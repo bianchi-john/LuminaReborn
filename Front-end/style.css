@@ -1,0 +1,13 @@
+.bold{
+    font-weight: bold;
+}
+
+.item {
+    display: flex;
+}
+
+.carousel-inner {
+    width: 100%!important;
+    min-width: 250px;
+    display: inline-block;
+}
