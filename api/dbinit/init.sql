@@ -7,23 +7,23 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_role` int,
-  `email` varchar(255),
-  `first_name` varchar(255),
-  `last_name` varchar(255),
-  `password` varchar(255)
+  `email` text,
+  `first_name` text,
+  `last_name` text,
+  `password` text
 );
 
 DROP TABLE IF EXISTS schede;
 
 CREATE TABLE `schede` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `autore` varchar(255),
-  `titolo` varchar(255),
-  `cronologia_ambito` int,
-  `oggetto` varchar(255),
-  `iscrizioni` varchar(255),
-  `corpo_scheda` varchar(255),
-  `storia_espositiva` varchar(255)
+  `autore` text,
+  `titolo` text,
+  `cronologia_ambito` text,
+  `oggetto` text,
+  `iscrizioni` text,
+  `corpo_scheda` text,
+  `storia_espositiva` text
 );
 
 DROP TABLE IF EXISTS tds_users_schede;
@@ -40,8 +40,8 @@ DROP TABLE IF EXISTS materiali;
 
 CREATE TABLE `materiali` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `nome_materiale` varchar(255),
-  `descrizione` varchar(255)
+  `nome_materiale` text,
+  `descrizione` text
 );
 
 DROP TABLE IF EXISTS tds_schede_materiali;
@@ -57,8 +57,8 @@ DROP TABLE IF EXISTS tecniche;
 
 CREATE TABLE `tecniche` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `nome_tecnica` varchar(255),
-  `descrizione` varchar(255)
+  `nome_tecnica` text,
+  `descrizione` text
 );
 
 DROP TABLE IF EXISTS tds_schede_tecniche;
@@ -75,8 +75,8 @@ DROP TABLE IF EXISTS misure;
 CREATE TABLE `misure` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `misura` float,
-  `unita_di_misura` varchar(255),
-  `descrizione` varchar(255)
+  `unita_di_misura` text,
+  `descrizione` text
 );
 
 DROP TABLE IF EXISTS tds_schede_misure;
@@ -92,8 +92,8 @@ DROP TABLE IF EXISTS ubicazioni;
 
 CREATE TABLE `ubicazioni` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `ubicazione` varchar(255),
-  `descrizione` varchar(255)
+  `ubicazione` text,
+  `descrizione` text
 );
 
 DROP TABLE IF EXISTS tds_schede_ubicazioni;
@@ -110,9 +110,9 @@ DROP TABLE IF EXISTS inventari;
 
 CREATE TABLE `inventari` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `numero_inventario` varchar(255),
-  `nome_inventario` varchar(255),
-  `descrizione` varchar(255)
+  `numero_inventario` text,
+  `nome_inventario` text,
+  `descrizione` text
 );
 
 
@@ -130,8 +130,8 @@ DROP TABLE IF EXISTS provenienze;
 
 CREATE TABLE `provenienze` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `provenienza` varchar(255),
-  `descrizione` varchar(255)
+  `provenienza` text,
+  `descrizione` text
 );
 
 
@@ -146,11 +146,12 @@ CREATE TABLE `tds_schede_provenienze` (
 DROP TABLE IF EXISTS mostre;
 
 
-CREATE TABLE `mostre` (
+CREATE TABLE `
+` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `titolo_mostra` varchar(255),
-  `data_mostra` varchar(255),
-  `descrizione` varchar(255)
+  `titolo_mostra` text,
+  `data_mostra` text,
+  `descrizione` text
 );
 
 DROP TABLE IF EXISTS tds_schede_mostre;
@@ -166,8 +167,8 @@ DROP TABLE IF EXISTS bibliografie;
 
 CREATE TABLE `bibliografie` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `riferimento_bibliografico` varchar(255),
-  `altro` varchar(255)
+  `riferimento_bibliografico` text,
+  `altro` text
 );
 
 
