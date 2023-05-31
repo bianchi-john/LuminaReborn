@@ -20,15 +20,16 @@ npm run start:build
 npm run start:dev
 ctrl + c
 docker-compose up -d --build
-docker-compose up
 ```
 
 Run
 
 ```sh
-npm install --production
-NODE_ENV=production node app
+docker-compose up  -d
 ```
+
+
+
 NPM
 
 ```sh

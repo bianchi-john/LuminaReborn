@@ -21,6 +21,10 @@ import tds_schede_ubicazione from './routes/tds_schede_ubicazione.routes'
 import tds_users_scheda from './routes/tds_users_scheda.routes'
 import tecnica from './routes/tecnica.routes'
 import ubicazione from './routes/ubicazione.routes'
+import autore from './routes/autore.routes'
+import immagine from './routes/immagine.routes'
+import tds_schede_autore from './routes/tds_schede_autore.routes'
+import tds_schede_immagine from './routes/tds_schede_autore.routes'
 
 import { HttpResponse } from './domain/response';
 import { Code } from './enum/code.enum';
@@ -68,6 +72,11 @@ export class App {
     this.app.use('/tds_users_schede', tds_users_scheda);
     this.app.use('/tecniche', tecnica);
     this.app.use('/ubicazioni', ubicazione);
+    this.app.use('/autori', autore);
+    this.app.use('/immagini', immagine);
+    this.app.use('/tds_schede_autori', tds_schede_autore);
+    this.app.use('/tds_schede_immagine', tds_schede_immagine);
+
 
 
     inventarioRoutes

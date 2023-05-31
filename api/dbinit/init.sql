@@ -22,7 +22,9 @@ CREATE TABLE `schede` (
   `cronologia_ambito` text,
   `oggetto` text,
   `iscrizioni` text,
-  `corpo_scheda` text,
+  `
+  ,
+   ` text,
   `storia_espositiva` text
 );
 
@@ -179,6 +181,39 @@ CREATE TABLE `tds_schede_bibliografie` (
   `id_riferimento` int
 );
 
+DROP TABLE IF EXISTS autori;
+
+
+CREATE TABLE `autori` (
+  `id_autore` int PRIMARY KEY AUTO_INCREMENT,
+  `nome` text,
+  `altroaltroaltro` text,
+);
+
+
+DROP TABLE IF EXISTS tds_schede_autori;
+
+CREATE TABLE `tds_schede_autori` (
+  `id_scheda` int,
+  `id_autore` int
+);
+
+DROP TABLE IF EXISTS immagini;
+
+CREATE TABLE `immagini` (
+  `id_immagine` int PRIMARY KEY AUTO_INCREMENT,
+  `path` text,
+);
+
+DROP TABLE IF EXISTS tds_schede_immagini;
+
+CREATE TABLE `tds_schede_immagini` (
+  `id_scheda` int,
+  `id_immagine` int
+);
+
+
+
 ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
 ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
@@ -214,3 +249,11 @@ ALTER TABLE `tds_schede_mostre` ADD FOREIGN KEY (`id_mostra`) REFERENCES `mostre
 ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
 ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_riferimento`) REFERENCES `bibliografie` (`id`);
+
+ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+
+ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_autore`) REFERENCES `autori` (`id`);
+
+ALTER TABLE `tds_schede_immagini` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+
+ALTER TABLE `tds_schede_immagini` ADD FOREIGN KEY (`id_immagine`) REFERENCES `immagini` (`id`);

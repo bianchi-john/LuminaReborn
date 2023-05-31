@@ -29,7 +29,7 @@
 // spessore medio cm 4,5
 {
     "id": "003",
-    "misura": "4,5",
+    "misura": "4.5",
     "unita_di_misura": "cm",
     "descrizione": "spessore medio"
 }
@@ -45,4 +45,12 @@
 {
     "id_scheda": "001",
     "id_misura": "003"
+}
+
+// Materiali
+// legno di castagno, foglia d’oro e lamine metalliche
+{
+    "id": 001,
+    "nome_materiale": "legno di castagno",
+    "descrizione": text
 }
