@@ -4,6 +4,7 @@ import cors from 'cors';
 import userRoutes from './routes/user.routes';
 import schedaRoutes from './routes/scheda.routes';
 import bibliografiaRoutes from './routes/bibliografia.routes';
+import altreBibliografiaRoutes from './routes/altreBibliografia.routes';
 import inventarioRoutes from './routes/inventario.routes'
 import materiale from './routes/materiale.routes'
 import misura from './routes/misura.routes'
@@ -11,6 +12,7 @@ import mostra from './routes/mostra.routes'
 import provenienza from './routes/provenienza.routes'
 import scheda from './routes/scheda.routes'
 import tds_schede_bibliografia from './routes/tds_schede_bibliografia.routes'
+import tds_schede_altreBibliografia from './routes/tds_schede_altreBibliografia.routes'
 import tds_schede_inventario from './routes/tds_schede_inventario.routes'
 import tds_schede_materiale from './routes/tds_schede_materiale.routes'
 import tds_schede_misura from './routes/tds_schede_misura.routes'
@@ -55,13 +57,15 @@ export class App {
     this.app.use('/users', userRoutes);
     this.app.use('/schede', schedaRoutes);
     this.app.use('/bibliografie', bibliografiaRoutes);
-    this.app.use('/inventariRoutes', inventarioRoutes);
+    this.app.use('/altreBibliografie', altreBibliografiaRoutes);
+    this.app.use('/inventari', inventarioRoutes);
     this.app.use('/materiali', materiale);
     this.app.use('/misure', misura);
     this.app.use('/mostre', mostra);
     this.app.use('/provenienze', provenienza);
     this.app.use('/schede', scheda);
     this.app.use('/tds_schede_bibliografie', tds_schede_bibliografia);
+    this.app.use('/tds_schede_altreBibliografie', tds_schede_altreBibliografia);
     this.app.use('/tds_schede_inventari', tds_schede_inventario);
     this.app.use('/tds_schede_materiali', tds_schede_materiale);
     this.app.use('/tds_schede_misure', tds_schede_misura);

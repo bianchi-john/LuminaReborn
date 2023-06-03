@@ -7,7 +7,6 @@ Made with:
 - NodeJs
 - Docker
 - Bootstrap
-- ✨Magic ✨
 ## Installation
 
 Setup and run:
@@ -17,8 +16,6 @@ sudo systemctl stop mysql.service
 cd api
 npm i
 npm run start:build
-npm run start:dev
-ctrl + c
 docker-compose up -d --build
 ```
 
@@ -27,7 +24,6 @@ Run
 ```sh
 docker-compose up  -d
 ```
-
 
 
 NPM
@@ -53,7 +49,7 @@ DOCKER
 docker ps -aq && docker images
 
 # Stop all running containers and Remove all containers and Remove all images
-docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force
+docker stop $(docker ps -aq) && docker kill $(docker ps -q) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force
 
 # List all containers (only IDs)
 docker ps -aq && docker images
@@ -69,11 +65,10 @@ SHOW DATABASES;
 USE luminadb;
 SHOW TABLES;
 
+#Restart docker service
+sudo systemctl restart docker.socket docker.service
 
 ```
-
-
-
 
 Other
 
