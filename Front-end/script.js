@@ -56,8 +56,6 @@ window.onload = function () {
                 // Puoi gestire la risposta della seconda chiamata qui
             }
 
-
-            
             const GetInventari = new XMLHttpRequest();
             const urlInventari = 'http://192.168.208.29:3000/Inventari'; // URL per la seconda chiamata GET
             GetInventari.open("GET", urlInventari);
@@ -117,7 +115,7 @@ window.onload = function () {
                 console.log(GetAutori.responseText);
                 // Puoi gestire la risposta della seconda chiamata qui
             }
-            
+
             const GetImmagini = new XMLHttpRequest();
             const urlImmagini = 'http://192.168.208.29:3000/Immagini'; // URL per la seconda chiamata GET
             GetImmagini.open("GET", urlImmagini);
