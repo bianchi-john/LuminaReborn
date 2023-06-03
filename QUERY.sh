@@ -10,10 +10,9 @@ curl --header "Content-Type: application/json" \
     "corpo_scheda": "Cristo crocifisso, qui nella formulazione iconografica del triumphans, è raffigurato vivo e con gli occhi bene aperti; la sua morte incipiente non dà segni manifesti di sofferenza fisica, se non nei rivoli di sangue, sottilissimi e calligrafici, che scaturiscono dai quattro chiodi confitti nelle mani e nei piedi; la caratterizzazione trionfante del soggetto è ulteriormente enfatizzata dal lungo perizoma, annodato sul davanti, impreziosito dal gallone dorato e dal colore purpureo delle vesti regali. La testa di Gesù è appena ruotata a destra, e i capelli, spartiti dalla marcata scriminatura centrale, ricadono in due ciocche ondulate che contornano ordinatamente il profilo delle spalle. Contravvenendo alla rigida assialità della figura condizionata dalla posa dei piedi divaricati, il busto è leggermente ruotato verso destra, come a voler suggerire un’impressione di scomposta naturalezza che si riverbera anche nel delicatissimo accavallamento della gamba sinistra sulla destra sottostante. Intorno a Gesù in croce si dispiega, in ordinata simmetria, un apparato di figure ed episodi che contestualizzano in senso narrativo il momento della Passione, esaltandone al contempo il messaggio trionfale e soteriologico: esso è particolarmente congeniale alla simbologia dell’altare eucaristico (Sinding Larsen 1978, pp. 193-195; Bacci 1994, p. 90), nelle cui immediate prossimità dovevano trovarsi questa ed altre croci monumentali, forse issate in trabe tra l’ecclesia laicorum e il presbiterio (speciatim Peroni 2012; Massaccesi 2019, con ulteriore bibliografia). Nella cimasa, poco al di sopra della tabella dell’INRI, è la Maiestas Domini, con ai lati due angeli riverenti; intorno alle estremità fiorite dei bracci orizzontali della Croce trovano posto gli Evangelisti nei quattro simboli del Tetramorfo: a sinistra, il Figlio dell’Uomo di San Matteo e il leone di San Marco; a destra, l’aquila di San Giovanni e il bue di San Luca. Il teatro dei dolenti  con Giovanni Evangelista e la Vergine, legati dal gesto della coniunctio dextrarum (Bagnarol 2012), e le Due Marie  occupa il primo registro del tabellone centrale, da un lato e dall’altro del busto di Cristo; immediatamente al di sotto si trovano descritte, in scala inferiore, la Crocifissione del buon ladrone (a destra) e la Crocifissione del cattivo ladrone (a sinistra); i due, legati alla rispettiva croce, stanno per essere fatalmente colpiti da altrettanti sgherri che, con pose in contrappunto (uno si volge verso il suo ladrone, il secondo dà all’altro le spalle), trattengono la violenza del colpo incipiente in una sorta di sinuoso passo di danza. In basso a sinistra trova posto la Deposizione di Cristo nel sepolcro, ambientata entro un baldacchino cupolato, allusivo all’edificio del Santo Sepolcro di Gerusalemme (Bacci 1994, p. 92), e officiata da tre personaggi. Al centro della scena è il ricco e anziano Giuseppe d’Arimatea; questi regge incongruamente tra le mani la pisside degli unguenti, che  stando al racconto evangelico  sarebbe invece più appropriata a Nicodemo, posto ai piedi del sarcofago strigilato all’antica dove aiuta a deporre il corpo morto di Cristo rinvolto nel sudario, che una terza figura  da identificare forse con l’efebico San Giovanni Evangelista  sostiene dal capo, dall’altra parte del sepolcro. Nel riquadro complanare, a destra del Crocifisso, è descritto l’episodio delle Marie al sepolcro, a compendio del racconto della Resurrezione. Vi è ripetuto il medesimo baldacchino cupolato della scena precedente, che qui, in un’ulteriore rappresentazione sintetica ma più completa del Santo Sepolcro (Bacci 1994, p. 92), insiste su un’edicola scavata nella roccia che pare far corpo unico con il sarcofago strigilato in cui Cristo veniva poc’anzi deposto. Conformemente al Vangelo di Matteo e alla tradizione figurativa orientale da questo derivata (Bacci 1994, p. 93), sono presenti nella scena solo due delle più canoniche tre donne testimoni della resurrezione di Gesù; ad annunciare loro l’evento è l’angelo che, munito di scettro, indica alle Marie il sepolcro ormai vuoto.",
     "storia_espositiva": "La croce, giunta nel 1899 nelle collezioni pubbliche lucchesi dalla chiesa duecentesca di Santa Maria dei Servi dov’era conservata prima nel coro, poi nella sacrestia (Ridolfi 1877; Ridolfi 1899), fu inizialmente compresa nell’allestimento della Pinacoteca di Palazzo Ducale, arrivandovi tra il 1909 e il 1912. L’opera, non ancora censita nel catalogo della Pinacoteca, a firma di Placido Campetti (Campetti 1909), è invece attestata in Palazzo Ducale nella guida pubblicata tre anni dopo dallo stesso autore (Campetti 1912).Dopo circa un decennio, la croce transitò nel Museo civico di Villa Guinigi, inaugurato nel 1924."
 }' \
-  http://192.168.208.29:3000/schede 
+  http://192.168.208.29:3000/schede
 
-
-  &&
+&&
 
 curl --header "Content-Type: application/json" \
   --request POST \
@@ -24,10 +23,7 @@ curl --header "Content-Type: application/json" \
     "descrizione": "altezza massima"
   }' \
   http://192.168.208.29:3000/misure
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -39,10 +35,7 @@ curl --header "Content-Type: application/json" \
       "descrizione": "larghezza massima"
   }' \
   http://192.168.208.29:3000/misure
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -53,10 +46,7 @@ curl --header "Content-Type: application/json" \
     "descrizione": "spessore medio"
 }' \
   http://192.168.208.29:3000/misure
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -65,10 +55,7 @@ curl --header "Content-Type: application/json" \
     "id_misura": "001"
   }' \
   http://192.168.208.29:3000/tds_schede_misure
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -77,10 +64,7 @@ curl --header "Content-Type: application/json" \
     "id_misura": "002"
   }' \
   http://192.168.208.29:3000/tds_schede_misure
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -89,11 +73,17 @@ curl --header "Content-Type: application/json" \
     "id_misura": "003"
   }' \
   http://192.168.208.29:3000/tds_schede_misure
-
-
-
-  &&
-
+&&
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '  
+  {
+    "id": "001",
+    "nome_materiale": "legno di castagno",
+    "descrizione": ""
+  }
+  ' \
+  http://192.168.208.29:3000/materiali&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -104,25 +94,7 @@ curl --header "Content-Type: application/json" \
   }
   ' \
   http://192.168.208.29:3000/materiali
-
-
-  &&
-
-curl --header "Content-Type: application/json" \
-  --request POST \
-  --data '  
-  {
-    "id": "001",
-    "nome_materiale": "legno di castagno",
-    "descrizione": ""
-  }
-  ' \
-  http://192.168.208.29:3000/materiali
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -132,11 +104,7 @@ curl --header "Content-Type: application/json" \
     "descrizione": ""
 }
   ' \
-  http://192.168.208.29:3000/materiali
-
-
-  &&
-
+  http://192.168.208.29:3000/materiali&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -160,12 +128,7 @@ curl --header "Content-Type: application/json" \
   }
   ' \
   http://192.168.208.29:3000/materiali
-
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -175,9 +138,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_materiali
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -187,11 +148,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_materiali
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -201,11 +158,7 @@ curl --header "Content-Type: application/json" \
   }
   ' \
   http://192.168.208.29:3000/tds_schede_materiali
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -216,11 +169,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tecniche
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -230,11 +179,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_tecniche
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -245,11 +190,7 @@ curl --header "Content-Type: application/json" \
 }
 
   ' \
-  http://192.168.208.29:3000/ubicazioni
-
-
-  &&
-
+  http://192.168.208.29:3000/ubicazioni&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -260,11 +201,7 @@ curl --header "Content-Type: application/json" \
 
   ' \
   http://192.168.208.29:3000/tds_schede_ubicazioni
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -274,11 +211,7 @@ curl --header "Content-Type: application/json" \
     }
 
   ' \
-  http://192.168.208.29:3000/tds_schede_ubicazioni
-
-
-  &&
-
+  http://192.168.208.29:3000/tds_schede_ubicazioni&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -288,11 +221,7 @@ curl --header "Content-Type: application/json" \
 }
 
   ' \
-  http://192.168.208.29:3000/inventari
-
-
-  &&
-
+  http://192.168.208.29:3000/inventari&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -303,11 +232,7 @@ curl --header "Content-Type: application/json" \
     "descrizione": ""
 }
   ' \
-  http://192.168.208.29:3000/inventari
-
-
-  &&
-
+  http://192.168.208.29:3000/inventari&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -317,9 +242,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_inventari
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -330,11 +253,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/provenienze
- 
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -342,13 +261,9 @@ curl --header "Content-Type: application/json" \
   "id_scheda": "001",
   "id_provenienza": "001"
 } 
-
   ' \
   http://192.168.208.29:3000/tds_schede_provenienze
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -360,10 +275,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/mostre
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -374,10 +286,7 @@ curl --header "Content-Type: application/json" \
     "descrizione": "Firenze 1937, cat. 1"
 }  ' \
   http://192.168.208.29:3000/mostre
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -389,9 +298,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/mostre
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -401,10 +308,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_mostre
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -414,12 +318,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_mostre
-
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -429,11 +328,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/tds_schede_mostre
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -444,9 +339,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/immagini
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -457,10 +350,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/immagini
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -471,10 +361,7 @@ curl --header "Content-Type: application/json" \
 }
   ' \
   http://192.168.208.29:3000/immagini
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -484,10 +371,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_immagini
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -497,11 +381,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_immagini
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -511,11 +391,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_immagini
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -525,10 +401,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -538,10 +411,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -551,9 +421,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -563,12 +431,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -578,11 +441,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -592,9 +451,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-  
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -604,10 +461,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -617,10 +471,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -630,11 +481,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -644,11 +491,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -658,11 +501,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -672,11 +511,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -686,11 +521,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -700,11 +531,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -714,12 +541,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -729,11 +551,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -743,11 +561,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -757,11 +571,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -771,10 +581,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -784,9 +591,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -796,11 +601,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -810,10 +611,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -823,9 +621,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -835,10 +631,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -848,10 +641,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -861,9 +651,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -873,11 +661,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -887,10 +671,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -900,10 +681,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -914,11 +692,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -928,11 +702,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -943,11 +713,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -957,10 +723,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -970,11 +733,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -984,10 +743,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -997,10 +753,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1010,9 +763,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1022,10 +773,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1035,10 +783,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1048,10 +793,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/bibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1061,10 +803,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/altreBibliografie
-
-
-  &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1074,10 +813,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1087,10 +823,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1100,10 +833,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1113,10 +843,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1126,10 +853,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1139,10 +863,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1152,10 +873,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1165,10 +883,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1178,10 +893,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1191,10 +903,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1204,10 +913,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1217,9 +923,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1229,10 +933,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1242,10 +943,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1255,10 +953,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1268,10 +963,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1281,10 +973,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1294,10 +983,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1307,11 +993,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1321,10 +1003,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1334,10 +1013,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1347,10 +1023,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1360,10 +1033,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1373,10 +1043,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1386,10 +1053,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1399,10 +1063,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1412,10 +1073,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1425,10 +1083,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1438,10 +1093,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1451,10 +1103,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1464,10 +1113,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1477,10 +1123,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1490,10 +1133,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1503,10 +1143,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1516,10 +1153,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1529,10 +1163,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1542,10 +1173,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1555,9 +1183,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  
@@ -1567,10 +1193,7 @@ curl --header "Content-Type: application/json" \
     }
   ' \
   http://192.168.208.29:3000/tds_schede_bibliografie
-
-
-    &&
-
+&&
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '  

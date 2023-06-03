@@ -49,7 +49,7 @@ DOCKER
 docker ps -aq && docker images
 
 # Stop all running containers and Remove all containers and Remove all images
-docker stop $(docker ps -aq) && docker kill $(docker ps -q) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force
+docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force
 
 # List all containers (only IDs)
 docker ps -aq && docker images

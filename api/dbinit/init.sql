@@ -164,7 +164,7 @@ DROP TABLE IF EXISTS bibliografie;
 
 CREATE TABLE `bibliografie` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `riferimento_bibliografico` text,
+  `riferimento_bibliografico` text
 );
 
 
@@ -180,7 +180,7 @@ DROP TABLE IF EXISTS altreBibliografie;
 
 CREATE TABLE `altreBibliografie` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `riferimento_bibliografico` text,
+  `riferimento_bibliografico` text
 );
 
 
@@ -199,7 +199,7 @@ DROP TABLE IF EXISTS autori;
 CREATE TABLE `autori` (
   `id_autore` int PRIMARY KEY AUTO_INCREMENT,
   `nome` text,
-  `altro` text,
+  `altro` text
 );
 
 
@@ -215,7 +215,7 @@ DROP TABLE IF EXISTS immagini;
 CREATE TABLE `immagini` (
   `id_immagine` int PRIMARY KEY AUTO_INCREMENT,
   `path` text,
-  `didascalia` text,
+  `didascalia` text
 );
 
 DROP TABLE IF EXISTS tds_schede_immagini;
