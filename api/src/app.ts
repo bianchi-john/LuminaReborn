@@ -26,7 +26,7 @@ import ubicazione from './routes/ubicazione.routes'
 import autore from './routes/autore.routes'
 import immagine from './routes/immagine.routes'
 import tds_schede_autore from './routes/tds_schede_autore.routes'
-import tds_schede_immagine from './routes/tds_schede_autore.routes'
+import tds_schede_immagine from './routes/tds_schede_immagine.routes'
 
 import { HttpResponse } from './domain/response';
 import { Code } from './enum/code.enum';
@@ -79,7 +79,7 @@ export class App {
     this.app.use('/autori', autore);
     this.app.use('/immagini', immagine);
     this.app.use('/tds_schede_autori', tds_schede_autore);
-    this.app.use('/tds_schede_immagine', tds_schede_immagine);
+    this.app.use('/tds_schede_immagini', tds_schede_immagine);
 
 
 

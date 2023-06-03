@@ -17,6 +17,7 @@ cd api
 npm i
 npm run start:build
 docker-compose up -d --build
+./QUERY.sh
 ```
 
 Run
@@ -25,6 +26,14 @@ Run
 docker-compose up  -d
 ```
 
+Delete all and recreate
+
+```sh
+docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force
+sudo rm -rf data
+docker-compose up -d --build
+./QUERY.sh
+```
 
 NPM
 
