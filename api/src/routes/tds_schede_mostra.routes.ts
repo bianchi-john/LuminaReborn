@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { createTds_schede_mostra, deleteTds_schede_mostra, getTds_schede_mostra, getTds_schede_mostre, updateTds_schede_mostra } from '../controller/tds_schede_mostra.controller';
 
-const misuraRoutes = Router();
+const tds_schede_mostraRoutes = Router();
 
-misuraRoutes.route('/')
+tds_schede_mostraRoutes.route('/')
   .get(getTds_schede_mostre)
   .post(createTds_schede_mostra);
 
-  misuraRoutes.route('/:misuraId')
+  tds_schede_mostraRoutes.route('/:tds_schede_mostraId')
   .get(getTds_schede_mostra)
   .put(updateTds_schede_mostra)
   .delete(deleteTds_schede_mostra);
 
-export default misuraRoutes;
+export default tds_schede_mostraRoutes;

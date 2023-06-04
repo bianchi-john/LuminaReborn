@@ -72,8 +72,7 @@ docker exec -it mysqlcontainer bash
 mysql -u root -p
 SHOW DATABASES;
 USE luminadb;
-SHOW TABLES;
-
+createTds_users_schedecreateTds_users_schedecreateTds_users_schede
 #Restart docker service
 sudo systemctl restart docker.socket docker.service
 

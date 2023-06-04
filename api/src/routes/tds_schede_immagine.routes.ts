@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { createTds_schede_immagine, deleteTds_schede_immagine, getTds_schede_immagine, getTds_schede_immagini, updateTds_schede_immagine } from '../controller/tds_schede_immagine.controller';
 
-const misuraRoutes = Router();
+const tds_schede_immagineRoutes = Router();
 
-misuraRoutes.route('/')
+tds_schede_immagineRoutes.route('/')
   .get(getTds_schede_immagini)
   .post(createTds_schede_immagine);
 
-  misuraRoutes.route('/:misuraId')
+  tds_schede_immagineRoutes.route('/:tds_schede_immagineId')
   .get(getTds_schede_immagine)
   .put(updateTds_schede_immagine)
   .delete(deleteTds_schede_immagine);
 
-export default misuraRoutes;
+export default tds_schede_immagineRoutes;

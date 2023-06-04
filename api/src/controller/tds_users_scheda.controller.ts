@@ -42,7 +42,7 @@ export const getTds_users_schede = async (req: Request, res: Response): Promise<
   }
 };
 
-export const createTds_users_schede = async (req: Request, res: Response): Promise<Response<Tds_users_scheda>> => {
+export const createTds_users_scheda = async (req: Request, res: Response): Promise<Response<Tds_users_scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   let tds_users_schede: Tds_users_scheda = { ...req.body };
   try {
@@ -58,7 +58,7 @@ export const createTds_users_schede = async (req: Request, res: Response): Promi
   }
 };
 
-export const updateTds_users_schede = async (req: Request, res: Response): Promise<Response<Tds_users_scheda>> => {
+export const updateTds_users_scheda = async (req: Request, res: Response): Promise<Response<Tds_users_scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   let tds_users_schede: Tds_users_scheda = { ...req.body };
   try {
@@ -79,7 +79,7 @@ export const updateTds_users_schede = async (req: Request, res: Response): Promi
   }
 };
 
-export const deleteTds_users_schede = async (req: Request, res: Response): Promise<Response<Tds_users_scheda>> => {
+export const deleteTds_users_scheda = async (req: Request, res: Response): Promise<Response<Tds_users_scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
     const pool = await connection();

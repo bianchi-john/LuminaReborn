@@ -1,6 +1,6 @@
 window.onload = function () {
     const Handshake = new XMLHttpRequest();
-    const url = 'http://192.168.208.29:3000';
+    const url = 'http://0.0.0.0:3000';
     Handshake.open("GET", url);
     Handshake.send();
 
@@ -9,8 +9,8 @@ window.onload = function () {
         if (Handshake.readyState === 4 && Handshake.status === 200) {
             // La prima chiamata è stata completata con successo
             const GetSchede = new XMLHttpRequest();
-            const urlSchede = 'http://192.168.208.29:3000/Schede'; // URL per la seconda chiamata GET
-            GetSchede.open("GET", urlSchede);
+            const urlSchede = 'http://0.0.0.0:3000/Schede/1'; // URL per la seconda chiamata GET
+            GetSchede.open("GET", urlSchede);createTds_users_schede
             GetSchede.send();
 
             GetSchede.onreadystatechange = (e) => {
@@ -18,7 +18,7 @@ window.onload = function () {
                 // Puoi gestire la risposta della seconda chiamata qui
             }
             const GetMateriali = new XMLHttpRequest();
-            const urlMateriali = 'http://192.168.208.29:3000/Materiali'; // URL per la seconda chiamata GET
+            const urlMateriali = 'http://0.0.0.0:3000/tds_schede_materiali'; // URL per la seconda chiamata GET
             GetMateriali.open("GET", urlMateriali);
             GetMateriali.send();
 
@@ -28,7 +28,7 @@ window.onload = function () {
             }
 
             const GetTecniche = new XMLHttpRequest();
-            const urlTecniche = 'http://192.168.208.29:3000/Tecniche'; // URL per la seconda chiamata GET
+            const urlTecniche = 'http://0.0.0.0:3000/Tecniche'; // URL per la seconda chiamata GET
             GetTecniche.open("GET", urlTecniche);
             GetTecniche.send();
 
@@ -37,7 +37,7 @@ window.onload = function () {
                 // Puoi gestire la risposta della seconda chiamata qui
             }
             const GetMisure = new XMLHttpRequest();
-            const urlMisure = 'http://192.168.208.29:3000/Misure'; // URL per la seconda chiamata GET
+            const urlMisure = 'http://0.0.0.0:3000/Misure'; // URL per la seconda chiamata GET
             GetMisure.open("GET", urlMisure);
             GetMisure.send();
 
@@ -47,7 +47,7 @@ window.onload = function () {
             }
 
             const GetUbicazioni = new XMLHttpRequest();
-            const urlUbicazioni = 'http://192.168.208.29:3000/Ubicazioni'; // URL per la seconda chiamata GET
+            const urlUbicazioni = 'http://0.0.0.0:3000/Ubicazioni'; // URL per la seconda chiamata GET
             GetUbicazioni.open("GET", urlUbicazioni);
             GetUbicazioni.send();
 
@@ -57,7 +57,7 @@ window.onload = function () {
             }
 
             const GetInventari = new XMLHttpRequest();
-            const urlInventari = 'http://192.168.208.29:3000/Inventari'; // URL per la seconda chiamata GET
+            const urlInventari = 'http://0.0.0.0:3000/Inventari'; // URL per la seconda chiamata GET
             GetInventari.open("GET", urlInventari);
             GetInventari.send();
 
@@ -67,7 +67,7 @@ window.onload = function () {
             }
 
             const GetProvenienze = new XMLHttpRequest();
-            const urlProvenienze = 'http://192.168.208.29:3000/Provenienze'; // URL per la seconda chiamata GET
+            const urlProvenienze = 'http://0.0.0.0:3000/Provenienze'; // URL per la seconda chiamata GET
             GetProvenienze.open("GET", urlProvenienze);
             GetProvenienze.send();
 
@@ -77,7 +77,7 @@ window.onload = function () {
             }
 
             const GetMostre = new XMLHttpRequest();
-            const urlMostre = 'http://192.168.208.29:3000/Mostre'; // URL per la seconda chiamata GET
+            const urlMostre = 'http://0.0.0.0:3000/Mostre'; // URL per la seconda chiamata GET
             GetMostre.open("GET", urlMostre);
             GetMostre.send();
 
@@ -87,7 +87,7 @@ window.onload = function () {
             }
 
             const GetBibliografie = new XMLHttpRequest();
-            const urlBibliografie = 'http://192.168.208.29:3000/Bibliografie'; // URL per la seconda chiamata GET
+            const urlBibliografie = 'http://0.0.0.0:3000/Bibliografie'; // URL per la seconda chiamata GET
             GetBibliografie.open("GET", urlBibliografie);
             GetBibliografie.send();
 
@@ -97,7 +97,7 @@ window.onload = function () {
             }
 
             const GetaltreBibliografie = new XMLHttpRequest();
-            const urlaltreBibliografie = 'http://192.168.208.29:3000/altreBibliografie'; // URL per la seconda chiamata GET
+            const urlaltreBibliografie = 'http://0.0.0.0:3000/altreBibliografie'; // URL per la seconda chiamata GET
             GetaltreBibliografie.open("GET", urlaltreBibliografie);
             GetaltreBibliografie.send();
 
@@ -107,7 +107,7 @@ window.onload = function () {
             }
 
             const GetAutori = new XMLHttpRequest();
-            const urlAutori = 'http://192.168.208.29:3000/Autori'; // URL per la seconda chiamata GET
+            const urlAutori = 'http://0.0.0.0:3000/Autori'; // URL per la seconda chiamata GET
             GetAutori.open("GET", urlAutori);
             GetAutori.send();
 
@@ -117,7 +117,7 @@ window.onload = function () {
             }
 
             const GetImmagini = new XMLHttpRequest();
-            const urlImmagini = 'http://192.168.208.29:3000/Immagini'; // URL per la seconda chiamata GET
+            const urlImmagini = 'http://0.0.0.0:3000/Immagini'; // URL per la seconda chiamata GET
             GetImmagini.open("GET", urlImmagini);
             GetImmagini.send();
 

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTds_users_schede = exports.updateTds_users_schede = exports.createTds_users_schede = exports.getTds_users_schede = exports.getTds_users_scheda = void 0;
+exports.deleteTds_users_scheda = exports.updateTds_users_scheda = exports.createTds_users_scheda = exports.getTds_users_schede = exports.getTds_users_scheda = void 0;
 const mysql_config_1 = require("../config/mysql.config");
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
@@ -51,7 +51,7 @@ const getTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getTds_users_schede = getTds_users_schede;
-const createTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createTds_users_scheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     let tds_users_schede = Object.assign({}, req.body);
     try {
@@ -67,8 +67,8 @@ const createTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, f
             .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
     }
 });
-exports.createTds_users_schede = createTds_users_schede;
-const updateTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createTds_users_scheda = createTds_users_scheda;
+const updateTds_users_scheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     let tds_users_schede = Object.assign({}, req.body);
     try {
@@ -90,8 +90,8 @@ const updateTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, f
             .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
     }
 });
-exports.updateTds_users_schede = updateTds_users_schede;
-const deleteTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.updateTds_users_scheda = updateTds_users_scheda;
+const deleteTds_users_scheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const pool = yield (0, mysql_config_1.connection)();
@@ -112,4 +112,4 @@ const deleteTds_users_schede = (req, res) => __awaiter(void 0, void 0, void 0, f
             .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
     }
 });
-exports.deleteTds_users_schede = deleteTds_users_schede;
+exports.deleteTds_users_scheda = deleteTds_users_scheda;

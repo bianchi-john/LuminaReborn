@@ -7,7 +7,7 @@ bibliografiaRoutes.route('/')
   .get(getAltreBibliografie)
   .post(createAltreBibliografia);
 
-  bibliografiaRoutes.route('/:bibliografiaId')
+  bibliografiaRoutes.route('/:altreBibliografiaId')
   .get(getAltreBibliografia)
   .put(updateAltreBibliografia)
   .delete(deleteAltreBibliografia);

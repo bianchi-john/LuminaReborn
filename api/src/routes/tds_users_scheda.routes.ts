@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import { createUser, deleteUser, getUser, getUsers, updateUser } from '../controller/user.controller';
+import { createTds_users_scheda, deleteTds_users_scheda, getTds_users_schede, getTds_users_scheda, updateTds_users_scheda } from '../controller/tds_users_scheda.controller';
 
-const userRoutes = Router();
+const tds_users_schedaRoutes = Router();
 
-userRoutes.route('/')
-  .get(getUsers)
-  .post(createUser);
+tds_users_schedaRoutes.route('/')
+  .get(getTds_users_schede)
+  .post(createTds_users_scheda);
 
-userRoutes.route('/:userId')
-  .get(getUser)
-  .put(updateUser)
-  .delete(deleteUser);
+  tds_users_schedaRoutes.route('/:tds_users_scheda.routesId')
+  .get(getTds_users_scheda)
+  .put(updateTds_users_scheda)
+  .delete(deleteTds_users_scheda);
 
-export default userRoutes;
+export default tds_users_schedaRoutes;
