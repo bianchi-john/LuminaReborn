@@ -15,7 +15,7 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "001","id_tecnica": "001"}' \  http://0.0.0.0:3000/tds_schede_tecniche
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "001","ubicazione": "Lucca, Museo Nazionale di Villa Guinigi","descrizione": ""}' \  http://0.0.0.0:3000/ubicazioni
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "001","id_ubicazione": "001"}' \  http://0.0.0.0:3000/tds_schede_ubicazioni
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "001","numero_inventario": "331","nome_inventario": "","descrizione": ""}' \  http://0.0.0.0:3000/inventari
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "001","numero_inventario": "331","nome_inventario": "Inventario di test","descrizione": ""}' \  http://0.0.0.0:3000/inventari
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "001","id_inventario": "001"}' \  http://0.0.0.0:3000/tds_schede_inventari
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "001","provenienza": "Lucca","descrizione": "sacrestia della chiesa di Santa Maria dei Servi (fino al 1899)"}' \  http://0.0.0.0:3000/provenienze
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "001","id_provenienza": "001"}'\  http://0.0.0.0:3000/tds_schede_provenienze

@@ -6,6 +6,10 @@
     display: flex;
 }
 
+.inline {
+    display: inline!important;
+}
+
 .carousel-inner {
     width: 100%!important;
     min-width: 250px;
