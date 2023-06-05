@@ -323,3 +323,64 @@ async function getInventari(dataID) {
         }
     }
 }
+
+async function getProvenienze(dataID) {
+
+    const Handshake = new XMLHttpRequest();
+    const tdsUrl = 'http://0.0.0.0:3000/tds_schede_provenienze' + '/' + dataID; // URL per la seconda chiamata GET
+    Handshake.open("GET", tdsUrl);
+    Handshake.send();
+    let elemetsData = []
+
+    Handshake.onreadystatechange = (e) => {
+        if (Handshake.readyState === 4 && Handshake.status === 200) {
+            let elementsId = Handshake.responseText;
+            let elements = []
+            if (elementsId.length > 1) {
+                elementsId = JSON.parse(elementsId)
+                let listOfElements = elementsId.data
+                for (let i = 0; i < listOfElements.length; i++) {
+                    elements.push(Object.values(listOfElements[i])[1])
+                }
+                for (let j = 0; j < elements.length; j++) {
+                    let GetSchedeData = new XMLHttpRequest();
+                    GetSchedeData.open("GET", 'http://0.0.0.0:3000/provenienze' + '/' + elements[j]);
+                    GetSchedeData.send();
+                    GetSchedeData.onreadystatechange = (e) => {
+                        let element = GetSchedeData.responseText
+                        if (element.length > 0) {
+                            let parsedData = JSON.parse(element);
+                            //provenienze
+                            let newTextFirst = parsedData.data[0].provenienza + " ";
+                            let $targetDivFirst = $(".provenienze");
+                            let $existingElementFirst = $targetDivFirst.find("p").filter(function() {
+                                return $(this).text() === newTextFirst;
+                            });
+                            if ($existingElementFirst.length > 0) {
+                              return;
+                            }
+                            let $pElementFirst = $("<p>").text(newTextFirst);
+                            $targetDivFirst.append($pElementFirst);
+                            $pElementFirst.addClass("item inline");
+
+                            // descrizione
+                            let newTextSecond = parsedData.data[0].descrizione + " ";
+                            let $targetDivSecond = $(".provenienze");
+                            let $existingElementSecond = $targetDivSecond.find("p").filter(function() {
+                                return $(this).text() === newTextSecond;
+                            });
+                            if ($existingElementSecond.length > 0) {
+                              return;
+                            }
+                            let $pElementSecond = $("<p>").text(newTextSecond);
+                            $targetDivSecond.append($pElementSecond);
+                            $pElementSecond.addClass("item inline");
+                        
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -5,4 +5,5 @@ window.addEventListener("load", (event) => {
     getMisure('1');
     getUbicazioni('1');
     getInventari('1');
+    getProvenienze('1');
 });

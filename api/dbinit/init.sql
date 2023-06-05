@@ -138,7 +138,7 @@ DROP TABLE IF EXISTS tds_schede_provenienze;
 
 
 CREATE TABLE `tds_schede_provenienze` (
-  createTds_users_schede
+  `id_scheda` int,
   `id_provenienza` int
 );
 
