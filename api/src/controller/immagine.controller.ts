@@ -14,7 +14,8 @@ export const getImmagini = async (req: Request, res: Response): Promise<Response
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_IMMAGINI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Immagini retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getImmagine = async (req: Request, res: Response): Promise<Response
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_IMMAGINE, [req.params.immagineId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Immagine retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateImmagine = async (req: Request, res: Response): Promise<Respo
     const result: ResultSet = await pool.query(QUERY.SELECT_IMMAGINE, [req.params.immagineId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_IMMAGINE, [...Object.values(immagine), req.params.immagineId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Immagine updated', { ...immagine, id: req.params.immagineId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteImmagine = async (req: Request, res: Response): Promise<Respo
     const result: ResultSet = await pool.query(QUERY.SELECT_IMMAGINE, [req.params.immagineId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_IMMAGINE, [req.params.immagineId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Immagine deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

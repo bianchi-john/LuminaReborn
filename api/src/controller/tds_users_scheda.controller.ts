@@ -14,7 +14,8 @@ export const getTds_users_scheda = async (req: Request, res: Response): Promise<
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_USERS_SCHEDE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Tds_users_scheda retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getTds_users_schede = async (req: Request, res: Response): Promise<
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_USERS_SCHEDE, [req.params.tds_users_schedeId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_users_schede retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateTds_users_scheda = async (req: Request, res: Response): Promi
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_USERS_SCHEDA, [req.params.tds_users_schedeId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_TDS_USERS_SCHEDA, [...Object.values(tds_users_schede), req.params.tds_users_schedeId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_users_schede updated', { ...tds_users_schede, id: req.params.tds_users_schedeId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteTds_users_scheda = async (req: Request, res: Response): Promi
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_USERS_SCHEDA, [req.params.tds_users_schedeId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_TDS_USERS_SCHEDA, [req.params.tds_users_schedeId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_users_schede deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

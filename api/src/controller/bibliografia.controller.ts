@@ -14,7 +14,8 @@ export const getBibliografie = async (req: Request, res: Response): Promise<Resp
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_BIBLIOGRAFIE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Bibliografie retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getBibliografia = async (req: Request, res: Response): Promise<Resp
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_BIBLIOGRAFIA, [req.params.bibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Bibliografia retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateBibliografia = async (req: Request, res: Response): Promise<R
     const result: ResultSet = await pool.query(QUERY.SELECT_BIBLIOGRAFIA, [req.params.bibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_BIBLIOGRAFIA, [...Object.values(bibliografia), req.params.bibliografiaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Bibliografia updated', { ...bibliografia, id: req.params.bibliografiaId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteBibliografia = async (req: Request, res: Response): Promise<R
     const result: ResultSet = await pool.query(QUERY.SELECT_BIBLIOGRAFIA, [req.params.bibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_BIBLIOGRAFIA, [req.params.bibliografiaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Bibliografia deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

@@ -20,6 +20,7 @@ const getProvenienze = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(provenienza_query_1.QUERY.SELECT_PROVENIENZE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Provenienze retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getProvenienza = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(provenienza_query_1.QUERY.SELECT_PROVENIENZA, [req.params.provenienzaId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Provenienza retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateProvenienza = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const result = yield pool.query(provenienza_query_1.QUERY.SELECT_PROVENIENZA, [req.params.provenienzaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(provenienza_query_1.QUERY.UPDATE_PROVENIENZA, [...Object.values(provenienza), req.params.provenienzaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Provenienza updated', Object.assign(Object.assign({}, provenienza), { id: req.params.provenienzaId })));
         }
@@ -98,6 +101,7 @@ const deleteProvenienza = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const result = yield pool.query(provenienza_query_1.QUERY.SELECT_PROVENIENZA, [req.params.provenienzaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(provenienza_query_1.QUERY.DELETE_PROVENIENZA, [req.params.provenienzaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Provenienza deleted'));
         }

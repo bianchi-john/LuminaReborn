@@ -20,6 +20,7 @@ const getTecniche = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tecnica_query_1.QUERY.SELECT_TECNICHE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tecniche retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getTecnica = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tecnica_query_1.QUERY.SELECT_TECNICA, [req.params.tecnicaId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tecnica retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateTecnica = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const result = yield pool.query(tecnica_query_1.QUERY.SELECT_TECNICA, [req.params.tecnicaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tecnica_query_1.QUERY.UPDATE_TECNICA, [...Object.values(tecnica), req.params.tecnicaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tecnica updated', Object.assign(Object.assign({}, tecnica), { id: req.params.tecnicaId })));
         }
@@ -98,6 +101,7 @@ const deleteTecnica = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const result = yield pool.query(tecnica_query_1.QUERY.SELECT_TECNICA, [req.params.tecnicaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tecnica_query_1.QUERY.DELETE_TECNICA, [req.params.tecnicaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tecnica deleted'));
         }

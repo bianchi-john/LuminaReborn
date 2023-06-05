@@ -20,6 +20,7 @@ const getTds_schede_mostre = (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_mostra_query_1.QUERY.SELECT_TDS_SCHEDE_MOSTRE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_mostre retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getTds_schede_mostra = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_mostra_query_1.QUERY.SELECT_TDS_SCHEDE_MOSTRA, [req.params.tds_schede_mostraId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_mostra retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateTds_schede_mostra = (req, res) => __awaiter(void 0, void 0, void 0, 
         const result = yield pool.query(tds_schede_mostra_query_1.QUERY.SELECT_TDS_SCHEDE_MOSTRA, [req.params.tds_schede_mostraId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_mostra_query_1.QUERY.UPDATE_TDS_SCHEDE_MOSTRA, [...Object.values(tds_schede_mostra), req.params.tds_schede_mostraId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_mostra updated', Object.assign(Object.assign({}, tds_schede_mostra), { id: req.params.tds_schede_mostraId })));
         }
@@ -98,6 +101,7 @@ const deleteTds_schede_mostra = (req, res) => __awaiter(void 0, void 0, void 0, 
         const result = yield pool.query(tds_schede_mostra_query_1.QUERY.SELECT_TDS_SCHEDE_MOSTRA, [req.params.tds_schede_mostraId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_mostra_query_1.QUERY.DELETE_TDS_SCHEDE_MOSTRA, [req.params.tds_schede_mostraId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_mostra deleted'));
         }

@@ -20,6 +20,7 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(user_query_1.QUERY.SELECT_USERS);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Users retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(user_query_1.QUERY.SELECT_USER, [req.params.userId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'User retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const result = yield pool.query(user_query_1.QUERY.SELECT_USER, [req.params.userId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(user_query_1.QUERY.UPDATE_USER, [...Object.values(user), req.params.userId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'User updated', Object.assign(Object.assign({}, user), { id: req.params.userId })));
         }
@@ -98,6 +101,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const result = yield pool.query(user_query_1.QUERY.SELECT_USER, [req.params.userId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(user_query_1.QUERY.DELETE_USER, [req.params.userId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'User deleted'));
         }

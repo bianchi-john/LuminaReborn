@@ -14,7 +14,8 @@ export const getTds_schede_autori = async (req: Request, res: Response): Promise
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_AUTORI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_autori retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getTds_schede_autore = async (req: Request, res: Response): Promise
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_AUTORE, [req.params.tds_schede_autoreId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_autore retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateTds_schede_autore = async (req: Request, res: Response): Prom
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_AUTORE, [req.params.tds_schede_autoreId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_TDS_SCHEDE_AUTORE, [...Object.values(tds_schede_autore), req.params.tds_schede_autoreId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_autore updated', { ...tds_schede_autore, id: req.params.tds_schede_autoreId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteTds_schede_autore = async (req: Request, res: Response): Prom
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_AUTORE, [req.params.tds_schede_autoreId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_TDS_SCHEDE_AUTORE, [req.params.tds_schede_autoreId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_autore deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

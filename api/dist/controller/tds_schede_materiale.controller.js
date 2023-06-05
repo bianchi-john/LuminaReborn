@@ -20,6 +20,7 @@ const getTds_schede_materiali = (req, res) => __awaiter(void 0, void 0, void 0, 
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_materiale_query_1.QUERY.SELECT_TDS_SCHEDE_MATERIALI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_materiali retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getTds_schede_materiale = (req, res) => __awaiter(void 0, void 0, void 0, 
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_materiale_query_1.QUERY.SELECT_TDS_SCHEDE_MATERIALE, [req.params.tds_schede_materialeId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_materiale retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateTds_schede_materiale = (req, res) => __awaiter(void 0, void 0, void 
         const result = yield pool.query(tds_schede_materiale_query_1.QUERY.SELECT_TDS_SCHEDE_MATERIALE, [req.params.tds_schede_materialeId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_materiale_query_1.QUERY.UPDATE_TDS_SCHEDE_MATERIALE, [...Object.values(tds_schede_materiale), req.params.tds_schede_materialeId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_materiale updated', Object.assign(Object.assign({}, tds_schede_materiale), { id: req.params.tds_schede_materialeId })));
         }
@@ -98,6 +101,7 @@ const deleteTds_schede_materiale = (req, res) => __awaiter(void 0, void 0, void 
         const result = yield pool.query(tds_schede_materiale_query_1.QUERY.SELECT_TDS_SCHEDE_MATERIALE, [req.params.tds_schede_materialeId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_materiale_query_1.QUERY.DELETE_TDS_SCHEDE_MATERIALE, [req.params.tds_schede_materialeId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_materiale deleted'));
         }

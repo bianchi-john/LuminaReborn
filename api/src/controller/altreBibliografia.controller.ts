@@ -14,7 +14,8 @@ export const getAltreBibliografie = async (req: Request, res: Response): Promise
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_ALTREBIBLIOGRAFIE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Altre bibliografie retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getAltreBibliografia = async (req: Request, res: Response): Promise
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_ALTREBIBLIOGRAFIA, [req.params.altreBibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Altre bibliografia retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateAltreBibliografia = async (req: Request, res: Response): Prom
     const result: ResultSet = await pool.query(QUERY.SELECT_ALTREBIBLIOGRAFIA, [req.params.altreBibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_ALTREBIBLIOGRAFIA, [...Object.values(altreBibliografia), req.params.altreBibliografiaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Altre bibliografia updated', { ...altreBibliografia, id: req.params.altreBibliografiaId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteAltreBibliografia = async (req: Request, res: Response): Prom
     const result: ResultSet = await pool.query(QUERY.SELECT_ALTREBIBLIOGRAFIA, [req.params.altreBibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_ALTREBIBLIOGRAFIA, [req.params.altreBibliografiaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Altre bibliografia deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

@@ -20,6 +20,7 @@ const getTds_schede_immagini = (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_immagine_query_1.QUERY.SELECT_TDS_SCHEDE_IMMAGINI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_immagini retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getTds_schede_immagine = (req, res) => __awaiter(void 0, void 0, void 0, f
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_immagine_query_1.QUERY.SELECT_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_immagine retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateTds_schede_immagine = (req, res) => __awaiter(void 0, void 0, void 0
         const result = yield pool.query(tds_schede_immagine_query_1.QUERY.SELECT_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_immagine_query_1.QUERY.UPDATE_TDS_SCHEDE_IMMAGINE, [...Object.values(tds_schede_immagine), req.params.tds_schede_immagineId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_immagine updated', Object.assign(Object.assign({}, tds_schede_immagine), { id: req.params.tds_schede_immagineId })));
         }
@@ -98,6 +101,7 @@ const deleteTds_schede_immagine = (req, res) => __awaiter(void 0, void 0, void 0
         const result = yield pool.query(tds_schede_immagine_query_1.QUERY.SELECT_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_immagine_query_1.QUERY.DELETE_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_immagine deleted'));
         }

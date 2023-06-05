@@ -14,12 +14,14 @@ export const getSchede = async (req: Request, res: Response): Promise<Response<S
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_SCHEDE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
-      .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
+      .send(new HttpReshow variables like "max_connections";
+      sponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
   }
 };
 
@@ -29,7 +31,8 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_SCHEDA, [req.params.schedaId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Scheda retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +69,8 @@ export const updateScheda = async (req: Request, res: Response): Promise<Respons
     const result: ResultSet = await pool.query(QUERY.SELECT_SCHEDA, [req.params.schedaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_SCHEDA, [...Object.values(scheda), req.params.schedaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Scheda updated', { ...scheda, id: req.params.schedaId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +90,8 @@ export const deleteScheda = async (req: Request, res: Response): Promise<Respons
     const result: ResultSet = await pool.query(QUERY.SELECT_SCHEDA, [req.params.schedaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_SCHEDA, [req.params.schedaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Scheda deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

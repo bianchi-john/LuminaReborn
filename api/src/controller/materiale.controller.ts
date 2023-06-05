@@ -14,7 +14,8 @@ export const getMateriali = async (req: Request, res: Response): Promise<Respons
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_MATERIALI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Materiali retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getMateriale = async (req: Request, res: Response): Promise<Respons
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_MATERIALE, [req.params.materialeId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Materiale retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateMateriale = async (req: Request, res: Response): Promise<Resp
     const result: ResultSet = await pool.query(QUERY.SELECT_MATERIALE, [req.params.materialeId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_MATERIALE, [...Object.values(materiale), req.params.materialeId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Materiale updated', { ...materiale, id: req.params.materialeId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteMateriale = async (req: Request, res: Response): Promise<Resp
     const result: ResultSet = await pool.query(QUERY.SELECT_MATERIALE, [req.params.materialeId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_MATERIALE, [req.params.materialeId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Materiale deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

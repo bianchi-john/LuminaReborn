@@ -20,6 +20,7 @@ const getMisure = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(misura_query_1.QUERY.SELECT_MISURE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Misure retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getMisura = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(misura_query_1.QUERY.SELECT_MISURA, [req.params.misuraId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Misura retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateMisura = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(misura_query_1.QUERY.SELECT_MISURA, [req.params.misuraId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(misura_query_1.QUERY.UPDATE_MISURA, [...Object.values(misura), req.params.misuraId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Misura updated', Object.assign(Object.assign({}, misura), { id: req.params.misuraId })));
         }
@@ -98,6 +101,7 @@ const deleteMisura = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(misura_query_1.QUERY.SELECT_MISURA, [req.params.misuraId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(misura_query_1.QUERY.DELETE_MISURA, [req.params.misuraId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Misura deleted'));
         }

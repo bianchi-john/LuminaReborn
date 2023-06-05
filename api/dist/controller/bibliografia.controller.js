@@ -20,6 +20,7 @@ const getBibliografie = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(bibliografia_query_1.QUERY.SELECT_BIBLIOGRAFIE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Bibliografie retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getBibliografia = (req, res) => __awaiter(void 0, void 0, void 0, function
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(bibliografia_query_1.QUERY.SELECT_BIBLIOGRAFIA, [req.params.bibliografiaId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Bibliografia retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateBibliografia = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const result = yield pool.query(bibliografia_query_1.QUERY.SELECT_BIBLIOGRAFIA, [req.params.bibliografiaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(bibliografia_query_1.QUERY.UPDATE_BIBLIOGRAFIA, [...Object.values(bibliografia), req.params.bibliografiaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Bibliografia updated', Object.assign(Object.assign({}, bibliografia), { id: req.params.bibliografiaId })));
         }
@@ -98,6 +101,7 @@ const deleteBibliografia = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const result = yield pool.query(bibliografia_query_1.QUERY.SELECT_BIBLIOGRAFIA, [req.params.bibliografiaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(bibliografia_query_1.QUERY.DELETE_BIBLIOGRAFIA, [req.params.bibliografiaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Bibliografia deleted'));
         }

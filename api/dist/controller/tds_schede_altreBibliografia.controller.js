@@ -20,6 +20,7 @@ const getTds_schede_altreBibliografie = (req, res) => __awaiter(void 0, void 0, 
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_altreBibliografia_query_1.QUERY.SELECT_TDS_SCHEDE_ALTREBIBLIOGRAFIE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_altreBibliografie retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getTds_schede_altreBibliografia = (req, res) => __awaiter(void 0, void 0, 
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_altreBibliografia_query_1.QUERY.SELECT_TDS_SCHEDE_ALTREBIBLIOGRAFIA, [req.params.tds_schede_altreBibliografiaId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_altreBibliografia retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateTds_schede_altreBibliografia = (req, res) => __awaiter(void 0, void 
         const result = yield pool.query(tds_schede_altreBibliografia_query_1.QUERY.SELECT_TDS_SCHEDE_ALTREBIBLIOGRAFIA, [req.params.tds_schede_altreBibliografiaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_altreBibliografia_query_1.QUERY.UPDATE_TDS_SCHEDE_ALTREBIBLIOGRAFIA, [...Object.values(tds_schede_altreBibliografia), req.params.tds_schede_altreBibliografiaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_altreBibliografia updated', Object.assign(Object.assign({}, tds_schede_altreBibliografia), { id: req.params.tds_schede_altreBibliografiaId })));
         }
@@ -98,6 +101,7 @@ const deleteTds_schede_altreBibliografia = (req, res) => __awaiter(void 0, void 
         const result = yield pool.query(tds_schede_altreBibliografia_query_1.QUERY.SELECT_TDS_SCHEDE_ALTREBIBLIOGRAFIA, [req.params.tds_schede_altreBibliografiaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_altreBibliografia_query_1.QUERY.DELETE_TDS_SCHEDE_ALTREBIBLIOGRAFIA, [req.params.tds_schede_altreBibliografiaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_altreBibliografia deleted'));
         }

@@ -14,7 +14,8 @@ export const getUbicazioni = async (req: Request, res: Response): Promise<Respon
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_UBICAZIONI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Ubicazioni retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getUbicazione = async (req: Request, res: Response): Promise<Respon
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_UBICAZIONE, [req.params.ubicazioneId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Ubicazione retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateUbicazione = async (req: Request, res: Response): Promise<Res
     const result: ResultSet = await pool.query(QUERY.SELECT_UBICAZIONE, [req.params.ubicazioneId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_UBICAZIONE, [...Object.values(ubicazione), req.params.ubicazioneId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Ubicazione updated', { ...ubicazione, id: req.params.ubicazioneId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteUbicazione = async (req: Request, res: Response): Promise<Res
     const result: ResultSet = await pool.query(QUERY.SELECT_UBICAZIONE, [req.params.ubicazioneId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_UBICAZIONE, [req.params.ubicazioneId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Ubicazione deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

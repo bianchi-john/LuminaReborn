@@ -20,6 +20,7 @@ const getAutori = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(autore_query_1.QUERY.SELECT_AUTORI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Autori retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getAutore = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(autore_query_1.QUERY.SELECT_AUTORE, [req.params.autoreId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Autore retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateAutore = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(autore_query_1.QUERY.SELECT_AUTORE, [req.params.autoreId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(autore_query_1.QUERY.UPDATE_AUTORE, [...Object.values(autore), req.params.autoreId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Autore updated', Object.assign(Object.assign({}, autore), { id: req.params.autoreId })));
         }
@@ -98,6 +101,7 @@ const deleteAutore = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(autore_query_1.QUERY.SELECT_AUTORE, [req.params.autoreId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(autore_query_1.QUERY.DELETE_AUTORE, [req.params.autoreId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Autore deleted'));
         }

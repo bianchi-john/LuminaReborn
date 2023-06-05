@@ -14,7 +14,8 @@ export const getTds_schede_bibliografie = async (req: Request, res: Response): P
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_BIBLIOGRAFIE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_bibliografie retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getTds_schede_bibliografia = async (req: Request, res: Response): P
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_BIBLIOGRAFIA, [req.params.tds_schede_bibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_bibliografia retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateTds_schede_bibliografia = async (req: Request, res: Response)
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_BIBLIOGRAFIA, [req.params.tds_schede_bibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_TDS_SCHEDE_BIBLIOGRAFIA, [...Object.values(tds_schede_bibliografia), req.params.tds_schede_bibliografiaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_bibliografia updated', { ...tds_schede_bibliografia, id: req.params.tds_schede_bibliografiaId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteTds_schede_bibliografia = async (req: Request, res: Response)
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_BIBLIOGRAFIA, [req.params.tds_schede_bibliografiaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_TDS_SCHEDE_BIBLIOGRAFIA, [req.params.tds_schede_bibliografiaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_bibliografia deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

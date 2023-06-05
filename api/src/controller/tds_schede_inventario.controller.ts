@@ -14,7 +14,8 @@ export const getTds_schede_inventari = async (req: Request, res: Response): Prom
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_INVENTARI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_inventari retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getTds_schede_inventario = async (req: Request, res: Response): Pro
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_INVENTARIO, [req.params.tds_schede_inventarioId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_inventario retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateTds_schede_inventario = async (req: Request, res: Response): 
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_INVENTARIO, [req.params.tds_schede_inventarioId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_TDS_SCHEDE_INVENTARIO, [...Object.values(tds_schede_inventario), req.params.tds_schede_inventarioId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_inventario updated', { ...tds_schede_inventario, id: req.params.tds_schede_inventarioId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteTds_schede_inventario = async (req: Request, res: Response): 
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_INVENTARIO, [req.params.tds_schede_inventarioId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_TDS_SCHEDE_INVENTARIO, [req.params.tds_schede_inventarioId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_inventario deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

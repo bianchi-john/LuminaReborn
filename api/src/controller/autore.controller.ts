@@ -14,7 +14,8 @@ export const getAutori = async (req: Request, res: Response): Promise<Response<A
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_AUTORI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Autori retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getAutore = async (req: Request, res: Response): Promise<Response<A
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_AUTORE, [req.params.autoreId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Autore retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateAutore = async (req: Request, res: Response): Promise<Respons
     const result: ResultSet = await pool.query(QUERY.SELECT_AUTORE, [req.params.autoreId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_AUTORE, [...Object.values(autore), req.params.autoreId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Autore updated', { ...autore, id: req.params.autoreId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteAutore = async (req: Request, res: Response): Promise<Respons
     const result: ResultSet = await pool.query(QUERY.SELECT_AUTORE, [req.params.autoreId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_AUTORE, [req.params.autoreId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Autore deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

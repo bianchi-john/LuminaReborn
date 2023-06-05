@@ -14,7 +14,8 @@ export const getTds_schede_tecniche = async (req: Request, res: Response): Promi
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_TECNICHE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_tecniche retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getTds_schede_tecnica = async (req: Request, res: Response): Promis
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_tecnica retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateTds_schede_tecnica = async (req: Request, res: Response): Pro
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_TDS_SCHEDE_TECNICA, [...Object.values(tds_schede_tecnica), req.params.tds_schede_tecnicaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_tecnica updated', { ...tds_schede_tecnica, id: req.params.tds_schede_tecnicaId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteTds_schede_tecnica = async (req: Request, res: Response): Pro
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_tecnica deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

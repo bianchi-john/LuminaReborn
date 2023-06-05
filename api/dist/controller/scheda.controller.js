@@ -20,6 +20,7 @@ const getSchede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(scheda_query_1.QUERY.SELECT_SCHEDE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(scheda_query_1.QUERY.SELECT_SCHEDA, [req.params.schedaId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Scheda retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(scheda_query_1.QUERY.SELECT_SCHEDA, [req.params.schedaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(scheda_query_1.QUERY.UPDATE_SCHEDA, [...Object.values(scheda), req.params.schedaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Scheda updated', Object.assign(Object.assign({}, scheda), { id: req.params.schedaId })));
         }
@@ -98,6 +101,7 @@ const deleteScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(scheda_query_1.QUERY.SELECT_SCHEDA, [req.params.schedaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(scheda_query_1.QUERY.DELETE_SCHEDA, [req.params.schedaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Scheda deleted'));
         }

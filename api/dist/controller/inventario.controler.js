@@ -20,6 +20,7 @@ const getInventari = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(inventario_query_1.QUERY.SELECT_INVENTARI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Inventari retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getInventario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(inventario_query_1.QUERY.SELECT_INVENTARIO, [req.params.inventarioId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Inventario retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateInventario = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const result = yield pool.query(inventario_query_1.QUERY.SELECT_INVENTARIO, [req.params.inventarioId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(inventario_query_1.QUERY.UPDATE_INVENTARIO, [...Object.values(inventario), req.params.inventarioId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Inventario updated', Object.assign(Object.assign({}, inventario), { id: req.params.inventarioId })));
         }
@@ -98,6 +101,7 @@ const deleteInventario = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const result = yield pool.query(inventario_query_1.QUERY.SELECT_INVENTARIO, [req.params.inventarioId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(inventario_query_1.QUERY.DELETE_INVENTARIO, [req.params.inventarioId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Inventario deleted'));
         }

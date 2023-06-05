@@ -20,6 +20,7 @@ const getMateriali = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(materiale_query_1.QUERY.SELECT_MATERIALI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Materiali retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getMateriale = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(materiale_query_1.QUERY.SELECT_MATERIALE, [req.params.materialeId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Materiale retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateMateriale = (req, res) => __awaiter(void 0, void 0, void 0, function
         const result = yield pool.query(materiale_query_1.QUERY.SELECT_MATERIALE, [req.params.materialeId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(materiale_query_1.QUERY.UPDATE_MATERIALE, [...Object.values(materiale), req.params.materialeId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Materiale updated', Object.assign(Object.assign({}, materiale), { id: req.params.materialeId })));
         }
@@ -98,6 +101,7 @@ const deleteMateriale = (req, res) => __awaiter(void 0, void 0, void 0, function
         const result = yield pool.query(materiale_query_1.QUERY.SELECT_MATERIALE, [req.params.materialeId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(materiale_query_1.QUERY.DELETE_MATERIALE, [req.params.materialeId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Materiale deleted'));
         }

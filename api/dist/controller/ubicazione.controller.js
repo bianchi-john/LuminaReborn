@@ -20,6 +20,7 @@ const getUbicazioni = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(ubicazione_query_1.QUERY.SELECT_UBICAZIONI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Ubicazioni retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getUbicazione = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(ubicazione_query_1.QUERY.SELECT_UBICAZIONE, [req.params.ubicazioneId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Ubicazione retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateUbicazione = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const result = yield pool.query(ubicazione_query_1.QUERY.SELECT_UBICAZIONE, [req.params.ubicazioneId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(ubicazione_query_1.QUERY.UPDATE_UBICAZIONE, [...Object.values(ubicazione), req.params.ubicazioneId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Ubicazione updated', Object.assign(Object.assign({}, ubicazione), { id: req.params.ubicazioneId })));
         }
@@ -98,6 +101,7 @@ const deleteUbicazione = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const result = yield pool.query(ubicazione_query_1.QUERY.SELECT_UBICAZIONE, [req.params.ubicazioneId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(ubicazione_query_1.QUERY.DELETE_UBICAZIONE, [req.params.ubicazioneId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Ubicazione deleted'));
         }

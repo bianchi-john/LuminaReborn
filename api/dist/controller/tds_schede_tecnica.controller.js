@@ -20,6 +20,7 @@ const getTds_schede_tecniche = (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_tecnica_query_1.QUERY.SELECT_TDS_SCHEDE_TECNICHE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_tecniche retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getTds_schede_tecnica = (req, res) => __awaiter(void 0, void 0, void 0, fu
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(tds_schede_tecnica_query_1.QUERY.SELECT_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_tecnica retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateTds_schede_tecnica = (req, res) => __awaiter(void 0, void 0, void 0,
         const result = yield pool.query(tds_schede_tecnica_query_1.QUERY.SELECT_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_tecnica_query_1.QUERY.UPDATE_TDS_SCHEDE_TECNICA, [...Object.values(tds_schede_tecnica), req.params.tds_schede_tecnicaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_tecnica updated', Object.assign(Object.assign({}, tds_schede_tecnica), { id: req.params.tds_schede_tecnicaId })));
         }
@@ -98,6 +101,7 @@ const deleteTds_schede_tecnica = (req, res) => __awaiter(void 0, void 0, void 0,
         const result = yield pool.query(tds_schede_tecnica_query_1.QUERY.SELECT_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(tds_schede_tecnica_query_1.QUERY.DELETE_TDS_SCHEDE_TECNICA, [req.params.tds_schede_tecnicaId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Tds_schede_tecnica deleted'));
         }

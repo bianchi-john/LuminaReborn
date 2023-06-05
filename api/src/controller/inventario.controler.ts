@@ -14,7 +14,8 @@ export const getInventari = async (req: Request, res: Response): Promise<Respons
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_INVENTARI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Inventari retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getInventario = async (req: Request, res: Response): Promise<Respon
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_INVENTARIO, [req.params.inventarioId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Inventario retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateInventario = async (req: Request, res: Response): Promise<Res
     const result: ResultSet = await pool.query(QUERY.SELECT_INVENTARIO, [req.params.inventarioId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_INVENTARIO, [...Object.values(inventario), req.params.inventarioId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Inventario updated', { ...inventario, id: req.params.inventarioId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteInventario = async (req: Request, res: Response): Promise<Res
     const result: ResultSet = await pool.query(QUERY.SELECT_INVENTARIO, [req.params.inventarioId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_INVENTARIO, [req.params.inventarioId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Inventario deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

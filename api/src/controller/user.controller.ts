@@ -14,7 +14,8 @@ export const getUsers = async (req: Request, res: Response): Promise<Response<Us
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_USERS);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Users retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getUser = async (req: Request, res: Response): Promise<Response<Use
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_USER, [req.params.userId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'User retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateUser = async (req: Request, res: Response): Promise<Response<
     const result: ResultSet = await pool.query(QUERY.SELECT_USER, [req.params.userId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_USER, [...Object.values(user), req.params.userId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'User updated', { ...user, id: req.params.userId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteUser = async (req: Request, res: Response): Promise<Response<
     const result: ResultSet = await pool.query(QUERY.SELECT_USER, [req.params.userId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_USER, [req.params.userId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'User deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

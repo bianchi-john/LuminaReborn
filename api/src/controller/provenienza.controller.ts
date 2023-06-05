@@ -14,7 +14,8 @@ export const getProvenienze = async (req: Request, res: Response): Promise<Respo
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_PROVENIENZE);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Provenienze retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getProvenienza = async (req: Request, res: Response): Promise<Respo
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_PROVENIENZA, [req.params.provenienzaId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Provenienza retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateProvenienza = async (req: Request, res: Response): Promise<Re
     const result: ResultSet = await pool.query(QUERY.SELECT_PROVENIENZA, [req.params.provenienzaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_PROVENIENZA, [...Object.values(provenienza), req.params.provenienzaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Provenienza updated', { ...provenienza, id: req.params.provenienzaId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteProvenienza = async (req: Request, res: Response): Promise<Re
     const result: ResultSet = await pool.query(QUERY.SELECT_PROVENIENZA, [req.params.provenienzaId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_PROVENIENZA, [req.params.provenienzaId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Provenienza deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

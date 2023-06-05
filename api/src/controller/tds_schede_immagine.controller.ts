@@ -14,7 +14,8 @@ export const getTds_schede_immagini = async (req: Request, res: Response): Promi
   try {
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_IMMAGINI);
-    return res.status(Code.OK)
+    pool.end();
+return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_immagini retrieved', result[0]));
   } catch (error: unknown) {
     console.error(error);
@@ -29,7 +30,8 @@ export const getTds_schede_immagine = async (req: Request, res: Response): Promi
     const pool = await connection();
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
     if (((result[0]) as Array<any>).length > 0) {
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_immagine retrieved', result[0]));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -66,7 +68,8 @@ export const updateTds_schede_immagine = async (req: Request, res: Response): Pr
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.UPDATE_TDS_SCHEDE_IMMAGINE, [...Object.values(tds_schede_immagine), req.params.tds_schede_immagineId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_immagine updated', { ...tds_schede_immagine, id: req.params.tds_schede_immagineId }));
     } else {
       return res.status(Code.NOT_FOUND)
@@ -86,7 +89,8 @@ export const deleteTds_schede_immagine = async (req: Request, res: Response): Pr
     const result: ResultSet = await pool.query(QUERY.SELECT_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
     if (((result[0]) as Array<any>).length > 0) {
       const result: ResultSet = await pool.query(QUERY.DELETE_TDS_SCHEDE_IMMAGINE, [req.params.tds_schede_immagineId]);
-      return res.status(Code.OK)
+      pool.end();
+return res.status(Code.OK)
         .send(new HttpResponse(Code.OK, Status.OK, 'Tds_schede_immagine deleted'));
     } else {
       return res.status(Code.NOT_FOUND)

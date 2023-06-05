@@ -20,6 +20,7 @@ const getImmagini = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(immagine_query_1.QUERY.SELECT_IMMAGINI);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Immagini retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getImmagine = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(immagine_query_1.QUERY.SELECT_IMMAGINE, [req.params.immagineId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Immagine retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateImmagine = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const result = yield pool.query(immagine_query_1.QUERY.SELECT_IMMAGINE, [req.params.immagineId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(immagine_query_1.QUERY.UPDATE_IMMAGINE, [...Object.values(immagine), req.params.immagineId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Immagine updated', Object.assign(Object.assign({}, immagine), { id: req.params.immagineId })));
         }
@@ -98,6 +101,7 @@ const deleteImmagine = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const result = yield pool.query(immagine_query_1.QUERY.SELECT_IMMAGINE, [req.params.immagineId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(immagine_query_1.QUERY.DELETE_IMMAGINE, [req.params.immagineId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Immagine deleted'));
         }

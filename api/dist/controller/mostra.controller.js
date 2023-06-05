@@ -20,6 +20,7 @@ const getMostre = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(mostra_query_1.QUERY.SELECT_MOSTRE);
+        pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Mostre retrieved', result[0]));
     }
@@ -36,6 +37,7 @@ const getMostra = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(mostra_query_1.QUERY.SELECT_MOSTRA, [req.params.mostraId]);
         if ((result[0]).length > 0) {
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Mostra retrieved', result[0]));
         }
@@ -76,6 +78,7 @@ const updateMostra = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(mostra_query_1.QUERY.SELECT_MOSTRA, [req.params.mostraId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(mostra_query_1.QUERY.UPDATE_MOSTRA, [...Object.values(mostra), req.params.mostraId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Mostra updated', Object.assign(Object.assign({}, mostra), { id: req.params.mostraId })));
         }
@@ -98,6 +101,7 @@ const deleteMostra = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield pool.query(mostra_query_1.QUERY.SELECT_MOSTRA, [req.params.mostraId]);
         if ((result[0]).length > 0) {
             const result = yield pool.query(mostra_query_1.QUERY.DELETE_MOSTRA, [req.params.mostraId]);
+            pool.end();
             return res.status(code_enum_1.Code.OK)
                 .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Mostra deleted'));
         }
