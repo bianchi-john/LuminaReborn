@@ -577,7 +577,60 @@ async function getImmagini(dataID) {
                         let element = GetSchedeData.responseText
                         if (element.length > 0) {
                             let parsedData = JSON.parse(element);
-                            let a = 9;
+                            let active = ""
+                            if (j == 0) {
+                                active = "active"
+                            }
+                            let li = $('<li>', {
+                                'data-target': '#carouselExampleIndicators',
+                                'data-slide-to': j,
+                                'class': active
+                              });
+                              if ($('.carousel-indicators li[data-target="#carouselExampleIndicators"][data-slide-to="' + j + '"]').length === 0) {
+                                $('.carousel-indicators').append(li);
+                              }
+
+                            // Creazione dell'elemento <div> con la classe "carousel-item active"
+                            var div = $('<div>', {
+                                'class': 'carousel-item ' + active
+                            });
+                            
+                            // Creazione dell'elemento <img> con le classi e gli attributi desiderati
+                            var img = $('<img>', {
+                                'class': 'd-block w-100',
+                                'src': "../" + parsedData.data[0].path,
+                                'alt': 'slide'
+                            });
+                            
+                            // Controllo se esistono già altri elementi <img> con gli stessi attributi
+                            var isDuplicate = false;
+                            $('.immagini div.carousel-item img').each(function() {
+                            if ($(this).attr('src') === img.attr('src') && $(this).attr('alt') === img.attr('alt')) {
+                                isDuplicate = true;
+                                return false; // Termina il ciclo each() se viene trovato un duplicato
+                            }
+                            });
+
+                            if (!isDuplicate) {
+                            // Aggiunta dell'elemento <img> come figlio dell'elemento <div>
+                            div.append(img);
+                            
+                            // Aggiunta dell'elemento <div> come figlio dell'elemento con classe "immagini"
+                            $('.immagini').append(div);
+                            }
+
+                            // Didascalia
+                            let newText = parsedData.data[0].didascalia;
+                            let $targetDiv = $(".didascalia");
+                            let $existingElement = $targetDiv.find("p").filter(function() {
+                                return $(this).text() === newText;
+                            });
+                            if ($existingElement.length > 0) {
+                              return;
+                            }
+                            let $pElement = $("<p>").text(newText);
+                            $targetDiv.append($pElement);
+                            $pElement.addClass("item");
                         }
                     }
                 }
