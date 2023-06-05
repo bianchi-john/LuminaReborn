@@ -384,3 +384,204 @@ async function getProvenienze(dataID) {
         }
     }
 }
+
+
+async function getMostre(dataID) {
+
+    const Handshake = new XMLHttpRequest();
+    const tdsUrl = 'http://0.0.0.0:3000/tds_schede_mostre' + '/' + dataID; // URL per la seconda chiamata GET
+    Handshake.open("GET", tdsUrl);
+    Handshake.send();
+    let elemetsData = []
+
+    Handshake.onreadystatechange = (e) => {
+        if (Handshake.readyState === 4 && Handshake.status === 200) {
+            let elementsId = Handshake.responseText;
+            let elements = []
+            if (elementsId.length > 1) {
+                elementsId = JSON.parse(elementsId)
+                let listOfElements = elementsId.data
+                for (let i = 0; i < listOfElements.length; i++) {
+                    elements.push(Object.values(listOfElements[i])[1])
+                }
+                for (let j = 0; j < elements.length; j++) {
+                    let GetSchedeData = new XMLHttpRequest();
+                    GetSchedeData.open("GET", 'http://0.0.0.0:3000/mostre' + '/' + elements[j]);
+                    GetSchedeData.send();
+                    GetSchedeData.onreadystatechange = (e) => {
+                        let element = GetSchedeData.responseText
+                        if (element.length > 0) {
+                            let parsedData = JSON.parse(element);
+                            //titolo_mostra
+                            let newTextFirst = parsedData.data[0].titolo_mostra + " ";
+                            let $targetDivFirst = $(".mostre");
+                            let $existingElementFirst = $targetDivFirst.find("p").filter(function() {
+                                return $(this).text() === newTextFirst;
+                            });
+                            if ($existingElementFirst.length > 0) {
+                              return;
+                            }
+                            let $pElementFirst = $("<p>").text(newTextFirst);
+                            $targetDivFirst.append($pElementFirst);
+                            $pElementFirst.addClass("item inline");
+
+                            // data_mostra
+                            let newTextSecond = parsedData.data[0].descrizione + " ";
+                            let $targetDivSecond = $(".data_mostra");
+                            let $existingElementSecond = $targetDivSecond.find("p").filter(function() {
+                                return $(this).text() === newTextSecond;
+                            });
+                            if ($existingElementSecond.length > 0) {
+                              return;
+                            }
+                            let $pElementSecond = $("<p>").text(newTextSecond);
+                            $targetDivSecond.append($pElementSecond);
+                            $pElementSecond.addClass("item inline");
+                        
+                            // descrizione
+                            let newTextThird = parsedData.data[0].descrizione + " ";
+                            let $targetDivThird = $(".data_mostra");
+                            let $existingElementThird = $targetDivThird.find("p").filter(function() {
+                                return $(this).text() === newTextThird;
+                            });
+                            if ($existingElementThird.length > 0) {
+                                return;
+                            }
+                            let $pElementThird= $("<p>").text(newTextThird);
+                            $targetDivThird.append($pElementThird);
+                            $pElementThird.addClass("item inline");
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+async function getBibliografie(dataID) {
+
+    const Handshake = new XMLHttpRequest();
+    const tdsUrl = 'http://0.0.0.0:3000/tds_schede_bibliografie' + '/' + dataID; // URL per la seconda chiamata GET
+    Handshake.open("GET", tdsUrl);
+    Handshake.send();
+    let elemetsData = []
+
+    Handshake.onreadystatechange = (e) => {
+        if (Handshake.readyState === 4 && Handshake.status === 200) {
+            let elementsId = Handshake.responseText;
+            let elements = []
+            if (elementsId.length > 1) {
+                elementsId = JSON.parse(elementsId)
+                let listOfElements = elementsId.data
+                for (let i = 0; i < listOfElements.length; i++) {
+                    elements.push(Object.values(listOfElements[i])[1])
+                }
+                for (let j = 0; j < elements.length; j++) {
+                    let GetSchedeData = new XMLHttpRequest();
+                    GetSchedeData.open("GET", 'http://0.0.0.0:3000/bibliografie' + '/' + elements[j]);
+                    GetSchedeData.send();
+                    GetSchedeData.onreadystatechange = (e) => {
+                        let element = GetSchedeData.responseText
+                        if (element.length > 0) {
+                            let parsedData = JSON.parse(element);
+                            let newText = parsedData.data[0].riferimento_bibliografico;
+                            let $targetDiv = $(".bibliografie");
+                            let $existingElement = $targetDiv.find("p").filter(function() {
+                                return $(this).text() === newText;
+                            });
+                            if ($existingElement.length > 0) {
+                              return;
+                            }
+                            let $pElement = $("<p>").text(newText);
+                            $targetDiv.append($pElement);
+                            $pElement.addClass("item");
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+async function getAltreBibliografie(dataID) {
+
+    const Handshake = new XMLHttpRequest();
+    const tdsUrl = 'http://0.0.0.0:3000/tds_schede_altreBibliografie' + '/' + dataID; // URL per la seconda chiamata GET
+    Handshake.open("GET", tdsUrl);
+    Handshake.send();
+    let elemetsData = []
+
+    Handshake.onreadystatechange = (e) => {
+        if (Handshake.readyState === 4 && Handshake.status === 200) {
+            let elementsId = Handshake.responseText;
+            let elements = []
+            if (elementsId.length > 1) {
+                elementsId = JSON.parse(elementsId)
+                let listOfElements = elementsId.data
+                for (let i = 0; i < listOfElements.length; i++) {
+                    elements.push(Object.values(listOfElements[i])[1])
+                }
+                for (let j = 0; j < elements.length; j++) {
+                    let GetSchedeData = new XMLHttpRequest();
+                    GetSchedeData.open("GET", 'http://0.0.0.0:3000/altreBibliografie' + '/' + elements[j]);
+                    GetSchedeData.send();
+                    GetSchedeData.onreadystatechange = (e) => {
+                        let element = GetSchedeData.responseText
+                        if (element.length > 0) {
+                            let parsedData = JSON.parse(element);
+                            let newText = parsedData.data[0].riferimento_bibliografico;
+                            let $targetDiv = $(".altre_bibliografie");
+                            let $existingElement = $targetDiv.find("p").filter(function() {
+                                return $(this).text() === newText;
+                            });
+                            if ($existingElement.length > 0) {
+                              return;
+                            }
+                            let $pElement = $("<p>").text(newText);
+                            $targetDiv.append($pElement);
+                            $pElement.addClass("item");
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+async function getImmagini(dataID) {
+
+    const Handshake = new XMLHttpRequest();
+    const tdsUrl = 'http://0.0.0.0:3000/tds_schede_immagini' + '/' + dataID; // URL per la seconda chiamata GET
+    Handshake.open("GET", tdsUrl);
+    Handshake.send();
+    let elemetsData = []
+
+    Handshake.onreadystatechange = (e) => {
+        if (Handshake.readyState === 4 && Handshake.status === 200) {
+            let elementsId = Handshake.responseText;
+            let elements = []
+            if (elementsId.length > 1) {
+                elementsId = JSON.parse(elementsId)
+                let listOfElements = elementsId.data
+                for (let i = 0; i < listOfElements.length; i++) {
+                    elements.push(Object.values(listOfElements[i])[1])
+                }
+                for (let j = 0; j < elements.length; j++) {
+                    let GetSchedeData = new XMLHttpRequest();
+                    GetSchedeData.open("GET", 'http://0.0.0.0:3000/immagini' + '/' + elements[j]);
+                    GetSchedeData.send();
+                    GetSchedeData.onreadystatechange = (e) => {
+                        let element = GetSchedeData.responseText
+                        if (element.length > 0) {
+                            let parsedData = JSON.parse(element);
+                            let a = 9;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

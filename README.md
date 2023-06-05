@@ -75,6 +75,10 @@ USE luminadb;
 createTds_users_schedecreateTds_users_schedecreateTds_users_schede
 #Restart docker service
 sudo systemctl restart docker.socket docker.service
+show variables like "max_connections";
+set global max_connections = 9999999;
+
+
 
 ```
 
