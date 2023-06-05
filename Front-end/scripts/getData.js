@@ -95,11 +95,11 @@ async function getMateriali(dataID) {
                             let parsedData = JSON.parse(element);
                             let newText = parsedData.data[0].nome_materiale;
                             let $targetDiv = $(".materiali");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
@@ -141,11 +141,11 @@ async function getTecniche(dataID) {
                             let parsedData = JSON.parse(element);
                             let newText = parsedData.data[0].nome_tecnica;
                             let $targetDiv = $(".tecniche");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
@@ -188,11 +188,11 @@ async function getMisure(dataID) {
                             //Descrizione
                             let newTextFirst = parsedData.data[0].descrizione + " ";
                             let $targetDivFirst = $(".misure");
-                            let $existingElementFirst = $targetDivFirst.find("p").filter(function() {
+                            let $existingElementFirst = $targetDivFirst.find("p").filter(function () {
                                 return $(this).text() === newTextFirst;
                             });
                             if ($existingElementFirst.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElementFirst = $("<p>").text(newTextFirst);
                             $targetDivFirst.append($pElementFirst);
@@ -201,11 +201,11 @@ async function getMisure(dataID) {
                             // Misura
                             let newTextSecond = parsedData.data[0].misura + " ";
                             let $targetDivSecond = $(".misure");
-                            let $existingElementSecond = $targetDivSecond.find("p").filter(function() {
+                            let $existingElementSecond = $targetDivSecond.find("p").filter(function () {
                                 return $(this).text() === newTextSecond;
                             });
                             if ($existingElementSecond.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElementSecond = $("<p>").text(newTextSecond);
                             $targetDivSecond.append($pElementSecond);
@@ -213,7 +213,7 @@ async function getMisure(dataID) {
                             // unità di misura
                             let newTextThird = parsedData.data[0].unita_di_misura + " ";
                             let $targetDivThird = $(".misure");
-                            let $existingElementThird = $targetDivThird.find("p").filter(function() {
+                            let $existingElementThird = $targetDivThird.find("p").filter(function () {
                                 return $(this).text() === newTextThird;
                             });
                             if ($existingElementSecond.length > 0) {
@@ -262,11 +262,11 @@ async function getUbicazioni(dataID) {
                             let parsedData = JSON.parse(element);
                             let newText = parsedData.data[0].ubicazione;
                             let $targetDiv = $(".ubicazioni");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
@@ -307,11 +307,11 @@ async function getInventari(dataID) {
                             let parsedData = JSON.parse(element);
                             let newText = parsedData.data[0].nome_inventario;
                             let $targetDiv = $(".inventari");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
@@ -353,11 +353,11 @@ async function getProvenienze(dataID) {
                             //provenienze
                             let newTextFirst = parsedData.data[0].provenienza + " ";
                             let $targetDivFirst = $(".provenienze");
-                            let $existingElementFirst = $targetDivFirst.find("p").filter(function() {
+                            let $existingElementFirst = $targetDivFirst.find("p").filter(function () {
                                 return $(this).text() === newTextFirst;
                             });
                             if ($existingElementFirst.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElementFirst = $("<p>").text(newTextFirst);
                             $targetDivFirst.append($pElementFirst);
@@ -366,16 +366,16 @@ async function getProvenienze(dataID) {
                             // descrizione
                             let newTextSecond = parsedData.data[0].descrizione + " ";
                             let $targetDivSecond = $(".provenienze");
-                            let $existingElementSecond = $targetDivSecond.find("p").filter(function() {
+                            let $existingElementSecond = $targetDivSecond.find("p").filter(function () {
                                 return $(this).text() === newTextSecond;
                             });
                             if ($existingElementSecond.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElementSecond = $("<p>").text(newTextSecond);
                             $targetDivSecond.append($pElementSecond);
                             $pElementSecond.addClass("item inline");
-                        
+
 
                         }
                     }
@@ -415,11 +415,11 @@ async function getMostre(dataID) {
                             //titolo_mostra
                             let newTextFirst = parsedData.data[0].titolo_mostra + " ";
                             let $targetDivFirst = $(".mostre");
-                            let $existingElementFirst = $targetDivFirst.find("p").filter(function() {
+                            let $existingElementFirst = $targetDivFirst.find("p").filter(function () {
                                 return $(this).text() === newTextFirst;
                             });
                             if ($existingElementFirst.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElementFirst = $("<p>").text(newTextFirst);
                             $targetDivFirst.append($pElementFirst);
@@ -428,26 +428,26 @@ async function getMostre(dataID) {
                             // data_mostra
                             let newTextSecond = parsedData.data[0].descrizione + " ";
                             let $targetDivSecond = $(".data_mostra");
-                            let $existingElementSecond = $targetDivSecond.find("p").filter(function() {
+                            let $existingElementSecond = $targetDivSecond.find("p").filter(function () {
                                 return $(this).text() === newTextSecond;
                             });
                             if ($existingElementSecond.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElementSecond = $("<p>").text(newTextSecond);
                             $targetDivSecond.append($pElementSecond);
                             $pElementSecond.addClass("item inline");
-                        
+
                             // descrizione
                             let newTextThird = parsedData.data[0].descrizione + " ";
                             let $targetDivThird = $(".data_mostra");
-                            let $existingElementThird = $targetDivThird.find("p").filter(function() {
+                            let $existingElementThird = $targetDivThird.find("p").filter(function () {
                                 return $(this).text() === newTextThird;
                             });
                             if ($existingElementThird.length > 0) {
                                 return;
                             }
-                            let $pElementThird= $("<p>").text(newTextThird);
+                            let $pElementThird = $("<p>").text(newTextThird);
                             $targetDivThird.append($pElementThird);
                             $pElementThird.addClass("item inline");
 
@@ -488,11 +488,11 @@ async function getBibliografie(dataID) {
                             let parsedData = JSON.parse(element);
                             let newText = parsedData.data[0].riferimento_bibliografico;
                             let $targetDiv = $(".bibliografie");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
@@ -533,11 +533,11 @@ async function getAltreBibliografie(dataID) {
                             let parsedData = JSON.parse(element);
                             let newText = parsedData.data[0].riferimento_bibliografico;
                             let $targetDiv = $(".altre_bibliografie");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
@@ -585,48 +585,48 @@ async function getImmagini(dataID) {
                                 'data-target': '#carouselExampleIndicators',
                                 'data-slide-to': j,
                                 'class': active
-                              });
-                              if ($('.carousel-indicators li[data-target="#carouselExampleIndicators"][data-slide-to="' + j + '"]').length === 0) {
+                            });
+                            if ($('.carousel-indicators li[data-target="#carouselExampleIndicators"][data-slide-to="' + j + '"]').length === 0) {
                                 $('.carousel-indicators').append(li);
-                              }
+                            }
 
                             // Creazione dell'elemento <div> con la classe "carousel-item active"
                             var div = $('<div>', {
                                 'class': 'carousel-item ' + active
                             });
-                            
+
                             // Creazione dell'elemento <img> con le classi e gli attributi desiderati
                             var img = $('<img>', {
                                 'class': 'd-block w-100',
                                 'src': "../" + parsedData.data[0].path,
                                 'alt': 'slide'
                             });
-                            
+
                             // Controllo se esistono già altri elementi <img> con gli stessi attributi
                             var isDuplicate = false;
-                            $('.immagini div.carousel-item img').each(function() {
-                            if ($(this).attr('src') === img.attr('src') && $(this).attr('alt') === img.attr('alt')) {
-                                isDuplicate = true;
-                                return false; // Termina il ciclo each() se viene trovato un duplicato
-                            }
+                            $('.immagini div.carousel-item img').each(function () {
+                                if ($(this).attr('src') === img.attr('src') && $(this).attr('alt') === img.attr('alt')) {
+                                    isDuplicate = true;
+                                    return false; // Termina il ciclo each() se viene trovato un duplicato
+                                }
                             });
 
                             if (!isDuplicate) {
-                            // Aggiunta dell'elemento <img> come figlio dell'elemento <div>
-                            div.append(img);
-                            
-                            // Aggiunta dell'elemento <div> come figlio dell'elemento con classe "immagini"
-                            $('.immagini').append(div);
+                                // Aggiunta dell'elemento <img> come figlio dell'elemento <div>
+                                div.append(img);
+
+                                // Aggiunta dell'elemento <div> come figlio dell'elemento con classe "immagini"
+                                $('.immagini').append(div);
                             }
 
                             // Didascalia
                             let newText = parsedData.data[0].didascalia;
                             let $targetDiv = $(".didascalia");
-                            let $existingElement = $targetDiv.find("p").filter(function() {
+                            let $existingElement = $targetDiv.find("p").filter(function () {
                                 return $(this).text() === newText;
                             });
                             if ($existingElement.length > 0) {
-                              return;
+                                return;
                             }
                             let $pElement = $("<p>").text(newText);
                             $targetDiv.append($pElement);
