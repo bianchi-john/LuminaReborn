@@ -1,10 +1,6 @@
-.bold{
+.bold {
     font-weight: bold;
 }
-
-/* .item {
-    display: flex;
-} */
 
 .inline {
     display: inline!important;
@@ -15,3 +11,6 @@
     min-width: 250px;
     display: inline-block;
 }
+.footer-space {
+    height: 50px; /* Altezza del tuo spazio verticale finale */
+  }

@@ -18,7 +18,6 @@ const misura_routes_1 = __importDefault(require("./routes/misura.routes"));
 const mostra_routes_1 = __importDefault(require("./routes/mostra.routes"));
 const cronologia_routes_1 = __importDefault(require("./routes/cronologia.routes"));
 const provenienza_routes_1 = __importDefault(require("./routes/provenienza.routes"));
-const scheda_routes_2 = __importDefault(require("./routes/scheda.routes"));
 const tds_schede_bibliografia_routes_1 = __importDefault(require("./routes/tds_schede_bibliografia.routes"));
 const tds_schede_altreBibliografia_routes_1 = __importDefault(require("./routes/tds_schede_altreBibliografia.routes"));
 const tds_schede_inventario_routes_1 = __importDefault(require("./routes/tds_schede_inventario.routes"));
@@ -69,8 +68,8 @@ class App {
         this.app.use('/mostre', mostra_routes_1.default);
         this.app.use('/cronologie', cronologia_routes_1.default);
         this.app.use('/provenienze', provenienza_routes_1.default);
-        this.app.use('/schede', scheda_routes_2.default);
-        this.app.use('/documentazioniFotograficheRoutes', documentazioneFotografica_routes_1.default);
+        this.app.use('/schede', scheda_routes_1.default);
+        this.app.use('/documentazioniFotografiche', documentazioneFotografica_routes_1.default);
         this.app.use('/tds_schede_bibliografie', tds_schede_bibliografia_routes_1.default);
         this.app.use('/tds_schede_documentazioniFotografiche', tds_schede_documentazioneFotografica_routes_1.default);
         this.app.use('/tds_schede_altreBibliografie', tds_schede_altreBibliografia_routes_1.default);
