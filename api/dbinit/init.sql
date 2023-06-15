@@ -21,8 +21,7 @@ CREATE TABLE `schede` (
   `commento` text,
   `iscrizioni` text,
   `descrizione_sintetica` text,
-  `storia_espositiva` text,
-
+  `storia_espositiva` text
 );
 
 DROP TABLE IF EXISTS autori;
@@ -32,7 +31,7 @@ CREATE TABLE `autori` (
   `formula_precedente` text,
   `formula_successiva` text,
   `categoria` text,
-  `nome` text,
+  `nome` text
 );
 
 
@@ -52,7 +51,7 @@ CREATE TABLE `cronologie` (
   `ambito_storico` text,
   `etichetta_data` text,
   `data_da` text,
-  `data_a` text,
+  `data_a` text
 );
 
 
@@ -178,7 +177,7 @@ CREATE TABLE `provenienze` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `provenienza` text,
   `descrizione` text,
-  `note` text,
+  `note` text
 );
 
 
@@ -222,7 +221,7 @@ DROP TABLE IF EXISTS tds_schede_bibliografie;
 
 CREATE TABLE `tds_schede_bibliografie` (
   `id_scheda` int,
-  `id_bibliografie` int
+  `id_bibliografia` int
 );
 
 DROP TABLE IF EXISTS altreBibliografie;
