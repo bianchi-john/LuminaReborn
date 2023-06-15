@@ -1,4 +1,5 @@
 export interface Immagine {
-    id_immagine: number;
+    id: number;
     path: string;
+    didascalia: string;
 }

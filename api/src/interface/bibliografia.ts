@@ -1,5 +1,4 @@
 export interface Bibliografia {
-    id: number;
+    ids: number;
     riferimento_bibliografico: string;
-    altro: string;
 }

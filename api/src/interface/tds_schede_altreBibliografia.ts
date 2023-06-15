@@ -1,5 +1,4 @@
 export interface Tds_schede_altreBibliografia {
-    id: number;
-    riferimento_bibliografico: string;
-    altro: string;
+    id_scheda: number;
+    id_altreBibliografie: string;
 }

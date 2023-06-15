@@ -1,10 +1,8 @@
 export interface Scheda {
     id: number;
-    autore: string;
     titolo: string;
-    cronologia_ambito: string;
-    oggetto: string;
+    commento: string;
     iscrizioni: string;
-    corpo_scheda: string;
+    descrizione_sintetica: string;
     storia_espositiva: string;
 }

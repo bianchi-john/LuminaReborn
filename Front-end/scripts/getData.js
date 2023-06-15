@@ -42,11 +42,11 @@ async function getScheda(idScheda) {
                         $(".iscrizioni").append($pElement);
                         $(".iscrizioni").addClass("item");
                     }
-                    //oggetto
-                    if ($(".oggetto").find("p").length === 0) {
-                        let $pElement = $("<p>").text(parsedData.data[0].oggetto);
-                        $(".oggetto").append($pElement);
-                        $(".oggetto").addClass("item");
+                    //commento
+                    if ($(".commento").find("p").length === 0) {
+                        let $pElement = $("<p>").text(parsedData.data[0].commento);
+                        $(".commento").append($pElement);
+                        $(".commento").addClass("item");
                     }
                     //corpo-scheda
                     if ($(".corpo-scheda").find("p").length === 0) {
