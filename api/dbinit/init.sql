@@ -18,10 +18,11 @@ DROP TABLE IF EXISTS schede;
 CREATE TABLE `schede` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `titolo` text,
-  `commento` text,
+  `corpo_scheda` text,
   `iscrizioni` text,
   `descrizione_sintetica` text,
-  `storia_espositiva` text
+  `storia_espositiva` text,
+  `classificazione` text 
 );
 
 DROP TABLE IF EXISTS autori;
