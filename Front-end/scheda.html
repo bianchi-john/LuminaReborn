@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
     <title>Bootstrap Example</title>
@@ -11,9 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="scripts/script.js"></script>
-
-
-
 </head>
 
 <body>
@@ -26,25 +23,24 @@
             <div class="col">
                 <div class="card mt-2">
                     <div class="card-header">Titolo</div>
-                    <div class="card-body title">
-                    <!-- Contenuto di titolo -->
+                    <div class="card-body title" id="titolo">
+                        <!-- Contenuto di titolo -->
                     </div>
                 </div>
                 <div class="card mt-2">
                     <div class="card-header">Autore/i</div>
                     <div class="card-body">
-                        <div class="item autori">
-                       <!-- Contenuto di autori -->
+                        <div class="item autori" id="autori">
+                            <!-- Contenuto di autori -->
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="col">
                 <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
                     <ol class="carousel-indicators">
                     </ol>
-                    <div class="carousel-inner mt-2 immagini">
+                    <div class="carousel-inner">
                     </div>
                     <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -55,15 +51,10 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
-
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col">
-                <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#cronologia">Cronologia e ambito</div>
-                    <div class="card-body cronologia collapse" id="cronologia">
-                        <!-- Contenuto di cronologia -->
+                <div class="card mt-2">
+                    <div class="card-header">Didascalia</div>
+                    <div class="card-body didascalia" id="didascalia">
+                        <!-- Contenuto di titolo -->
                     </div>
                 </div>
             </div>
@@ -71,9 +62,9 @@
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#ubicazione">Informazioni ubicazione</div>
-                    <div class="card-body ubicazione collapse" id="ubicazione">
-                        <!-- Contenuto di ubicazione -->
+                    <div class="card-header" data-toggle="collapse" data-target="#cronologie">Cronologia e ambito</div>
+                    <div class="card-body cronologie collapse" id="cronologie">
+                        <!-- Contenuto di cronologie -->
                     </div>
                 </div>
             </div>
@@ -81,9 +72,10 @@
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#inventario">Numero di inventario e proprietà giuridica</div>
-                    <div class="card-body inventario collapse" id="inventario">
-                        <!-- Contenuto di inventario -->
+                    <div class="card-header" data-toggle="collapse" data-target="#ubicazioni">Informazioni ubicazione
+                    </div>
+                    <div class="card-body ubicazioni collapse" id="ubicazioni">
+                        <!-- Contenuto di ubicazioni -->
                     </div>
                 </div>
             </div>
@@ -91,7 +83,19 @@
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#classificazione">Classificazione opera</div>
+                    <div class="card-header" data-toggle="collapse" data-target="#inventari">Numero di inventario e
+                        proprietà giuridica</div>
+                    <div class="card-body inventari collapse" id="inventari">
+                        <!-- Contenuto di inventari -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#classificazione">Classificazione opera
+                    </div>
                     <div class="card-body classificazione collapse" id="classificazione">
                         <!-- Contenuto di Classificazione opera -->
                     </div>
@@ -151,7 +155,8 @@
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#storia_espositiva">Vicende collezionistiche e storia espositiva</div>
+                    <div class="card-header" data-toggle="collapse" data-target="#storia_espositiva">Vicende
+                        collezionistiche e storia espositiva</div>
                     <div class="card-body storia_espositiva collapse" id="storia_espositiva">
                         <!-- Contenuto delle storia_espositiva -->
                     </div>
@@ -161,15 +166,14 @@
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#descrizione_sintetica">Descrizione sintetica</div>
+                    <div class="card-header" data-toggle="collapse" data-target="#descrizione_sintetica">Descrizione
+                        sintetica</div>
                     <div class="card-body descrizione_sintetica collapse" id="descrizione_sintetica">
                         <!-- Contenuto delle descrizione_sintetica -->
                     </div>
                 </div>
             </div>
         </div>
-
-
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
@@ -200,10 +204,11 @@
                 </div>
             </div>
         </div>
-       <div class="row mt-2">
+        <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#altreBibliografie">Altra bibliografia</div>
+                    <div class="card-header" data-toggle="collapse" data-target="#altreBibliografie">Altra bibliografia
+                    </div>
                     <div class="card-body altreBibliografie collapse" id="altreBibliografie">
                         <!-- Contenuto di altreBibliografie -->
                     </div>
@@ -213,14 +218,16 @@
         <div class="row mt-2">
             <div class="col">
                 <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#documentazioneFotografica">Documentazione fotografica</div>
+                    <div class="card-header" data-toggle="collapse" data-target="#documentazioneFotografica">
+                        Documentazione fotografica</div>
                     <div class="card-body documentazioneFotografica collapse" id="documentazioneFotografica">
                         <!-- Contenuto di Documentazione fotografica -->
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
         <div class="footer-space"></div>
-
+    </div>
 </body>
+
 </html>
