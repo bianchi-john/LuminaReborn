@@ -4,4 +4,5 @@ export interface Misura {
     tipo: string;
     valore: GLfloat;
     unita_di_misura: string;
+    id_gruppo_misure: number;
 }

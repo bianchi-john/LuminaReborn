@@ -1,4 +1,6 @@
 export interface Tds_schede_gruppo_misura {
-    id_scheda: number;
-    id_gruppo_misure: number;
+    id: number;
+    intero_parziale: GLfloat;
+    titolo_gruppo_misure: string;
+    id_tds: number;
 }

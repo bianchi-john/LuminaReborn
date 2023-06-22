@@ -45,85 +45,91 @@ function populateSchede(data) {
     document.getElementById('descrizione_sintetica').innerHTML = data.data[0].descrizione_sintetica;
     document.getElementById('iscrizioni').innerHTML = data.data[0].iscrizioni;
     document.getElementById('storia_espositiva').innerHTML = data.data[0].storia_espositiva;
-    document.getElementById('titolo').innerHTML = data.data[0].titolo;
+    document.getElementById('titolo').innerHTML = data.data[0].titolo_opera;
 }
 
 function populateAutori(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('autori').innerHTML += data[i].data[0].categoria + " ";
-        document.getElementById('autori').innerHTML += data[i].data[0].formula_precedente + " ";
-        document.getElementById('autori').innerHTML += data[i].data[0].formula_successiva + " <br>";
+        document.getElementById('autori').innerHTML += data[i].data[0].formula_precedente + ", ";
+        document.getElementById('autori').innerHTML += data[i].data[0].formula_successiva + ", ";
+        document.getElementById('autori').innerHTML += data[i].data[0].categoria + " <br>";
     }
 }
 
 function populateCronologie(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('cronologie').innerHTML += data[i].data[0].ambito_storico + " ";
+        document.getElementById('cronologie').innerHTML += data[i].data[0].ambito_storico + ", ";
         document.getElementById('cronologie').innerHTML += data[i].data[0].etichetta_data + " <br>";
     }
 }
 
 function populateUbicazioni(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('ubicazioni').innerHTML += data[i].data[0].descrizione + " ";
-        document.getElementById('ubicazioni').innerHTML += data[i].data[0].ubicazione + " <br>";
+        document.getElementById('ubicazioni').innerHTML += data[i].data[0].ubicazione + ", ";
+        document.getElementById('ubicazioni').innerHTML += data[i].data[0].descrizione + " <br>";
     }
 }
 
 function populateInventari(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('inventari').innerHTML += data[i].data[0].nome_inventario + " ";
-        document.getElementById('inventari').innerHTML += data[i].data[0].descrizione + " <br>";
+        document.getElementById('inventari').innerHTML += data[i].data[0].nome_inventario;
+        document.getElementById('giuridica').innerHTML += data[i].data[0].descrizione;
     }
 }
 
 function populateMateriali(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('materiali').innerHTML += data[i].data[0].nome_materiale + " ";
+        document.getElementById('materiali').innerHTML += data[i].data[0].nome_materiale + ", ";
         document.getElementById('materiali').innerHTML += data[i].data[0].descrizione + " <br>";
     }
 }
 
 function populatetecniche(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('tecniche').innerHTML += data[i].data[0].nome_tecnica + " ";
+        document.getElementById('tecniche').innerHTML += data[i].data[0].nome_tecnica + ", ";
         document.getElementById('tecniche').innerHTML += data[i].data[0].descrizione + " <br>";
     }
 }
 
-function populateTds_schede_misure(data) {
-    for (i = 0; i < data[0].data.length; i++) {
+function populateTds_schede_gruppo_misure(data) {
+    for (i = 0; i < data.length; i++) {
         let misura = $("<div></div>");
-        misura.attr("id", "misura_" + data[0].data[i].id_misura);
+        misura.attr("id", "misura_" + data[i].data[0].id);
         misura.appendTo("#misure");
-        document.getElementById('misura_' + data[0].data[i].id_misura).innerHTML += data[0].data[i].intero_parziale + " ";
-        document.getElementById('misura_' + data[0].data[i].id_misura).innerHTML += data[0].data[i].descrizione + " ";
+        document.getElementById('misura_' + data[i].data[0].id).innerHTML += data[i].data[0].titolo_gruppo_misure + ", ";
+        document.getElementById('misura_' + data[i].data[0].id).innerHTML += data[i].data[0].intero_parziale + "<br>";
+        callTDSAPI('http://0.0.0.0:3000/tds_schede_gruppo_misure/1', 'id_gruppo_misure', 'http://0.0.0.0:3000/misure/'+ data[i].data[0].id, populateMisure);
+        
     }
 }
 
 function populateMisure(data) {
-    for (i = 0; i < data.length; i++) {
-        document.getElementById('misura_' + data[i].data[0].id).innerHTML += data[i].data[0].direzione + " ";
-        document.getElementById('misura_' + data[i].data[0].id).innerHTML += data[i].data[0].tipo + " ";
-        document.getElementById('misura_' + data[i].data[0].id).innerHTML += data[i].data[0].unita_di_misura + " ";
-        document.getElementById('misura_' + data[i].data[0].id).innerHTML += data[i].data[0].valore + " ";
+     for (i = 0; i < data[0].data.length; i++) {
+        document.getElementById('misura_' + data[0].data[i].id_gruppo_misure).innerHTML += "- ";
+        document.getElementById('misura_' + data[0].data[i].id_gruppo_misure).innerHTML += data[0].data[i].direzione + ", ";
+        document.getElementById('misura_' + data[0].data[i].id_gruppo_misure).innerHTML += data[0].data[i].tipo + ", ";
+        document.getElementById('misura_' + data[0].data[i].id_gruppo_misure).innerHTML += data[0].data[i].unita_di_misura + ", ";
+        document.getElementById('misura_' + data[0].data[i].id_gruppo_misure).innerHTML += data[0].data[i].valore + "<br>";
+        if (i + 1 == data[0].data.length) {
+            document.getElementById('misura_' + data[0].data[i].id_gruppo_misure).innerHTML += "<br>";
+        }
     }
 }
 
 function populateProvenienze(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('provenienze').innerHTML += data[i].data[0].provenienza + " ";
-        document.getElementById('provenienze').innerHTML += data[i].data[0].descrizione + " ";
+        document.getElementById('provenienze').innerHTML += data[i].data[0].provenienza + ", ";
+        document.getElementById('provenienze').innerHTML += data[i].data[0].descrizione + ", ";
         document.getElementById('provenienze').innerHTML += data[i].data[0].note + " <br>";
     }
 }
 
 function populateMostre(data) {
     for (i = 0; i < data.length; i++) {
-        document.getElementById('mostre').innerHTML += data[i].data[0].curatore + " ";
-        document.getElementById('mostre').innerHTML += data[i].data[0].titolo_mostra + " ";
-        document.getElementById('mostre').innerHTML += data[i].data[0].data_mostra + " ";
-        document.getElementById('mostre').innerHTML += data[i].data[0].luogo_mostra + " ";
+        document.getElementById('mostre').innerHTML += data[i].data[0].titolo_mostra + ", ";
+        document.getElementById('mostre').innerHTML += data[i].data[0].curatore + ", ";
+        document.getElementById('mostre').innerHTML += data[i].data[0].data_mostra + ", ";
+        document.getElementById('mostre').innerHTML += data[i].data[0].luogo_mostra + ", ";
         document.getElementById('mostre').innerHTML += data[i].data[0].descrizione + " <br>";
     }
 }
@@ -174,24 +180,26 @@ function populateImmagini(data) {
         imgElement.attr('alt', i + 'st slide');
         divElement.append(imgElement);
         $('.carousel-inner').append(divElement);
-        document.getElementById('didascalia').innerHTML += 'Didascalia immagine '+ data[i].data[0].id + ': ' + data[i].data[0].didascalia +' <br>';
+        document.getElementById('didascalia').innerHTML += 'Immagine '+ data[i].data[0].id + ': ' + data[i].data[0].didascalia +' <br>';
     }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     callBaseAPI('http://0.0.0.0:3000/schede/1', populateSchede);
+    callTDSAPI('http://0.0.0.0:3000/tds_schede_misure/1', 'id_gruppo_misure', 'http://0.0.0.0:3000/tds_schede_gruppo_misure/', populateTds_schede_gruppo_misure);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_autori/1', 'id_autore', 'http://0.0.0.0:3000/autori/', populateAutori);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_cronologie/1', 'id_cronologia', 'http://0.0.0.0:3000/cronologie/', populateCronologie);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_ubicazioni/1', 'id_ubicazione', 'http://0.0.0.0:3000/ubicazioni/', populateUbicazioni);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_inventari/1', 'id_inventario', 'http://0.0.0.0:3000/inventari/', populateInventari);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_materiali/1', 'id_materiale', 'http://0.0.0.0:3000/materiali/', populateMateriali);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_tecniche/1', 'id_tecnica', 'http://0.0.0.0:3000/tecniche/', populatetecniche);
-    callTDSAPI('http://0.0.0.0:3000/tds_schede_gruppo_misure/1', 'id_gruppo_misure', 'http://0.0.0.0:3000/tds_schede_misure/', populateTds_schede_misure);
-    callTDSAPI('http://0.0.0.0:3000/tds_schede_misure/1', 'id_misura', 'http://0.0.0.0:3000/misure/', populateMisure);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_provenienze/1', 'id_provenienza', 'http://0.0.0.0:3000/provenienze/', populateProvenienze);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_mostre/1', 'id_mostra', 'http://0.0.0.0:3000/mostre/', populateMostre);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_bibliografie/1', 'id_bibliografia', 'http://0.0.0.0:3000/bibliografie/', populateBibliografie);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_altreBibliografie/1', 'id_altreBibliografie', 'http://0.0.0.0:3000/altreBibliografie/', populateAltreBibliografie);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_documentazioniFotografiche/1', 'id_documentazioneFotografica', 'http://0.0.0.0:3000/documentazioniFotografiche/', populateDocumentazioneFotografica);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_immagini/1', 'id_immagine', 'http://0.0.0.0:3000/immagini/', populateImmagini);
+    // callTDSAPI('http://0.0.0.0:3000/tds_schede_gruppo_misure/1', 'id_gruppo_misure', 'http://0.0.0.0:3000/misure/1', populateMisure);
+
+
 });

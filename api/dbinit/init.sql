@@ -17,7 +17,8 @@ DROP TABLE IF EXISTS schede;
 
 CREATE TABLE `schede` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `titolo` text,
+  `titolo_di_servizio` text,
+  `titolo_opera` text,
   `corpo_scheda` text,
   `iscrizioni` text,
   `descrizione_sintetica` text,
@@ -114,22 +115,22 @@ CREATE TABLE `misure` (
   `direzione` text,
   `tipo` text,
   `valore` float,
-  `unita_di_misura` text
-);
-
-DROP TABLE IF EXISTS tds_schede_misure;
-
-CREATE TABLE `tds_schede_misure` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
-  `id_scheda` int,
-  `id_misura` int,
-  `intero_parziale` text,
-  `descrizione` text
+  `unita_di_misura` text,
+  `id_gruppo_misure` int
 );
 
 DROP TABLE IF EXISTS tds_schede_gruppo_misure;
 
 CREATE TABLE `tds_schede_gruppo_misure` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `intero_parziale` text,
+  `titolo_gruppo_misure` text,
+  `id_tds` int
+);
+
+DROP TABLE IF EXISTS tds_schede_misure;
+
+CREATE TABLE `tds_schede_misure` (
   `id_scheda` int,
   `id_gruppo_misure` int
 );
@@ -306,7 +307,7 @@ ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_bibliografie`) REFERE
 
 ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
-ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id`) REFERENCES `altreBibliografie` (`id`);
+ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_altreBibliografie`) REFERENCES `altreBibliografie` (`id`);
 
 ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
@@ -324,10 +325,10 @@ ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_scheda`
 
 ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`documentazioniFotografiche`) REFERENCES `documentazioniFotografiche` (`id`);
 
-ALTER TABLE `tds_schede_gruppo_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
-ALTER TABLE `tds_schede_gruppo_misure` ADD FOREIGN KEY (`id`) REFERENCES `tds_schede_misure` (`id`);
+ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`);
 
-ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_misura`) REFERENCES `misure` (`id`);
+ALTER TABLE `tds_schede_gruppo_misure` ADD FOREIGN KEY (`id_tds`) REFERENCES `tds_schede_misure` (`id_gruppo_misure`);
 
-ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id`) REFERENCES `misure` (`id`);
+ALTER TABLE `misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`);
