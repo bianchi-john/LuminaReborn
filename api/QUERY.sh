@@ -1,6 +1,6 @@
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1","user_role": 1, "email": "example@example.com", "first_name": "John", "last_name": "Doe", "password": "password123"}' \  http://0.0.0.0:3000/users
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "titolo_di_servizio": "Esempio titolo di servizio", "titolo_opera": "Esempio titolo opera", "corpo_scheda": "Esempio corpo scheda", "iscrizioni": "Nel tabellone apicale I(e)S[us n]AZARENU(s) REX IUDEORUM", "descrizione_sintetica": "Esempio descrizione sintetica scheda", "storia_espositiva": "Esempio storia espositiva scheda", "classificazione": "Dipinto"}' \  http://0.0.0.0:3000/schede
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "formula_precedente": "", "formula_successiva": "copia da Giusto Suttermans", "categoria": "Categoria autore", "nome": "Filippo Latini"}' \  http://0.0.0.0:3000/autori
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "formula_precedente": "Esempio formula precedente", "formula_successiva": "copia da Giusto Suttermans", "categoria": "Categoria autore", "nome": "Filippo Latini"}' \  http://0.0.0.0:3000/autori
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "formula_precedente": "Formula precedente autore 2", "formula_successiva": "Formula successiva autore 2", "categoria": "Categoria autore 2", "nome": "Nome autore 2"}' \  http://0.0.0.0:3000/autori
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_autore": 1}' \  http://0.0.0.0:3000/tds_schede_autori
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_autore": 2}' \  http://0.0.0.0:3000/tds_schede_autori
@@ -34,14 +34,11 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "1","id_immagine": "003"}' \  http://0.0.0.0:3000/tds_schede_immagini
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "riferimento_bibliografico": "Esempio documentazione fotografica"}' \  http://0.0.0.0:3000/documentazioniFotografiche
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "1", "id_documentazioneFotografica": "1"}' \  http://0.0.0.0:3000/tds_schede_documentazioniFotografiche
-
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "direzione": "altezza", "tipo": "assoluta", "valore": 25.5, "unita_di_misura": "cm", "id_gruppo_misure": "1"}' \  http://0.0.0.0:3000/misure
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "direzione": "larghezza", "tipo": "derivata", "valore": 30, "unita_di_misura": "cm", "id_gruppo_misure": "1"}' \  http://0.0.0.0:3000/misure
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "direzione": "spessore", "tipo": "assoluta", "valore": 55.5, "unita_di_misura": "mm", "id_gruppo_misure": "2"}' \  http://0.0.0.0:3000/misure
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "direzione": "spessore", "tipo": "assoluto", "valore": 55.5, "unita_di_misura": "mm", "id_gruppo_misure": "2"}' \  http://0.0.0.0:3000/misure
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "4", "direzione": "profondità", "tipo": "derivata", "valore": 50, "unita_di_misura": "mm", "id_gruppo_misure": "2"}' \  http://0.0.0.0:3000/misure
-
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "intero_parziale": "intero", "titolo_gruppo_misure": "Collana A", "id_tds": "1"}' \  http://0.0.0.0:3000/tds_schede_gruppo_misure
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "intero_parziale": "parziale, Pendaglio A", "titolo_gruppo_misure": "Collana A", "id_tds": "1"}' \  http://0.0.0.0:3000/tds_schede_gruppo_misure
-
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_gruppo_misure": 1}' \  http://0.0.0.0:3000/tds_schede_misure
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_gruppo_misure": 2}' \  http://0.0.0.0:3000/tds_schede_misure
