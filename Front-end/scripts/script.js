@@ -165,14 +165,15 @@ function populateImmagini(data) {
             var div = $('<div>').addClass('mySlides fade one');
         }
         else {
-            var div = $('<div>').addClass('mySlides fade');
+            var div = $('<div>').addClass('mySlides fade')
+                    .attr('num',i + 1 + '/' + (data.length));
+
         }
-        var numberText = $('<div>').addClass('numbertext').text(i + 1 + '/' + (data.length));
         var img = $('<img>').attr('src', data[i].data[0].path)
                               .addClass('image').attr('alt', data[i].data[0].didascalia)
-                              .on('contextmenu', function() { return false; });
+                              .on('contextmenu', function() { return false; })
         
-        div.append(numberText, img);
+        div.append(img);
         $('.slideshow-container').append(div);
     }
     $('.slideshow-container').append('<a class="next">&#10095;</a>');

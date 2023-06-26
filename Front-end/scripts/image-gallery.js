@@ -30,6 +30,7 @@ function showSlides(n) {
 
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
+        
     }
     slides[slideIndex - 1].style.display = "contents";
 }
@@ -54,7 +55,6 @@ function loadImages() {
         var modalImg = document.getElementById("img01");
         var captionText = document.getElementById("caption");
         modal.style.display = "block";
-
         modalImg.src = this.src;
         captionText.innerHTML = this.alt;
     });
