@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="scripts/script.js"></script>
+    <script src="scripts/image-gallery.js"></script>
 </head>
 
 <body>
@@ -37,26 +38,18 @@
                 </div>
             </div>
             <div class="col">
-                <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
-                    <ol class="carousel-indicators">
-                    </ol>
-                    <div class="carousel-inner">
-                    </div>
-                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+                <div id="myModal" class="modal">
+                    <span class="close">&times;</span>
+                    <img class="modal-content" id="img01" oncontextmenu="return false">
+                    <div id="caption"></div>
                 </div>
-                <div class="card mt-2">
-                    <div class="card-header">Didascalia</div>
-                    <div class="card-body didascalia" id="didascalia">
-                        <!-- Contenuto di titolo -->
+
+                <section class="nw">
+                    <div class="slideshow-container">
                     </div>
-                </div>
+                    <br>
+                </section>
+
             </div>
         </div>
         <div class="row mt-2">

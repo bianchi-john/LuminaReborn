@@ -35,7 +35,7 @@ async function callTDSAPI(tdsUrl, name, routeUrl, callback) {
         callback(risultati)
         console.log("Risultati:", "200");
     } catch (error) {
-        console.error("Errore nella logica:", error);
+        console.error("Errore nella chiamata:", error );
     }
 }
 
@@ -159,32 +159,28 @@ function populateDocumentazioneFotografica(data) {
 }
 
 function populateImmagini(data) {
+    $('.slideshow-container').append('<a class="prev">&#10094;</a>');
     for (i = 0; i < data.length; i++) {
-        var liElement = $('<li></li>');
-        liElement.attr('data-target', '#carouselExampleIndicators');
-        liElement.attr('data-slide-to', i);
         if (i == 0) {
-            liElement.addClass('active');
+            var div = $('<div>').addClass('mySlides fade one');
         }
-        $('.carousel-indicators').append(liElement);
-        var s = 0;
-        var divElement = $('<div></div>');
-        divElement.addClass('carousel-item');
-        divElement.attr('id', data[i].data[0].id);
-        if (i == 0) {
-            divElement.addClass('active');
+        else {
+            var div = $('<div>').addClass('mySlides fade');
         }
-        var imgElement = $('<img>');
-        imgElement.addClass('d-block w-100');
-        imgElement.attr('src', data[i].data[0].path);
-        imgElement.attr('alt', i + 'st slide');
-        divElement.append(imgElement);
-        $('.carousel-inner').append(divElement);
-        document.getElementById('didascalia').innerHTML += 'Immagine '+ data[i].data[0].id + ': ' + data[i].data[0].didascalia +' <br>';
+        var numberText = $('<div>').addClass('numbertext').text(i + 1 + '/' + (data.length));
+        var img = $('<img>').attr('src', data[i].data[0].path)
+                              .addClass('image').attr('alt', data[i].data[0].didascalia)
+                              .on('contextmenu', function() { return false; });
+        
+        div.append(numberText, img);
+        $('.slideshow-container').append(div);
     }
+    $('.slideshow-container').append('<a class="next">&#10095;</a>');
+
+    loadImages();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+$(document).ready(function () { 
     callBaseAPI('http://0.0.0.0:3000/schede/1', populateSchede);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_misure/1', 'id_gruppo_misure', 'http://0.0.0.0:3000/tds_schede_gruppo_misure/', populateTds_schede_gruppo_misure);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_autori/1', 'id_autore', 'http://0.0.0.0:3000/autori/', populateAutori);
@@ -199,7 +195,4 @@ document.addEventListener('DOMContentLoaded', function () {
     callTDSAPI('http://0.0.0.0:3000/tds_schede_altreBibliografie/1', 'id_altreBibliografie', 'http://0.0.0.0:3000/altreBibliografie/', populateAltreBibliografie);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_documentazioniFotografiche/1', 'id_documentazioneFotografica', 'http://0.0.0.0:3000/documentazioniFotografiche/', populateDocumentazioneFotografica);
     callTDSAPI('http://0.0.0.0:3000/tds_schede_immagini/1', 'id_immagine', 'http://0.0.0.0:3000/immagini/', populateImmagini);
-    // callTDSAPI('http://0.0.0.0:3000/tds_schede_gruppo_misure/1', 'id_gruppo_misure', 'http://0.0.0.0:3000/misure/1', populateMisure);
-
-
 });
