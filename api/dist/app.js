@@ -37,19 +37,22 @@ const autore_routes_1 = __importDefault(require("./routes/autore.routes"));
 const immagine_routes_1 = __importDefault(require("./routes/immagine.routes"));
 const tds_schede_autore_routes_1 = __importDefault(require("./routes/tds_schede_autore.routes"));
 const tds_schede_immagine_routes_1 = __importDefault(require("./routes/tds_schede_immagine.routes"));
+const process_1 = __importDefault(require("process"));
 const response_1 = require("./domain/response");
 const code_enum_1 = require("./enum/code.enum");
 const status_enum_1 = require("./enum/status.enum");
 class App {
-    constructor(port = process.env.SERVER_PORT || 3000) {
+    constructor(port = process_1.default.env.SERVER_PORT || 3000) {
         this.port = port;
         this.APPLICATION_RUNNING = 'application is running on:';
-        this.ROUTE_NOT_FOUND = 'Route does not exist on the server';
+        this.ROUTE_NOT_FOUND = 'Route does not exist on the server.';
         this.app = (0, express_1.default)();
         this.middleWare();
         this.routes();
+        this.nodeOptions = ['--max-old-space-size=4096'];
     }
     listen() {
+        process_1.default.env.NODE_OPTIONS = '--max-old-space-size=4096'; // Imposta le opzioni del nodo
         this.app.listen(this.port);
         console.info(`${this.APPLICATION_RUNNING} ${ip_1.default.address()}:${this.port}`);
     }

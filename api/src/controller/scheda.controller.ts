@@ -28,11 +28,53 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
     const pool = await connection();
-    const result: ResultSet = await pool.query(QUERY.SELECT_SCHEDA, [req.params.schedaId]);
-    if (((result[0]) as Array<any>).length > 0) {
+    const schedaId = req.params.schedaId;
+
+    const querySelectScheda = QUERY.SELECT_SCHEDA;
+    const querySelectAutori = QUERY.SELECT_AUTORI;
+    const querySelectCronologie = QUERY.SELECT_CRONOLOGIE;
+    const querySelectMateriali = QUERY.SELECT_MATERIALI;
+    const querySelectTecniche = QUERY.SELECT_MATERIALI;
+    const querySelectUbicazioni = QUERY.SELECT_MATERIALI;
+    const querySelectInventari = QUERY.SELECT_MATERIALI;
+    const querySelectProvenienze = QUERY.SELECT_MATERIALI;
+    const querySelectMostre = QUERY.SELECT_MATERIALI;
+    const querySelectBibliografie = QUERY.SELECT_MATERIALI;
+    const querySelectImmagini = QUERY.SELECT_MATERIALI;
+    const querySelectDocumentazioniFotografiche = QUERY.SELECT_MATERIALI;
+    const querySelectMisure = QUERY.SELECT_MISURE;
+
+    const resultScheda: ResultSet = await pool.query(querySelectScheda, [schedaId]);
+    const resultAutori: ResultSet = await pool.query(querySelectAutori, [schedaId]);
+    const resultCronologie: ResultSet = await pool.query(querySelectCronologie, [schedaId]);
+    const resultTecniche: ResultSet = await pool.query(querySelectTecniche, [schedaId]);
+    const resultUbicazioni: ResultSet = await pool.query(querySelectUbicazioni, [schedaId]);
+    const resultInventari: ResultSet = await pool.query(querySelectInventari, [schedaId]);
+    const resultProvenienze: ResultSet = await pool.query(querySelectProvenienze, [schedaId]);
+    const resultMostre: ResultSet = await pool.query(querySelectMostre, [schedaId]);
+    const resultBibliografie: ResultSet = await pool.query(querySelectBibliografie, [schedaId]);
+    const resultImmagini: ResultSet = await pool.query(querySelectImmagini, [schedaId]);
+    const resultDocumentazioniFotografiche: ResultSet = await pool.query(querySelectDocumentazioniFotografiche, [schedaId]);
+    const resultMisure: ResultSet = await pool.query(querySelectMisure, [schedaId]);
+
+    if (resultScheda.length > 0) {
       pool.end();
-return res.status(Code.OK)
-        .send(new HttpResponse(Code.OK, Status.OK, 'Scheda retrieved', result[0]));
+      return res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Scheda retrieved', {
+        scheda: resultScheda[0],
+        autori: resultAutori[0],
+        cronologie: resultCronologie[0],
+        materiali: querySelectMateriali[0],
+        tecniche: resultTecniche[0],
+        ubicazioni: resultUbicazioni[0],
+        inventari: resultInventari[0],
+        provenienze: resultProvenienze[0],
+        mostre: resultMostre[0],
+        bibliografie: resultBibliografie[0],
+        immagini: resultImmagini[0],
+        documentazioniFotografiche: resultDocumentazioniFotografiche[0],
+        misure: resultMisure[0],
+
+      }));
     } else {
       return res.status(Code.NOT_FOUND)
         .send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, 'Scheda not found'));

@@ -32,6 +32,9 @@ import immagineRoutes from './routes/immagine.routes'
 import tds_schede_autoreRoutes from './routes/tds_schede_autore.routes'
 import tds_schede_immagineRoutes from './routes/tds_schede_immagine.routes'
 
+
+import process from 'process';
+
 import { HttpResponse } from './domain/response';
 import { Code } from './enum/code.enum';
 import { Status } from './enum/status.enum';
@@ -39,15 +42,19 @@ import { Status } from './enum/status.enum';
 export class App {
   private readonly app: Application;
   private readonly APPLICATION_RUNNING = 'application is running on:';
-  private readonly ROUTE_NOT_FOUND = 'Route does not exist on the server';
+  private readonly ROUTE_NOT_FOUND = 'Route does not exist on the server.';
+  private readonly nodeOptions: string[];
 
-  constructor(private readonly port: (string | number) = process.env.SERVER_PORT || 3000) {
+  constructor(private readonly port: string | number = process.env.SERVER_PORT || 3000) {
     this.app = express();
     this.middleWare();
     this.routes();
+    this.nodeOptions = ['--max-old-space-size=4096'];
+
   }
 
   listen(): void {
+    process.env.NODE_OPTIONS = '--max-old-space-size=4096'; // Imposta le opzioni del nodo
     this.app.listen(this.port);
     console.info(`${this.APPLICATION_RUNNING} ${ip.address()}:${this.port}`);
   }
