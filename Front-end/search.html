@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <title>Search Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="scripts/search.js"></script>
+</head>
+
+<body>
+    <div class="jumbotron text-center">
+        <h1>Search page</h1>
+    </div>
+    <div class="container">
+        <form>
+          <div class="form-group" id="generalSearch">
+            <label for="generalSearchBar">General search</label>
+            <input type="email" class="form-control" id="generalSearchBar" aria-describedby="generalSearchBar">
+            <small class="form-text text-muted">General search caption</small>
+          </div>
+          
+          <div id="advancedSearchFields" style="display: none;">
+
+            <div class="form-group">
+                <label for="titleSearchBar">Ricerca per Titolo</label>
+                <input type="text" class="form-control title" id="titleSearchBar" aria-describedby="titleSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="authorSearchBar">Ricerca per autori</label>
+                <input type="text" class="form-control autori" id="authorSearchBar" aria-describedby="authorSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="dateSearchBar">Ricerca per cronologie</label>
+                <input type="date" class="form-control cronologie" id="dateSearchBar" aria-describedby="dateSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="locationSearchBar">Ricerca per ubicazioni</label>
+                <input type="text" class="form-control ubicazioni" id="locationSearchBar" aria-describedby="locationSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="inventorySearchBar">Ricerca per inventari</label>
+                <input type="text" class="form-control inventari" id="inventorySearchBar" aria-describedby="inventorySearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="legalSearchBar">Ricerca per proprietà giuridica</label>
+                <input type="text" class="form-control giuridica" id="legalSearchBar" aria-describedby="legalSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="classificationSearchBar">Ricerca per classificazione</label>
+                <input type="text" class="form-control classificazione" id="classificationSearchBar" aria-describedby="classificationSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="materialSearchBar">Ricerca per materiali</label>
+                <input type="text" class="form-control materiali" id="materialSearchBar" aria-describedby="materialSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="techniqueSearchBar">Ricerca per tecniche</label>
+                <input type="text" class="form-control tecniche" id="techniqueSearchBar" aria-describedby="techniqueSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="sizeSearchBar">Ricerca per misure</label>
+                <input type="text" class="form-control misure" id="sizeSearchBar" aria-describedby="sizeSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="originSearchBar">Ricerca per provenienze</label>
+                <input type="text" class="form-control provenienze" id="originSearchBar" aria-describedby="originSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="inscriptionSearchBar">Ricerca per iscrizioni</label>
+                <input type="text" class="form-control iscrizioni" id="inscriptionSearchBar" aria-describedby="inscriptionSearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="exhibitionHistorySearchBar">Ricerca per storia espositiva</label>
+                <input type="text" class="form-control storia_espositiva" id="exhibitionHistorySearchBar" aria-describedby="exhibitionHistorySearchBar">
+              </div>
+              
+              <div class="form-group">
+                <label for="corpo_schedaSearchBar">Ricerca per corpo scheda</label>
+                <input type="text" class="form-control corpo_scheda" id="corpo_schedaSearchBar" aria-describedby="corpo_schedaSearchBar">
+              </div>
+
+              <div class="form-group">
+                <label for="mostreSearchBar">Ricerca per mostre</label>
+                <input type="text" class="form-control mostre" id="mostreSearchBar" aria-describedby="mostreSearchBar">
+              </div>
+              <div class="form-group">
+                <label for="descrizione_sinteticaSearchBar">Ricerca per descrizione sintetica</label>
+                <input type="text" class="form-control descrizione_sintetica" id="descrizione_sinteticaSearchBar" aria-describedby="descrizione_sinteticaSearchBar">
+              </div>
+              <div class="form-group">
+                <label for="bibliografieSearchBar">Ricerca per bibliografie</label>
+                <input type="text" class="form-control bibliografie" id="bibliografieSearchBar" aria-describedby="synopsisSearchBar">
+              </div>
+              <div class="form-group">
+                <label for="altreBibliografieSearchBar">Ricerca per altreBibliografie</label>
+                <input type="text" class="form-control altreBibliografie" id="altreBibliografieSearchBar" aria-describedby="altreBibliografieSearchBar">
+              </div>
+              <div class="form-group">
+                <label for="documentazioneFotograficaSearchBar">Ricerca per documentazioneFotografica</label>
+                <input type="text" class="form-control documentazioneFotografica" id="documentazioneFotograficaSearchBar" aria-describedby="documentazioneFotograficaSearchBar">
+              </div>
+                      
+          </div>
+          <button type="button" class="btn btn-primary" id="advancedSearchButton">Advanced Search</button>
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+      </div>
+      
+      
+</body>

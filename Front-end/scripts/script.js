@@ -162,5 +162,7 @@ function populateWebPage(data) {
 }
 
 $(document).ready(function () {
+    const queryString = window.location.search;
+    console.log(queryString);
     callAPI('http://0.0.0.0:3000/schede/1', populateWebPage);    
 });
