@@ -12,12 +12,37 @@
   display: inline-block;
 }
 
+li {
+  list-style-type: circle;
+}
+
+.title,
+.autori, 
+.cronologie,
+.ubicazioni,
+.inventari,
+.giuridica,
+.classificazione,
+.materiali,
+.tecniche,
+.misure,
+.provenienze,
+.iscrizioni,
+.storia_espositiva,
+.descrizione_sintetica,
+.corpo_scheda,
+.mostre,
+.bibliografie,
+.altreBibliografie,
+.documentazioneFotografica{
+  display: none;
+}
+
 .footer-space {
   height: 50px;
 }
 
 /* IMAGE CAROUSEL RULES */
-
 * {
   box-sizing: border-box;
 }

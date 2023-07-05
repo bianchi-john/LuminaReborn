@@ -40,24 +40,27 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const querySelectAutori = scheda_query_1.QUERY.SELECT_AUTORI;
         const querySelectCronologie = scheda_query_1.QUERY.SELECT_CRONOLOGIE;
         const querySelectMateriali = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectTecniche = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectUbicazioni = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectInventari = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectProvenienze = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectMostre = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectBibliografie = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectImmagini = scheda_query_1.QUERY.SELECT_MATERIALI;
-        const querySelectDocumentazioniFotografiche = scheda_query_1.QUERY.SELECT_MATERIALI;
+        const querySelectTecniche = scheda_query_1.QUERY.SELECT_TECNICHE;
+        const querySelectUbicazioni = scheda_query_1.QUERY.SELECT_UBICAZIONI;
+        const querySelectInventari = scheda_query_1.QUERY.SELECT_INVENTARI;
+        const querySelectProvenienze = scheda_query_1.QUERY.SELECT_PROVENIENZE;
+        const querySelectMostre = scheda_query_1.QUERY.SELECT_MOSTRE;
+        const querySelectBibliografie = scheda_query_1.QUERY.SELECT_BIBLIOGRAFIE;
+        const querySelectAltreBibliografie = scheda_query_1.QUERY.SELECT_ALTREBIBLIOGRAFIE;
+        const querySelectImmagini = scheda_query_1.QUERY.SELECT_IMMAGINI;
+        const querySelectDocumentazioniFotografiche = scheda_query_1.QUERY.SELECT_DOCUMENTAZIONIFOTOGRAFICHE;
         const querySelectMisure = scheda_query_1.QUERY.SELECT_MISURE;
         const resultScheda = yield pool.query(querySelectScheda, [schedaId]);
         const resultAutori = yield pool.query(querySelectAutori, [schedaId]);
         const resultCronologie = yield pool.query(querySelectCronologie, [schedaId]);
+        const resultMateriali = yield pool.query(querySelectMateriali, [schedaId]);
         const resultTecniche = yield pool.query(querySelectTecniche, [schedaId]);
         const resultUbicazioni = yield pool.query(querySelectUbicazioni, [schedaId]);
         const resultInventari = yield pool.query(querySelectInventari, [schedaId]);
         const resultProvenienze = yield pool.query(querySelectProvenienze, [schedaId]);
         const resultMostre = yield pool.query(querySelectMostre, [schedaId]);
         const resultBibliografie = yield pool.query(querySelectBibliografie, [schedaId]);
+        const resultAltreBibliografie = yield pool.query(querySelectAltreBibliografie, [schedaId]);
         const resultImmagini = yield pool.query(querySelectImmagini, [schedaId]);
         const resultDocumentazioniFotografiche = yield pool.query(querySelectDocumentazioniFotografiche, [schedaId]);
         const resultMisure = yield pool.query(querySelectMisure, [schedaId]);
@@ -67,13 +70,14 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 scheda: resultScheda[0],
                 autori: resultAutori[0],
                 cronologie: resultCronologie[0],
-                materiali: querySelectMateriali[0],
+                materiali: resultMateriali[0],
                 tecniche: resultTecniche[0],
                 ubicazioni: resultUbicazioni[0],
                 inventari: resultInventari[0],
                 provenienze: resultProvenienze[0],
                 mostre: resultMostre[0],
                 bibliografie: resultBibliografie[0],
+                altreBibliografie: resultAltreBibliografie[0],
                 immagini: resultImmagini[0],
                 documentazioniFotografiche: resultDocumentazioniFotografiche[0],
                 misure: resultMisure[0],

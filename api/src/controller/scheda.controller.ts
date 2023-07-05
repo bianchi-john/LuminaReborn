@@ -34,25 +34,29 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
     const querySelectAutori = QUERY.SELECT_AUTORI;
     const querySelectCronologie = QUERY.SELECT_CRONOLOGIE;
     const querySelectMateriali = QUERY.SELECT_MATERIALI;
-    const querySelectTecniche = QUERY.SELECT_MATERIALI;
-    const querySelectUbicazioni = QUERY.SELECT_MATERIALI;
-    const querySelectInventari = QUERY.SELECT_MATERIALI;
-    const querySelectProvenienze = QUERY.SELECT_MATERIALI;
-    const querySelectMostre = QUERY.SELECT_MATERIALI;
-    const querySelectBibliografie = QUERY.SELECT_MATERIALI;
-    const querySelectImmagini = QUERY.SELECT_MATERIALI;
-    const querySelectDocumentazioniFotografiche = QUERY.SELECT_MATERIALI;
+    const querySelectTecniche = QUERY.SELECT_TECNICHE;
+    const querySelectUbicazioni = QUERY.SELECT_UBICAZIONI;
+    const querySelectInventari = QUERY.SELECT_INVENTARI;
+    const querySelectProvenienze = QUERY.SELECT_PROVENIENZE;
+    const querySelectMostre = QUERY.SELECT_MOSTRE;
+    const querySelectBibliografie = QUERY.SELECT_BIBLIOGRAFIE;
+    const querySelectAltreBibliografie = QUERY.SELECT_ALTREBIBLIOGRAFIE;
+
+    const querySelectImmagini = QUERY.SELECT_IMMAGINI;
+    const querySelectDocumentazioniFotografiche = QUERY.SELECT_DOCUMENTAZIONIFOTOGRAFICHE;
     const querySelectMisure = QUERY.SELECT_MISURE;
 
     const resultScheda: ResultSet = await pool.query(querySelectScheda, [schedaId]);
     const resultAutori: ResultSet = await pool.query(querySelectAutori, [schedaId]);
     const resultCronologie: ResultSet = await pool.query(querySelectCronologie, [schedaId]);
+    const resultMateriali: ResultSet = await pool.query(querySelectMateriali, [schedaId]);
     const resultTecniche: ResultSet = await pool.query(querySelectTecniche, [schedaId]);
     const resultUbicazioni: ResultSet = await pool.query(querySelectUbicazioni, [schedaId]);
     const resultInventari: ResultSet = await pool.query(querySelectInventari, [schedaId]);
     const resultProvenienze: ResultSet = await pool.query(querySelectProvenienze, [schedaId]);
     const resultMostre: ResultSet = await pool.query(querySelectMostre, [schedaId]);
     const resultBibliografie: ResultSet = await pool.query(querySelectBibliografie, [schedaId]);
+    const resultAltreBibliografie: ResultSet = await pool.query(querySelectAltreBibliografie, [schedaId]);
     const resultImmagini: ResultSet = await pool.query(querySelectImmagini, [schedaId]);
     const resultDocumentazioniFotografiche: ResultSet = await pool.query(querySelectDocumentazioniFotografiche, [schedaId]);
     const resultMisure: ResultSet = await pool.query(querySelectMisure, [schedaId]);
@@ -63,13 +67,14 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
         scheda: resultScheda[0],
         autori: resultAutori[0],
         cronologie: resultCronologie[0],
-        materiali: querySelectMateriali[0],
+        materiali: resultMateriali[0],
         tecniche: resultTecniche[0],
         ubicazioni: resultUbicazioni[0],
         inventari: resultInventari[0],
         provenienze: resultProvenienze[0],
         mostre: resultMostre[0],
         bibliografie: resultBibliografie[0],
+        altreBibliografie: resultAltreBibliografie[0],
         immagini: resultImmagini[0],
         documentazioniFotografiche: resultDocumentazioniFotografiche[0],
         misure: resultMisure[0],
