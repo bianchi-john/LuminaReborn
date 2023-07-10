@@ -37,6 +37,7 @@ const autore_routes_1 = __importDefault(require("./routes/autore.routes"));
 const immagine_routes_1 = __importDefault(require("./routes/immagine.routes"));
 const tds_schede_autore_routes_1 = __importDefault(require("./routes/tds_schede_autore.routes"));
 const tds_schede_immagine_routes_1 = __importDefault(require("./routes/tds_schede_immagine.routes"));
+const search_routes_1 = __importDefault(require("./routes/search.routes"));
 const process_1 = __importDefault(require("process"));
 const response_1 = require("./domain/response");
 const code_enum_1 = require("./enum/code.enum");
@@ -92,6 +93,7 @@ class App {
         this.app.use('/immagini', immagine_routes_1.default);
         this.app.use('/tds_schede_autori', tds_schede_autore_routes_1.default);
         this.app.use('/tds_schede_immagini', tds_schede_immagine_routes_1.default);
+        this.app.use('/search', search_routes_1.default);
         this.app.get('/', (_, res) => res.status(code_enum_1.Code.OK).send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Welcome to the Lumina API v1.0.0')));
         this.app.all('*', (_, res) => res.status(code_enum_1.Code.NOT_FOUND).send(new response_1.HttpResponse(code_enum_1.Code.NOT_FOUND, status_enum_1.Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
     }

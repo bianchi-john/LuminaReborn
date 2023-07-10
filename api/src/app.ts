@@ -31,6 +31,7 @@ import autoreRoutes from './routes/autore.routes'
 import immagineRoutes from './routes/immagine.routes'
 import tds_schede_autoreRoutes from './routes/tds_schede_autore.routes'
 import tds_schede_immagineRoutes from './routes/tds_schede_immagine.routes'
+import searchRoutes from './routes/search.routes'
 
 
 import process from 'process';
@@ -96,6 +97,8 @@ export class App {
     this.app.use('/immagini', immagineRoutes);
     this.app.use('/tds_schede_autori', tds_schede_autoreRoutes);
     this.app.use('/tds_schede_immagini', tds_schede_immagineRoutes);
+    this.app.use('/search', searchRoutes);
+
     this.app.get('/', (_: Request, res: Response)=> res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Welcome to the Lumina API v1.0.0')));
     this.app.all('*', (_: Request, res: Response)=> res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
   }
