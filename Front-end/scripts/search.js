@@ -10,16 +10,12 @@ function toggleAdvancedSearch() {
     toggleButton.style.backgroundColor = "#2e1273";
     toggleButton.style.borderColor = "#2e1273";
 
-
-
   } else {
-
     toggleButton.innerText = 'Show advanced search functions';
     advancedSearchFields.style.display = "none";
     generalSearchBar.style.display = "block";
     toggleButton.style.backgroundColor = "#007bff";
     toggleButton.style.borderColor = "#007bff";
-
   }
 }
 
@@ -32,87 +28,74 @@ function handleSearch() {
     console.log('ricerca avanzata')
 
     // Ottieni i valori inseriti nei campi di ricerca
-    var title = document.getElementById('titleSearchBar').value;
-    var author = document.getElementById('authorSearchBar').value;
-    var date = document.getElementById('dateSearchBar').value;
-    var location = document.getElementById('locationSearchBar').value;
-    var inventory = document.getElementById('inventorySearchBar').value;
-    var legal = document.getElementById('legalSearchBar').value;
-    var classification = document.getElementById('classificationSearchBar').value;
-    var material = document.getElementById('materialSearchBar').value;
-    var technique = document.getElementById('techniqueSearchBar').value;
-    var size = document.getElementById('sizeSearchBar').value;
-    var origin = document.getElementById('originSearchBar').value;
-    var inscription = document.getElementById('inscriptionSearchBar').value;
-    var exhibitionHistory = document.getElementById('exhibitionHistorySearchBar').value;
-    var corpoScheda = document.getElementById('corpo_schedaSearchBar').value;
-    var mostre = document.getElementById('mostreSearchBar').value;
-    var descrizioneSintetica = document.getElementById('descrizione_sinteticaSearchBar').value;
-    var bibliografie = document.getElementById('bibliografieSearchBar').value;
-    var altreBibliografie = document.getElementById('altreBibliografieSearchBar').value;
-    var documentazioneFotografica = document.getElementById('documentazioneFotograficaSearchBar').value;
+    const titoloOpera = document.getElementById('titolo_opera').value;
+    const corpoScheda = document.getElementById('corpo_scheda').value;
+    const iscrizioni = document.getElementById('iscrizioni').value;
+    const descrizioneSintetica = document.getElementById('descrizione_sintetica').value;
+    const storiaEspositiva = document.getElementById('storia_espositiva').value;
+    const classificazione = document.getElementById('classificazione').value;
+    const formulaPrecedente = document.getElementById('formula_precedente').value;
+    const formulaSuccessiva = document.getElementById('formula_successiva').value;
+    const categoria = document.getElementById('categoria').value;
+    const nomeAutore = document.getElementById('nome').value;
+    const ambitoStorico = document.getElementById('ambito_storico').value;
+    const dataDa = document.getElementById('data_da').value;
+    const dataA = document.getElementById('data_a').value;
+    const nomeMateriale = document.getElementById('nome_materiale').value;
+    const descrizioneMateriale = document.getElementById('descrizione_materiale').value;
+    const nomeTecnica = document.getElementById('nome_tecnica').value;
+    const descrizioneTecnica = document.getElementById('descrizione_tecnica').value;
+    const ubicazione = document.getElementById('ubicazione').value;
+    const descrizioneUbicazione = document.getElementById('descrizione_ubicazione').value;
+    const nomeInventario = document.getElementById('nome_inventario').value;
+    const nomeProvenienza = document.getElementById('nome_provenienza').value;
+    const descrizioneProvenienza = document.getElementById('descrizione_provenienza').value;
+    const curatore = document.getElementById('curatore').value;
+    const titoloMostra = document.getElementById('titolo_mostra').value;
+    const dataInizioMostra = document.getElementById('data_inizio_mostra').value;
+    const dataFineMostra = document.getElementById('data_fine_mostra').value;
+    const luogoMostra = document.getElementById('luogo_mostra').value;
+    const descrizioneMostra = document.getElementById('descrizione_mostra').value;
+    const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
+    const altroRiferimentoBibliografico = document.getElementById('altro_riferimento_bibliografico').value;
+    const documentazioniFotografiche = document.getElementById('documentazioniFotografiche').value;
+    
 
     // Crea l'URL per la chiamata GET
     var url = 'http://0.0.0.0:3000/search/?';
     var queries = [];
 
-    if (title.trim() !== '') {
-      queries.push('title=' + encodeURIComponent(title));
-    }
-    if (author.trim() !== '') {
-      queries.push('author=' + encodeURIComponent(author));
-    }
-    if (date.trim() !== '') {
-      queries.push('date=' + encodeURIComponent(date));
-    }
-    if (location.trim() !== '') {
-      queries.push('location=' + encodeURIComponent(location));
-    }
-    if (inventory.trim() !== '') {
-      queries.push('inventory=' + encodeURIComponent(inventory));
-    }
-    if (legal.trim() !== '') {
-      queries.push('legal=' + encodeURIComponent(legal));
-    }
-    if (classification.trim() !== '') {
-      queries.push('classification=' + encodeURIComponent(classification));
-    }
-    if (material.trim() !== '') {
-      queries.push('material=' + encodeURIComponent(material));
-    }
-    if (technique.trim() !== '') {
-      queries.push('technique=' + encodeURIComponent(technique));
-    }
-    if (size.trim() !== '') {
-      queries.push('size=' + encodeURIComponent(size));
-    }
-    if (origin.trim() !== '') {
-      queries.push('origin=' + encodeURIComponent(origin));
-    }
-    if (inscription.trim() !== '') {
-      queries.push('inscription=' + encodeURIComponent(inscription));
-    }
-    if (exhibitionHistory.trim() !== '') {
-      queries.push('exhibitionHistory=' + encodeURIComponent(exhibitionHistory));
-    }
-    if (corpoScheda.trim() !== '') {
+      queries.push('titoloOpera=' + encodeURIComponent(titoloOpera));
       queries.push('corpoScheda=' + encodeURIComponent(corpoScheda));
-    }
-    if (mostre.trim() !== '') {
-      queries.push('mostre=' + encodeURIComponent(mostre));
-    }
-    if (descrizioneSintetica.trim() !== '') {
+      queries.push('iscrizioni=' + encodeURIComponent(iscrizioni));
       queries.push('descrizioneSintetica=' + encodeURIComponent(descrizioneSintetica));
-    }
-    if (bibliografie.trim() !== '') {
-      queries.push('bibliografie=' + encodeURIComponent(bibliografie));
-    }
-    if (altreBibliografie.trim() !== '') {
-      queries.push('altreBibliografie=' + encodeURIComponent(altreBibliografie));
-    }
-    if (documentazioneFotografica.trim() !== '') {
-      queries.push('documentazioneFotografica=' + encodeURIComponent(documentazioneFotografica));
-    }
+      queries.push('storiaEspositiva=' + encodeURIComponent(storiaEspositiva));
+      queries.push('classificazione=' + encodeURIComponent(classificazione));
+      queries.push('formulaPrecedente=' + encodeURIComponent(formulaPrecedente));
+      queries.push('formulaSuccessiva=' + encodeURIComponent(formulaSuccessiva));
+      queries.push('categoria=' + encodeURIComponent(categoria));
+      queries.push('nomeAutore=' + encodeURIComponent(nomeAutore));
+      queries.push('ambitoStorico=' + encodeURIComponent(ambitoStorico));
+      queries.push('dataDa=' + encodeURIComponent(dataDa));
+      queries.push('dataA=' + encodeURIComponent(dataA));
+      queries.push('nomeMateriale=' + encodeURIComponent(nomeMateriale));
+      queries.push('descrizioneMateriale=' + encodeURIComponent(descrizioneMateriale));
+      queries.push('nomeTecnica=' + encodeURIComponent(nomeTecnica));
+      queries.push('descrizioneTecnica=' + encodeURIComponent(descrizioneTecnica));
+      queries.push('ubicazione=' + encodeURIComponent(ubicazione));
+      queries.push('descrizioneUbicazione=' + encodeURIComponent(descrizioneUbicazione));
+      queries.push('nomeInventario=' + encodeURIComponent(nomeInventario));
+      queries.push('nomeProvenienza=' + encodeURIComponent(nomeProvenienza));
+      queries.push('descrizioneProvenienza=' + encodeURIComponent(descrizioneProvenienza));
+      queries.push('curatore=' + encodeURIComponent(curatore));
+      queries.push('titoloMostra=' + encodeURIComponent(titoloMostra));
+      queries.push('dataInizioMostra=' + encodeURIComponent(dataInizioMostra));
+      queries.push('dataFineMostra=' + encodeURIComponent(dataFineMostra));
+      queries.push('luogoMostra=' + encodeURIComponent(luogoMostra));
+      queries.push('descrizioneMostra=' + encodeURIComponent(descrizioneMostra));
+      queries.push('riferimentoBibliografico=' + encodeURIComponent(riferimentoBibliografico));
+      queries.push('altroRiferimentoBibliografico=' + encodeURIComponent(altroRiferimentoBibliografico));
+      queries.push('documentazioniFotografiche=' + encodeURIComponent(documentazioniFotografiche));
 
     url += queries.join('&');
 
