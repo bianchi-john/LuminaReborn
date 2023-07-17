@@ -74,6 +74,8 @@ docker exec -it mysqlcontainer bash
 mysql -u root -p
 SHOW DATABASES;
 USE luminadb;
+
+SELECT *, schede.id AS scheda_id FROM schede WHERE LOWER(titolo_di_servizio) LIKE ? OR LOWER(titolo_opera) LIKE ? AND schede.id IN (SELECT id_scheda FROM tds_schede_immagini WHERE id_immagine IN (SELECT id FROM immagini));
 #Restart docker service
 sudo systemctl restart docker.socket docker.service
 show variables like "max_connections";

@@ -5,16 +5,21 @@ import { HttpResponse } from '../domain/response';
 import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
-import { QUERY } from '../query/search.query';
+import { buildDynamicQuery } from '../query/search.query';
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
-export const genericSearch = async (req: Request, res: Response): Promise<Response<Scheda[]>> => {
+export const advancedSearch = async (req: Request, res: Response): Promise<Response<Scheda[]>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
-    const { queryString } = req.query; // Ottieni il valore della query string dalla richiesta GET
+    const searchCriteria: { title: string; author: string; } = {
+      title: req.query.title as string,
+      author: req.query.author as string,
+    };
+
+    const dynamicQuery = buildDynamicQuery(searchCriteria);
     const pool = await connection();
-    const result: ResultSet = await pool.query(QUERY.GENERIC_SEARCH, [`%${queryString}%`, `%${queryString}%`]); // Passa i valori della query string come parametri
+    const result: ResultSet = await pool.query(dynamicQuery.query, dynamicQuery.params);
     pool.end();
     return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', result[0]));

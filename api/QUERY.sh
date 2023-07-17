@@ -22,7 +22,7 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "1", "id_bibliografia": "1"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "1", "id_bibliografia": "2"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "riferimento_bibliografico": "Ridolfi E., Guida di Lucca, Lucca 1877, p. 86."}' \  http://0.0.0.0:3000/altreBibliografie
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "riferimento_bibliografico": "Ridolfi E., Guida di Lucca, Lucca 1899, p. 94."}' \  http://0.0.0."1"0:3000/altreBibliografie
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "riferimento_bibliografico": "Ridolfi E., Guida di Lucca, Lucca 1899, p. 94."}' \  http://0.0.0.0:3000/altreBibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "1", "id_altreBibliografia": "1"}' \  http://0.0.0.0:3000/tds_schede_altreBibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "1", "id_altreBibliografia": "2"}' \  http://0.0.0.0:3000/tds_schede_altreBibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "001","path": "../api/attach/pictures/1/1.png","didascalia": "esempio didascalia figura 1"}' \  http://0.0.0.0:3000/immagini
@@ -57,13 +57,10 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_inventario": "2"}' \  http://0.0.0.0:3000/tds_schede_inventari
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "provenienza": "Firenze", "descrizione": "Galleria degli Uffizi", "note": "Esempio note provenienza 2"}' \  http://0.0.0.0:3000/provenienze
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_provenienza": "2"}' \  http://0.0.0.0:3000/tds_schede_provenienze
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "curatore": "Curator 2", "titolo_mostra": "Esempio titolo mostra", "data_inizio_mostra": "2023-05-01", "data_fine_mostra": "2023-09-30", "luogo_mostra": "esempio luogo mostra", "descrizione": "esempio descrizione della mostra 2"}' \  http://0.0.0.0:3000/mostre
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_mostra": "2"}' \  http://0.0.0.0:3000/tds_schede_mostre
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "riferimento_bibliografico": "Vasari G., Le vite de più eccellenti pittori, scultori e architettori, Firenze 1550."}' \  http://0.0.0.0:3000/bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_bibliografia": "3"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_bibliografia": "1"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "riferimento_bibliografico": "Esempio altra documentazione fotografica"}' \ http://0.0.0.0:3000/documentazioniFotografiche
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "titolo_di_servizio": "Annunciazione Leonardo da Vinci", "titolo_opera": "Annunciazione", "corpo_scheda": "Esempio corpo scheda", "iscrizioni": "Nel tabellone apicale I(e)S[us n]AZARENU(s) REX IUDEORUM", "descrizione_sintetica": "Esempio descrizione sintetica scheda", "storia_espositiva": "Esempio storia espositiva scheda", "classificazione": "Dipinto"}' \  http://0.0.0.0:3000/schede
 
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "titolo_di_servizio": "Notte Stellata", "titolo_opera": "Notte Stellata", "corpo_scheda": "Esempio corpo scheda", "iscrizioni": "Nessuna iscrizione presente", "descrizione_sintetica": "Esempio descrizione sintetica scheda", "storia_espositiva": "Esempio storia espositiva scheda", "classificazione": "Dipinto"}' \  http://0.0.0.0:3000/schede
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 3, "id_autore": 1}' \  http://0.0.0.0:3000/tds_schede_autori
@@ -80,8 +77,6 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_inventario": "3"}' \  http://0.0.0.0:3000/tds_schede_inventari
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "provenienza": "Arles", "descrizione": "Collezione privata", "note": "Esempio note provenienza 3"}' \  http://0.0.0.0:3000/provenienze
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_provenienza": "3"}' \  http://0.0.0.0:3000/tds_schede_provenienze
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "curatore": "Curator 3", "titolo_mostra": "Esempio titolo mostra", "data_inizio_mostra": "2023-08-01", "data_fine_mostra": "2023-12-31", "luogo_mostra": "esempio luogo mostra", "descrizione": "esempio descrizione della mostra 3"}' \  http://0.0.0.0:3000/mostre
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_mostra": "3"}' \  http://0.0.0.0:3000/tds_schede_mostre
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "4", "riferimento_bibliografico": "Van Gogh Museum, Amsterdam, Netherlands"}' \  http://0.0.0.0:3000/bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_bibliografia": "4"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_bibliografia": "1"}' \  http://0.0.0.0:3000/tds_schede_bibliografie

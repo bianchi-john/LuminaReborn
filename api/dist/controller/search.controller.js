@@ -9,18 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.genericSearch = void 0;
+exports.advancedSearch = void 0;
 const mysql_config_1 = require("../config/mysql.config");
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const search_query_1 = require("../query/search.query");
-const genericSearch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const { queryString } = req.query; // Ottieni il valore della query string dalla richiesta GET
         const pool = yield (0, mysql_config_1.connection)();
-        const result = yield pool.query(search_query_1.QUERY.GENERIC_SEARCH, [`%${queryString}%`, `%${queryString}%`]); // Passa i valori della query string come parametri
+        const result = yield pool.query(search_query_1.QUERY.ADVANCED_SEARCH, [`%${queryString}%`, `%${queryString}%`]); // Passa i valori della query string come parametri
         pool.end();
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', result[0]));
@@ -31,4 +31,4 @@ const genericSearch = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
     }
 });
-exports.genericSearch = genericSearch;
+exports.advancedSearch = advancedSearch;

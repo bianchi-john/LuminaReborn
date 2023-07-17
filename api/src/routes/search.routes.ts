@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { genericSearch} from '../controller/search.controller';
+import { advancedSearch} from '../controller/search.controller';
 
 const searchRoutes = Router();
 
 searchRoutes.route('/')
-  .get(genericSearch)
+  .get(advancedSearch)
 
 export default searchRoutes;
