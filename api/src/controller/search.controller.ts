@@ -78,15 +78,31 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       documentazioniFotografiche: req.query.documentazioniFotografiche as string,
     };
 
-    const dynamicQuery = buildDynamicQuery(searchCriteria);
-    const pool = await connection();
-    const result: ResultSet = await pool.query(dynamicQuery.query, dynamicQuery.params);
-    pool.end();
-    return res.status(Code.OK)
-      .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', result[0]));
-  } catch (error: unknown) {
-    console.error(error);
-    return res.status(Code.INTERNAL_SERVER_ERROR)
-      .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
-  }
+
+    let responses: any[] = [];
+    for (const key in searchCriteria) {
+      if (searchCriteria.hasOwnProperty(key)) {
+        const value = searchCriteria[key as keyof typeof searchCriteria];
+        if (value !== undefined) {
+          const dynamicQuery = buildDynamicQuery(key, String(value));
+          if (dynamicQuery === undefined) {
+            continue
+          }
+          const pool = await connection();
+          const result: ResultSet = await pool.query(dynamicQuery);
+          responses.push(result[0]); // Appendi il risultato a responses
+          pool.end();
+        } 
+        }
+      }
+      return res.status(Code.OK)
+      .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', responses));
+    }
+    
+    
+    catch (error: unknown) {
+      console.error(error);
+      return res.status(Code.INTERNAL_SERVER_ERROR)
+        .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
+    }
 };

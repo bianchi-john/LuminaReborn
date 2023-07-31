@@ -51,12 +51,24 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
             altroRiferimentoBibliografico: req.query.altroRiferimentoBibliografico,
             documentazioniFotografiche: req.query.documentazioniFotografiche,
         };
-        const dynamicQuery = (0, search_query_1.buildDynamicQuery)(searchCriteria);
-        const pool = yield (0, mysql_config_1.connection)();
-        const result = yield pool.query(dynamicQuery.query, dynamicQuery.params);
-        pool.end();
+        let responses = [];
+        for (const key in searchCriteria) {
+            if (searchCriteria.hasOwnProperty(key)) {
+                const value = searchCriteria[key];
+                if (value !== undefined) {
+                    const dynamicQuery = (0, search_query_1.buildDynamicQuery)(key, String(value));
+                    if (dynamicQuery === undefined) {
+                        continue;
+                    }
+                    const pool = yield (0, mysql_config_1.connection)();
+                    const result = yield pool.query(dynamicQuery);
+                    responses.push(result[0]); // Appendi il risultato a responses
+                    pool.end();
+                }
+            }
+        }
         return res.status(code_enum_1.Code.OK)
-            .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', result[0]));
+            .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', responses));
     }
     catch (error) {
         console.error(error);

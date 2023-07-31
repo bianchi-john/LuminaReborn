@@ -1,190 +1,86 @@
-export const buildDynamicQuery = (searchCriteria: {
+export const buildDynamicQuery = ( key: string, value:string) => {
+  
+  function generateCondition(key: string, value:string) {
+    let condition = '';
+    if (key === 'titoloOpera') {
+      condition = `SELECT * FROM schede  WHERE titolo_opera LIKE '%${value}%';`;
+    } else if (key === 'corpoScheda') {
+      condition = `SELECT * FROM schede WHERE corpo_scheda LIKE '%${value}%';`;
+    } else if (key === 'iscrizioni') {
+      condition = `SELECT * FROM schede WHERE iscrizioni LIKE '%${value}%';`;
+    } else if (key === 'descrizioneSintetica') {
+      condition = `SELECT * FROM schede WHERE descrizione_sintetica LIKE '%${value}%';`;
+    } else if (key === 'storiaEspositiva') {
+      condition = `SELECT * FROM schede WHERE storia_espositiva LIKE '%${value}%';`;
+    } else if (key === 'classificazione') {
+      condition = `SELECT * FROM schede WHERE classificazione LIKE '%${value}%';`;
+    } else if (key === 'formulaPrecedente') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.formula_precedente LIKE '%${value}%';`;
+    } else if (key === 'formulaSuccessiva') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.formula_successiva LIKE '%${value}%';`;
+    } else if (key === 'categoria') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    } else if (key === 'nomeAutore') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.nome LIKE '%${value}%';`;
+    } else if (key === 'ambitoStorico') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_cronologie tsa ON s.id = tsa.id_scheda INNER JOIN cronologie a ON tsa.id_cronologia = a.id WHERE a.ambito_storico LIKE '%${value}%';`;
+    // } else if (key === 'dataDa') {
+    //   `INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    // } else if (key === 'dataA') {
+    //   `INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    } else if (key === 'nomeMateriale') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.nome_materiale LIKE '%${value}%';`;
+    } else if (key === 'descrizioneMateriale') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.descrizione LIKE '%${value}%';`;
+    } else if (key === 'nomeTecnica') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_tecniche tsa ON s.id = tsa.id_scheda INNER JOIN tecniche a ON tsa.id_tecnica = a.id WHERE a.nome_tecnica LIKE '%${value}%';`;
+    } else if (key === 'descrizioneTecnica') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_tecniche tsa ON s.id = tsa.id_scheda INNER JOIN tecniche a ON tsa.id_tecnica = a.id WHERE a.descrizione LIKE '%${value}%';`;
+    } else if (key === 'ubicazione') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_ubicazioni tsa ON s.id = tsa.id_scheda INNER JOIN ubicazioni a ON tsa.id_ubicazione = a.id WHERE a.ubicazione LIKE '%${value}%';`;
+    } else if (key === 'descrizioneUbicazione') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_ubicazioni tsa ON s.id = tsa.id_scheda INNER JOIN ubicazioni a ON tsa.id_ubicazione = a.id WHERE a.descrizione LIKE '%${value}%';`;
+    } else if (key === 'nomeInventario') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.nome_inventario LIKE '%${value}%';`;
+    } else if (key === 'nomeProvenienza') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.provenienza LIKE '%${value}%';`;
+    } else if (key === 'descrizioneProvenienza') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.descrizione LIKE '%${value}%';`;
+    } else if (key === 'curatore') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.curatore LIKE '%${value}%';`;
+    } else if (key === 'titoloMostra') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.titolo_mostra LIKE '%${value}%';`;
+    // } else if (key === 'dataInizioMostra') {
+    //   `INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    // } else if (key === 'dataFineMostra') {
+    //   `INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    } else if (key === 'luogoMostra') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.luogo_mostra LIKE '%${value}%';`;
+    } else if (key === 'descrizioneMostra') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.descrizione LIKE '%${value}%';`;
+    } else if (key === 'riferimentoBibliografico') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_bibliografie tsa ON s.id = tsa.id_scheda INNER JOIN bibliografie a ON tsa.id_bibliografia = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
+    } else if (key === 'altroRiferimentoBibliografico') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    } else if (key === 'documentazioniFotografiche') {
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+    }
+  
+    return condition;
+  }
+  
+  // Esempi di utilizzo:
+  
+  const condition = generateCondition(key, value);
+  
+  let result = '';
+  if (condition) {
+    result = `${condition}`;
+    return result
+  }
+  return ('Errore nella richiesta')
+  console.log(result);
 
-  titoloOpera: string;
-  corpoScheda: string;
-  iscrizioni: string;
-  descrizioneSintetica: string;
-  storiaEspositiva: string;
-  classificazione: string;
-  formulaPrecedente: string;
-  formulaSuccessiva: string;
-  categoria: string;
-  nomeAutore: string;
-  ambitoStorico: string;
-  dataDa: Date;
-  dataA: Date;
-  nomeMateriale: string;
-  descrizioneMateriale: string;
-  nomeTecnica: string;
-  descrizioneTecnica: string;
-  ubicazione: string;
-  descrizioneUbicazione: string;
-  nomeInventario: string;
-  nomeProvenienza: string;
-  descrizioneProvenienza: string;
-  curatore: string;
-  titoloMostra: string;
-  dataInizioMostra: Date;
-  dataFineMostra: Date;
-  luogoMostra: string;
-  descrizioneMostra: string;
-  riferimentoBibliografico: string;
-  altroRiferimentoBibliografico: string;
-  documentazioniFotografiche: string;
-}) => {
-  let query = "SELECT * FROM schede WHERE 1=1";
-  const params = [];
-
-  // Aggiungi ulteriori clausole WHERE per gli altri campi se necessario
-  if (searchCriteria.titoloOpera) {
-    query += " AND LOWER(titolo_opera) LIKE ?";
-    params.push(`%${searchCriteria.titoloOpera.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.corpoScheda) {
-    query += " AND LOWER(corpo_scheda) LIKE ?";
-    params.push(`%${searchCriteria.corpoScheda.toLowerCase()}%`);
-  }
-
-  // Aggiungi le altre clausole WHERE per gli altri campi
-  if (searchCriteria.iscrizioni) {
-    query += " AND LOWER(iscrizioni) LIKE ?";
-    params.push(`%${searchCriteria.iscrizioni.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.descrizioneSintetica) {
-    query += " AND LOWER(descrizione_sintetica) LIKE ?";
-    params.push(`%${searchCriteria.descrizioneSintetica.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.storiaEspositiva) {
-    query += " AND LOWER(storia_espositiva) LIKE ?";
-    params.push(`%${searchCriteria.storiaEspositiva.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.classificazione) {
-    query += " AND LOWER(classificazione) LIKE ?";
-    params.push(`%${searchCriteria.classificazione.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.formulaPrecedente) {
-    query += " AND LOWER(formula_precedente) LIKE ?";
-    params.push(`%${searchCriteria.formulaPrecedente.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.formulaSuccessiva) {
-    query += " AND LOWER(formula_successiva) LIKE ?";
-    params.push(`%${searchCriteria.formulaSuccessiva.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.categoria) {
-    query += " AND LOWER(categoria) LIKE ?";
-    params.push(`%${searchCriteria.categoria.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.nomeAutore) {
-    query += " AND LOWER(nome_autore) LIKE ?";
-    params.push(`%${searchCriteria.nomeAutore.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.ambitoStorico) {
-    query += " AND LOWER(ambito_storico) LIKE ?";
-    params.push(`%${searchCriteria.ambitoStorico.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.dataDa) {
-    query += " AND data >= ?";
-    params.push(searchCriteria.dataDa);
-  }
-
-  if (searchCriteria.dataA) {
-    query += " AND data <= ?";
-    params.push(searchCriteria.dataA);
-  }
-
-  if (searchCriteria.nomeMateriale) {
-    query += " AND LOWER(nome_materiale) LIKE ?";
-    params.push(`%${searchCriteria.nomeMateriale.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.descrizioneMateriale) {
-    query += " AND LOWER(descrizione_materiale) LIKE ?";
-    params.push(`%${searchCriteria.descrizioneMateriale.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.nomeTecnica) {
-    query += " AND LOWER(nome_tecnica) LIKE ?";
-    params.push(`%${searchCriteria.nomeTecnica.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.descrizioneTecnica) {
-    query += " AND LOWER(descrizione_tecnica) LIKE ?";
-    params.push(`%${searchCriteria.descrizioneTecnica.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.ubicazione) {
-    query += " AND LOWER(ubicazione) LIKE ?";
-    params.push(`%${searchCriteria.ubicazione.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.descrizioneUbicazione) {
-    query += " AND LOWER(descrizione_ubicazione) LIKE ?";
-    params.push(`%${searchCriteria.descrizioneUbicazione.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.nomeInventario) {
-    query += " AND LOWER(nome_inventario) LIKE ?";
-    params.push(`%${searchCriteria.nomeInventario.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.nomeProvenienza) {
-    query += " AND LOWER(nome_provenienza) LIKE ?";
-    params.push(`%${searchCriteria.nomeProvenienza.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.descrizioneProvenienza) {
-    query += " AND LOWER(descrizione_provenienza) LIKE ?";
-    params.push(`%${searchCriteria.descrizioneProvenienza.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.curatore) {
-    query += " AND LOWER(curatore) LIKE ?";
-    params.push(`%${searchCriteria.curatore.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.titoloMostra) {
-    query += " AND LOWER(titolo_mostra) LIKE ?";
-    params.push(`%${searchCriteria.titoloMostra.toLowerCase()}%`);
-  }
-
-  if (searchCriteria.dataInizioMostra) {
-    query += " AND data_inizio_mostra >= ?";
-    params.push(searchCriteria.dataInizioMostra);
-  }
-
-  if (searchCriteria.luogoMostra) {
-    query += " AND luogoMostra <= ?";
-    params.push(searchCriteria.luogoMostra);
-  }
-  if (searchCriteria.descrizioneMostra) {
-    query += " AND descrizioneMostra <= ?";
-    params.push(searchCriteria.descrizioneMostra);
-  }
-  if (searchCriteria.riferimentoBibliografico) {
-    query += " AND riferimentoBibliografico <= ?";
-    params.push(searchCriteria.riferimentoBibliografico);
-  }
-  if (searchCriteria.altroRiferimentoBibliografico) {
-    query += " AND altroRiferimentoBibliografico <= ?";
-    params.push(searchCriteria.altroRiferimentoBibliografico);
-  }
-  if (searchCriteria.documentazioniFotografiche) {
-    query += " AND documentazioniFotografiche <= ?";
-    params.push(searchCriteria.documentazioniFotografiche);
-  }
-
-  return {
-    query,
-    params,
-  };
 };
+
+
