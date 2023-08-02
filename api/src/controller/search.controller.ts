@@ -9,6 +9,7 @@ import { buildDynamicQuery } from '../query/search.query';
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
+
 export const advancedSearch = async (req: Request, res: Response): Promise<Response<Scheda[]>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
@@ -78,12 +79,12 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       documentazioniFotografiche: req.query.documentazioniFotografiche as string,
     };
 
-
     let responses: any[] = [];
+    
     for (const key in searchCriteria) {
       if (searchCriteria.hasOwnProperty(key)) {
         const value = searchCriteria[key as keyof typeof searchCriteria];
-        if (value !== undefined) {
+        if (value !== undefined && value !== '') {
           const dynamicQuery = buildDynamicQuery(key, String(value));
           if (dynamicQuery === undefined) {
             continue
@@ -95,10 +96,11 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
         } 
         }
       }
+  
       return res.status(Code.OK)
+    
       .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', responses));
     }
-    
     
     catch (error: unknown) {
       console.error(error);

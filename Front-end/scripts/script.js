@@ -163,6 +163,18 @@ function populateWebPage(data) {
 
 $(document).ready(function () {
     const queryString = window.location.search;
-    console.log(queryString);
-    callAPI('http://0.0.0.0:3000/schede/1', populateWebPage);    
+    const urlParams = new URLSearchParams(queryString);
+    const id = urlParams.get('id'); // Estrae il valore del parametro 'id' dalla query string
+    if (id) {
+        const apiUrl = `http://10.180.53.210:5000/schede/${id}`;
+        callAPI(apiUrl, populateWebPage);
+    } else {
+        console.log("Parametro 'id' non presente nella query string dell'URL.");
+        // Puoi gestire qui l'assenza del parametro 'id' come preferisci
+    }
 });
+
+
+
+
+

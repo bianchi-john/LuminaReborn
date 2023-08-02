@@ -1,3 +1,62 @@
+function scrollToResults() {
+  // Ottenere l'elemento della sezione dei risultati per cui scrollare
+  var resultsSection = document.getElementById("result");
+
+  // Eseguire lo scroll alla sezione dei risultati
+  resultsSection.scrollIntoView({ behavior: "smooth" });
+}
+
+  // Funzione per creare la card di Bootstrap
+  function createCard(data) {
+    var cardDiv = document.createElement("div");
+    cardDiv.classList.add("card");
+
+    var cardBodyDiv = document.createElement("div");
+    cardBodyDiv.classList.add("card-body");
+
+    var titleElement = document.createElement("h5");
+    titleElement.classList.add("card-title", "mb-2", "text-muted");
+    titleElement.textContent = data.titolo_opera;
+
+    var corpoSchedaElement = document.createElement("p");
+    corpoSchedaElement.classList.add("card-text");
+    corpoSchedaElement.textContent = data.corpo_scheda;
+
+    var iscrizioniElement = document.createElement("p");
+    iscrizioniElement.classList.add("card-text");
+    iscrizioniElement.textContent = data.iscrizioni;
+
+    var descrizioneSinteticaElement = document.createElement("p");
+    descrizioneSinteticaElement.classList.add("card-text");
+    descrizioneSinteticaElement.textContent = data.descrizione_sintetica;
+
+    var storiaEspositivaElement = document.createElement("p");
+    storiaEspositivaElement.classList.add("card-text");
+    storiaEspositivaElement.textContent = data.storia_espositiva;
+
+    var classificazioneElement = document.createElement("p");
+    classificazioneElement.classList.add("card-text");
+    classificazioneElement.textContent = data.classificazione;
+
+    // cardBodyDiv.appendChild(titleElement);
+    cardBodyDiv.appendChild(titleElement);
+    cardBodyDiv.appendChild(corpoSchedaElement);
+    cardBodyDiv.appendChild(iscrizioniElement);
+    cardBodyDiv.appendChild(descrizioneSinteticaElement);
+    cardBodyDiv.appendChild(storiaEspositivaElement);
+    cardBodyDiv.appendChild(classificazioneElement);
+
+    // Crea il link intorno alla card e imposta l'URL desiderato con il parametro "id"
+    var cardLink = document.createElement("a");
+    cardLink.href = "scheda.html?id=" + data.id;
+    cardLink.appendChild(cardBodyDiv);
+
+    cardDiv.appendChild(cardLink);
+
+    return cardDiv;
+  }
+
+
 function toggleAdvancedSearch() {
   var advancedSearchFields = document.getElementById("advancedSearchFields");
   var generalSearchBar = document.getElementById("generalSearch");
@@ -20,6 +79,8 @@ function toggleAdvancedSearch() {
 }
 
 function handleSearch() {
+  // Svuoto il contenuto del div dei risultati
+  document.getElementById('result').innerHTML = '';
 
   if (advancedSearchFields.style.display === "none") {
     console.log('ricerca generica')
@@ -62,7 +123,7 @@ function handleSearch() {
     
 
     // Crea l'URL per la chiamata GET
-    var url = 'http://0.0.0.0:3000/search/?';
+    var url = 'http://10.180.53.210:5000/search/?';
     var queries = [];
 
       queries.push('titoloOpera=' + encodeURIComponent(titoloOpera));
@@ -112,9 +173,17 @@ function handleSearch() {
     xhr.onload = function () {
       if (xhr.status === 200) {
         // La chiamata ha avuto successo, visualizza il risultato nella pagina
-        var response = xhr.responseText;
-        // Fai qualcosa con la risposta, ad esempio:
-        document.getElementById('result').innerHTML = response;
+        var response = JSON.parse(xhr.responseText);
+        if (response.data[0].length == 0) {
+          document.getElementById('result').innerHTML ='<p>Nessun risultato trovato</p>'
+        }
+        else {
+            for (var j = 0; j < response.data[0].length; j++) {
+                document.getElementById('result').appendChild(createCard(response.data[0][j]));
+            }
+            // Scrolla alla sezione dei risultati
+            scrollToResults();
+        }
       } else {
         // La chiamata non è riuscita, gestisci l'errore di conseguenza
         console.error('Errore nella chiamata GET: ' + xhr.status);
