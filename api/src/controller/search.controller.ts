@@ -14,69 +14,65 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
     const searchCriteria: {
-      titoloOpera: string;
-      corpoScheda: string;
-      iscrizioni: string;
-      descrizioneSintetica: string;
-      storiaEspositiva: string;
-      classificazione: string;
-      formulaPrecedente: string;
-      formulaSuccessiva: string;
-      categoria: string;
-      nomeAutore: string;
-      ambitoStorico: string;
-      dataDa: Date;
-      dataA: Date;
-      nomeMateriale: string;
-      descrizioneMateriale: string;
-      nomeTecnica: string;
-      descrizioneTecnica: string;
-      ubicazione: string;
-      descrizioneUbicazione: string;
-      nomeInventario: string;
-      nomeProvenienza: string;
-      descrizioneProvenienza: string;
-      curatore: string;
-      titoloMostra: string;
-      dataInizioMostra: Date;
-      dataFineMostra: Date;
-      luogoMostra: string;
-      descrizioneMostra: string;
-      riferimentoBibliografico: string;
-      altroRiferimentoBibliografico: string;
-      documentazioniFotografiche: string;
+      titoloOpera: String;
+      corpoScheda: String;
+      iscrizioni: String;
+      descrizioneSintetica: String;
+      storiaEspositiva: String;
+      classificazione: String;
+      formulaPrecedente: String;
+      formulaSuccessiva: String;
+      categoria: String;
+      nomeAutore: String;
+      ambitoStorico: String;
+      dataDadataA: String;
+      nomeMateriale: String;
+      descrizioneMateriale: String;
+      nomeTecnica: String;
+      descrizioneTecnica: String;
+      ubicazione: String;
+      descrizioneUbicazione: String;
+      nomeInventario: String;
+      nomeProvenienza: String;
+      descrizioneProvenienza: String;
+      curatore: String;
+      titoloMostra: String;
+      dataInizioMostradataFineMostra: String;
+      luogoMostra: String;
+      descrizioneMostra: String;
+      riferimentoBibliografico: String;
+      altroRiferimentoBibliografico: String;
+      documentazioniFotografiche: String;
     } = {
-      titoloOpera: req.query.titoloOpera as string,
-      corpoScheda: req.query.corpoScheda as string,
-      iscrizioni: req.query.iscrizioni as string,
-      descrizioneSintetica: req.query.descrizioneSintetica as string,
-      storiaEspositiva: req.query.storiaEspositiva as string,
-      classificazione: req.query.classificazione as string,
-      formulaPrecedente: req.query.formulaPrecedente as string,
-      formulaSuccessiva: req.query.formulaSuccessiva as string,
-      categoria: req.query.categoria as string,
-      nomeAutore: req.query.nomeAutore as string,
-      ambitoStorico: req.query.ambitoStorico as string,
-      dataDa: req.query.dataDa as unknown as Date,
-      dataA: req.query.dataA as unknown as Date,
-      nomeMateriale: req.query.nomeMateriale as string,
-      descrizioneMateriale: req.query.descrizioneMateriale as string,
-      nomeTecnica: req.query.nomeTecnica as string,
-      descrizioneTecnica: req.query.descrizioneTecnica as string,
-      ubicazione: req.query.ubicazione as string,
-      descrizioneUbicazione: req.query.descrizioneUbicazione as string,
-      nomeInventario: req.query.nomeInventario as string,
-      nomeProvenienza: req.query.nomeProvenienza as string,
-      descrizioneProvenienza: req.query.descrizioneProvenienza as string,
-      curatore: req.query.curatore as string,
-      titoloMostra: req.query.titoloMostra as string,
-      dataInizioMostra: req.query.dataInizioMostra as unknown as Date,
-      dataFineMostra: req.query.dataFineMostra as unknown as Date,
-      luogoMostra: req.query.luogoMostra as string,
-      descrizioneMostra: req.query.descrizioneMostra as string,
-      riferimentoBibliografico: req.query.riferimentoBibliografico as string,
-      altroRiferimentoBibliografico: req.query.altroRiferimentoBibliografico as string,
-      documentazioniFotografiche: req.query.documentazioniFotografiche as string,
+      titoloOpera: req.query.titoloOpera as String,
+      corpoScheda: req.query.corpoScheda as String,
+      iscrizioni: req.query.iscrizioni as String,
+      descrizioneSintetica: req.query.descrizioneSintetica as String,
+      storiaEspositiva: req.query.storiaEspositiva as String,
+      classificazione: req.query.classificazione as String,
+      formulaPrecedente: req.query.formulaPrecedente as String,
+      formulaSuccessiva: req.query.formulaSuccessiva as String,
+      categoria: req.query.categoria as String,
+      nomeAutore: req.query.nomeAutore as String,
+      ambitoStorico: req.query.ambitoStorico as String,
+      dataDadataA: req.query.dataDadataA as String,
+      nomeMateriale: req.query.nomeMateriale as String,
+      descrizioneMateriale: req.query.descrizioneMateriale as String,
+      nomeTecnica: req.query.nomeTecnica as String,
+      descrizioneTecnica: req.query.descrizioneTecnica as String,
+      ubicazione: req.query.ubicazione as String,
+      descrizioneUbicazione: req.query.descrizioneUbicazione as String,
+      nomeInventario: req.query.nomeInventario as String,
+      nomeProvenienza: req.query.nomeProvenienza as String,
+      descrizioneProvenienza: req.query.descrizioneProvenienza as String,
+      curatore: req.query.curatore as String,
+      titoloMostra: req.query.titoloMostra as String,
+      dataInizioMostradataFineMostra: req.query.dataInizioMostradataFineMostra as String,
+      luogoMostra: req.query.luogoMostra as String,
+      descrizioneMostra: req.query.descrizioneMostra as String,
+      riferimentoBibliografico: req.query.riferimentoBibliografico as String,
+      altroRiferimentoBibliografico: req.query.altroRiferimentoBibliografico as String,
+      documentazioniFotografiche: req.query.documentazioniFotografiche as String,
     };
 
     let responses: any[] = [];
@@ -84,14 +80,14 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
     for (const key in searchCriteria) {
       if (searchCriteria.hasOwnProperty(key)) {
         const value = searchCriteria[key as keyof typeof searchCriteria];
-        if (value !== undefined && value !== '') {
+        if (value !== undefined && value !== '' && value !== ' ') {
           const dynamicQuery = buildDynamicQuery(key, String(value));
           if (dynamicQuery === undefined) {
             continue
           }
           const pool = await connection();
           const result: ResultSet = await pool.query(dynamicQuery);
-          responses.push(result[0]); // Appendi il risultato a responses
+          responses.push(result[0]);
           pool.end();
         } 
         }

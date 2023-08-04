@@ -30,8 +30,7 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
             categoria: req.query.categoria,
             nomeAutore: req.query.nomeAutore,
             ambitoStorico: req.query.ambitoStorico,
-            dataDa: req.query.dataDa,
-            dataA: req.query.dataA,
+            dataDadataA: req.query.dataDadataA,
             nomeMateriale: req.query.nomeMateriale,
             descrizioneMateriale: req.query.descrizioneMateriale,
             nomeTecnica: req.query.nomeTecnica,
@@ -43,8 +42,7 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
             descrizioneProvenienza: req.query.descrizioneProvenienza,
             curatore: req.query.curatore,
             titoloMostra: req.query.titoloMostra,
-            dataInizioMostra: req.query.dataInizioMostra,
-            dataFineMostra: req.query.dataFineMostra,
+            dataInizioMostradataFineMostra: req.query.dataInizioMostradataFineMostra,
             luogoMostra: req.query.luogoMostra,
             descrizioneMostra: req.query.descrizioneMostra,
             riferimentoBibliografico: req.query.riferimentoBibliografico,
@@ -55,7 +53,7 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
         for (const key in searchCriteria) {
             if (searchCriteria.hasOwnProperty(key)) {
                 const value = searchCriteria[key];
-                if (value !== undefined) {
+                if (value !== undefined && value !== '' && value !== ' ') {
                     const dynamicQuery = (0, search_query_1.buildDynamicQuery)(key, String(value));
                     if (dynamicQuery === undefined) {
                         continue;

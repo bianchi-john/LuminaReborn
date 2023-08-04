@@ -94,8 +94,31 @@
         <div class="form-group">
           <label for="ambito_storico">Ricerca per data</label>
           <input type="date" class="form-control data_da" id="data_da" aria-describedby="data_da">
-          <input type="date" class="form-control data_a" id="data_a" aria-describedby="data_a">
+          <label>
+            <input type="radio" name="ambito_storico_da" value="avanti" id="avanti_da" checked>a.C.
+          </label>
+          <label>
+            <input type="radio" name="ambito_storico_da" value="dopo" id="dopo_da">d.C.
+          </label>
         </div>
+        
+        <div class="form-group">
+          <input type="date" class="form-control data_a" id="data_a" aria-describedby="data_a">
+          <label>
+            <input type="radio" name="ambito_storico_a" value="avanti" id="avanti_a" checked>a.C.
+          </label>
+          <label>
+            <input type="radio" name="ambito_storico_a" value="dopo" id="dopo_a">d.C.
+          </label>
+        </div>
+
+        
+        
+        
+        
+        
+        
+
 
         <div class="form-group">
           <label for="nome_materiale">Ricerca per nome materiale</label>

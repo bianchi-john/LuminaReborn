@@ -52,8 +52,12 @@ CREATE TABLE `cronologie` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `ambito_storico` text,
   `etichetta_data` text,
-  `data_da` date,
-  `data_a` date
+  `giorno_data_da` int,
+  `mese_data_da` int,
+  `anno_data_da` int,
+  `giorno_data_a` int,
+  `mese_data_a` int,
+  `anno_data_a` int
 );
 
 
@@ -198,8 +202,12 @@ CREATE TABLE `mostre` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `curatore` text,
   `titolo_mostra` text,
-  `data_inizio_mostra` date,
-  `data_fine_mostra` date,
+  `giorno_data_da` int,
+  `mese_data_da` int,
+  `anno_data_da` int,
+  `giorno_data_a` int,
+  `mese_data_a` int,
+  `anno_data_a` int,
   `luogo_mostra` text,
   `descrizione` text
 );
