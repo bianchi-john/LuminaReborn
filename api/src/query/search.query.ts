@@ -8,6 +8,11 @@ export const buildDynamicQuery = (key: string, value: string) => {
 
   function generateCondition(key: string, value: string) {
     let condition = '';
+    // RICERCA GENERICA
+    if (key === 'queryGenerica') {
+      condition = `SELECT * FROM schede WHERE titolo_opera LIKE '%${value}%' OR corpo_scheda LIKE '%${value}%' OR iscrizioni LIKE '%${value}%' OR descrizione_sintetica LIKE '%${value}%' OR storia_espositiva LIKE '%${value}%' OR classificazione LIKE '%${value}%';`;
+    }
+    // RICERCA SPECIFICA
     if (key === 'titoloOpera') {
       condition = `SELECT * FROM schede  WHERE titolo_opera LIKE '%${value}%';`;
     } else if (key === 'corpoScheda') {
@@ -48,7 +53,7 @@ export const buildDynamicQuery = (key: string, value: string) => {
           if (ephocSecondPart == "avanti") {
             secondYear = '-' + secondYear
           }
-          condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_cronologie tsa ON s.id = tsa.id_scheda INNER JOIN cronologie a ON tsa.id_cronologia = a.id WHERE (anno_data_da <= ${firstYear} OR (anno_data_da <= ${firstYear} AND mese_data_da <= ${firstMonth}) OR (anno_data_da <= ${firstYear} AND mese_data_da <= ${firstMonth} AND giorno_data_da <= ${firstDay})) AND (anno_data_a >= ${secondYear} OR (anno_data_a >= ${secondYear} AND mese_data_a >= ${secondMonth}) OR (anno_data_a >= ${secondYear} AND mese_data_a >= ${secondMonth} AND giorno_data_a >= ${secondDay}));`;
+          condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_cronologie tsa ON s.id = tsa.id_scheda INNER JOIN cronologie a ON tsa.id_cronologia = a.id WHERE (anno_data_da >= ${firstYear} OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth}) OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth} AND giorno_data_da >= ${firstDay})) AND (anno_data_a <= ${secondYear} OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth}) OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth} AND giorno_data_a <= ${secondDay}));`;
         }
         else {
           console.log('Data non valida:')
@@ -88,7 +93,7 @@ export const buildDynamicQuery = (key: string, value: string) => {
         if (isValidFirstPart && isValidSecondPart) {
           let [firstYear, firstMonth, firstDay] = firstPart.split("-");
           let [secondYear, secondMonth, secondDay] = secondPart.split("-");
-          condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE (anno_data_da <= ${firstYear} OR (anno_data_da <= ${firstYear} AND mese_data_da <= ${firstMonth}) OR (anno_data_da <= ${firstYear} AND mese_data_da <= ${firstMonth} AND giorno_data_da <= ${firstDay})) AND (anno_data_a >= ${secondYear} OR (anno_data_a >= ${secondYear} AND mese_data_a >= ${secondMonth}) OR (anno_data_a >= ${secondYear} AND mese_data_a >= ${secondMonth} AND giorno_data_a >= ${secondDay}));`;
+          condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE (anno_data_da <= ${firstYear} OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth}) OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth} AND giorno_data_da >= ${firstDay})) AND (anno_data_a <= ${secondYear} OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth}) OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth} AND giorno_data_a <= ${secondDay}));`;
         }
         else {
           console.log('Data non valida:')

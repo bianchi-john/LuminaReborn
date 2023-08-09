@@ -14,6 +14,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
     const searchCriteria: {
+      queryGenerica: String;
       titoloOpera: String;
       corpoScheda: String;
       iscrizioni: String;
@@ -44,6 +45,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       altroRiferimentoBibliografico: String;
       documentazioniFotografiche: String;
     } = {
+      queryGenerica: req.query.queryGenerica as String,
       titoloOpera: req.query.titoloOpera as String,
       corpoScheda: req.query.corpoScheda as String,
       iscrizioni: req.query.iscrizioni as String,
@@ -76,7 +78,6 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
     };
 
     let responses: any[] = [];
-    
     for (const key in searchCriteria) {
       if (searchCriteria.hasOwnProperty(key)) {
         const value = searchCriteria[key as keyof typeof searchCriteria];

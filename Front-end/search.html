@@ -23,7 +23,7 @@
     <form>
       <div class="form-group" id="generalSearch">
         <label for="generalSearchBar">Ricerca generale</label>
-        <input type="email" class="form-control" id="generalSearchBar" aria-describedby="generalSearchBar">
+        <input type="text" class="form-control" id="generalSearchBar" aria-describedby="generalSearchBar">
         <small class="form-text text-muted">Ricerca generale caption</small>
       </div>
 
@@ -93,6 +93,7 @@
 
         <div class="form-group">
           <label for="ambito_storico">Ricerca per data</label>
+          <p>Data da</p>
           <input type="date" class="form-control data_da" id="data_da" aria-describedby="data_da">
           <label>
             <input type="radio" name="ambito_storico_da" value="avanti" id="avanti_da" checked>a.C.
@@ -103,6 +104,7 @@
         </div>
         
         <div class="form-group">
+          <p>Data a</p>
           <input type="date" class="form-control data_a" id="data_a" aria-describedby="data_a">
           <label>
             <input type="radio" name="ambito_storico_a" value="avanti" id="avanti_a" checked>a.C.
@@ -186,9 +188,11 @@
 
         <div class="form-group">
           <label for="data_mostra">Ricerca per data della mostra</label>
+          <p>Data da</p>
           <input type="date" class="form-control data_inizio_mostra" id="data_inizio_mostra"
             aria-describedby="data_inizio_mostra">
-          <input type="date" class="form-control data_fine_mostra" id="data_fine_mostra"
+            <p>Data a</p>
+            <input type="date" class="form-control data_fine_mostra" id="data_fine_mostra"
             aria-describedby="data_fine_mostra">
         </div>
 

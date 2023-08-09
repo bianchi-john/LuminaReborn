@@ -116,17 +116,46 @@ function handleSearch() {
   const ambitoStoricoDaValue = getAmbitoStoricoDa();
   const ambitoStoricoAValue = getAmbitoStoricoA();
 
+  // Solo la data di inizio selezionata
+  if (document.getElementById('data_da').value && !document.getElementById('data_a').value) {
+    document.getElementById('result').innerHTML = '<p>Data di fine non selezionata</p>'
+    return
 
+  }
+  // Solo la data di fine selezionata
+  if (!document.getElementById('data_da').value && document.getElementById('data_a').value) {
+    document.getElementById('result').innerHTML = '<p>Data di inizio non selezionata</p>'
+    return
+  }
+  
+
+  // Solo la data di inizio mostra selezionata
+  if (document.getElementById('data_inizio_mostra').value && !document.getElementById('data_fine_mostra').value) {
+    document.getElementById('result').innerHTML = '<p>Data di fine mostra non selezionata</p>'
+    return
+  }
+  // Solo la data di fine mostra selezionata
+  if (!document.getElementById('data_inizio_mostra').value && document.getElementById('data_fine_mostra').value) {
+    document.getElementById('result').innerHTML = '<p>Data di inizio mostra non selezionata</p>'
+  }
 
   // Svuoto il contenuto del div dei risultati
   document.getElementById('result').innerHTML = '';
 
+  // Crea l'URL per la chiamata GET
+  var url = 'http://0.0.0.0:3000/search/?';
+  var queries = [];
+
+
+  // Ricerca generica
   if (advancedSearchFields.style.display === "none") {
     console.log('ricerca generica')
+    const queryGenerica = document.getElementById('generalSearchBar').value;
+    queries.push('queryGenerica=' + encodeURIComponent(queryGenerica));
   }
+
   else {
     console.log('ricerca avanzata')
-
     // Ottieni i valori inseriti nei campi di ricerca
     const titoloOpera = document.getElementById('titolo_opera').value;
     const corpoScheda = document.getElementById('corpo_scheda').value;
@@ -139,7 +168,11 @@ function handleSearch() {
     const categoria = document.getElementById('categoria').value;
     const nomeAutore = document.getElementById('nome').value;
     const ambitoStorico = document.getElementById('ambito_storico').value;
-    const dataDadataA = (document.getElementById('data_da').value).toString() + ' ' + (document.getElementById('data_a').value).toString()  + ' ' + ambitoStoricoDaValue  + ' ' + ambitoStoricoAValue;
+    let dataDadataA = "";
+    // Entrambe le date selezionate
+    if (document.getElementById('data_da').value && document.getElementById('data_a').value) {
+      dataDadataA = (document.getElementById('data_da').value).toString() + ' ' + (document.getElementById('data_a').value).toString() + ' ' + ambitoStoricoDaValue + ' ' + ambitoStoricoAValue;
+    }
     const nomeMateriale = document.getElementById('nome_materiale').value;
     const descrizioneMateriale = document.getElementById('descrizione_materiale').value;
     const nomeTecnica = document.getElementById('nome_tecnica').value;
@@ -151,17 +184,15 @@ function handleSearch() {
     const descrizioneProvenienza = document.getElementById('descrizione_provenienza').value;
     const curatore = document.getElementById('curatore').value;
     const titoloMostra = document.getElementById('titolo_mostra').value;
-    const dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
+    let dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
+    if (document.getElementById('data_inizio_mostra').value && document.getElementById('data_fine_mostra').value) {
+      dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
+    }
     const luogoMostra = document.getElementById('luogo_mostra').value;
     const descrizioneMostra = document.getElementById('descrizione_mostra').value;
     const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
     const altroRiferimentoBibliografico = document.getElementById('altro_riferimento_bibliografico').value;
     const documentazioniFotografiche = document.getElementById('documentazioniFotografiche').value;
-
-
-    // Crea l'URL per la chiamata GET
-    var url = 'http://10.180.53.210:5000/search/?';
-    var queries = [];
 
     queries.push('titoloOpera=' + encodeURIComponent(titoloOpera));
     queries.push('corpoScheda=' + encodeURIComponent(corpoScheda));
@@ -192,8 +223,9 @@ function handleSearch() {
     queries.push('riferimentoBibliografico=' + encodeURIComponent(riferimentoBibliografico));
     queries.push('altroRiferimentoBibliografico=' + encodeURIComponent(altroRiferimentoBibliografico));
     queries.push('documentazioniFotografiche=' + encodeURIComponent(documentazioniFotografiche));
+  }
+  url += queries.join('&');
 
-    url += queries.join('&');
 
     // Controlla se non ci sono query da inviare
     if (queries.length === 0) {
@@ -226,7 +258,7 @@ function handleSearch() {
     };
 
     xhr.send();
-  }
+  
 
 }
 

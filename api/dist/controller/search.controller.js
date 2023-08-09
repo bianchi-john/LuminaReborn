@@ -19,6 +19,7 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const searchCriteria = {
+            queryGenerica: req.query.queryGenerica,
             titoloOpera: req.query.titoloOpera,
             corpoScheda: req.query.corpoScheda,
             iscrizioni: req.query.iscrizioni,
@@ -60,7 +61,7 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     }
                     const pool = yield (0, mysql_config_1.connection)();
                     const result = yield pool.query(dynamicQuery);
-                    responses.push(result[0]); // Appendi il risultato a responses
+                    responses.push(result[0]);
                     pool.end();
                 }
             }
