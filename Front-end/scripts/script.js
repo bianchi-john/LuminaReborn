@@ -138,27 +138,28 @@ function populateWebPage(data) {
             lista.appendChild(li);
         });
     });
+    if (data.data.immagini.length > 0) {
+        $('.slideshow-container').append('<a class="prev">&#10094;</a>');
 
-    $('.slideshow-container').append('<a class="prev">&#10094;</a>');
+        for (i = 0; i < data.data.immagini.length; i++) {
+            if (i == 0) {
+                var div = $('<div>').addClass('mySlides fade one');
+            }
+            else {
+                var div = $('<div>').addClass('mySlides fade')
+                    .attr('num', i + 1 + '/' + (data.data.immagini.length));
 
-    for (i = 0; i < data.data.immagini.length; i++) {
-        if (i == 0) {
-            var div = $('<div>').addClass('mySlides fade one');
+            }
+            var img = $('<img>').attr('src', data.data.immagini[i].path)
+                .addClass('image').attr('alt', data.data.immagini[i].didascalia)
+                .on('contextmenu', function () { return false; })
+
+            div.append(img);
+            $('.slideshow-container').append(div);
         }
-        else {
-            var div = $('<div>').addClass('mySlides fade')
-                .attr('num', i + 1 + '/' + (data.data.immagini.length));
-
-        }
-        var img = $('<img>').attr('src', data.data.immagini[i].path)
-            .addClass('image').attr('alt', data.data.immagini[i].didascalia)
-            .on('contextmenu', function () { return false; })
-
-        div.append(img);
-        $('.slideshow-container').append(div);
+        $('.slideshow-container').append('<a class="next">&#10095;</a>');
+        loadImages();
     }
-    $('.slideshow-container').append('<a class="next">&#10095;</a>');
-    loadImages();
 }
 
 $(document).ready(function () {
@@ -170,7 +171,6 @@ $(document).ready(function () {
         callAPI(apiUrl, populateWebPage);
     } else {
         console.log("Parametro 'id' non presente nella query string dell'URL.");
-        // Puoi gestire qui l'assenza del parametro 'id' come preferisci
     }
 });
 
