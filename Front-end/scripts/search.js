@@ -1,3 +1,82 @@
+// Funzione che aggiunge i suggerimenti alle textbox
+function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
+  const inputElement = document.getElementById(suggestionId);
+  const datalistElement = document.getElementById(suggestionTextBox);
+
+  inputElement.addEventListener("input", function () {
+    const inputText = inputElement.value.trim().toLowerCase();
+
+    // Filtra le classificazioni che iniziano con il testo inserito
+    const suggerimenti = suggestions.filter(classificazione =>
+      classificazione.toLowerCase().startsWith(inputText)
+    );
+
+    // Svuota il datalist e aggiungi le nuove opzioni
+    datalistElement.innerHTML = suggerimenti
+      .map(suggerimento => `<option value="${suggerimento}">`)
+      .join("");
+  });
+}
+
+// Funzione per trovare e generare i suggerimenti per le searchbox di: Classificazione opera, Materiali, Tecniche
+function retrieveSuggestion() {
+  const urls = [
+    "http://0.0.0.0:3000/materiali",
+    "http://0.0.0.0:3000/schede",
+    "http://0.0.0.0:3000/tecniche"
+  ];
+
+  const risultati = {};
+
+  Promise.all(
+    urls.map(url =>
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const nomeDizionario = url.split("/").pop(); // Estrae l'ultima parte dell'URL come nome del dizionario
+          risultati[nomeDizionario] = data;
+        })
+    )
+  )
+    .then(() => {
+
+      // Liste per i campi estratti
+      const listaMateriali = [];
+      const listaClassificazioni = [];
+      const listaDescrizioni = [];
+
+      // Estrarre i dati da "materiali"
+      risultati.materiali.data.forEach(materiale => {
+        listaMateriali.push(materiale.nome_materiale);
+      });
+      risultati.schede.data.forEach(schede => {
+        listaClassificazioni.push(schede.classificazione);
+      });
+      risultati.tecniche.data.forEach(tecniche => {
+        listaDescrizioni.push(tecniche.nome_tecnica);
+      });
+      // Stampa delle liste
+
+      const listaMaterialiClean = new Set(listaMateriali);
+      const listaClassificazioniClean = new Set(listaClassificazioni);
+      const listaDescrizioniClean = new Set(listaDescrizioni);
+
+      const arrayListaClassificazioni = Array.from(listaClassificazioniClean);
+      const arrayListaMateriali = Array.from(listaMaterialiClean);
+      const arrayListaDescrizioni = Array.from(listaDescrizioniClean);
+      addSuggestion('classificazione','classificazioneSuggerimenti',arrayListaClassificazioni)
+      addSuggestion('nome_materiale','nome_materialeSuggerimenti',arrayListaMateriali)
+      addSuggestion('nome_tecnica','nome_tecnicaSuggerimenti',arrayListaDescrizioni)
+
+    })
+
+
+    .catch(error => {
+      console.error("Si è verificato un errore:", error);
+    });
+}
+
+
 
 // Funzione per ottenere il valore selezionato per il primo form di date
 function getAmbitoStoricoDa() {
@@ -105,9 +184,9 @@ function toggleAdvancedSearch() {
     $(".custom-tooltip-content").removeClass("show");
     var tooltipMessage = 'Ricerca all\'interno di uno o più campi specifici della scheda';
     $(".custom-tooltip-content").text(tooltipMessage)
-} 
+  }
 
-else {
+  else {
     $(".custom-tooltip-content").removeClass("show");
     var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
     $(".custom-tooltip-content").text(tooltipMessage)
@@ -137,7 +216,7 @@ function handleSearch() {
     document.getElementById('result').innerHTML = '<p>Data di inizio non selezionata</p>'
     return
   }
-  
+
 
   // Solo la data di inizio mostra selezionata
   if (document.getElementById('data_inizio_mostra').value && !document.getElementById('data_fine_mostra').value) {
@@ -237,47 +316,48 @@ function handleSearch() {
   url += queries.join('&');
 
 
-    // Controlla se non ci sono query da inviare
-    if (queries.length === 0) {
-      console.log('Nessuna query inserita.');
-      return;
-    }
+  // Controlla se non ci sono query da inviare
+  if (queries.length === 0) {
+    console.log('Nessuna query inserita.');
+    return;
+  }
 
-    // Effettua la chiamata GET
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+  // Effettua la chiamata GET
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
 
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        // La chiamata ha avuto successo, visualizza il risultato nella pagina
-        var response = JSON.parse(xhr.responseText);
-        if (response.data[0].length == 0) {
-          document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
-        }
-        else {
-          for (var j = 0; j < response.data[0].length; j++) {
-            document.getElementById('result').appendChild(createCard(response.data[0][j]));
-          }
-          // Scrolla alla sezione dei risultati
-          scrollToResults();
-        }
-      } else {
-        // La chiamata non è riuscita, gestisci l'errore di conseguenza
-        console.error('Errore nella chiamata GET: ' + xhr.status);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      // La chiamata ha avuto successo, visualizza il risultato nella pagina
+      var response = JSON.parse(xhr.responseText);
+      if (response.data[0].length == 0) {
+        document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
       }
-    };
-    xhr.send();
+      else {
+        for (var j = 0; j < response.data[0].length; j++) {
+          document.getElementById('result').appendChild(createCard(response.data[0][j]));
+        }
+        // Scrolla alla sezione dei risultati
+        scrollToResults();
+      }
+    } else {
+      // La chiamata non è riuscita, gestisci l'errore di conseguenza
+      console.error('Errore nella chiamata GET: ' + xhr.status);
+    }
+  };
+  xhr.send();
 }
 
 
 $(document).ready(function () {
+  retrieveSuggestion();
   var toggleSearchFunctions = document.getElementById("toggleSearchFunctions");
   toggleSearchFunctions.addEventListener("click", toggleAdvancedSearch);
   var searchButton = document.getElementById('searchButton');
   searchButton.addEventListener('click', handleSearch);
   var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
   $(".custom-tooltip-content").text(tooltipMessage)
-  $("#custom-tooltip").click(function() {
+  $("#custom-tooltip").click(function () {
     $(".custom-tooltip-content").toggleClass("show");
   });
 });
