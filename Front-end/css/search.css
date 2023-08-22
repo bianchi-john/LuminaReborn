@@ -12,3 +12,28 @@
 html {
   scroll-behavior: smooth;
 }
+.custom-tooltip-content {
+  position: absolute;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 5px;
+  display: none;
+  margin-top: 5px;
+
+}
+
+.custom-tooltip-content.show {
+  display: inline;
+  margin-top: 5px;
+
+}
+
+#searchButton{
+ margin-top: 5px;
+}
+
+#toggleSearchFunctions {
+  margin-top: 5px;
+  background-color: #2e1273;
+  border-color: #2e1273;
+}

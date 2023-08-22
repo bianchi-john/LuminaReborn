@@ -94,24 +94,36 @@ function toggleAdvancedSearch() {
   var advancedSearchFields = document.getElementById("advancedSearchFields");
   var generalSearchBar = document.getElementById("generalSearch");
   var toggleButton = document.getElementById('toggleSearchFunctions');
+  var searchButton = document.getElementById('searchButton');
 
   if (advancedSearchFields.style.display === "none") {
-    toggleButton.innerText = 'Hide advanced search functions';
+    toggleButton.innerText = 'Mostra le funzionalità di ricerca veloce';
     advancedSearchFields.style.display = "block";
     generalSearchBar.style.display = "none";
-    toggleButton.style.backgroundColor = "#2e1273";
-    toggleButton.style.borderColor = "#2e1273";
+    searchButton.textContent = 'Ricerca avanzata';
+    searchButton.title = 'Mostra i risultati della ricerca avanzata';
+    $(".custom-tooltip-content").removeClass("show");
+    var tooltipMessage = 'Ricerca all\'interno di uno o più campi specifici della scheda';
+    $(".custom-tooltip-content").text(tooltipMessage)
+
+
 
   } else {
-    toggleButton.innerText = 'Show advanced search functions';
+    $(".custom-tooltip-content").removeClass("show");
+    var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
+    $(".custom-tooltip-content").text(tooltipMessage)
+    toggleButton.innerText = 'Mostra le funzionalità di ricerca avanzata';
     advancedSearchFields.style.display = "none";
     generalSearchBar.style.display = "block";
-    toggleButton.style.backgroundColor = "#007bff";
-    toggleButton.style.borderColor = "#007bff";
+    searchButton.textContent = 'Ricerca veloce';
+
+
   }
 }
 
 function handleSearch() {
+
+
   // Esempio di come puoi utilizzare le funzioni per ottenere i valori selezionati
   const ambitoStoricoDaValue = getAmbitoStoricoDa();
   const ambitoStoricoAValue = getAmbitoStoricoA();
@@ -268,6 +280,11 @@ $(document).ready(function () {
   toggleSearchFunctions.addEventListener("click", toggleAdvancedSearch);
   var searchButton = document.getElementById('searchButton');
   searchButton.addEventListener('click', handleSearch);
+  var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
+  $(".custom-tooltip-content").text(tooltipMessage)
+  $("#custom-tooltip").click(function() {
+    $(".custom-tooltip-content").toggleClass("show");
+  });
 
 });
 
