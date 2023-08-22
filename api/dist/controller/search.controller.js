@@ -15,11 +15,13 @@ const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const search_query_1 = require("../query/search.query");
+const validator = require('validator');
+const sqlstring = require('sqlstring');
 const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const searchCriteria = {
-            queryGenerica: req.query.queryGenerica,
+            queryGenerica: validator.escape(req.query.queryGenerica),
             titoloOpera: req.query.titoloOpera,
             corpoScheda: req.query.corpoScheda,
             iscrizioni: req.query.iscrizioni,

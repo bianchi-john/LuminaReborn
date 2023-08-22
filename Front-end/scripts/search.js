@@ -105,10 +105,9 @@ function toggleAdvancedSearch() {
     $(".custom-tooltip-content").removeClass("show");
     var tooltipMessage = 'Ricerca all\'interno di uno o più campi specifici della scheda';
     $(".custom-tooltip-content").text(tooltipMessage)
+} 
 
-
-
-  } else {
+else {
     $(".custom-tooltip-content").removeClass("show");
     var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
     $(".custom-tooltip-content").text(tooltipMessage)
@@ -116,7 +115,6 @@ function toggleAdvancedSearch() {
     advancedSearchFields.style.display = "none";
     generalSearchBar.style.display = "block";
     searchButton.textContent = 'Ricerca veloce';
-
 
   }
 }
@@ -268,10 +266,7 @@ function handleSearch() {
         console.error('Errore nella chiamata GET: ' + xhr.status);
       }
     };
-
     xhr.send();
-  
-
 }
 
 
@@ -285,7 +280,6 @@ $(document).ready(function () {
   $("#custom-tooltip").click(function() {
     $(".custom-tooltip-content").toggleClass("show");
   });
-
 });
 
 

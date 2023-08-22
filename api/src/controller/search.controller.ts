@@ -6,6 +6,8 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { buildDynamicQuery } from '../query/search.query';
+const validator = require('validator');
+const sqlstring = require('sqlstring');
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
@@ -45,7 +47,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       altroRiferimentoBibliografico: String;
       documentazioniFotografiche: String;
     } = {
-      queryGenerica: req.query.queryGenerica as String,
+      queryGenerica: validator.escape(req.query.queryGenerica) as String,
       titoloOpera: req.query.titoloOpera as String,
       corpoScheda: req.query.corpoScheda as String,
       iscrizioni: req.query.iscrizioni as String,
