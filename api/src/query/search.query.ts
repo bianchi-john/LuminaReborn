@@ -10,7 +10,7 @@ export const buildDynamicQuery = (key: string, value: string) => {
     let condition = '';
     // RICERCA GENERICA
     if (key === 'queryGenerica') {
-      condition = `SELECT * FROM schede WHERE titolo_opera LIKE '%${value}%' OR corpo_scheda LIKE '%${value}%' OR iscrizioni LIKE '%${value}%' OR descrizione_sintetica LIKE '%${value}%' OR storia_espositiva LIKE '%${value}%' OR classificazione LIKE '%${value}%';`;
+      condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera LIKE '%${value}%' OR s.descrizione_sintetica LIKE '%${value}%' OR s.corpo_scheda LIKE '%${value}%' OR a.nome LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR p.provenienza LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR s.storia_espositiva LIKE '%${value}%';`;
     }
     // RICERCA SPECIFICA
     if (key === 'titoloOpera') {

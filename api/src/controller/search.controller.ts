@@ -97,7 +97,8 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       }
   
       return res.status(Code.OK)
-    
+      
+      
       .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', responses));
     }
     

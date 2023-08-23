@@ -102,13 +102,12 @@ function populateWebPage(data) {
     }
 
     for (i = 0; i < data.data.altreBibliografie.length; i++) {
-        document.getElementById('altreBibliografie').innerHTML += data.data.bibliografie[i].riferimento_bibliografico + "<br>";
+        document.getElementById('altreBibliografie').innerHTML += data.data.altreBibliografie[i].riferimento_bibliografico + "<br>";
         $('.altreBibliografie').removeClass('altreBibliografie');
 
     }
-
     for (i = 0; i < data.data.documentazioniFotografiche.length; i++) {
-        document.getElementById('documentazioneFotografica').innerHTML += data.data.bibliografie[i].riferimento_bibliografico + "<br>";
+        document.getElementById('documentazioneFotografica').innerHTML += data.data.documentazioniFotografiche[i].riferimento_bibliografico + "<br>";
         $('.documentazioneFotografica').removeClass('documentazioneFotografica');
 
     }
