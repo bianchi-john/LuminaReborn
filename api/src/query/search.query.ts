@@ -107,9 +107,9 @@ export const buildDynamicQuery = (key: string, value: string) => {
     } else if (key === 'riferimentoBibliografico') {
       condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_bibliografie tsa ON s.id = tsa.id_scheda INNER JOIN bibliografie a ON tsa.id_bibliografia = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
     } else if (key === 'altroRiferimentoBibliografico') {
-      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_altreBibliografie tsa ON s.id = tsa.id_scheda INNER JOIN altreBibliografie a ON tsa.id_altreBibliografie = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
     } else if (key === 'documentazioniFotografiche') {
-      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+      condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_documentazioniFotografiche tsa ON s.id = tsa.id_scheda INNER JOIN documentazioniFotografiche a ON tsa.id_documentazioneFotografica = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
     }
 
     return condition;
