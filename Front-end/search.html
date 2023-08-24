@@ -34,15 +34,65 @@
           <label for="titolo_opera">Ricerca in Titolo</label>
           <input type="text" class="form-control titolo_opera" id="titolo_opera" aria-describedby="titolo_opera">
         </div>
+        <div class="form-group">
+          <label for="nome">Ricerca in nome autore</label>
+          <input type="text" class="form-control nome" id="nome" aria-describedby="nome">
+        </div>
 
         <div class="form-group">
-          <label for="corpo_scheda">Ricerca in corpo scheda</label>
-          <input type="text" class="form-control corpo_scheda" id="corpo_scheda" aria-describedby="corpo_scheda">
+          <label for="categoria">Ricerca in categoria autore</label>
+          <select class="form-control categoria" id="categoria" aria-describedby="categoria">
+            <option value="">Seleziona una categoria</option>
+          </select>
         </div>
+
+        <div class="form-group">
+          <label for="ambito_storico">Ricerca in ambito storico</label>
+          <input type="text" class="form-control ambito_storico" id="ambito_storico" aria-describedby="ambito_storico">
+        </div>
+
+
+        <div class="form-group">
+          <label for="ubicazione">Ricerca in ubicazione</label>
+          <input type="text" class="form-control ubicazione" id="ubicazione" aria-describedby="ubicazione">
+        </div>
+
+        <div class="form-group">
+          <label for="nome_inventario">Ricerca in nome inventario</label>
+          <input type="text" class="form-control nome_inventario" id="nome_inventario"
+            aria-describedby="nome_inventario">
+        </div>
+
+
+        <div class="form-group">
+          <label for="classificazione">Ricerca in classificazione opera</label>
+          <select class="form-control classificazione" id="classificazione" aria-describedby="classificazione">
+            <option value="">Seleziona una categoria</option>
+          </select>
+        </div>
+
+
+
+
+
+
+
+        <div class="form-group">
+          <label for="nome_provenienza">Ricerca in provenienza</label>
+          <input type="text" class="form-control nome_provenienza" id="nome_provenienza"
+            aria-describedby="nome_provenienza">
+        </div>
+
+
 
         <div class="form-group">
           <label for="iscrizioni">Ricerca in iscrizioni</label>
           <input type="text" class="form-control iscrizioni" id="iscrizioni" aria-describedby="iscrizioni">
+        </div>
+        <div class="form-group">
+          <label for="storia_espositiva">Ricerca in storia espositiva</label>
+          <input type="text" class="form-control storia_espositiva" id="storia_espositiva"
+            aria-describedby="storia_espositiva">
         </div>
 
         <div class="form-group">
@@ -52,45 +102,26 @@
         </div>
 
         <div class="form-group">
-          <label for="storia_espositiva">Ricerca in storia espositiva</label>
-          <input type="text" class="form-control storia_espositiva" id="storia_espositiva"
-            aria-describedby="storia_espositiva">
+          <label for="corpo_scheda">Ricerca in corpo scheda</label>
+          <input type="text" class="form-control corpo_scheda" id="corpo_scheda" aria-describedby="corpo_scheda">
         </div>
 
         <div class="form-group">
-          <label for="classificazione">Ricerca in classificazione opera</label>
-          <input type="text" class="form-control classificazione" id="classificazione"
-                 list="classificazioneSuggerimenti" aria-describedby="classificazione">
-          <datalist id="classificazioneSuggerimenti"></datalist>
-        </div>
-
-        <div class="form-group">
-          <label for="formula_precedente">Ricerca in formula precedente</label>
-          <input type="text" class="form-control formula_precedente" id="formula_precedente"
-            aria-describedby="formula_precedente">
-        </div>
-
-        <div class="form-group">
-          <label for="formula_successiva">Ricerca in formula successiva</label>
-          <input type="text" class="form-control formula_successiva" id="formula_successiva"
-            aria-describedby="formula_successiva">
-        </div>
-
-        <div class="form-group">
-          <label for="categoria">Ricerca in categoria autore</label>
-          <input type="text" class="form-control categoria" id="categoria" aria-describedby="categoria">
-        </div>
-
-        <div class="form-group">
-          <label for="nome">Ricerca in nome autore</label>
-          <input type="text" class="form-control nome" id="nome" aria-describedby="nome">
+          <label for="titolo_mostra">Ricerca in mostre</label>
+          <input type="text" class="form-control titolo_mostra" id="titolo_mostra" aria-describedby="titolo_mostra">
         </div>
 
 
         <div class="form-group">
-          <label for="ambito_storico">Ricerca in ambito storico</label>
-          <input type="text" class="form-control ambito_storico" id="ambito_storico" aria-describedby="ambito_storico">
+          <label for="data_mostra">Ricerca in data della mostra</label>
+          <p>Data da</p>
+          <input type="date" class="form-control data_inizio_mostra" id="data_inizio_mostra"
+            aria-describedby="data_inizio_mostra">
+            <p>Data a</p>
+            <input type="date" class="form-control data_fine_mostra" id="data_fine_mostra"
+            aria-describedby="data_fine_mostra">
         </div>
+
 
 
         <div class="form-group">
@@ -117,62 +148,22 @@
         </div>
 
       
-
         <div class="form-group">
-          <label for="nome_materiale">Ricerca in nome materiale</label>
+          <label for="nome_materiale">Ricerca in materiali</label>
           <input type="text" class="form-control nome_materiale" id="nome_materiale"
                  list="nome_materialeSuggerimenti" aria-describedby="nome_materiale">
           <datalist id="nome_materialeSuggerimenti"></datalist>
         </div>
 
-        <div class="form-group">
-          <label for="descrizione_materiale">Ricerca in descrizione materiale</label>
-          <input type="text" class="form-control descrizione_materiale" id="descrizione_materiale"
-            aria-describedby="descrizione_materiale">
-        </div>
+
 
         <div class="form-group">
-          <label for="nome_tecnica">Ricerca in nome tecnica</label>
+          <label for="nome_tecnica">Ricerca in tecniche</label>
           <input type="text" class="form-control nome_tecnica" id="nome_tecnica"
                  list="nome_tecnicaSuggerimenti" aria-describedby="nome_tecnica">
           <datalist id="nome_tecnicaSuggerimenti"></datalist>
         </div>
 
-        <div class="form-group">
-          <label for="descrizione_tecnica">Ricerca in descrizione tecnica</label>
-          <input type="text" class="form-control descrizione_tecnica" id="descrizione_tecnica"
-            aria-describedby="descrizione_tecnica">
-        </div>
-
-        <div class="form-group">
-          <label for="ubicazione">Ricerca in ubicazione</label>
-          <input type="text" class="form-control ubicazione" id="ubicazione" aria-describedby="ubicazione">
-        </div>
-
-        <div class="form-group">
-          <label for="descrizione_ubicazione">Ricerca in descrizione ubicazione</label>
-          <input type="text" class="form-control descrizione_ubicazione" id="descrizione_ubicazione"
-            aria-describedby="descrizione_ubicazione">
-        </div>
-
-        <div class="form-group">
-          <label for="nome_inventario">Ricerca in nome inventario</label>
-          <input type="text" class="form-control nome_inventario" id="nome_inventario"
-            aria-describedby="nome_inventario">
-        </div>
-
-        <div class="form-group">
-          <label for="nome_provenienza">Ricerca in provenienza</label>
-          <input type="text" class="form-control nome_provenienza" id="nome_provenienza"
-            aria-describedby="nome_provenienza">
-        </div>
-
-
-        <div class="form-group">
-          <label for="descrizione_provenienza">Ricerca in descrizione provenienza</label>
-          <input type="text" class="form-control descrizione_provenienza" id="descrizione_provenienza"
-            aria-describedby="descrizione_provenienza">
-        </div>
 
 
         <div class="form-group">
@@ -180,21 +171,7 @@
           <input type="text" class="form-control curatore" id="curatore" aria-describedby="curatore">
         </div>
 
-        <div class="form-group">
-          <label for="titolo_mostra">Ricerca in titolo mostra</label>
-          <input type="text" class="form-control titolo_mostra" id="titolo_mostra" aria-describedby="titolo_mostra">
-        </div>
 
-
-        <div class="form-group">
-          <label for="data_mostra">Ricerca in data della mostra</label>
-          <p>Data da</p>
-          <input type="date" class="form-control data_inizio_mostra" id="data_inizio_mostra"
-            aria-describedby="data_inizio_mostra">
-            <p>Data a</p>
-            <input type="date" class="form-control data_fine_mostra" id="data_fine_mostra"
-            aria-describedby="data_fine_mostra">
-        </div>
 
 
         <div class="form-group">
@@ -202,11 +179,7 @@
           <input type="text" class="form-control luogo_mostra" id="luogo_mostra" aria-describedby="luogo_mostra">
         </div>
 
-        <div class="form-group">
-          <label for="descrizione_mostra">Ricerca in descrizione della mostra</label>
-          <input type="text" class="form-control descrizione_mostra" id="descrizione_mostra"
-            aria-describedby="descrizione_mostra">
-        </div>
+
 
         <div class="form-group">
           <label for="riferimento_bibliografico">Ricerca in bibliografia</label>

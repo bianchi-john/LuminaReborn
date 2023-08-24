@@ -20,9 +20,35 @@ function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
 
 // Funzione per trovare e generare i suggerimenti per le searchbox di: Classificazione opera, Materiali, Tecniche
 function retrieveSuggestion() {
+
+
+  const categoriaSelect = document.getElementById('categoria');
+  const classificazioneSelect = document.getElementById('classificazione');
+
+  // Opzioni fisse che vuoi aggiungere
+  const opzioniFisse = [
+    'Opzione 1',
+    'Opzione 2',
+    'Opzione 3',
+    // ... aggiungi le altre opzioni ...
+  ];
+  
+  // Aggiungi le opzioni alla <select>
+  opzioniFisse.forEach(opzione => {
+    const optionElement = document.createElement('option');
+    optionElement.value = opzione; // Assegna il valore all'opzione
+    optionElement.textContent = opzione; // Testo visibile all'utente
+    categoriaSelect.appendChild(optionElement);
+        classificazioneSelect.appendChild(optionElement);
+  });
+
+
+
+
+
+
   const urls = [
     "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/schede",
     "http://0.0.0.0:3000/tecniche"
   ];
 
@@ -42,29 +68,23 @@ function retrieveSuggestion() {
 
       // Liste per i campi estratti
       const listaMateriali = [];
-      const listaClassificazioni = [];
       const listaDescrizioni = [];
 
       // Estrarre i dati da "materiali"
       risultati.materiali.data.forEach(materiale => {
         listaMateriali.push(materiale.nome_materiale);
       });
-      risultati.schede.data.forEach(schede => {
-        listaClassificazioni.push(schede.classificazione);
-      });
+
       risultati.tecniche.data.forEach(tecniche => {
         listaDescrizioni.push(tecniche.nome_tecnica);
       });
       // Stampa delle liste
 
       const listaMaterialiClean = new Set(listaMateriali);
-      const listaClassificazioniClean = new Set(listaClassificazioni);
       const listaDescrizioniClean = new Set(listaDescrizioni);
 
-      const arrayListaClassificazioni = Array.from(listaClassificazioniClean);
       const arrayListaMateriali = Array.from(listaMaterialiClean);
       const arrayListaDescrizioni = Array.from(listaDescrizioniClean);
-      addSuggestion('classificazione','classificazioneSuggerimenti',arrayListaClassificazioni)
       addSuggestion('nome_materiale','nome_materialeSuggerimenti',arrayListaMateriali)
       addSuggestion('nome_tecnica','nome_tecnicaSuggerimenti',arrayListaDescrizioni)
 
@@ -119,7 +139,7 @@ function scrollToResults() {
 }
 
 // Funzione per creare la card di Bootstrap
-function createCard(data) {
+function createCard(data, index) {
   var cardDiv = document.createElement("div");
   cardDiv.classList.add("card");
 
@@ -130,37 +150,66 @@ function createCard(data) {
   titleElement.classList.add("card-title", "mb-2", "text-muted");
   titleElement.textContent = data.titolo_opera;
 
-  var corpoSchedaElement = document.createElement("p");
-  corpoSchedaElement.classList.add("card-text");
-  corpoSchedaElement.textContent = data.corpo_scheda;
+  var autoreElement = document.createElement("p");
+  autoreElement.classList.add("card-text");
+  autoreElement.textContent = data.nome;
 
-  var iscrizioniElement = document.createElement("p");
-  iscrizioniElement.classList.add("card-text");
-  iscrizioniElement.textContent = data.iscrizioni;
+  var categoriaElement = document.createElement("p");
+  categoriaElement.classList.add("card-text");
+  categoriaElement.textContent = data.categoria;
 
-  var descrizioneSinteticaElement = document.createElement("p");
-  descrizioneSinteticaElement.classList.add("card-text");
-  descrizioneSinteticaElement.textContent = data.descrizione_sintetica;
+  var ambito_storicoElement = document.createElement("p");
+  ambito_storicoElement.classList.add("card-text");
+  ambito_storicoElement.textContent = data.ambito_storico;
 
-  var storiaEspositivaElement = document.createElement("p");
-  storiaEspositivaElement.classList.add("card-text");
-  storiaEspositivaElement.textContent = data.storia_espositiva;
+  var nome_tecnicaElement = document.createElement("p");
+  nome_tecnicaElement.classList.add("card-text");
+  nome_tecnicaElement.textContent = data.nome_tecnica;
 
-  var classificazioneElement = document.createElement("p");
-  classificazioneElement.classList.add("card-text");
-  classificazioneElement.textContent = data.classificazione;
+  var nome_materialeElement = document.createElement("p");
+  nome_materialeElement.classList.add("card-text");
+  nome_materialeElement.textContent = data.nome_materiale;
+
+  var ubicazioneElement = document.createElement("p");
+  ubicazioneElement.classList.add("card-text");
+  ubicazioneElement.textContent = data.ubicazione;
+
+  var nome_inventarioElement = document.createElement("p");
+  nome_inventarioElement.classList.add("card-text");
+  nome_inventarioElement.textContent = data.nome_inventario;
+
+  var pathElement = document.createElement("p");
+  pathElement.classList.add("card-text");
+  pathElement.textContent = data.path;
+
+  if (data.path) {
+    var imgElement = document.createElement("img");
+    imgElement.src = data.path;
+    var imageContainer = document.createElement("div");
+    imgElement.classList.add("card-image");
+    imageContainer.classList.add("image-container");
+    imageContainer.appendChild(imgElement);
+    cardBodyDiv.appendChild(imageContainer);
+  
+  }
+
+  
 
   // cardBodyDiv.appendChild(titleElement);
   cardBodyDiv.appendChild(titleElement);
-  cardBodyDiv.appendChild(corpoSchedaElement);
-  cardBodyDiv.appendChild(iscrizioniElement);
-  cardBodyDiv.appendChild(descrizioneSinteticaElement);
-  cardBodyDiv.appendChild(storiaEspositivaElement);
-  cardBodyDiv.appendChild(classificazioneElement);
+  cardBodyDiv.appendChild(autoreElement);
+  cardBodyDiv.appendChild(categoriaElement);
+  cardBodyDiv.appendChild(ambito_storicoElement);
+  cardBodyDiv.appendChild(nome_tecnicaElement);
+  cardBodyDiv.appendChild(nome_materialeElement);
+  cardBodyDiv.appendChild(ubicazioneElement);
+  cardBodyDiv.appendChild(nome_inventarioElement);
+
+  
 
   // Crea il link intorno alla card e imposta l'URL desiderato con il parametro "id"
   var cardLink = document.createElement("a");
-  cardLink.href = "scheda.html?id=" + data.id;
+  cardLink.href = "scheda.html?id=" + index;
   cardLink.appendChild(cardBodyDiv);
 
   cardDiv.appendChild(cardLink);
@@ -188,7 +237,7 @@ function toggleAdvancedSearch() {
 
   else {
     $(".custom-tooltip-content").removeClass("show");
-    var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
+    var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo, autore, classificazione, corpo scheda, descrizione, ubicazione, provenienza, storia collezionistica';
     $(".custom-tooltip-content").text(tooltipMessage)
     toggleButton.innerText = 'Mostra le funzionalità di ricerca avanzata';
     advancedSearchFields.style.display = "none";
@@ -252,8 +301,6 @@ function handleSearch() {
     const descrizioneSintetica = document.getElementById('descrizione_sintetica').value;
     const storiaEspositiva = document.getElementById('storia_espositiva').value;
     const classificazione = document.getElementById('classificazione').value;
-    const formulaPrecedente = document.getElementById('formula_precedente').value;
-    const formulaSuccessiva = document.getElementById('formula_successiva').value;
     const categoria = document.getElementById('categoria').value;
     const nomeAutore = document.getElementById('nome').value;
     const ambitoStorico = document.getElementById('ambito_storico').value;
@@ -263,14 +310,10 @@ function handleSearch() {
       dataDadataA = (document.getElementById('data_da').value).toString() + ' ' + (document.getElementById('data_a').value).toString() + ' ' + ambitoStoricoDaValue + ' ' + ambitoStoricoAValue;
     }
     const nomeMateriale = document.getElementById('nome_materiale').value;
-    const descrizioneMateriale = document.getElementById('descrizione_materiale').value;
     const nomeTecnica = document.getElementById('nome_tecnica').value;
-    const descrizioneTecnica = document.getElementById('descrizione_tecnica').value;
     const ubicazione = document.getElementById('ubicazione').value;
-    const descrizioneUbicazione = document.getElementById('descrizione_ubicazione').value;
     const nomeInventario = document.getElementById('nome_inventario').value;
     const nomeProvenienza = document.getElementById('nome_provenienza').value;
-    const descrizioneProvenienza = document.getElementById('descrizione_provenienza').value;
     const curatore = document.getElementById('curatore').value;
     const titoloMostra = document.getElementById('titolo_mostra').value;
     let dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
@@ -278,7 +321,6 @@ function handleSearch() {
       dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
     }
     const luogoMostra = document.getElementById('luogo_mostra').value;
-    const descrizioneMostra = document.getElementById('descrizione_mostra').value;
     const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
     const altroRiferimentoBibliografico = document.getElementById('altro_riferimento_bibliografico').value;
     const documentazioniFotografiche = document.getElementById('documentazioniFotografiche').value;
@@ -289,26 +331,19 @@ function handleSearch() {
     queries.push('descrizioneSintetica=' + encodeURIComponent(descrizioneSintetica));
     queries.push('storiaEspositiva=' + encodeURIComponent(storiaEspositiva));
     queries.push('classificazione=' + encodeURIComponent(classificazione));
-    queries.push('formulaPrecedente=' + encodeURIComponent(formulaPrecedente));
-    queries.push('formulaSuccessiva=' + encodeURIComponent(formulaSuccessiva));
     queries.push('categoria=' + encodeURIComponent(categoria));
     queries.push('nomeAutore=' + encodeURIComponent(nomeAutore));
     queries.push('ambitoStorico=' + encodeURIComponent(ambitoStorico));
     queries.push('dataDadataA=' + encodeURIComponent(dataDadataA));
     queries.push('nomeMateriale=' + encodeURIComponent(nomeMateriale));
-    queries.push('descrizioneMateriale=' + encodeURIComponent(descrizioneMateriale));
     queries.push('nomeTecnica=' + encodeURIComponent(nomeTecnica));
-    queries.push('descrizioneTecnica=' + encodeURIComponent(descrizioneTecnica));
     queries.push('ubicazione=' + encodeURIComponent(ubicazione));
-    queries.push('descrizioneUbicazione=' + encodeURIComponent(descrizioneUbicazione));
     queries.push('nomeInventario=' + encodeURIComponent(nomeInventario));
     queries.push('nomeProvenienza=' + encodeURIComponent(nomeProvenienza));
-    queries.push('descrizioneProvenienza=' + encodeURIComponent(descrizioneProvenienza));
     queries.push('curatore=' + encodeURIComponent(curatore));
     queries.push('titoloMostra=' + encodeURIComponent(titoloMostra));
     queries.push('dataInizioMostradataFineMostra=' + encodeURIComponent(dataInizioMostradataFineMostra));
     queries.push('luogoMostra=' + encodeURIComponent(luogoMostra));
-    queries.push('descrizioneMostra=' + encodeURIComponent(descrizioneMostra));
     queries.push('riferimentoBibliografico=' + encodeURIComponent(riferimentoBibliografico));
     queries.push('altroRiferimentoBibliografico=' + encodeURIComponent(altroRiferimentoBibliografico));
     queries.push('documentazioniFotografiche=' + encodeURIComponent(documentazioniFotografiche));
@@ -334,8 +369,8 @@ function handleSearch() {
         document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
       }
       else {
-        for (var j = 0; j < response.data[0].length; j++) {
-          document.getElementById('result').appendChild(createCard(response.data[0][j]));
+        for (var j = 0; j < response.data.length; j = j + 2) {
+          document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j+1]));
         }
         // Scrolla alla sezione dei risultati
         scrollToResults();
@@ -355,7 +390,7 @@ $(document).ready(function () {
   toggleSearchFunctions.addEventListener("click", toggleAdvancedSearch);
   var searchButton = document.getElementById('searchButton');
   searchButton.addEventListener('click', handleSearch);
-  var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo di servizio, titolo opera, corpo scheda, iscrizioni, descrizione sintetica, storia espositiva, classificazione';
+  var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo, autore, classificazione, corpo scheda, descrizione, ubicazione, provenienza, storia collezionistica';
   $(".custom-tooltip-content").text(tooltipMessage)
   $("#custom-tooltip").click(function () {
     $(".custom-tooltip-content").toggleClass("show");

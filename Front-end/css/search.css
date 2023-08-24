@@ -37,3 +37,24 @@ html {
   background-color: #2e1273;
   border-color: #2e1273;
 }
+
+.image-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: auto; /* Regola le dimensioni dell'immagine */
+  height: 100%; /* Altezza pari all'altezza del contenitore */
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%; /* Altezza pari all'altezza del contenitore */
+  object-fit: cover;
+}
+
+@media only screen and (max-width: 700px) {
+  .card-image {
+    display: none;
+  }
+}

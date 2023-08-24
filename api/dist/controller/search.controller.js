@@ -28,35 +28,30 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
             descrizioneSintetica: req.query.descrizioneSintetica ? validator.escape(req.query.descrizioneSintetica) : '',
             storiaEspositiva: req.query.storiaEspositiva ? validator.escape(req.query.storiaEspositiva) : '',
             classificazione: req.query.classificazione ? validator.escape(req.query.classificazione) : '',
-            formulaPrecedente: req.query.formulaPrecedente ? validator.escape(req.query.formulaPrecedente) : '',
-            formulaSuccessiva: req.query.formulaSuccessiva ? validator.escape(req.query.formulaSuccessiva) : '',
             categoria: req.query.categoria ? validator.escape(req.query.categoria) : '',
             nomeAutore: req.query.nomeAutore ? validator.escape(req.query.nomeAutore) : '',
             ambitoStorico: req.query.ambitoStorico ? validator.escape(req.query.ambitoStorico) : '',
             dataDadataA: req.query.dataDadataA ? validator.escape(req.query.dataDadataA) : '',
             nomeMateriale: req.query.nomeMateriale ? validator.escape(req.query.nomeMateriale) : '',
-            descrizioneMateriale: req.query.descrizioneMateriale ? validator.escape(req.query.descrizioneMateriale) : '',
             nomeTecnica: req.query.nomeTecnica ? validator.escape(req.query.nomeTecnica) : '',
-            descrizioneTecnica: req.query.descrizioneTecnica ? validator.escape(req.query.descrizioneTecnica) : '',
             ubicazione: req.query.ubicazione ? validator.escape(req.query.ubicazione) : '',
-            descrizioneUbicazione: req.query.descrizioneUbicazione ? validator.escape(req.query.descrizioneUbicazione) : '',
             nomeInventario: req.query.nomeInventario ? validator.escape(req.query.nomeInventario) : '',
             nomeProvenienza: req.query.nomeProvenienza ? validator.escape(req.query.nomeProvenienza) : '',
-            descrizioneProvenienza: req.query.descrizioneProvenienza ? validator.escape(req.query.descrizioneProvenienza) : '',
             curatore: req.query.curatore ? validator.escape(req.query.curatore) : '',
             titoloMostra: req.query.titoloMostra ? validator.escape(req.query.titoloMostra) : '',
             dataInizioMostradataFineMostra: req.query.dataInizioMostradataFineMostra ? validator.escape(req.query.dataInizioMostradataFineMostra) : '',
             luogoMostra: req.query.luogoMostra ? validator.escape(req.query.luogoMostra) : '',
-            descrizioneMostra: req.query.descrizioneMostra ? validator.escape(req.query.descrizioneMostra) : '',
             riferimentoBibliografico: req.query.riferimentoBibliografico ? validator.escape(req.query.riferimentoBibliografico) : '',
             altroRiferimentoBibliografico: req.query.altroRiferimentoBibliografico ? validator.escape(req.query.altroRiferimentoBibliografico) : '',
             documentazioniFotografiche: req.query.documentazioniFotografiche ? validator.escape(req.query.documentazioniFotografiche) : '',
         };
+        let ok = false;
         let responses = [];
         for (const key in searchCriteria) {
             if (searchCriteria.hasOwnProperty(key)) {
                 const value = searchCriteria[key];
                 if (value !== undefined && value !== '' && value !== ' ') {
+                    ok = true;
                     const dynamicQuery = (0, search_query_1.buildDynamicQuery)(key, String(value));
                     if (dynamicQuery === undefined) {
                         continue;
@@ -68,8 +63,54 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 }
             }
         }
+        if (ok == false) {
+            return res.status(code_enum_1.Code.OK);
+        }
+        let responseCount = {};
+        for (let response of responses[0]) {
+            let responseString = JSON.stringify(response);
+            responseCount[responseString] = (responseCount[responseString] || 0) + 1;
+        }
+        let uniqueResponses = [];
+        let seenItems = {};
+        for (let response of responses[0]) {
+            let responseString = JSON.stringify(response);
+            if (!seenItems[responseString]) {
+                if (responseCount[responseString] > 1) {
+                    uniqueResponses.unshift(response);
+                }
+                else {
+                    uniqueResponses.push(response);
+                }
+                seenItems[responseString] = true;
+            }
+        }
+        let uniqueResponsesWithInformation = [];
+        for (let i = 0; i < uniqueResponses.length; i++) {
+            let pool = yield (0, mysql_config_1.connection)();
+            let finalResult = yield pool.query(`SELECT s.*, a.*, u.*, p.*, c.*, t.*, m.*, i.*, imm.*
+        FROM schede s
+        LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda
+        LEFT JOIN autori a ON tsa.id_autore = a.id
+        LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda
+        LEFT JOIN ubicazioni u ON tsu.id_ubicazione = u.id
+        LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda
+        LEFT JOIN provenienze p ON tsp.id_provenienza = p.id
+        LEFT JOIN tds_schede_cronologie tsc ON s.id = tsc.id_scheda
+        LEFT JOIN cronologie c ON tsc.id_cronologia = c.id
+        LEFT JOIN tds_schede_tecniche tst ON s.id = tst.id_scheda
+        LEFT JOIN tecniche t ON tst.id_tecnica = t.id
+        LEFT JOIN tds_schede_materiali tsn ON s.id = tsn.id_scheda
+        LEFT JOIN materiali m ON tsn.id_materiale = m.id
+        LEFT JOIN tds_schede_inventari tsi ON s.id = tsi.id_scheda
+        LEFT JOIN inventari i ON tsi.id_inventario = i.id
+        LEFT JOIN tds_schede_immagini tsim ON s.id = tsim.id_scheda
+        LEFT JOIN immagini imm ON tsim.id_immagine = imm.id
+        WHERE s.id = ` + uniqueResponses[i].id + `;`);
+            uniqueResponsesWithInformation.push(finalResult[0], uniqueResponses[i].id);
+        }
         return res.status(code_enum_1.Code.OK)
-            .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', responses));
+            .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', uniqueResponsesWithInformation));
     }
     catch (error) {
         console.error(error);
