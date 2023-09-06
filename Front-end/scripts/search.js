@@ -284,148 +284,236 @@ function handleSearch() {
   const ambitoStoricoDaValue = getAmbitoStoricoDa();
   const ambitoStoricoAValue = getAmbitoStoricoA();
 
-  // Solo la data di inizio selezionata
-  if (document.getElementById('data_da').value && !document.getElementById('data_a').value) {
-    document.getElementById('result').innerHTML = '<p>Data di fine non selezionata</p>'
-    return
+  var anno_da_mostra = document.getElementById('anno_da_mostra').value ? document.getElementById('anno_da_mostra').value : '';
+  var anno_a_mostra = document.getElementById('anno_a_mostra').value ? document.getElementById('anno_a_mostra').value : '';
+  var anno_da = document.getElementById('anno_da').value ? document.getElementById('anno_da').value : '';
+  var anno_a = document.getElementById('anno_a').value ? document.getElementById('anno_a').value : '';
+  
+  var mese_da_mostra = document.getElementById('mese_da_mostra').value ? document.getElementById('mese_da_mostra').value : '';
+  var mese_a_mostra = document.getElementById('mese_a_mostra').value ? document.getElementById('mese_a_mostra').value : '';
+  var mese_da = document.getElementById('mese_da').value ? document.getElementById('mese_da').value : '';
+  var mese_a = document.getElementById('mese_a').value ? document.getElementById('mese_a').value : '';
 
-  }
-  // Solo la data di fine selezionata
-  if (!document.getElementById('data_da').value && document.getElementById('data_a').value) {
-    document.getElementById('result').innerHTML = '<p>Data di inizio non selezionata</p>'
-    return
-  }
-
-
-  // Solo la data di inizio mostra selezionata
-  if (document.getElementById('data_inizio_mostra').value && !document.getElementById('data_fine_mostra').value) {
-    document.getElementById('result').innerHTML = '<p>Data di fine mostra non selezionata</p>'
-    return
-  }
-  // Solo la data di fine mostra selezionata
-  if (!document.getElementById('data_inizio_mostra').value && document.getElementById('data_fine_mostra').value) {
-    document.getElementById('result').innerHTML = '<p>Data di inizio mostra non selezionata</p>'
-  }
-
-  // Svuoto il contenuto del div dei risultati
-  document.getElementById('result').innerHTML = '';
-
-  // Crea l'URL per la chiamata GET
-  var url = 'http://0.0.0.0:3000/search/?';
-  var queries = [];
+  var giorno_da_mostra = document.getElementById('giorno_da_mostra').value ? document.getElementById('giorno_da_mostra').value : '';
+  var giorno_a_mostra = document.getElementById('giorno_a_mostra').value ? document.getElementById('giorno_a_mostra').value : '';
+  var giorno_da = document.getElementById('giorno_da').value ? document.getElementById('giorno_da').value : '';
+  var giorno_a = document.getElementById('giorno_a').value ? document.getElementById('giorno_a').value : '';
 
 
-  // Ricerca generica
-  if (advancedSearchFields.style.display === "none") {
-    console.log('ricerca generica')
-    const queryGenerica = document.getElementById('generalSearchBar').value;
-    queries.push('queryGenerica=' + encodeURIComponent(queryGenerica));
-  }
-
-  else {
-    console.log('ricerca avanzata')
-    // Ottieni i valori inseriti nei campi di ricerca
-    const titoloOpera = document.getElementById('titolo_opera').value;
-    const corpoScheda = document.getElementById('corpo_scheda').value;
-    const iscrizioni = document.getElementById('iscrizioni').value;
-    const descrizioneSintetica = document.getElementById('descrizione_sintetica').value;
-    const storiaEspositiva = document.getElementById('storia_espositiva').value;
-    const classificazione = document.getElementById('classificazione').value;
-    const categoria = document.getElementById('categoria').value;
-    const nomeAutore = document.getElementById('nome').value;
-    const ambitoStorico = document.getElementById('ambito_storico').value;
-    let dataDadataA = "";
-    // Entrambe le date selezionate
-    if (document.getElementById('data_da').value && document.getElementById('data_a').value) {
-      dataDadataA = (document.getElementById('data_da').value).toString() + ' ' + (document.getElementById('data_a').value).toString() + ' ' + ambitoStoricoDaValue + ' ' + ambitoStoricoAValue;
+  if (anno_da_mostra) {
+    if (!document.getElementById('giorno_da_mostra').value) {
+      document.getElementById('giorno_da_mostra').value = '01';
     }
-    const nomeMateriale = document.getElementById('nome_materiale').value;
-    const nomeTecnica = document.getElementById('nome_tecnica').value;
-    const ubicazione = document.getElementById('ubicazione').value;
-    const nomeInventario = document.getElementById('nome_inventario').value;
-    const nomeProvenienza = document.getElementById('nome_provenienza').value;
-    const curatore = document.getElementById('curatore').value;
-    const titoloMostra = document.getElementById('titolo_mostra').value;
-    let dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
-    if (document.getElementById('data_inizio_mostra').value && document.getElementById('data_fine_mostra').value) {
-      dataInizioMostradataFineMostra = document.getElementById('data_inizio_mostra').value + ' ' + document.getElementById('data_fine_mostra').value;
+    if (!document.getElementById('mese_da_mostra').value) {
+      document.getElementById('mese_da_mostra').value = '01';
     }
-    const luogoMostra = document.getElementById('luogo_mostra').value;
-    const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
-    const altroRiferimentoBibliografico = document.getElementById('altro_riferimento_bibliografico').value;
-    const documentazioniFotografiche = document.getElementById('documentazioniFotografiche').value;
-
-    queries.push('titoloOpera=' + encodeURIComponent(titoloOpera));
-    queries.push('corpoScheda=' + encodeURIComponent(corpoScheda));
-    queries.push('iscrizioni=' + encodeURIComponent(iscrizioni));
-    queries.push('descrizioneSintetica=' + encodeURIComponent(descrizioneSintetica));
-    queries.push('storiaEspositiva=' + encodeURIComponent(storiaEspositiva));
-    queries.push('classificazione=' + encodeURIComponent(classificazione));
-    queries.push('categoria=' + encodeURIComponent(categoria));
-    queries.push('nomeAutore=' + encodeURIComponent(nomeAutore));
-    queries.push('ambitoStorico=' + encodeURIComponent(ambitoStorico));
-    queries.push('dataDadataA=' + encodeURIComponent(dataDadataA));
-    queries.push('nomeMateriale=' + encodeURIComponent(nomeMateriale));
-    queries.push('nomeTecnica=' + encodeURIComponent(nomeTecnica));
-    queries.push('ubicazione=' + encodeURIComponent(ubicazione));
-    queries.push('nomeInventario=' + encodeURIComponent(nomeInventario));
-    queries.push('nomeProvenienza=' + encodeURIComponent(nomeProvenienza));
-    queries.push('curatore=' + encodeURIComponent(curatore));
-    queries.push('titoloMostra=' + encodeURIComponent(titoloMostra));
-    queries.push('dataInizioMostradataFineMostra=' + encodeURIComponent(dataInizioMostradataFineMostra));
-    queries.push('luogoMostra=' + encodeURIComponent(luogoMostra));
-    queries.push('riferimentoBibliografico=' + encodeURIComponent(riferimentoBibliografico));
-    queries.push('altroRiferimentoBibliografico=' + encodeURIComponent(altroRiferimentoBibliografico));
-    queries.push('documentazioniFotografiche=' + encodeURIComponent(documentazioniFotografiche));
   }
-  url += queries.join('&');
-
-
-  // Controlla se non ci sono query da inviare
-  if (queries.length === 0) {
-    console.log('Nessuna query inserita.');
-    return;
+  if (anno_a_mostra) {
+    if (!document.getElementById('giorno_a_mostra').value) {
+      document.getElementById('giorno_a_mostra').value = '01';
+    }
+    if (!document.getElementById('mese_a_mostra').value) {
+      document.getElementById('mese_a_mostra').value = '01';
+    }
   }
-
-  // Effettua la chiamata GET
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', url, true);
-
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      // La chiamata ha avuto successo, visualizza il risultato nella pagina
-      var response = JSON.parse(xhr.responseText);
-      if (response.data[0].length == 0) {
-        document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
+  if (anno_da) {
+    if (!document.getElementById('giorno_da').value) {
+      document.getElementById('giorno_da').value = '01';
+    }
+    if (!document.getElementById('mese_da').value) {
+      document.getElementById('mese_da').value = '01';
+    }
+  }
+  if (anno_a) {
+    if (!document.getElementById('giorno_a').value) {
+      document.getElementById('giorno_a').value = '01';
+      if (!document.getElementById('mese_a').value) {
+        document.getElementById('mese_a').value = '01';
       }
-      else {
-        for (var j = 0; j < response.data.length; j = j + 2) {
-          document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
+    }
+  }
+  if (anno_a) {
+    var data_da = giorno_da + '/' + mese_da + '/' + anno_da;
+    var data_a = giorno_a + '/' + mese_a + '/' + anno_a;
+  }
+  if (anno_a_mostra){
+    var data_da_mostra = giorno_da_mostra + '/' + mese_da_mostra + '/' + anno_da_mostra;
+    var data_a_mostra = giorno_a_mostra + '/' + mese_a_mostra + '/' + anno_a_mostra;
+  }
+
+    // Svuoto il contenuto del div dei risultati
+    document.getElementById('result').innerHTML = '';
+
+    // Crea l'URL per la chiamata GET
+    var url = 'http://0.0.0.0:3000/search/?';
+    var queries = [];
+
+
+    // Ricerca generica
+    if (advancedSearchFields.style.display === "none") {
+      console.log('ricerca generica')
+      const queryGenerica = document.getElementById('generalSearchBar').value;
+      queries.push('queryGenerica=' + encodeURIComponent(queryGenerica));
+    }
+
+    else {
+      console.log('ricerca avanzata')
+      // Ottieni i valori inseriti nei campi di ricerca
+      const titoloOpera = document.getElementById('titolo_opera').value;
+      const corpoScheda = document.getElementById('corpo_scheda').value;
+      const iscrizioni = document.getElementById('iscrizioni').value;
+      const descrizioneSintetica = document.getElementById('descrizione_sintetica').value;
+      const storiaEspositiva = document.getElementById('storia_espositiva').value;
+      const classificazione = document.getElementById('classificazione').value;
+      const categoria = document.getElementById('categoria').value;
+      const nomeAutore = document.getElementById('nome').value;
+      const ambitoStorico = document.getElementById('ambito_storico').value;
+      let dataDadataA = '';
+      // Entrambe le date selezionate
+      if (anno_a && anno_da) {
+        dataDadataA = data_da + ' ' + data_a + ' ' + ambitoStoricoDaValue + ' ' + ambitoStoricoAValue;
+      }
+      const nomeMateriale = document.getElementById('nome_materiale').value;
+      const nomeTecnica = document.getElementById('nome_tecnica').value;
+      const ubicazione = document.getElementById('ubicazione').value;
+      const nomeInventario = document.getElementById('nome_inventario').value;
+      const nomeProvenienza = document.getElementById('nome_provenienza').value;
+      const curatore = document.getElementById('curatore').value;
+      const titoloMostra = document.getElementById('titolo_mostra').value;
+      let dataInizioMostradataFineMostra = '';
+      if (anno_a_mostra && anno_da_mostra) {
+        dataInizioMostradataFineMostra = doanno_da_mostra + ' ' + anno_a_mostra;
+      }
+      const luogoMostra = document.getElementById('luogo_mostra').value;
+      const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
+      const altroRiferimentoBibliografico = document.getElementById('altro_riferimento_bibliografico').value;
+      const documentazioniFotografiche = document.getElementById('documentazioniFotografiche').value;
+
+      queries.push('titoloOpera=' + encodeURIComponent(titoloOpera));
+      queries.push('corpoScheda=' + encodeURIComponent(corpoScheda));
+      queries.push('iscrizioni=' + encodeURIComponent(iscrizioni));
+      queries.push('descrizioneSintetica=' + encodeURIComponent(descrizioneSintetica));
+      queries.push('storiaEspositiva=' + encodeURIComponent(storiaEspositiva));
+      queries.push('classificazione=' + encodeURIComponent(classificazione));
+      queries.push('categoria=' + encodeURIComponent(categoria));
+      queries.push('nomeAutore=' + encodeURIComponent(nomeAutore));
+      queries.push('ambitoStorico=' + encodeURIComponent(ambitoStorico));
+      queries.push('dataDadataA=' + encodeURIComponent(dataDadataA));
+      queries.push('nomeMateriale=' + encodeURIComponent(nomeMateriale));
+      queries.push('nomeTecnica=' + encodeURIComponent(nomeTecnica));
+      queries.push('ubicazione=' + encodeURIComponent(ubicazione));
+      queries.push('nomeInventario=' + encodeURIComponent(nomeInventario));
+      queries.push('nomeProvenienza=' + encodeURIComponent(nomeProvenienza));
+      queries.push('curatore=' + encodeURIComponent(curatore));
+      queries.push('titoloMostra=' + encodeURIComponent(titoloMostra));
+      queries.push('dataInizioMostradataFineMostra=' + encodeURIComponent(dataInizioMostradataFineMostra));
+      queries.push('luogoMostra=' + encodeURIComponent(luogoMostra));
+      queries.push('riferimentoBibliografico=' + encodeURIComponent(riferimentoBibliografico));
+      queries.push('altroRiferimentoBibliografico=' + encodeURIComponent(altroRiferimentoBibliografico));
+      queries.push('documentazioniFotografiche=' + encodeURIComponent(documentazioniFotografiche));
+    }
+    url += queries.join('&');
+
+
+    // Controlla se non ci sono query da inviare
+    if (queries.length === 0) {
+      console.log('Nessuna query inserita.');
+      return;
+    }
+
+    // Effettua la chiamata GET
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        // La chiamata ha avuto successo, visualizza il risultato nella pagina
+        var response = JSON.parse(xhr.responseText);
+        if (response.data[0].length == 0) {
+          document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
         }
-        // Scrolla alla sezione dei risultati
-        scrollToResults();
+        else {
+          for (var j = 0; j < response.data.length; j = j + 2) {
+            document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
+          }
+          // Scrolla alla sezione dei risultati
+          scrollToResults();
+        }
+      } else {
+        // La chiamata non è riuscita, gestisci l'errore di conseguenza
+        console.error('Errore nella chiamata GET: ' + xhr.status);
       }
-    } else {
-      // La chiamata non è riuscita, gestisci l'errore di conseguenza
-      console.error('Errore nella chiamata GET: ' + xhr.status);
-    }
-  };
-  xhr.send();
-}
+    };
+    xhr.send();
+  }
+
+  function initInputValidation() {
+    const inputs = document.querySelectorAll('.form-control');
+
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        if (!/^\d*$/.test(input.value)) {
+          input.value = input.value.replace(/[^\d]/g, '');
+        }
+
+        if (input.id === 'giorno_da' || input.id === 'giorno_a' || input.id === 'mese_da' || input.id === 'mese_a') {
+          if (input.value > 31) {
+            input.value = '31';
+          }
+        }
+
+        if (input.id === 'mese_da' || input.id === 'mese_a') {
+          if (input.value > 12) {
+            input.value = '12';
+          }
+        }
+
+        if (input.id === 'anno_da' || input.id === 'anno_a') {
+          if (input.value.length > 4) {
+            input.value = input.value.slice(0, 4);
+          }
+        }
+        if (!/^\d*$/.test(input.value)) {
+          input.value = input.value.replace(/[^\d]/g, '');
+        }
+
+        if (input.id === 'giorno_da_mostra' || input.id === 'giorno_a_mostra' || input.id === 'mese_da_mostra' || input.id === 'mese_a_mostra') {
+          if (input.value > 31) {
+            input.value = '31';
+          }
+        }
+
+        if (input.id === 'mese_da_mostra' || input.id === 'mese_a_mostra') {
+          if (input.value > 12) {
+            input.value = '12';
+          }
+        }
+
+        if (input.id === 'anno_da_mostra' || input.id === 'anno_a_mostra') {
+          if (input.value.length > 4) {
+            input.value = input.value.slice(0, 4);
+          }
+        }
+      });
+    });
+  }
 
 
-$(document).ready(function () {
-  retrieveSuggestion();
-  var toggleSearchFunctions = document.getElementById("toggleSearchFunctions");
-  toggleSearchFunctions.addEventListener("click", toggleAdvancedSearch);
-  var searchButton = document.getElementById('searchButton');
-  searchButton.addEventListener('click', handleSearch);
-  var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo, autore, classificazione, corpo scheda, descrizione, ubicazione, provenienza, storia collezionistica';
-  $(".custom-tooltip-content").text(tooltipMessage)
-  $("#custom-tooltip").click(function () {
-    $(".custom-tooltip-content").toggleClass("show");
+  $(document).ready(function () {
+    retrieveSuggestion();
+    var toggleSearchFunctions = document.getElementById("toggleSearchFunctions");
+    toggleSearchFunctions.addEventListener("click", toggleAdvancedSearch);
+    var searchButton = document.getElementById('searchButton');
+    searchButton.addEventListener('click', handleSearch);
+    var tooltipMessage = 'Ricerca all\'interno dei capi di: titolo, autore, classificazione, corpo scheda, descrizione, ubicazione, provenienza, storia collezionistica';
+    $(".custom-tooltip-content").text(tooltipMessage)
+    $("#custom-tooltip").click(function () {
+      $(".custom-tooltip-content").toggleClass("show");
+    });
+    initInputValidation();
+
+
   });
-});
 
 
 
