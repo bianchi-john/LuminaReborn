@@ -25,27 +25,57 @@ function retrieveSuggestion() {
   const categoriaSelect = document.getElementById('categoria');
   const classificazioneSelect = document.getElementById('classificazione');
 
-  // Opzioni fisse che vuoi aggiungere
-  const opzioniFisse = [
-    'Opzione 1',
-    'Opzione 2',
-    'Opzione 3',
-    // ... aggiungi le altre opzioni ...
+  const opzioniCategoria = [
+    'Dipinti',
+    'Mosaici',
+    'Sculture e frammenti lapidei',
+    'Piccola plastica',
+    'Elementi architettonici',
+    'Disegni, stampe e matrici',
+    'Fotografie',
+    'Libri e riviste',
+    'Manoscritti',
+    'Armi e armature',
+    'Tessuti e moda',
+    'Gioielleria e ornamenti',
+    'Paramenti sacri, oggetti liturgici e devozionali',
+    'Utensili e strumenti di lavoro',
+    'Materiali organici, fossili e resti umani',
+    'Tarsie',
+    'Arredi e mobili',
+    'Medaglie, monete e gemme',
+    'Calchi',
+    'Lapidi e cippi funerari',
+    'Urne, sarcofagi e casse tombali',
+    'Vasellame ceramico',
+    'Vasellame metallico',
+    'Vetri',
+    'Sigilli e impronte di sigilli',
+    'Strumenti musicali',
+    'Giocattoli',
+    'Altro'
   ];
-  
-  // Aggiungi le opzioni alla <select>
-  opzioniFisse.forEach(opzione => {
-    const optionElement = document.createElement('option');
+
+  const opzioniClassificazione = [
+    'Opera firmata',
+    'Opera attribuita',
+    'Opera documentata'
+  ];
+
+
+  opzioniCategoria.forEach(opzione => {
+    let optionElement = document.createElement('option');
     optionElement.value = opzione; // Assegna il valore all'opzione
     optionElement.textContent = opzione; // Testo visibile all'utente
     categoriaSelect.appendChild(optionElement);
-        classificazioneSelect.appendChild(optionElement);
   });
 
-
-
-
-
+  opzioniClassificazione.forEach(opzione => {
+    let optionElement = document.createElement('option');
+    optionElement.value = opzione; // Assegna il valore all'opzione
+    optionElement.textContent = opzione; // Testo visibile all'utente
+    classificazioneSelect.appendChild(optionElement);
+  });
 
   const urls = [
     "http://0.0.0.0:3000/materiali",
@@ -85,8 +115,8 @@ function retrieveSuggestion() {
 
       const arrayListaMateriali = Array.from(listaMaterialiClean);
       const arrayListaDescrizioni = Array.from(listaDescrizioniClean);
-      addSuggestion('nome_materiale','nome_materialeSuggerimenti',arrayListaMateriali)
-      addSuggestion('nome_tecnica','nome_tecnicaSuggerimenti',arrayListaDescrizioni)
+      addSuggestion('nome_materiale', 'nome_materialeSuggerimenti', arrayListaMateriali)
+      addSuggestion('nome_tecnica', 'nome_tecnicaSuggerimenti', arrayListaDescrizioni)
 
     })
 
@@ -190,10 +220,10 @@ function createCard(data, index) {
     imageContainer.classList.add("image-container");
     imageContainer.appendChild(imgElement);
     cardBodyDiv.appendChild(imageContainer);
-  
+
   }
 
-  
+
 
   // cardBodyDiv.appendChild(titleElement);
   cardBodyDiv.appendChild(titleElement);
@@ -205,7 +235,7 @@ function createCard(data, index) {
   cardBodyDiv.appendChild(ubicazioneElement);
   cardBodyDiv.appendChild(nome_inventarioElement);
 
-  
+
 
   // Crea il link intorno alla card e imposta l'URL desiderato con il parametro "id"
   var cardLink = document.createElement("a");
@@ -370,7 +400,7 @@ function handleSearch() {
       }
       else {
         for (var j = 0; j < response.data.length; j = j + 2) {
-          document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j+1]));
+          document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
         }
         // Scrolla alla sezione dei risultati
         scrollToResults();
