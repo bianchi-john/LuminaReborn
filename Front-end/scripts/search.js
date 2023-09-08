@@ -18,62 +18,38 @@ function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
   });
 }
 
-// Funzione per trovare e generare i suggerimenti per le searchbox di: Classificazione opera, Materiali, Tecniche
 function retrieveSuggestion() {
-
-
   const categoriaSelect = document.getElementById('categoria');
   const classificazioneSelect = document.getElementById('classificazione');
 
   const opzioniCategoria = [
-    'Dipinti',
-    'Mosaici',
-    'Sculture e frammenti lapidei',
-    'Piccola plastica',
-    'Elementi architettonici',
-    'Disegni, stampe e matrici',
-    'Fotografie',
-    'Libri e riviste',
-    'Manoscritti',
-    'Armi e armature',
-    'Tessuti e moda',
-    'Gioielleria e ornamenti',
-    'Paramenti sacri, oggetti liturgici e devozionali',
-    'Utensili e strumenti di lavoro',
-    'Materiali organici, fossili e resti umani',
-    'Tarsie',
-    'Arredi e mobili',
-    'Medaglie, monete e gemme',
-    'Calchi',
-    'Lapidi e cippi funerari',
-    'Urne, sarcofagi e casse tombali',
-    'Vasellame ceramico',
-    'Vasellame metallico',
-    'Vetri',
-    'Sigilli e impronte di sigilli',
-    'Strumenti musicali',
-    'Giocattoli',
-    'Altro'
+    'Dipinti', 'Mosaici', 'Sculture e frammenti lapidei', 'Piccola plastica',
+    'Elementi architettonici', 'Disegni, stampe e matrici', 'Fotografie',
+    'Libri e riviste', 'Manoscritti', 'Armi e armature', 'Tessuti e moda',
+    'Gioielleria e ornamenti', 'Paramenti sacri, oggetti liturgici e devozionali',
+    'Utensili e strumenti di lavoro', 'Materiali organici, fossili e resti umani',
+    'Tarsie', 'Arredi e mobili', 'Medaglie, monete e gemme', 'Calchi',
+    'Lapidi e cippi funerari', 'Urne, sarcofagi e casse tombali',
+    'Vasellame ceramico', 'Vasellame metallico', 'Vetri',
+    'Sigilli e impronte di sigilli', 'Strumenti musicali', 'Giocattoli', 'Altro'
   ];
 
-  const opzioniClassificazione = [
-    'Opera firmata',
-    'Opera attribuita',
-    'Opera documentata'
-  ];
+  const opzioniClassificazione = ['Opera firmata', 'Opera attribuita', 'Opera documentata'];
 
+  function createOptionElement(value) {
+    const optionElement = document.createElement('option');
+    optionElement.value = value;
+    optionElement.textContent = value;
+    return optionElement;
+  }
 
   opzioniCategoria.forEach(opzione => {
-    let optionElement = document.createElement('option');
-    optionElement.value = opzione; // Assegna il valore all'opzione
-    optionElement.textContent = opzione; // Testo visibile all'utente
+    const optionElement = createOptionElement(opzione);
     categoriaSelect.appendChild(optionElement);
   });
 
   opzioniClassificazione.forEach(opzione => {
-    let optionElement = document.createElement('option');
-    optionElement.value = opzione; // Assegna il valore all'opzione
-    optionElement.textContent = opzione; // Testo visibile all'utente
+    const optionElement = createOptionElement(opzione);
     classificazioneSelect.appendChild(optionElement);
   });
 
@@ -89,43 +65,25 @@ function retrieveSuggestion() {
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          const nomeDizionario = url.split("/").pop(); // Estrae l'ultima parte dell'URL come nome del dizionario
+          const nomeDizionario = url.split("/").pop();
           risultati[nomeDizionario] = data;
         })
     )
   )
     .then(() => {
+      const listaMateriali = new Set(risultati.materiali.data.map(materiale => materiale.nome_materiale));
+      const listaDescrizioni = new Set(risultati.tecniche.data.map(tecniche => tecniche.nome_tecnica));
 
-      // Liste per i campi estratti
-      const listaMateriali = [];
-      const listaDescrizioni = [];
+      const arrayListaMateriali = Array.from(listaMateriali);
+      const arrayListaDescrizioni = Array.from(listaDescrizioni);
 
-      // Estrarre i dati da "materiali"
-      risultati.materiali.data.forEach(materiale => {
-        listaMateriali.push(materiale.nome_materiale);
-      });
-
-      risultati.tecniche.data.forEach(tecniche => {
-        listaDescrizioni.push(tecniche.nome_tecnica);
-      });
-      // Stampa delle liste
-
-      const listaMaterialiClean = new Set(listaMateriali);
-      const listaDescrizioniClean = new Set(listaDescrizioni);
-
-      const arrayListaMateriali = Array.from(listaMaterialiClean);
-      const arrayListaDescrizioni = Array.from(listaDescrizioniClean);
-      addSuggestion('nome_materiale', 'nome_materialeSuggerimenti', arrayListaMateriali)
-      addSuggestion('nome_tecnica', 'nome_tecnicaSuggerimenti', arrayListaDescrizioni)
-
+      addSuggestion('nome_materiale', 'nome_materialeSuggerimenti', arrayListaMateriali);
+      addSuggestion('nome_tecnica', 'nome_tecnicaSuggerimenti', arrayListaDescrizioni);
     })
-
-
     .catch(error => {
       console.error("Si è verificato un errore:", error);
     });
 }
-
 
 
 // Funzione per ottenere il valore selezionato per il primo form di date
@@ -133,8 +91,6 @@ function getAmbitoStoricoDa() {
   // Ottieni i riferimenti agli elementi dei radio button
   const radioAvantiDa = document.getElementById('avanti_da');
   const radioDopoDa = document.getElementById('dopo_da');
-  const radioAvantiA = document.getElementById('avanti_a');
-  const radioDopoA = document.getElementById('dopo_a');
 
   if (radioAvantiDa.checked) {
     return radioAvantiDa.value;
@@ -146,8 +102,6 @@ function getAmbitoStoricoDa() {
 // Funzione per ottenere il valore selezionato per il secondo form di date
 function getAmbitoStoricoA() {
   // Ottieni i riferimenti agli elementi dei radio button
-  const radioAvantiDa = document.getElementById('avanti_da');
-  const radioDopoDa = document.getElementById('dopo_da');
   const radioAvantiA = document.getElementById('avanti_a');
   const radioDopoA = document.getElementById('dopo_a');
 
@@ -157,8 +111,6 @@ function getAmbitoStoricoA() {
     return radioDopoA.value;
   }
 }
-
-
 
 function scrollToResults() {
   // Ottenere l'elemento della sezione dei risultati per cui scrollare
@@ -208,6 +160,11 @@ function createCard(data, index) {
   nome_inventarioElement.classList.add("card-text");
   nome_inventarioElement.textContent = data.nome_inventario;
 
+  var numero_inventarioElement = document.createElement("p");
+  numero_inventarioElement.classList.add("card-text");
+  numero_inventarioElement.textContent = data.numero_inventario;
+
+
   var pathElement = document.createElement("p");
   pathElement.classList.add("card-text");
   pathElement.textContent = data.path;
@@ -223,9 +180,6 @@ function createCard(data, index) {
 
   }
 
-
-
-  // cardBodyDiv.appendChild(titleElement);
   cardBodyDiv.appendChild(titleElement);
   cardBodyDiv.appendChild(autoreElement);
   cardBodyDiv.appendChild(categoriaElement);
@@ -234,16 +188,11 @@ function createCard(data, index) {
   cardBodyDiv.appendChild(nome_materialeElement);
   cardBodyDiv.appendChild(ubicazioneElement);
   cardBodyDiv.appendChild(nome_inventarioElement);
-
-
-
-  // Crea il link intorno alla card e imposta l'URL desiderato con il parametro "id"
+  cardBodyDiv.appendChild(numero_inventarioElement);
   var cardLink = document.createElement("a");
   cardLink.href = "scheda.html?id=" + index;
   cardLink.appendChild(cardBodyDiv);
-
   cardDiv.appendChild(cardLink);
-
   return cardDiv;
 }
 
@@ -279,8 +228,6 @@ function toggleAdvancedSearch() {
 
 function handleSearch() {
 
-
-  // Esempio di come puoi utilizzare le funzioni per ottenere i valori selezionati
   const ambitoStoricoDaValue = getAmbitoStoricoDa();
   const ambitoStoricoAValue = getAmbitoStoricoA();
 
@@ -341,15 +288,11 @@ function handleSearch() {
     var data_a_mostra = giorno_a_mostra + '-' + mese_a_mostra + '-' + anno_a_mostra;
   }
 
-  // Svuoto il contenuto del div dei risultati
   document.getElementById('result').innerHTML = '';
 
-  // Crea l'URL per la chiamata GET
   var url = 'http://10.180.53.210:5000/search/?';
   var queries = [];
 
-
-  // Ricerca generica
   if (advancedSearchFields.style.display === "none") {
     console.log('ricerca generica')
     const queryGenerica = document.getElementById('generalSearchBar').value;
@@ -358,7 +301,6 @@ function handleSearch() {
 
   else {
     console.log('ricerca avanzata')
-    // Ottieni i valori inseriti nei campi di ricerca
     const titoloOpera = document.getElementById('titolo_opera').value;
     const corpoScheda = document.getElementById('corpo_scheda').value;
     const iscrizioni = document.getElementById('iscrizioni').value;
@@ -369,7 +311,6 @@ function handleSearch() {
     const nomeAutore = document.getElementById('nome').value;
     const ambitoStorico = document.getElementById('ambito_storico').value;
     var dataDadataA = '';
-    // Entrambe le date selezionate
     if (anno_a && anno_da) {
       dataDadataA = data_da + ' ' + data_a + ' ' + ambitoStoricoDaValue + ' ' + ambitoStoricoAValue;
     }
@@ -377,6 +318,7 @@ function handleSearch() {
     const nomeTecnica = document.getElementById('nome_tecnica').value;
     const ubicazione = document.getElementById('ubicazione').value;
     const nomeInventario = document.getElementById('nome_inventario').value;
+    const numeroInventario = document.getElementById('numero_inventario').value;
     const nomeProvenienza = document.getElementById('nome_provenienza').value;
     const curatore = document.getElementById('curatore').value;
     const titoloMostra = document.getElementById('titolo_mostra').value;
@@ -403,6 +345,7 @@ function handleSearch() {
     queries.push('nomeTecnica=' + encodeURIComponent(nomeTecnica));
     queries.push('ubicazione=' + encodeURIComponent(ubicazione));
     queries.push('nomeInventario=' + encodeURIComponent(nomeInventario));
+    queries.push('numeroInventario=' + encodeURIComponent(numeroInventario));
     queries.push('nomeProvenienza=' + encodeURIComponent(nomeProvenienza));
     queries.push('curatore=' + encodeURIComponent(curatore));
     queries.push('titoloMostra=' + encodeURIComponent(titoloMostra));
@@ -414,20 +357,16 @@ function handleSearch() {
   }
   url += queries.join('&');
 
-
-  // Controlla se non ci sono query da inviare
   if (queries.length === 0) {
     console.log('Nessuna query inserita.');
     return;
   }
 
-  // Effettua la chiamata GET
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
 
   xhr.onload = function () {
     if (xhr.status === 200) {
-      // La chiamata ha avuto successo, visualizza il risultato nella pagina
       var response = JSON.parse(xhr.responseText);
       if (response.data[0].length == 0) {
         document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
@@ -436,11 +375,9 @@ function handleSearch() {
         for (var j = 0; j < response.data.length; j = j + 2) {
           document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
         }
-        // Scrolla alla sezione dei risultati
         scrollToResults();
       }
     } else {
-      // La chiamata non è riuscita, gestisci l'errore di conseguenza
       console.error('Errore nella chiamata GET: ' + xhr.status);
     }
   };
@@ -493,7 +430,6 @@ function setupTooltip() {
 
 
 $(document).ready(function () {
-  // Inizializza l'interfaccia utente al caricamento della pagina
   initializeUI();
 
   function initializeUI() {
@@ -504,7 +440,6 @@ $(document).ready(function () {
   }
 
   function addEventListeners() {
-    // Aggiungi gestori di eventi ai tuoi elementi DOM
     $("#toggleSearchFunctions").on("click", toggleAdvancedSearch);
     $("#searchButton").on("click", handleSearch);
   }

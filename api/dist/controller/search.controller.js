@@ -36,6 +36,7 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
             nomeTecnica: req.query.nomeTecnica ? validator.escape(req.query.nomeTecnica) : '',
             ubicazione: req.query.ubicazione ? validator.escape(req.query.ubicazione) : '',
             nomeInventario: req.query.nomeInventario ? validator.escape(req.query.nomeInventario) : '',
+            numeroInventario: req.query.numeroInventario ? validator.escape(req.query.numeroInventario) : '',
             nomeProvenienza: req.query.nomeProvenienza ? validator.escape(req.query.nomeProvenienza) : '',
             curatore: req.query.curatore ? validator.escape(req.query.curatore) : '',
             titoloMostra: req.query.titoloMostra ? validator.escape(req.query.titoloMostra) : '',

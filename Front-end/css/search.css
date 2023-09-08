@@ -12,6 +12,7 @@
 html {
   scroll-behavior: smooth;
 }
+
 .custom-tooltip-content {
   position: absolute;
   background-color: #f9f9f9;
@@ -28,8 +29,8 @@ html {
 
 }
 
-#searchButton{
- margin-top: 5px;
+#searchButton {
+  margin-top: 5px;
 }
 
 #toggleSearchFunctions {
@@ -42,31 +43,34 @@ html {
   position: absolute;
   top: 0;
   right: 0;
-  width: auto; /* Regola le dimensioni dell'immagine */
-  height: 100%; /* Altezza pari all'altezza del contenitore */
+  width: auto;
+  height: 100%;
   overflow: hidden;
 }
 
 .card-image {
   width: 100%;
-  height: 100%; /* Altezza pari all'altezza del contenitore */
+  height: 100%;
   object-fit: cover;
 }
-.gruppo_giorni{
+
+.gruppo_giorni {
   display: flex;
   margin-bottom: 5px;
-  
+
 }
-.gruppo_date{
-    margin-left: 40px;
-    margin-right: 40px;
-    font-size: 14px;
+
+.gruppo_date {
+  margin-left: 40px;
+  margin-right: 40px;
+  font-size: 14px;
 }
-.ambito_storico{
+
+.ambito_storico {
   margin-top: 14px;
 }
 
-.date-form{
+.date-form {
   width: 150px;
 }
 
@@ -74,11 +78,13 @@ html {
   .card-image {
     display: none;
   }
-  .gruppo_date{
+
+  .gruppo_date {
     margin-left: 0px;
     margin-left: 0px;
-}
-.date-form{
-  min-width: 95px;
-}
+  }
+
+  .date-form {
+    min-width: 95px;
+  }
 }

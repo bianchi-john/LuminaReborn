@@ -80,6 +80,9 @@ const buildDynamicQuery = (key, value) => {
         else if (key === 'nomeInventario') {
             condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.nome_inventario LIKE '%${value}%';`;
         }
+        else if (key === 'numeroInventario') {
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.numero_inventario LIKE '%${value}%';`;
+        }
         else if (key === 'nomeProvenienza') {
             condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.provenienza LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
         }

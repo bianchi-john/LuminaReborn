@@ -31,6 +31,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       nomeTecnica: String;
       ubicazione: String;
       nomeInventario: String;
+      numeroInventario: String;
       nomeProvenienza: String;
       curatore: String;
       titoloMostra: String;
@@ -55,6 +56,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       nomeTecnica: req.query.nomeTecnica ? validator.escape(req.query.nomeTecnica) : '',
       ubicazione: req.query.ubicazione ? validator.escape(req.query.ubicazione) : '',
       nomeInventario: req.query.nomeInventario ? validator.escape(req.query.nomeInventario) : '',
+      numeroInventario: req.query.numeroInventario ? validator.escape(req.query.numeroInventario) : '',
       nomeProvenienza: req.query.nomeProvenienza ? validator.escape(req.query.nomeProvenienza) : '',
       curatore: req.query.curatore ? validator.escape(req.query.curatore) : '',
       titoloMostra: req.query.titoloMostra ? validator.escape(req.query.titoloMostra) : '',
@@ -86,7 +88,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       return res.status(Code.OK)
 
     }
-
+    
 
     let responseCount: { [key: string]: number } = {};
     for (let response of responses[0]) {
@@ -136,10 +138,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       uniqueResponsesWithInformation.push(finalResult[0], uniqueResponses[i].id)
 
     }
-
     return res.status(Code.OK)
-
-
       .send(new HttpResponse(Code.OK, Status.OK, 'Schede retrieved', uniqueResponsesWithInformation));
   }
 
