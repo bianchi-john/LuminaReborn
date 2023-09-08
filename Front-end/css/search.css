@@ -21,11 +21,17 @@ html {
   display: none;
   margin-top: 5px;
 
+
 }
 
 .custom-tooltip-content.show {
   display: inline;
   margin-top: 5px;
+  display: inline;
+  margin-top: 5px;
+  margin-left: 8px;
+  z-index: 2;
+  margin-right: 10px;
 
 }
 

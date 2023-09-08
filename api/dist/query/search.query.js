@@ -126,7 +126,6 @@ const buildDynamicQuery = (key, value) => {
         }
         return condition;
     }
-    // Esempi di utilizzo:
     const condition = generateCondition(key, value);
     let result = '';
     if (condition) {

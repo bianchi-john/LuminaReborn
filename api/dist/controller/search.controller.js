@@ -67,14 +67,28 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (ok == false) {
             return res.status(code_enum_1.Code.OK);
         }
+        //
+        // Creare un set contenente gli id dei primi elementi dell'array
+        const idsSet = new Set(responses[0].map((item) => item.id));
+        // Filtrare gli elementi che compaiono in tutti gli indici dell'array
+        const result = responses[0].filter((item) => {
+            for (let i = 1; i < responses.length; i++) {
+                if (!responses[i].some((subItem) => subItem.id === item.id)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        // Creare un nuovo array con i risultati filtrati
+        const filteredResponses = [...result];
         let responseCount = {};
-        for (let response of responses[0]) {
+        for (let response of filteredResponses) {
             let responseString = JSON.stringify(response);
             responseCount[responseString] = (responseCount[responseString] || 0) + 1;
         }
         let uniqueResponses = [];
         let seenItems = {};
-        for (let response of responses[0]) {
+        for (let response of filteredResponses) {
             let responseString = JSON.stringify(response);
             if (!seenItems[responseString]) {
                 if (responseCount[responseString] > 1) {

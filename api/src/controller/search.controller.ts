@@ -88,10 +88,26 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
       return res.status(Code.OK)
 
     }
-    
+
+    // Creare un set contenente gli id dei primi elementi dell'array
+    const idsSet = new Set(responses[0].map((item: { id: number }) => item.id));
+
+    // Filtrare gli elementi che compaiono in tutti gli indici dell'array
+    const result = responses[0].filter((item: { id: number }) => {
+      for (let i = 1; i < responses.length; i++) {
+        if (!responses[i].some((subItem: { id: number }) => subItem.id === item.id)) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    // Creare un nuovo array con i risultati filtrati
+    const filteredResponses: Array<{ id: number; titolo_di_servizio: string }> = [...result];
+
 
     let responseCount: { [key: string]: number } = {};
-    for (let response of responses[0]) {
+    for (let response of filteredResponses) {
       let responseString = JSON.stringify(response);
       responseCount[responseString] = (responseCount[responseString] || 0) + 1;
     }
@@ -99,7 +115,7 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
     let uniqueResponses: any[] = [];
     let seenItems: { [key: string]: boolean } = {};
 
-    for (let response of responses[0]) {
+    for (let response of filteredResponses) {
       let responseString = JSON.stringify(response);
       if (!seenItems[responseString]) {
         if (responseCount[responseString] > 1) {
@@ -112,7 +128,6 @@ export const advancedSearch = async (req: Request, res: Response): Promise<Respo
     }
 
     let uniqueResponsesWithInformation: any[] = [];
-
 
     for (let i = 0; i < uniqueResponses.length; i++) {
       let pool = await connection();
