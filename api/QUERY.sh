@@ -4,11 +4,7 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_autore": 1}' \  http://0.0.0.0:3000/tds_schede_autori
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_autore": 2}' \  http://0.0.0.0:3000/tds_schede_autori
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "ambito_storico": "Basso medioevo", "etichetta_data": " 1340 ca", "giorno_data_da": "10", "mese_data_da":"02", "anno_data_da": "1020", "giorno_data_a": "11", "mese_data_a":"03", "anno_data_a": "1520"}' \  http://0.0.0.0:3000/cronologie
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "ambito_storico": "Basso medioevo", "etichetta_data": " 1340 ca", "giorno_data_da": "10", "mese_data_da":"02", "anno_data_da": "-2000", "giorno_data_a": "11", "mese_data_a":"03", "anno_data_a": "-1000"}' \  http://0.0.0.0:3000/cronologie
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "ambito_storico": "Basso medioevo", "etichetta_data": " 1340 ca", "giorno_data_da": "10", "mese_data_da":"02", "anno_data_da": "-2000", "giorno_data_a": "11", "mese_data_a":"03", "anno_data_a": "1000"}' \  http://0.0.0.0:3000/cronologie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_cronologia": 1}' \  http://0.0.0.0:3000/tds_schede_cronologie
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_cronologia": 2}' \  http://0.0.0.0:3000/tds_schede_cronologie
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_cronologia": 3}' \  http://0.0.0.0:3000/tds_schede_cronologie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "nome_materiale": "Nome materiale", "descrizione": "descrizione materiale"}' \  http://0.0.0.0:3000/materiali
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_materiale": 1}' \  http://0.0.0.0:3000/tds_schede_materiali
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "nome_tecnica": "Nome tecnica", "descrizione": "descrizione tecnica"}' \  http://0.0.0.0:3000/tecniche
@@ -44,7 +40,6 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "1", "intero_parziale": "intero", "titolo_gruppo_misure": "Collana A", "id_tds": "1"}' \  http://0.0.0.0:3000/tds_schede_gruppo_misure
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "intero_parziale": "parziale, Pendaglio A", "titolo_gruppo_misure": "Collana A", "id_tds": "1"}' \  http://0.0.0.0:3000/tds_schede_gruppo_misure
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_gruppo_misure": 1}' \  http://0.0.0.0:3000/tds_schede_misure
-curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 1, "id_gruppo_misure": 2}' \  http://0.0.0.0:3000/tds_schede_misure
 
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "titolo_di_servizio": "La Gioconda", "titolo_opera": "Monna Lisa", "corpo_scheda": "Esempio corpo scheda", "iscrizioni": "Nessuna iscrizione presente", "descrizione_sintetica": "Esempio descrizione sintetica scheda", "storia_espositiva": "Esempio storia espositiva scheda", "classificazione": "Dipinto"}' \  http://0.0.0.0:3000/schede
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 2, "id_autore": 1}' \  http://0.0.0.0:3000/tds_schede_autori
@@ -63,6 +58,10 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_bibliografia": "3"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "2", "id_bibliografia": "1"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "riferimento_bibliografico": "Esempio altra documentazione fotografica"}' \ http://0.0.0.0:3000/documentazioniFotografiche
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "2", "ambito_storico": "Basso medioevo", "etichetta_data": " 1340 ca", "giorno_data_da": "10", "mese_data_da":"02", "anno_data_da": "-2000", "giorno_data_a": "11", "mese_data_a":"03", "anno_data_a": "-1000"}' \  http://0.0.0.0:3000/cronologie
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 2, "id_cronologia": 2}' \  http://0.0.0.0:3000/tds_schede_cronologie
+
+
 
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "titolo_di_servizio": "Notte Stellata", "titolo_opera": "Notte Stellata", "corpo_scheda": "Esempio corpo scheda", "iscrizioni": "Nessuna iscrizione presente", "descrizione_sintetica": "Esempio descrizione sintetica scheda", "storia_espositiva": "Esempio storia espositiva scheda", "classificazione": "Dipinto"}' \  http://0.0.0.0:3000/schede
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 3, "id_autore": 1}' \  http://0.0.0.0:3000/tds_schede_autori
@@ -81,3 +80,5 @@ curl --header "Content-Type: application/json" \  --request POST \  --data '{"id
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_bibliografia": "4"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": "3", "id_bibliografia": "1"}' \  http://0.0.0.0:3000/tds_schede_bibliografie
 curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "riferimento_bibliografico": "Esempio altra documentazione fotografica"}' \  http://0.0.0.0:3000/documentazioniFotografiche
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id_scheda": 3, "id_cronologia": 3}' \  http://0.0.0.0:3000/tds_schede_cronologie
+curl --header "Content-Type: application/json" \  --request POST \  --data '{"id": "3", "ambito_storico": "Basso medioevo", "etichetta_data": " 1340 ca", "giorno_data_da": "10", "mese_data_da":"02", "anno_data_da": "-2000", "giorno_data_a": "11", "mese_data_a":"03", "anno_data_a": "1000"}' \  http://0.0.0.0:3000/cronologie
