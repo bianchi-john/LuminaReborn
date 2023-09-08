@@ -67,7 +67,6 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (ok == false) {
             return res.status(code_enum_1.Code.OK);
         }
-        //
         // Creare un set contenente gli id dei primi elementi dell'array
         const idsSet = new Set(responses[0].map((item) => item.id));
         // Filtrare gli elementi che compaiono in tutti gli indici dell'array
