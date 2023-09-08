@@ -52,9 +52,33 @@ html {
   height: 100%; /* Altezza pari all'altezza del contenitore */
   object-fit: cover;
 }
+.gruppo_giorni{
+  display: flex;
+  margin-bottom: 5px;
+  
+}
+.gruppo_date{
+    margin-left: 40px;
+    margin-right: 40px;
+    font-size: 14px;
+}
+.ambito_storico{
+  margin-top: 14px;
+}
+
+.date-form{
+  width: 150px;
+}
 
 @media only screen and (max-width: 700px) {
   .card-image {
     display: none;
   }
+  .gruppo_date{
+    margin-left: 0px;
+    margin-left: 0px;
+}
+.date-form{
+  min-width: 95px;
+}
 }

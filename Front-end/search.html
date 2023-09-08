@@ -110,43 +110,60 @@
 
         <div class="form-group">
           <label for="data_mostra">Ricerca in data della mostra</label>
+          <div class="gruppo_date">
+
           <p>Data da</p>
-          <input type="text" class="form-control date-form" id="giorno_da_mostra" placeholder="Giorno (1-31)">
-          <input type="text" class="form-control date-form" id="mese_da_mostra" placeholder="Mese (1-12)">
-          <input type="text" class="form-control date-form" id="anno_da_mostra" placeholder="Anno (es. 2023)">
+          <div class="gruppo_giorni">
+            <input type="text" class="form-control date-form" id="giorno_da_mostra" placeholder="Giorno (1-31)">
+            <input type="text" class="form-control date-form" id="mese_da_mostra" placeholder="Mese (1-12)">
+            <input type="text" class="form-control date-form" id="anno_da_mostra" placeholder="Anno (es. 2023)">
+          </div>
           <p>Data a</p>
-          <input type="text" class="form-control date-form" id="giorno_a_mostra" placeholder="Giorno (1-31)">
-          <input type="text" class="form-control date-form" id="mese_a_mostra" placeholder="Mese (1-12)">
-          <input type="text" class="form-control date-form" id="anno_a_mostra" placeholder="Anno (es. 2023)">
+          <div class="gruppo_giorni">
+            <input type="text" class="form-control date-form" id="giorno_a_mostra" placeholder="Giorno (1-31)">
+            <input type="text" class="form-control date-form" id="mese_a_mostra" placeholder="Mese (1-12)">
+            <input type="text" class="form-control date-form" id="anno_a_mostra" placeholder="Anno (es. 2023)">
+          </div>
+          </div>
         </div>
-        
+
 
 
         <div class="form-group">
           <label for="ambito_storico">Ricerca in data</label>
-          <p>Data da</p>
-          <input type="text" class="form-control date-form" id="giorno_da" placeholder="Giorno (1-31)">
-          <input type="text" class="form-control date-form" id="mese_da" placeholder="Mese (1-12)">
-          <input type="text" class="form-control date-form" id="anno_da" placeholder="Anno (es. 2023)">
-          <label>
-            <input type="radio" name="ambito_storico_da" value="avanti" id="avanti_da" checked>a.C.
-          </label>
-          <label>
-            <input type="radio" name="ambito_storico_da" value="dopo" id="dopo_da">d.C.
-          </label>
+          <div class="gruppo_date">
+            <p>Data da</p>
+            <div class="gruppo_giorni">
+              <input type="text" class="form-control date-form" id="giorno_da" placeholder="Giorno (1-31)">
+              <input type="text" class="form-control date-form" id="mese_da" placeholder="Mese (1-12)">
+              <input type="text" class="form-control date-form" id="anno_da" placeholder="Anno (es. 2023)">
+            </div>
+            <label>
+              <input type="radio" class="ambito_storico" name="ambito_storico_da" value="avanti" id="avanti_da"
+                checked>a.C.
+            </label>
+            <label>
+              <input type="radio" class="ambito_storico" name="ambito_storico_da" value="dopo" id="dopo_da">d.C.
+            </label>
+          </div>
         </div>
 
         <div class="form-group">
-          <p>Data a</p>
-          <input type="text" class="form-control date-form" id="giorno_a" placeholder="Giorno (1-31)">
-          <input type="text" class="form-control date-form" id="mese_a" placeholder="Mese (1-12)">
-          <input type="text" class="form-control date-form" id="anno_a" placeholder="Anno (es. 2023)">
-          <label>
-            <input type="radio" name="ambito_storico_a" value="avanti" id="avanti_a" checked>a.C.
-          </label>
-          <label>
-            <input type="radio" name="ambito_storico_a" value="dopo" id="dopo_a">d.C.
-          </label>
+          <div class="gruppo_date">
+            <p>Data a</p>
+            <div class="gruppo_giorni">
+              <input type="text" class="form-control date-form" id="giorno_a" placeholder="Giorno (1-31)">
+              <input type="text" class="form-control date-form" id="mese_a" placeholder="Mese (1-12)">
+              <input type="text" class="form-control date-form" id="anno_a" placeholder="Anno (es. 2023)">
+            </div>
+            <label>
+              <input type="radio" class="ambito_storico" name="ambito_storico_a" value="avanti" id="avanti_a"
+                checked>a.C.
+            </label>
+            <label>
+              <input type="radio" class="ambito_storico" name="ambito_storico_a" value="dopo" id="dopo_a">d.C.
+            </label>
+          </div>
         </div>
 
 
@@ -157,8 +174,6 @@
           <datalist id="nome_materialeSuggerimenti"></datalist>
         </div>
 
-
-
         <div class="form-group">
           <label for="nome_tecnica">Ricerca in tecniche</label>
           <input type="text" class="form-control nome_tecnica" id="nome_tecnica" list="nome_tecnicaSuggerimenti"
@@ -166,21 +181,15 @@
           <datalist id="nome_tecnicaSuggerimenti"></datalist>
         </div>
 
-
-
         <div class="form-group">
           <label for="curatore">Ricerca in curatore</label>
           <input type="text" class="form-control curatore" id="curatore" aria-describedby="curatore">
         </div>
 
-
-
-
         <div class="form-group">
           <label for="luogo_mostra">Ricerca in luogo della mostra</label>
           <input type="text" class="form-control luogo_mostra" id="luogo_mostra" aria-describedby="luogo_mostra">
         </div>
-
 
 
         <div class="form-group">
