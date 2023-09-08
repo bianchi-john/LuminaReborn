@@ -78,8 +78,8 @@ function retrieveSuggestion() {
   });
 
   const urls = [
-    "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/tecniche"
+    "http://10.180.53.210:5000/materiali",
+    "http://10.180.53.210:5000/tecniche"
   ];
 
   const risultati = {};
@@ -333,19 +333,19 @@ function handleSearch() {
     }
   }
   if (anno_a) {
-    var data_da = giorno_da + '/' + mese_da + '/' + anno_da;
-    var data_a = giorno_a + '/' + mese_a + '/' + anno_a;
+    var data_da = anno_da + '-' + mese_da + '-' + giorno_da;
+    var data_a = anno_a + '-' + mese_a + '-' + giorno_a;
   }
   if (anno_a_mostra){
-    var data_da_mostra = giorno_da_mostra + '/' + mese_da_mostra + '/' + anno_da_mostra;
-    var data_a_mostra = giorno_a_mostra + '/' + mese_a_mostra + '/' + anno_a_mostra;
+    var data_da_mostra = giorno_da_mostra + '-' + mese_da_mostra + '-' + anno_da_mostra;
+    var data_a_mostra = giorno_a_mostra + '-' + mese_a_mostra + '-' + anno_a_mostra;
   }
 
     // Svuoto il contenuto del div dei risultati
     document.getElementById('result').innerHTML = '';
 
     // Crea l'URL per la chiamata GET
-    var url = 'http://0.0.0.0:3000/search/?';
+    var url = 'http://10.180.53.210:5000/search/?';
     var queries = [];
 
 
@@ -368,7 +368,7 @@ function handleSearch() {
       const categoria = document.getElementById('categoria').value;
       const nomeAutore = document.getElementById('nome').value;
       const ambitoStorico = document.getElementById('ambito_storico').value;
-      let dataDadataA = '';
+      var dataDadataA = '';
       // Entrambe le date selezionate
       if (anno_a && anno_da) {
         dataDadataA = data_da + ' ' + data_a + ' ' + ambitoStoricoDaValue + ' ' + ambitoStoricoAValue;
@@ -380,9 +380,9 @@ function handleSearch() {
       const nomeProvenienza = document.getElementById('nome_provenienza').value;
       const curatore = document.getElementById('curatore').value;
       const titoloMostra = document.getElementById('titolo_mostra').value;
-      let dataInizioMostradataFineMostra = '';
+      var dataInizioMostradataFineMostra = '';
       if (anno_a_mostra && anno_da_mostra) {
-        dataInizioMostradataFineMostra = doanno_da_mostra + ' ' + anno_a_mostra;
+        dataInizioMostradataFineMostra = anno_da_mostra + ' ' + anno_a_mostra;
       }
       const luogoMostra = document.getElementById('luogo_mostra').value;
       const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
@@ -448,7 +448,7 @@ function handleSearch() {
   }
 
   function initInputValidation() {
-    const inputs = document.querySelectorAll('.form-control');
+    const inputs = document.querySelectorAll('.date-form');
 
     inputs.forEach(input => {
       input.addEventListener('input', () => {
