@@ -54,8 +54,8 @@ function retrieveSuggestion() {
   });
 
   const urls = [
-    "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/tecniche"
+    "http://10.180.53.210:5000/materiali",
+    "http://10.180.53.210:5000/tecniche"
   ];
 
   const risultati = {};
@@ -290,7 +290,7 @@ function handleSearch() {
 
   document.getElementById('result').innerHTML = '';
 
-  var url = 'http://0.0.0.0:3000/search/?';
+  var url = 'http://10.180.53.210:5000/search/?';
   var queries = [];
 
   if (advancedSearchFields.style.display === "none") {

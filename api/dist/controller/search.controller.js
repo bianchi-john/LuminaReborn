@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.advancedSearch = void 0;
+exports.search = void 0;
 const mysql_config_1 = require("../config/mysql.config");
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
@@ -17,7 +17,7 @@ const status_enum_1 = require("../enum/status.enum");
 const search_query_1 = require("../query/search.query");
 const validator = require('validator');
 const sqlstring = require('sqlstring');
-const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const searchCriteria = {
@@ -132,4 +132,4 @@ const advancedSearch = (req, res) => __awaiter(void 0, void 0, void 0, function*
             .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
     }
 });
-exports.advancedSearch = advancedSearch;
+exports.search = search;

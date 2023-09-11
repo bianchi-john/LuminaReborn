@@ -12,7 +12,7 @@ const sqlstring = require('sqlstring');
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
 
-export const advancedSearch = async (req: Request, res: Response): Promise<Response<Scheda[]>> => {
+export const search = async (req: Request, res: Response): Promise<Response<Scheda[]>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   try {
     const searchCriteria: {
