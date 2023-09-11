@@ -3,8 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildDynamicQuery = void 0;
 const buildDynamicQuery = (key, value) => {
     function isValidDate(dateStr) {
-        const date = new Date(dateStr);
-        return !isNaN(date.getTime());
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) {
+                throw new Error('Data non valida');
+            }
+            return true;
+        }
+        catch (error) {
+            throw new Error('Data non valida');
+        }
     }
     function generateCondition(key, value) {
         let condition = '';
@@ -127,12 +135,6 @@ const buildDynamicQuery = (key, value) => {
         return condition;
     }
     const condition = generateCondition(key, value);
-    let result = '';
-    if (condition) {
-        result = `${condition}`;
-        return result;
-    }
-    return ('Errore nella richiesta');
-    console.log(result);
+    return `${condition}`;
 };
 exports.buildDynamicQuery = buildDynamicQuery;

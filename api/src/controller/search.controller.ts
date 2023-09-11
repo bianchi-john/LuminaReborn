@@ -77,6 +77,9 @@ export const search = async (req: Request, res: Response): Promise<Response<Sche
           if (dynamicQuery === undefined) {
             continue
           }
+          if (dynamicQuery === '') {
+            res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
+          }
           const pool = await connection();
           const result: ResultSet = await pool.query(dynamicQuery);
           responses.push(result[0]);

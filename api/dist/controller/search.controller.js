@@ -57,6 +57,9 @@ const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     if (dynamicQuery === undefined) {
                         continue;
                     }
+                    if (dynamicQuery === '') {
+                        res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
+                    }
                     const pool = yield (0, mysql_config_1.connection)();
                     const result = yield pool.query(dynamicQuery);
                     responses.push(result[0]);

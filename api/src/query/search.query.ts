@@ -2,10 +2,17 @@ export const buildDynamicQuery = (key: string, value: string) => {
 
 
   function isValidDate(dateStr: string): boolean {
-    const date = new Date(dateStr);
-    return !isNaN(date.getTime());
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        throw new Error('Data non valida');
+      }
+      return true;
+    } catch (error) {
+      throw new Error('Data non valida');
+    }
   }
-
+  
   function generateCondition(key: string, value: string) {
     let condition = '';
     // RICERCA GENERICA
@@ -105,11 +112,6 @@ export const buildDynamicQuery = (key: string, value: string) => {
 
   const condition = generateCondition(key, value);
 
-  let result = '';
-  if (condition) {
-    result = `${condition}`;
-    return result
-  }
-  return ('Errore nella richiesta')
-  console.log(result);
-};
+  return `${condition}`
+
+}
