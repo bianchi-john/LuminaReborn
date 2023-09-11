@@ -82,6 +82,12 @@ html {
   margin-left: 6px;
 }
 
+.selectBox {
+    width: 300px;
+}
+
+
+
 @media only screen and (max-width: 700px) {
   .card-image {
     display: none;
@@ -95,4 +101,14 @@ html {
   .date-form {
     min-width: 95px;
   }
+  #toggleSearchFunctions{
+    font-size: 14px;
+  }
+  #searchButton{
+    font-size: 14px;
+  }
+  .selectBox {
+    width: auto;
+  }
+
 }
