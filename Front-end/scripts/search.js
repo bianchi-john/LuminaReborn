@@ -442,6 +442,12 @@ $(document).ready(function () {
   function addEventListeners() {
     $("#toggleSearchFunctions").on("click", toggleAdvancedSearch);
     $("#searchButton").on("click", handleSearch);
+    $(window).on("keydown", function(event) {
+      if (event.which === 13) { // 13 è il codice del tasto "Invio"
+        handleSearch();
+      }
+    });
+    
   }
 
 });
