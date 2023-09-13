@@ -312,7 +312,7 @@ ALTER TABLE `tds_schede_mostre` ADD FOREIGN KEY (`id_mostra`) REFERENCES `mostre
 
 ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
-ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_bibliografie`) REFERENCES `bibliografie` (`id`);
+ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_bibliografia`) REFERENCES `bibliografie` (`id`);
 
 ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
@@ -332,7 +332,7 @@ ALTER TABLE `tds_schede_cronologie` ADD FOREIGN KEY (`id_cronologia`) REFERENCES
 
 ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
-ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`documentazioniFotografiche`) REFERENCES `documentazioniFotografiche` (`id`);
+ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_documentazioneFotografica`) REFERENCES `documentazioniFotografiche` (`id`);
 
 ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
