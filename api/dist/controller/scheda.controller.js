@@ -47,6 +47,7 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const querySelectMostre = scheda_query_1.QUERY.SELECT_MOSTRE;
         const querySelectBibliografie = scheda_query_1.QUERY.SELECT_BIBLIOGRAFIE;
         const querySelectAltreBibliografie = scheda_query_1.QUERY.SELECT_ALTREBIBLIOGRAFIE;
+        const querySelectSchedatori = scheda_query_1.QUERY.SELECT_SCHEDATORI;
         const querySelectImmagini = scheda_query_1.QUERY.SELECT_IMMAGINI;
         const querySelectDocumentazioniFotografiche = scheda_query_1.QUERY.SELECT_DOCUMENTAZIONIFOTOGRAFICHE;
         const querySelectMisure = scheda_query_1.QUERY.SELECT_MISURE;
@@ -61,6 +62,7 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const resultMostre = yield pool.query(querySelectMostre, [schedaId]);
         const resultBibliografie = yield pool.query(querySelectBibliografie, [schedaId]);
         const resultAltreBibliografie = yield pool.query(querySelectAltreBibliografie, [schedaId]);
+        const resultSchedatori = yield pool.query(querySelectSchedatori, [schedaId]);
         const resultImmagini = yield pool.query(querySelectImmagini, [schedaId]);
         const resultDocumentazioniFotografiche = yield pool.query(querySelectDocumentazioniFotografiche, [schedaId]);
         const resultMisure = yield pool.query(querySelectMisure, [schedaId]);
@@ -81,6 +83,7 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 immagini: resultImmagini[0],
                 documentazioniFotografiche: resultDocumentazioniFotografiche[0],
                 misure: resultMisure[0],
+                schedatori: resultSchedatori[0],
             }));
         }
         else {

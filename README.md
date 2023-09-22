@@ -31,9 +31,7 @@ Delete all and recreate
 ```sh
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force
 sudo rm -rf data
-npm run start:build
-docker-compose up -d --build
-
+npm run start:build && docker-compose up -d --build
 ./QUERY.sh
 ```
 

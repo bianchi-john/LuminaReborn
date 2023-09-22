@@ -41,6 +41,7 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
     const querySelectMostre = QUERY.SELECT_MOSTRE;
     const querySelectBibliografie = QUERY.SELECT_BIBLIOGRAFIE;
     const querySelectAltreBibliografie = QUERY.SELECT_ALTREBIBLIOGRAFIE;
+    const querySelectSchedatori = QUERY.SELECT_SCHEDATORI;
 
     const querySelectImmagini = QUERY.SELECT_IMMAGINI;
     const querySelectDocumentazioniFotografiche = QUERY.SELECT_DOCUMENTAZIONIFOTOGRAFICHE;
@@ -57,6 +58,7 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
     const resultMostre: ResultSet = await pool.query(querySelectMostre, [schedaId]);
     const resultBibliografie: ResultSet = await pool.query(querySelectBibliografie, [schedaId]);
     const resultAltreBibliografie: ResultSet = await pool.query(querySelectAltreBibliografie, [schedaId]);
+    const resultSchedatori: ResultSet = await pool.query(querySelectSchedatori, [schedaId]);
     const resultImmagini: ResultSet = await pool.query(querySelectImmagini, [schedaId]);
     const resultDocumentazioniFotografiche: ResultSet = await pool.query(querySelectDocumentazioniFotografiche, [schedaId]);
     const resultMisure: ResultSet = await pool.query(querySelectMisure, [schedaId]);
@@ -78,6 +80,7 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
         immagini: resultImmagini[0],
         documentazioniFotografiche: resultDocumentazioniFotografiche[0],
         misure: resultMisure[0],
+        schedatori: resultSchedatori[0],
 
       }));
     } else {

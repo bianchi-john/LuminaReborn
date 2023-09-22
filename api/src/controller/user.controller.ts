@@ -60,6 +60,10 @@ export const createUser = async (req: Request, res: Response): Promise<Response<
   }
 };
 
+
+
+
+
 export const updateUser = async (req: Request, res: Response): Promise<Response<User>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   let user: User = { ...req.body };

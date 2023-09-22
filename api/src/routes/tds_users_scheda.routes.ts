@@ -7,7 +7,7 @@ tds_users_schedaRoutes.route('/')
   .get(getTds_users_schede)
   .post(createTds_users_scheda);
 
-  tds_users_schedaRoutes.route('/:tds_users_scheda.routesId')
+  tds_users_schedaRoutes.route('/:tds_users_schedaId')
   .get(getTds_users_scheda)
   .put(updateTds_users_scheda)
   .delete(deleteTds_users_scheda);

@@ -14,7 +14,10 @@ export const QUERY = {
     SELECT_IMMAGINI:'SELECT * FROM immagini JOIN tds_schede_immagini ON immagini.id = tds_schede_immagini.id_immagine WHERE tds_schede_immagini.id_scheda =  ?',
     SELECT_DOCUMENTAZIONIFOTOGRAFICHE:'SELECT * FROM documentazioniFotografiche JOIN tds_schede_documentazioniFotografiche ON documentazioniFotografiche.id = tds_schede_documentazioniFotografiche.id_documentazioneFotografica WHERE tds_schede_documentazioniFotografiche.id_scheda =  ?',
     SELECT_MISURE: 'SELECT m.*, tsgm.* FROM misure AS m JOIN tds_schede_gruppo_misure AS tsgm ON m.id_gruppo_misure = tsgm.id JOIN tds_schede_misure AS tsm ON tsgm.id = tsm.id_gruppo_misure WHERE tsm.id_scheda = ?',
-    CREATE_SCHEDA: 'INSERT INTO schede(id, titolo_di_servizio, titolo_opera, corpo_scheda, iscrizioni, descrizione_sintetica, storia_espositiva, classificazione) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
-    UPDATE_SCHEDA: 'UPDATE schede SET id = ?, titolo_di_servizio = ?, titolo_opera = ?,  corpo_scheda = ?, iscrizioni = ?, descrizione_sintetica = ?, storia_espositiva = ?, classificazione = ? WHERE id = ?',
+    SELECT_SCHEDATORI: 'SELECT * FROM users JOIN tds_users_schede ON users.id = tds_users_schede.id_user WHERE tds_users_schede.id_scheda = ?',
+    CREATE_SCHEDA: 'INSERT INTO schede(id, titolo_opera, corpo_scheda, iscrizioni, descrizione_sintetica, storia_espositiva, classificazione) VALUES (?, ?, ?, ?, ?, ?, ?);',
+    UPDATE_SCHEDA: 'UPDATE schede SET id = ?, titolo_opera = ?,  corpo_scheda = ?, iscrizioni = ?, descrizione_sintetica = ?, storia_espositiva = ?, classificazione = ? WHERE id = ?',
     DELETE_SCHEDA: 'DELETE FROM schede WHERE id = ?'
+
+
 };

@@ -38,16 +38,24 @@ function populateWebPage(data) {
 
 
     for (i = 0; i < data.data.autori.length; i++) {
-        document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", ";
-        document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", ";
-        document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", ";
-        document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>";
+        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", ";}
+        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", ";}
+        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", ";}
+        if(data.data.autori[i].categoria) {document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>";}
         $('.autori').removeClass('autori');
     }
 
+    for (i = 0; i < data.data.schedatori.length; i++) {
+        if(data.data.schedatori[i].first_name) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].first_name + " ";}
+        if(data.data.schedatori[i].last_name){document.getElementById('schedatore').innerHTML += data.data.schedatori[i].last_name ;}
+        $('.schedatori').removeClass('schedatori');
+    }
+
+
+
     for (i = 0; i < data.data.cronologie.length; i++) {
-        document.getElementById('cronologie').innerHTML += data.data.cronologie[i].ambito_storico + ", ";
-        document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data + " <br>";
+        if(data.data.cronologie[i].ambito_storico) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].ambito_storico + ", ";}
+        if(data.data.cronologie[i].etichetta_data) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data + " <br>";}
         $('.cronologie').removeClass('cronologie');
 
     }
@@ -60,39 +68,87 @@ function populateWebPage(data) {
     }
 
     for (i = 0; i < data.data.inventari.length; i++) {
-        document.getElementById('inventari').innerHTML += data.data.inventari[i].nome_inventario;
-        document.getElementById('giuridica').innerHTML += data.data.inventari[i].descrizione;
-        $('.inventari').removeClass('hiinventaridden');
-        $('.giuridica').removeClass('giuridica');
+        var nomeInventario = data.data.inventari[i].nome_inventario;
+        var numeroInventario = data.data.inventari[i].numero_inventario;
+        var descrizione = data.data.inventari[i].descrizione;
+    
+        // Verifica se le stringhe sono vuote e, se non lo sono, le stampa
+        document.getElementById('inventari').innerHTML += (nomeInventario !== "" ? nomeInventario : "");
+        document.getElementById('inventari').innerHTML += (numeroInventario !== "" ? numeroInventario : "");
+        document.getElementById('giuridica').innerHTML += (descrizione !== "" ? descrizione : "");
+    
+        if (nomeInventario || numeroInventario) {
+            $('.inventari').removeClass('inventari');
+        }
+        if (descrizione) {
+            $('.giuridica').removeClass('giuridica');
+        }
     }
+    
+    
 
     for (i = 0; i < data.data.materiali.length; i++) {
-        document.getElementById('materiali').innerHTML += data.data.materiali[i].nome_materiale + ", ";
-        document.getElementById('materiali').innerHTML += data.data.materiali[i].descrizione + " <br>";
+        document.getElementById('materiali').innerHTML += data.data.materiali[i].nome_materiale;
+        if (data.data.materiali[i].descrizione) {document.getElementById('materiali').innerHTML +=+ ", " + data.data.materiali[i].descrizione + " <br>";}
         $('.materiali').removeClass('materiali');
     }
 
     for (i = 0; i < data.data.tecniche.length; i++) {
-        document.getElementById('tecniche').innerHTML += data.data.tecniche[i].nome_tecnica + ", ";
-        document.getElementById('tecniche').innerHTML += data.data.tecniche[i].descrizione + " <br>";
+        document.getElementById('tecniche').innerHTML += data.data.tecniche[i].nome_tecnica
+        if (data.data.tecniche[i].descrizione) {document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>";}
         $('.tecniche').removeClass('tecniche');
     }
 
     for (i = 0; i < data.data.provenienze.length; i++) {
-        document.getElementById('provenienze').innerHTML += data.data.provenienze[i].provenienza + ", ";
-        document.getElementById('provenienze').innerHTML += data.data.provenienze[i].note + ", ";
-        document.getElementById('provenienze').innerHTML += data.data.provenienze[i].descrizione + " <br>";
+        var provenienza = data.data.provenienze[i].provenienza;
+        var note = data.data.provenienze[i].note;
+        var descrizione = data.data.provenienze[i].descrizione;
+    
+        // Verifica se le proprietà esistono e non sono vuote prima di stamparle
+        if (provenienza && provenienza.trim() !== "") {
+            document.getElementById('provenienze').innerHTML += provenienza + ", ";
+        }
+    
+        if (note && note.trim() !== "") {
+            document.getElementById('provenienze').innerHTML += note + ", ";
+        }
+    
+        if (descrizione && descrizione.trim() !== "") {
+            document.getElementById('provenienze').innerHTML += descrizione + " <br>";
+        }
+    
         $('.provenienze').removeClass('provenienze');
     }
-
+        
     for (i = 0; i < data.data.mostre.length; i++) {
-        document.getElementById('mostre').innerHTML += data.data.mostre[i].titolo_mostra + ", ";
-        document.getElementById('mostre').innerHTML += data.data.mostre[i].curatore + ", ";
-        document.getElementById('mostre').innerHTML += data.data.mostre[i].data_mostra + ", ";
-        document.getElementById('mostre').innerHTML += data.data.mostre[i].luogo_mostra + ", ";
-        document.getElementById('mostre').innerHTML += data.data.mostre[i].descrizione + "<br>";
+        var titoloMostra = data.data.mostre[i].titolo_mostra;
+        var curatore = data.data.mostre[i].curatore;
+        var dataMostra = data.data.mostre[i].data_mostra;
+        var luogoMostra = data.data.mostre[i].luogo_mostra;
+        var descrizione = data.data.mostre[i].descrizione;
+    
+        // Verifica se le proprietà esistono e non sono vuote prima di stamparle
+        if (titoloMostra && titoloMostra.trim() !== "") {
+            document.getElementById('mostre').innerHTML += titoloMostra + ", ";
+        }
+    
+        if (curatore && curatore.trim() !== "") {
+            document.getElementById('mostre').innerHTML += curatore + ", ";
+        }
+    
+        if (dataMostra && dataMostra.trim() !== "") {
+            document.getElementById('mostre').innerHTML += dataMostra + ", ";
+        }
+    
+        if (luogoMostra && luogoMostra.trim() !== "") {
+            document.getElementById('mostre').innerHTML += luogoMostra + ", ";
+        }
+    
+        if (descrizione && descrizione.trim() !== "") {
+            document.getElementById('mostre').innerHTML += descrizione + "<br>";
+        }
+    
         $('.mostre').removeClass('mostre');
-
     }
 
     for (i = 0; i < data.data.bibliografie.length; i++) {
@@ -126,7 +182,7 @@ function populateWebPage(data) {
         } else {
             raggruppamenti[elemento.id_gruppo_misure] = [elemento];
         }
-    });
+    }); 
 
     Object.keys(raggruppamenti).forEach(function (gruppo) {
         $('.misureContent').append('<ol id="lista' + gruppo + '"></ol>');

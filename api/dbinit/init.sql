@@ -17,7 +17,6 @@ DROP TABLE IF EXISTS schede;
 
 CREATE TABLE `schede` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `titolo_di_servizio` text,
   `titolo_opera` text,
   `corpo_scheda` text,
   `iscrizioni` text,
@@ -52,12 +51,12 @@ CREATE TABLE `cronologie` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `ambito_storico` text,
   `etichetta_data` text,
-  `giorno_data_da` int,
-  `mese_data_da` int,
-  `anno_data_da` int,
-  `giorno_data_a` int,
-  `mese_data_a` int,
-  `anno_data_a` int
+  `giorno_data_da` text,
+  `mese_data_da` text,
+  `anno_data_da` text,
+  `giorno_data_a` text,
+  `mese_data_a` text,
+  `anno_data_a` text
 );
 
 
@@ -129,7 +128,8 @@ CREATE TABLE `tds_schede_gruppo_misure` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `intero_parziale` text,
   `titolo_gruppo_misure` text,
-  `id_tds` int
+  `id_tds` int,
+  `note` text
 );
 
 DROP TABLE IF EXISTS tds_schede_misure;
@@ -202,12 +202,12 @@ CREATE TABLE `mostre` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `curatore` text,
   `titolo_mostra` text,
-  `giorno_data_da` int,
-  `mese_data_da` int,
-  `anno_data_da` int,
-  `giorno_data_a` int,
-  `mese_data_a` int,
-  `anno_data_a` int,
+  `giorno_data_da` text,
+  `mese_data_da` text,
+  `anno_data_da` text,
+  `giorno_data_a` text,
+  `mese_data_a` text,
+  `anno_data_a` text,
   `luogo_mostra` text,
   `descrizione` text
 );
@@ -337,7 +337,3 @@ ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_documen
 ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
 ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`);
-
-ALTER TABLE `tds_schede_gruppo_misure` ADD FOREIGN KEY (`id_tds`) REFERENCES `tds_schede_misure` (`id_gruppo_misure`);
-
-ALTER TABLE `misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`);

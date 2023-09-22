@@ -106,7 +106,7 @@ export const search = async (req: Request, res: Response): Promise<Response<Sche
     });
 
     // Creare un nuovo array con i risultati filtrati
-    const filteredResponses: Array<{ id: number; titolo_di_servizio: string }> = [...result];
+    const filteredResponses: Array<{ id: number; titolo_opera: string }> = [...result];
 
 
     let responseCount: { [key: string]: number } = {};
