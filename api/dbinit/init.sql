@@ -128,7 +128,6 @@ CREATE TABLE `tds_schede_gruppo_misure` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `intero_parziale` text,
   `titolo_gruppo_misure` text,
-  `id_tds` int,
   `note` text
 );
 

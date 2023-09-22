@@ -54,11 +54,15 @@ function populateWebPage(data) {
 
 
     for (i = 0; i < data.data.cronologie.length; i++) {
-        if(data.data.cronologie[i].ambito_storico) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].ambito_storico + ", ";}
-        if(data.data.cronologie[i].etichetta_data) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data + " <br>";}
-        $('.cronologie').removeClass('cronologie');
-
+        if(data.data.cronologie[i].etichetta_data) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data}
+        $('.cronologie').removeClass('cronologie'); 
     }
+
+    for (i = 0; i < data.data.cronologie.length; i++) {
+        if(data.data.cronologie[i].ambito_storico) {document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico}
+    $('.ambito').removeClass('ambito'); 
+    }
+
 
     for (i = 0; i < data.data.ubicazioni.length; i++) {
         document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].ubicazione + ", ";
@@ -106,11 +110,11 @@ function populateWebPage(data) {
     
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (provenienza && provenienza.trim() !== "") {
-            document.getElementById('provenienze').innerHTML += provenienza + ", ";
+            document.getElementById('provenienze').innerHTML += provenienza + " ";
         }
     
         if (note && note.trim() !== "") {
-            document.getElementById('provenienze').innerHTML += note + ", ";
+            document.getElementById('provenienze').innerHTML += note + " ";
         }
     
         if (descrizione && descrizione.trim() !== "") {
@@ -170,7 +174,7 @@ function populateWebPage(data) {
 
     function creaElementoLista(elemento) {
         var li = document.createElement("li");
-        li.textContent = "Direzione: " + elemento.direzione + ", Tipo: " + elemento.tipo + ", Valore: " + elemento.valore + " " + elemento.unita_di_misura;
+        li.textContent = " " + elemento.direzione + " " + elemento.tipo + " " + elemento.valore + " " + elemento.unita_di_misura;
         return li;
     }
 
@@ -181,6 +185,8 @@ function populateWebPage(data) {
             $('.misure').removeClass('misure');
         } else {
             raggruppamenti[elemento.id_gruppo_misure] = [elemento];
+            $('.misure').removeClass('misure');
+
         }
     }); 
 
