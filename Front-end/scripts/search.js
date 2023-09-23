@@ -128,6 +128,9 @@ function createCard(data, index) {
   var cardBodyDiv = document.createElement("div");
   cardBodyDiv.classList.add("card-body");
 
+  var textInformations = document.createElement("div");
+  textInformations.classList.add("text_informations");
+
   var titleElement = document.createElement("h5");
   titleElement.classList.add("card-title", "mb-2", "text-muted");
   titleElement.innerHTML =  data.titolo_opera ;
@@ -181,15 +184,17 @@ function createCard(data, index) {
 
   }
 
-  cardBodyDiv.appendChild(titleElement);
-  cardBodyDiv.appendChild(autoreElement);
-  cardBodyDiv.appendChild(categoriaElement);
-  cardBodyDiv.appendChild(ambito_storicoElement);
-  cardBodyDiv.appendChild(nome_tecnicaElement);
-  cardBodyDiv.appendChild(nome_materialeElement);
-  cardBodyDiv.appendChild(ubicazioneElement);
-  cardBodyDiv.appendChild(nome_inventarioElement);
-  cardBodyDiv.appendChild(numero_inventarioElement);
+  textInformations.appendChild(titleElement);
+  textInformations.appendChild(autoreElement);
+  textInformations.appendChild(categoriaElement);
+  textInformations.appendChild(ambito_storicoElement);
+  textInformations.appendChild(nome_tecnicaElement);
+  textInformations.appendChild(nome_materialeElement);
+  textInformations.appendChild(ubicazioneElement);
+  textInformations.appendChild(nome_inventarioElement);
+  textInformations.appendChild(numero_inventarioElement);
+  cardBodyDiv.appendChild(textInformations);
+
   var cardLink = document.createElement("a");
   cardLink.href = "scheda.html?id=" + index;
   cardLink.appendChild(cardBodyDiv);
