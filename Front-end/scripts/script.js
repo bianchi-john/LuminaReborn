@@ -59,8 +59,8 @@ function populateWebPage(data) {
     }
 
     for (i = 0; i < data.data.cronologie.length; i++) {
-        if(data.data.cronologie[i].ambito_storico) {document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico}
-    $('.ambito').removeClass('ambito'); 
+        if(data.data.cronologie[i].ambito_storico) {document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico
+    $('.ambito').removeClass('ambito'); }
     }
 
 

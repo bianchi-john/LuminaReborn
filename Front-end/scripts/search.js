@@ -130,7 +130,8 @@ function createCard(data, index) {
 
   var titleElement = document.createElement("h5");
   titleElement.classList.add("card-title", "mb-2", "text-muted");
-  titleElement.textContent = data.titolo_opera;
+  titleElement.innerHTML =  data.titolo_opera ;
+  
 
   var autoreElement = document.createElement("p");
   autoreElement.classList.add("card-text");
