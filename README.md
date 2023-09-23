@@ -73,6 +73,8 @@ mysql -u root -p
 letmein
 USE luminadb;
 set global max_connections = 9999999;
+
+
 #Restart docker service       
 sudo systemctl restart docker.socket docker.service
 show variables like "max_connections";

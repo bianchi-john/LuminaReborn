@@ -49,9 +49,9 @@ html {
   margin-top: auto;
   margin-bottom: auto;
   width: auto;
-  height: 100%;
   overflow: hidden;
   padding-left: 40px;
+  max-width: 300px;
 }
 
 
@@ -101,6 +101,8 @@ html {
 .card-body{
   display:flex;
   flex-direction: row-reverse;
+  justify-content: space-between;
+  
 }
 
 
