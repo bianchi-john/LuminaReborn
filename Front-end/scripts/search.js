@@ -54,8 +54,8 @@ function retrieveSuggestion() {
   });
 
   const urls = [
-    "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/tecniche"
+    "http://192.168.0.102:5000/materiali",
+    "http://192.168.0.102:5000/tecniche"
   ];
 
   const risultati = {};
@@ -256,35 +256,46 @@ function handleSearch() {
   if (anno_da_mostra) {
     if (!document.getElementById('giorno_da_mostra').value) {
       document.getElementById('giorno_da_mostra').value = '01';
+      giorno_da_mostra = '01'
     }
     if (!document.getElementById('mese_da_mostra').value) {
       document.getElementById('mese_da_mostra').value = '01';
+      mese_da_mostra = '01'
     }
   }
   if (anno_a_mostra) {
     if (!document.getElementById('giorno_a_mostra').value) {
       document.getElementById('giorno_a_mostra').value = '01';
+      giorno_a_mostra = '01'
+
     }
     if (!document.getElementById('mese_a_mostra').value) {
       document.getElementById('mese_a_mostra').value = '01';
+      mese_a_mostra = '01'
+
     }
   }
   if (anno_da) {
     if (!document.getElementById('giorno_da').value) {
       document.getElementById('giorno_da').value = '01';
+      giorno_da = '01'
     }
     if (!document.getElementById('mese_da').value) {
       document.getElementById('mese_da').value = '01';
+      mese_da = '01'
     }
   }
   if (anno_a) {
     if (!document.getElementById('giorno_a').value) {
       document.getElementById('giorno_a').value = '01';
-      if (!document.getElementById('mese_a').value) {
-        document.getElementById('mese_a').value = '01';
-      }
+      giorno_a = '01'
+    }
+    if (!document.getElementById('mese_a').value) {
+      document.getElementById('mese_a').value = '01';
+      mese_a = '01'
     }
   }
+  
   if (anno_a) {
     var data_da = anno_da + '-' + mese_da + '-' + giorno_da;
     var data_a = anno_a + '-' + mese_a + '-' + giorno_a;
@@ -296,7 +307,7 @@ function handleSearch() {
 
   document.getElementById('result').innerHTML = '';
 
-  var url = 'http://0.0.0.0:3000/search/?';
+  var url = 'http://192.168.0.102:5000/search/?';
   var queries = [];
 
   if (advancedSearchFields.style.display === "none") {
@@ -363,8 +374,8 @@ function handleSearch() {
   }
   url += queries.join('&');
 
-  if (queries.length === 0) {
-    console.log('Nessuna query inserita.');
+  if (queries[0] == "queryGenerica=") {
+    document.getElementById('result').innerHTML = '<p>Nessun dato inserito</p>'
     return;
   }
 
@@ -374,7 +385,7 @@ function handleSearch() {
   xhr.onload = function () {
     if (xhr.status === 200) {
       var response = JSON.parse(xhr.responseText);
-      if (response.data[0].length == 0) {
+      if (response.data.length == 0) {
         document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
       }
       else {

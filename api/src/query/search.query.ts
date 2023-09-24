@@ -5,11 +5,11 @@ export const buildDynamicQuery = (key: string, value: string) => {
     try {
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) {
-        throw new Error('Data non valida');
+        return false
       }
       return true;
     } catch (error) {
-      throw new Error('Data non valida');
+      return false
     }
   }
   
@@ -17,6 +17,7 @@ export const buildDynamicQuery = (key: string, value: string) => {
     let condition = '';
     // RICERCA GENERICA
     if (key === 'queryGenerica') {
+      value = ' ' + value + ' '
       condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera LIKE '%${value}%' OR s.descrizione_sintetica LIKE '%${value}%' OR s.corpo_scheda LIKE '%${value}%' OR a.nome LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR p.provenienza LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR s.storia_espositiva LIKE '%${value}%';`;
     }
     // RICERCA SPECIFICA
@@ -59,10 +60,10 @@ export const buildDynamicQuery = (key: string, value: string) => {
           condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_cronologie tsa ON s.id = tsa.id_scheda INNER JOIN cronologie a ON tsa.id_cronologia = a.id WHERE (anno_data_da >= ${firstYear} OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth}) OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth} AND giorno_data_da >= ${firstDay})) AND (anno_data_a <= ${secondYear} OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth}) OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth} AND giorno_data_a <= ${secondDay}));`;
         }
         else {
-          console.log('Data non valida:')
+          return ''
         }
       } catch (error) {
-        console.error('Data non valida:', error);
+        return ''
       }
     } else if (key === 'nomeMateriale') {
       condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.nome_materiale LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
@@ -93,10 +94,10 @@ export const buildDynamicQuery = (key: string, value: string) => {
           condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE (anno_data_da <= ${firstYear} OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth}) OR (anno_data_da >= ${firstYear} AND mese_data_da >= ${firstMonth} AND giorno_data_da >= ${firstDay})) AND (anno_data_a <= ${secondYear} OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth}) OR (anno_data_a <= ${secondYear} AND mese_data_a <= ${secondMonth} AND giorno_data_a <= ${secondDay}));`;
         }
         else {
-          console.log('Data non valida:')
+          return ''
         }
       } catch (error) {
-        console.error('Data non valida:', error);
+        return  ''
       }    } else if (key === 'luogoMostra') {
       condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.luogo_mostra LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
     } else if (key === 'riferimentoBibliografico') {
