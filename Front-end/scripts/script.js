@@ -48,7 +48,7 @@ function populateWebPage(data) {
     for (i = 0; i < data.data.schedatori.length; i++) {
         if(data.data.schedatori[i].first_name) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].first_name + " ";}
         if(data.data.schedatori[i].last_name){document.getElementById('schedatore').innerHTML += data.data.schedatori[i].last_name ;}
-        $('.schedatori').removeClass('schedatori');
+        $('.schedatore').removeClass('schedatore');
     }
 
 
