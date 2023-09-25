@@ -228,7 +228,7 @@ $(document).ready(function () {
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get('id'); // Estrae il valore del parametro 'id' dalla query string
     if (id) {
-        const apiUrl = `http://localhost/schede/${id}`;
+        const apiUrl = `http://0.0.0.0:3000/schede/${id}`;
         callAPI(apiUrl, populateWebPage);
     } else {
         console.log("Parametro 'id' non presente nella query string dell'URL.");
