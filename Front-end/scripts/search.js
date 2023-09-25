@@ -54,8 +54,8 @@ function retrieveSuggestion() {
   });
 
   const urls = [
-    "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/tecniche"
+    "http://localhost/materiali",
+    "http://localhost/tecniche"
   ];
 
   const risultati = {};
@@ -307,7 +307,7 @@ function handleSearch() {
 
   document.getElementById('result').innerHTML = '';
 
-  var url = 'http://0.0.0.0:3000/search/?';
+  var url = 'http://localhost/search/?';
   var queries = [];
 
   if (advancedSearchFields.style.display === "none") {

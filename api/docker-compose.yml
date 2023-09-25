@@ -1,3 +1,4 @@
+version: '3'
 services:
   mysqldb:
     image: mysql:8.0
@@ -42,6 +43,15 @@ services:
       - 3000
     depends_on:
       - mysqldb
+    networks:
+      - internalnet
+  nginx:
+    image: nginx:alpine
+    container_name: nginxcontainer
+    volumes:
+      - ../Front-end:/usr/share/nginx/html
+    ports:
+      - 80:80
     networks:
       - internalnet
 
