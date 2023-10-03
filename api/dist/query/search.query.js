@@ -18,7 +18,7 @@ const buildDynamicQuery = (key, value) => {
         let condition = '';
         // RICERCA GENERICA
         if (key === 'queryGenerica') {
-            condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera  REGEXP  '%${value}%' OR s.descrizione_sintetica  REGEXP  '%${value}%' OR s.corpo_scheda  REGEXP  '%${value}%' OR a.nome  REGEXP  '%${value}%' OR u.ubicazione  REGEXP  '%${value}%' OR p.provenienza  REGEXP  '%${value}%' OR u.ubicazione  REGEXP  '%${value}%' OR s.storia_espositiva  REGEXP '${value}';`;
+            condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera  REGEXP  '${value}' OR s.descrizione_sintetica  REGEXP  '${value}' OR s.corpo_scheda  REGEXP  '${value}' OR a.nome  REGEXP  '${value}' OR u.ubicazione  REGEXP  '${value}' OR p.provenienza  REGEXP  '${value}' OR u.ubicazione  REGEXP  '${value}' OR s.storia_espositiva  REGEXP '${value}';`;
         }
         // RICERCA SPECIFICA
         if (key === 'titoloOpera') {
@@ -77,13 +77,13 @@ const buildDynamicQuery = (key, value) => {
             }
         }
         else if (key === 'nomeMateriale') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.nome_materiale  REGEXP  '%${value}%' OR a.descrizione  REGEXP  '${value}';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.nome_materiale  REGEXP  '${value}' OR a.descrizione  REGEXP  '${value}';`;
         }
         else if (key === 'nomeTecnica') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_tecniche tsa ON s.id = tsa.id_scheda INNER JOIN tecniche a ON tsa.id_tecnica = a.id WHERE a.nome_tecnica  REGEXP  '%${value}%'OR a.descrizione  REGEXP '${value}';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_tecniche tsa ON s.id = tsa.id_scheda INNER JOIN tecniche a ON tsa.id_tecnica = a.id WHERE a.nome_tecnica  REGEXP  '${value}'OR a.descrizione  REGEXP '${value}';`;
         }
         else if (key === 'ubicazione') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_ubicazioni tsa ON s.id = tsa.id_scheda INNER JOIN ubicazioni a ON tsa.id_ubicazione = a.id WHERE a.ubicazione  REGEXP  '%${value}%' OR a.descrizione REGEXP  '${value}';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_ubicazioni tsa ON s.id = tsa.id_scheda INNER JOIN ubicazioni a ON tsa.id_ubicazione = a.id WHERE a.ubicazione  REGEXP  '${value}' OR a.descrizione REGEXP  '${value}';`;
         }
         else if (key === 'nomeInventario') {
             condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.nome_inventario  REGEXP '${value}';`;
@@ -92,7 +92,7 @@ const buildDynamicQuery = (key, value) => {
             condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.numero_inventario REGEXP  '${value}';`;
         }
         else if (key === 'nomeProvenienza') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.provenienza  REGEXP  '%${value}%' OR a.descrizione  REGEXP '${value}';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.provenienza  REGEXP  '${value}' OR a.descrizione  REGEXP '${value}';`;
         }
         else if (key === 'curatore') {
             condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.curatore REGEXP  '${value}';`;
@@ -121,7 +121,7 @@ const buildDynamicQuery = (key, value) => {
             }
         }
         else if (key === 'luogoMostra') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.luogo_mostra  REGEXP  '%${value}%' OR a.descrizione REGEXP  '${value}';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.luogo_mostra  REGEXP  '${value}' OR a.descrizione REGEXP  '${value}';`;
         }
         else if (key === 'riferimentoBibliografico') {
             condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_bibliografie tsa ON s.id = tsa.id_scheda INNER JOIN bibliografie a ON tsa.id_bibliografia = a.id WHERE a.riferimento_bibliografico  REGEXP '${value}';`;
