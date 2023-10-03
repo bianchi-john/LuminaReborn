@@ -17,8 +17,8 @@ const buildDynamicQuery = (key, value) => {
     function generateCondition(key, value) {
         let condition = '';
         // RICERCA GENERICA
+        value = ' ' + value + ' ';
         if (key === 'queryGenerica') {
-            value = ' ' + value + ' ';
             condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera LIKE '%${value}%' OR s.descrizione_sintetica LIKE '%${value}%' OR s.corpo_scheda LIKE '%${value}%' OR a.nome LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR p.provenienza LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR s.storia_espositiva LIKE '%${value}%';`;
         }
         // RICERCA SPECIFICA
