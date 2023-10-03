@@ -17,37 +17,36 @@ const buildDynamicQuery = (key, value) => {
     function generateCondition(key, value) {
         let condition = '';
         // RICERCA GENERICA
-        value = ' ' + value + ' ';
         if (key === 'queryGenerica') {
-            condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera LIKE '%${value}%' OR s.descrizione_sintetica LIKE '%${value}%' OR s.corpo_scheda LIKE '%${value}%' OR a.nome LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR p.provenienza LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR s.storia_espositiva LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda LEFT JOIN autori a ON tsa.id_autore = a.id LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda LEFT JOIN ubicazioni u ON s.id = tsu.id_scheda LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda LEFT JOIN provenienze p ON tsp.id_provenienza = p.id WHERE s.titolo_opera LIKE '%${value}%' OR s.descrizione_sintetica LIKE '%${value}%' OR s.corpo_scheda LIKE '%${value}%' OR a.nome LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR p.provenienza LIKE '%${value}%' OR u.ubicazione LIKE '%${value}%' OR s.storia_espositiva '${value}';`;
         }
         // RICERCA SPECIFICA
         if (key === 'titoloOpera') {
-            condition = `SELECT * FROM schede  WHERE titolo_opera LIKE '%${value}%';`;
+            condition = `SELECT * FROM schede  WHERE titolo_opera REGEXP '${value}';`;
         }
         else if (key === 'corpoScheda') {
-            condition = `SELECT * FROM schede WHERE corpo_scheda LIKE '%${value}%';`;
+            condition = `SELECT * FROM schede WHERE corpo_scheda '${value}';`;
         }
         else if (key === 'iscrizioni') {
-            condition = `SELECT * FROM schede WHERE iscrizioni LIKE '%${value}%';`;
+            condition = `SELECT * FROM schede WHERE iscrizioni '${value}';`;
         }
         else if (key === 'descrizioneSintetica') {
-            condition = `SELECT * FROM schede WHERE descrizione_sintetica LIKE '%${value}%';`;
+            condition = `SELECT * FROM schede WHERE descrizione_sintetica '${value}';`;
         }
         else if (key === 'storiaEspositiva') {
-            condition = `SELECT * FROM schede WHERE storia_espositiva LIKE '%${value}%';`;
+            condition = `SELECT * FROM schede WHERE storia_espositiva '${value}';`;
         }
         else if (key === 'classificazione') {
-            condition = `SELECT * FROM schede WHERE classificazione LIKE '%${value}%';`;
+            condition = `SELECT * FROM schede WHERE classificazione '${value}';`;
         }
         else if (key === 'categoria') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.categoria '${value}';`;
         }
         else if (key === 'nomeAutore') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.nome LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda INNER JOIN autori a ON tsa.id_autore = a.id WHERE a.nome '${value}';`;
         }
         else if (key === 'ambitoStorico') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_cronologie tsa ON s.id = tsa.id_scheda INNER JOIN cronologie a ON tsa.id_cronologia = a.id WHERE a.ambito_storico LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_cronologie tsa ON s.id = tsa.id_scheda INNER JOIN cronologie a ON tsa.id_cronologia = a.id WHERE a.ambito_storico '${value}';`;
         }
         else if (key === 'dataDadataA') {
             try {
@@ -78,28 +77,28 @@ const buildDynamicQuery = (key, value) => {
             }
         }
         else if (key === 'nomeMateriale') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.nome_materiale LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_materiali tsa ON s.id = tsa.id_scheda INNER JOIN materiali a ON tsa.id_materiale = a.id WHERE a.nome_materiale LIKE '%${value}%' OR a.descrizione '${value}';`;
         }
         else if (key === 'nomeTecnica') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_tecniche tsa ON s.id = tsa.id_scheda INNER JOIN tecniche a ON tsa.id_tecnica = a.id WHERE a.nome_tecnica LIKE '%${value}%'OR a.descrizione LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_tecniche tsa ON s.id = tsa.id_scheda INNER JOIN tecniche a ON tsa.id_tecnica = a.id WHERE a.nome_tecnica LIKE '%${value}%'OR a.descrizione '${value}';`;
         }
         else if (key === 'ubicazione') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_ubicazioni tsa ON s.id = tsa.id_scheda INNER JOIN ubicazioni a ON tsa.id_ubicazione = a.id WHERE a.ubicazione LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_ubicazioni tsa ON s.id = tsa.id_scheda INNER JOIN ubicazioni a ON tsa.id_ubicazione = a.id WHERE a.ubicazione LIKE '%${value}%' OR a.descrizione '${value}';`;
         }
         else if (key === 'nomeInventario') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.nome_inventario LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.nome_inventario '${value}';`;
         }
         else if (key === 'numeroInventario') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.numero_inventario LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_inventari tsa ON s.id = tsa.id_scheda INNER JOIN inventari a ON tsa.id_inventario = a.id WHERE a.numero_inventario '${value}';`;
         }
         else if (key === 'nomeProvenienza') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.provenienza LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_provenienze tsa ON s.id = tsa.id_scheda INNER JOIN provenienze a ON tsa.id_provenienza = a.id WHERE a.provenienza LIKE '%${value}%' OR a.descrizione '${value}';`;
         }
         else if (key === 'curatore') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.curatore LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.curatore '${value}';`;
         }
         else if (key === 'titoloMostra') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.titolo_mostra LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.titolo_mostra '${value}';`;
         }
         else if (key === 'dataInizioMostradataFineMostra') {
             try {
@@ -122,16 +121,16 @@ const buildDynamicQuery = (key, value) => {
             }
         }
         else if (key === 'luogoMostra') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.luogo_mostra LIKE '%${value}%' OR a.descrizione LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_mostre tsa ON s.id = tsa.id_scheda INNER JOIN mostre a ON tsa.id_mostra = a.id WHERE a.luogo_mostra LIKE '%${value}%' OR a.descrizione '${value}';`;
         }
         else if (key === 'riferimentoBibliografico') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_bibliografie tsa ON s.id = tsa.id_scheda INNER JOIN bibliografie a ON tsa.id_bibliografia = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_bibliografie tsa ON s.id = tsa.id_scheda INNER JOIN bibliografie a ON tsa.id_bibliografia = a.id WHERE a.riferimento_bibliografico '${value}';`;
         }
         else if (key === 'altroRiferimentoBibliografico') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_altreBibliografie tsa ON s.id = tsa.id_scheda INNER JOIN altreBibliografie a ON tsa.id_altreBibliografie = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_altreBibliografie tsa ON s.id = tsa.id_scheda INNER JOIN altreBibliografie a ON tsa.id_altreBibliografie = a.id WHERE a.riferimento_bibliografico '${value}';`;
         }
         else if (key === 'documentazioniFotografiche') {
-            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_documentazioniFotografiche tsa ON s.id = tsa.id_scheda INNER JOIN documentazioniFotografiche a ON tsa.id_documentazioneFotografica = a.id WHERE a.riferimento_bibliografico LIKE '%${value}%';`;
+            condition = `SELECT s.* FROM schede s INNER JOIN tds_schede_documentazioniFotografiche tsa ON s.id = tsa.id_scheda INNER JOIN documentazioniFotografiche a ON tsa.id_documentazioneFotografica = a.id WHERE a.riferimento_bibliografico '${value}';`;
         }
         return condition;
     }
