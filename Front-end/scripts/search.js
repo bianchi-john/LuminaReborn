@@ -22,7 +22,7 @@ function retrieveSuggestion() {
   const categoriaSelect = document.getElementById('categoria');
   const classificazioneSelect = document.getElementById('classificazione');
 
-  const opzioniCategoria = [
+  const opzioniClassificazione = [
     'Dipinti', 'Mosaici', 'Sculture e frammenti lapidei', 'Piccola plastica',
     'Elementi architettonici', 'Disegni, stampe e matrici', 'Fotografie',
     'Libri e riviste', 'Manoscritti', 'Armi e armature', 'Tessuti e moda',
@@ -34,7 +34,7 @@ function retrieveSuggestion() {
     'Sigilli e impronte di sigilli', 'Strumenti musicali', 'Giocattoli', 'Altro'
   ];
 
-  const opzioniClassificazione = ['Opera firmata', 'Opera attribuita', 'Opera documentata'];
+  const opzioniCategoria = ['Opera firmata', 'Opera attribuita', 'Opera documentata'];
 
   function createOptionElement(value) {
     const optionElement = document.createElement('option');
