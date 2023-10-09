@@ -17,6 +17,44 @@ const status_enum_1 = require("../enum/status.enum");
 const search_query_1 = require("../query/search.query");
 const validator = require('validator');
 const sqlstring = require('sqlstring');
+function validateInput(input) {
+    return input ? validator.escape(input) : '';
+}
+function executeQuery(query) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pool = yield (0, mysql_config_1.connection)();
+        const result = yield pool.query(query);
+        pool.end();
+        return result;
+    });
+}
+function buildAndExecuteQuery(key, value) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const dynamicQuery = (0, search_query_1.buildDynamicQuery)(key, value);
+        if (dynamicQuery === undefined || dynamicQuery === '') {
+            return undefined;
+        }
+        return yield executeQuery(dynamicQuery);
+    });
+}
+function processUniqueResponses(uniqueResponses) {
+    const responseCount = {};
+    const seenItems = {};
+    const processedResponses = [];
+    for (const response of uniqueResponses) {
+        const responseString = JSON.stringify(response);
+        if (!seenItems[responseString]) {
+            if (responseCount[responseString] > 1) {
+                processedResponses.unshift(response);
+            }
+            else {
+                processedResponses.push(response);
+            }
+            seenItems[responseString] = true;
+        }
+    }
+    return processedResponses;
+}
 const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
@@ -53,55 +91,26 @@ const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const value = searchCriteria[key];
                 if (value !== undefined && value !== '' && value !== ' ') {
                     ok = true;
-                    const dynamicQuery = (0, search_query_1.buildDynamicQuery)(key, String(value));
-                    if (dynamicQuery === undefined) {
-                        continue;
-                    }
-                    if (dynamicQuery === '') {
+                    const result = yield buildAndExecuteQuery(key, String(value));
+                    if (result === undefined) {
                         res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
                     }
-                    const pool = yield (0, mysql_config_1.connection)();
-                    const result = yield pool.query(dynamicQuery);
-                    responses.push(result[0]);
-                    pool.end();
+                    if (result === undefined) {
+                        res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
+                    }
+                    else {
+                        responses.push(result[0]);
+                    }
                 }
             }
         }
-        if (ok == false) {
+        if (!ok) {
             return res.status(code_enum_1.Code.OK);
         }
-        // Creare un set contenente gli id dei primi elementi dell'array
-        const idsSet = new Set(responses[0].map((item) => item.id));
-        // Filtrare gli elementi che compaiono in tutti gli indici dell'array
-        const result = responses[0].filter((item) => {
-            for (let i = 1; i < responses.length; i++) {
-                if (!responses[i].some((subItem) => subItem.id === item.id)) {
-                    return false;
-                }
-            }
-            return true;
+        const filteredResponses = responses[0].filter((item) => {
+            return responses.every((subItem) => subItem.some((subSubItem) => subSubItem.id === item.id));
         });
-        // Creare un nuovo array con i risultati filtrati
-        const filteredResponses = [...result];
-        let responseCount = {};
-        for (let response of filteredResponses) {
-            let responseString = JSON.stringify(response);
-            responseCount[responseString] = (responseCount[responseString] || 0) + 1;
-        }
-        let uniqueResponses = [];
-        let seenItems = {};
-        for (let response of filteredResponses) {
-            let responseString = JSON.stringify(response);
-            if (!seenItems[responseString]) {
-                if (responseCount[responseString] > 1) {
-                    uniqueResponses.unshift(response);
-                }
-                else {
-                    uniqueResponses.push(response);
-                }
-                seenItems[responseString] = true;
-            }
-        }
+        const uniqueResponses = processUniqueResponses(filteredResponses);
         let uniqueResponsesWithInformation = [];
         for (let i = 0; i < uniqueResponses.length; i++) {
             let pool = yield (0, mysql_config_1.connection)();

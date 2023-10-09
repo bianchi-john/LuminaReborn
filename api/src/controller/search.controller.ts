@@ -11,6 +11,44 @@ const sqlstring = require('sqlstring');
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
+function validateInput(input: string | undefined): string {
+  return input ? validator.escape(input) : '';
+}
+
+async function executeQuery(query: string): Promise<ResultSet> {
+  const pool = await connection();
+  const result: ResultSet = await pool.query(query);
+  pool.end();
+  return result;
+}
+
+async function buildAndExecuteQuery(key: string, value: string): Promise<ResultSet | undefined> {
+  const dynamicQuery = buildDynamicQuery(key, value);
+  if (dynamicQuery === undefined || dynamicQuery === '') {
+    return undefined;
+  }
+  return await executeQuery(dynamicQuery);
+}
+
+function processUniqueResponses(uniqueResponses: any[]): any[] {
+  const responseCount: { [key: string]: number } = {};
+  const seenItems: { [key: string]: boolean } = {};
+  const processedResponses: any[] = [];
+
+  for (const response of uniqueResponses) {
+    const responseString = JSON.stringify(response);
+    if (!seenItems[responseString]) {
+      if (responseCount[responseString] > 1) {
+        processedResponses.unshift(response);
+      } else {
+        processedResponses.push(response);
+      }
+      seenItems[responseString] = true;
+    }
+  }
+
+  return processedResponses;
+}
 
 export const search = async (req: Request, res: Response): Promise<Response<Scheda[]>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
@@ -73,62 +111,25 @@ export const search = async (req: Request, res: Response): Promise<Response<Sche
         const value = searchCriteria[key as keyof typeof searchCriteria];
         if (value !== undefined && value !== '' && value !== ' ') {
           ok = true
-          const dynamicQuery = buildDynamicQuery(key, String(value));
-          if (dynamicQuery === undefined) {
-            continue
-          }
-          if (dynamicQuery === '') {
+          const result = await buildAndExecuteQuery(key, String(value));
+          if (result === undefined) {
             res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
+          } else {
+            responses.push(result[0]);
           }
-          const pool = await connection();
-          const result: ResultSet = await pool.query(dynamicQuery);
-          responses.push(result[0]);
-          pool.end();
         }
       }
     }
-    if (ok == false) {
+    if (!ok) {
       return res.status(Code.OK)
-
     }
 
-    // Creare un set contenente gli id dei primi elementi dell'array
-    const idsSet = new Set(responses[0].map((item: { id: number }) => item.id));
-
-    // Filtrare gli elementi che compaiono in tutti gli indici dell'array
-    const result = responses[0].filter((item: { id: number }) => {
-      for (let i = 1; i < responses.length; i++) {
-        if (!responses[i].some((subItem: { id: number }) => subItem.id === item.id)) {
-          return false;
-        }
-      }
-      return true;
+    const filteredResponses = responses[0].filter((item: { id: number }) => {
+      return responses.every((subItem: any[]) => subItem.some((subSubItem: { id: number }) => subSubItem.id === item.id));
     });
 
-    // Creare un nuovo array con i risultati filtrati
-    const filteredResponses: Array<{ id: number; titolo_opera: string }> = [...result];
+    const uniqueResponses = processUniqueResponses(filteredResponses);
 
-
-    let responseCount: { [key: string]: number } = {};
-    for (let response of filteredResponses) {
-      let responseString = JSON.stringify(response);
-      responseCount[responseString] = (responseCount[responseString] || 0) + 1;
-    }
-
-    let uniqueResponses: any[] = [];
-    let seenItems: { [key: string]: boolean } = {};
-
-    for (let response of filteredResponses) {
-      let responseString = JSON.stringify(response);
-      if (!seenItems[responseString]) {
-        if (responseCount[responseString] > 1) {
-          uniqueResponses.unshift(response);
-        } else {
-          uniqueResponses.push(response);
-        }
-        seenItems[responseString] = true;
-      }
-    }
 
     let uniqueResponsesWithInformation: any[] = [];
 
