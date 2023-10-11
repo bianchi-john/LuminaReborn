@@ -16,10 +16,6 @@ const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const search_query_1 = require("../query/search.query");
 const validator = require('validator');
-const sqlstring = require('sqlstring');
-function validateInput(input) {
-    return input ? validator.escape(input) : '';
-}
 function executeQuery(query) {
     return __awaiter(this, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
@@ -92,9 +88,6 @@ const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 if (value !== undefined && value !== '' && value !== ' ') {
                     ok = true;
                     const result = yield buildAndExecuteQuery(key, String(value));
-                    if (result === undefined) {
-                        res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
-                    }
                     if (result === undefined) {
                         res.status(400).send('I dati ricevuti dal client non sono in formato corretto');
                     }

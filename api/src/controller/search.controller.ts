@@ -7,13 +7,9 @@ import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { buildDynamicQuery } from '../query/search.query';
 const validator = require('validator');
-const sqlstring = require('sqlstring');
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
-function validateInput(input: string | undefined): string {
-  return input ? validator.escape(input) : '';
-}
 
 async function executeQuery(query: string): Promise<ResultSet> {
   const pool = await connection();
