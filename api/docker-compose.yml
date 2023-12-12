@@ -54,6 +54,33 @@ services:
       - 80:80
     networks:
       - internalnet
+  mongo:
+    image: mongo
+    logging:
+      driver: none
+  user-manager-api:
+    image: moreillon/user-manager-mongoose
+    environment:
+      MONGODB_URL: mongodb://mongo
+      JWT_SECRET: keyboard_cat
+    ports:
+      - "7071:80"
+    depends_on:
+      - mongo
+
+  user-manager-front:
+    image: moreillon/user-manager-mongoose-front
+    logging:
+      driver: none
+    environment:
+      VUE_APP_USER_MANAGER_API_URL: /proxy/api
+  user-manager-front-proxy:
+    image: moreillon/api-proxy
+    environment:
+      PROXY_API: http://user-manager-api
+      PROXY_ROOT: http://user-manager-front
+    ports:
+      - "8081:80"
 
 networks:
   internalnet:
