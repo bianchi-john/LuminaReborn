@@ -32,6 +32,7 @@ import immagineRoutes from './routes/immagine.routes'
 import tds_schede_autoreRoutes from './routes/tds_schede_autore.routes'
 import tds_schede_immagineRoutes from './routes/tds_schede_immagine.routes'
 import searchRoutes from './routes/search.routes'
+import authMiddleware from '@moreillon/express_identification_middleware';
 
 
 import process from 'process';
@@ -58,11 +59,14 @@ export class App {
     process.env.NODE_OPTIONS = '--max-old-space-size=4096'; // Imposta le opzioni del nodo
     this.app.listen(this.port);
     console.info(`${this.APPLICATION_RUNNING} ${ip.address()}:${this.port}`);
+        console.info(`${this.APPLICATION_RUNNING} ${ip.address()}:${this.port}`);
   }
 
   private middleWare(): void {
     this.app.use(cors({ origin: '*' }));
     this.app.use(express.json());
+    const authOptions = { url: 'http://0.0.0.0:7071' };
+    this.app.use(authMiddleware(authOptions));
   }
 
   private routes(): void {

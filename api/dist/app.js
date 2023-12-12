@@ -38,6 +38,7 @@ const immagine_routes_1 = __importDefault(require("./routes/immagine.routes"));
 const tds_schede_autore_routes_1 = __importDefault(require("./routes/tds_schede_autore.routes"));
 const tds_schede_immagine_routes_1 = __importDefault(require("./routes/tds_schede_immagine.routes"));
 const search_routes_1 = __importDefault(require("./routes/search.routes"));
+const express_identification_middleware_1 = __importDefault(require("@moreillon/express_identification_middleware"));
 const process_1 = __importDefault(require("process"));
 const response_1 = require("./domain/response");
 const code_enum_1 = require("./enum/code.enum");
@@ -56,10 +57,13 @@ class App {
         process_1.default.env.NODE_OPTIONS = '--max-old-space-size=4096'; // Imposta le opzioni del nodo
         this.app.listen(this.port);
         console.info(`${this.APPLICATION_RUNNING} ${ip_1.default.address()}:${this.port}`);
+        console.info(`${this.APPLICATION_RUNNING} ${ip_1.default.address()}:${this.port}`);
     }
     middleWare() {
         this.app.use((0, cors_1.default)({ origin: '*' }));
         this.app.use(express_1.default.json());
+        const authOptions = { url: 'http://0.0.0.0:7071' };
+        this.app.use((0, express_identification_middleware_1.default)(authOptions));
     }
     routes() {
         this.app.use('/users', user_routes_1.default);

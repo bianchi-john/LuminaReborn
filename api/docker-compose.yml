@@ -47,11 +47,12 @@ services:
       - internalnet
   nginx:
     image: nginx:alpine
+    hostname: nginx
     container_name: nginxcontainer
     volumes:
       - ../Front-end:/usr/share/nginx/html
     ports:
-      - 80:80
+      - 8088:80
     networks:
       - internalnet
   mongo:
@@ -78,7 +79,7 @@ services:
     image: moreillon/api-proxy
     environment:
       PROXY_API: http://user-manager-api
-      PROXY_ROOT: http://user-manager-front
+      PROXY_ROOT: http://nginx
     ports:
       - "8081:80"
 
