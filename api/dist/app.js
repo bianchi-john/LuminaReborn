@@ -1,10 +1,23 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const express_1 = __importDefault(require("express"));
+const response_1 = require("./domain/response");
+const code_enum_1 = require("./enum/code.enum");
+const status_enum_1 = require("./enum/status.enum");
+const cookies_1 = __importDefault(require("cookies"));
 const ip_1 = __importDefault(require("ip"));
 const cors_1 = __importDefault(require("cors"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
@@ -40,9 +53,20 @@ const tds_schede_immagine_routes_1 = __importDefault(require("./routes/tds_sched
 const search_routes_1 = __importDefault(require("./routes/search.routes"));
 const express_identification_middleware_1 = __importDefault(require("@moreillon/express_identification_middleware"));
 const process_1 = __importDefault(require("process"));
-const response_1 = require("./domain/response");
-const code_enum_1 = require("./enum/code.enum");
-const status_enum_1 = require("./enum/status.enum");
+const axios_1 = __importDefault(require("axios"));
+const isAdmin = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const response = yield axios_1.default.get('http://172.22.0.2/proxy/api/users', {
+            params: { jwt }
+        });
+        // Se la richiesta alla risorsa degli utenti ha successo (200), considera l'utente un amministratore
+        return response.status === 200;
+    }
+    catch (error) {
+        // Se la richiesta fallisce con un 403, considera l'utente non un amministratore
+        return false;
+    }
+});
 class App {
     constructor(port = process_1.default.env.SERVER_PORT || 3000) {
         this.port = port;
@@ -62,10 +86,9 @@ class App {
     middleWare() {
         this.app.use((0, cors_1.default)({ origin: '*' }));
         this.app.use(express_1.default.json());
-        const authOptions = { url: 'http://0.0.0.0:7071' };
-        this.app.use((0, express_identification_middleware_1.default)(authOptions));
     }
     routes() {
+        const authOptions = { url: 'http://172.22.0.2' };
         this.app.use('/users', user_routes_1.default);
         this.app.use('/schede', scheda_routes_1.default);
         this.app.use('/bibliografie', bibliografia_routes_1.default);
@@ -93,11 +116,29 @@ class App {
         this.app.use('/tds_users_schede', tds_users_scheda_routes_1.default);
         this.app.use('/tecniche', tecnica_routes_1.default);
         this.app.use('/ubicazioni', ubicazione_routes_1.default);
-        this.app.use('/autori', autore_routes_1.default);
         this.app.use('/immagini', immagine_routes_1.default);
         this.app.use('/tds_schede_autori', tds_schede_autore_routes_1.default);
         this.app.use('/tds_schede_immagini', tds_schede_immagine_routes_1.default);
         this.app.use('/search', search_routes_1.default);
+        // Blocco la route autori disponibile solamente per gli autenticati
+        this.app.use('/autori', (0, express_identification_middleware_1.default)(authOptions));
+        // Aggiungi la route '/autori' dopo aver applicato il middleware di autenticazione
+        this.app.use('/autori', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // Verifica se l'utente autenticato è anche un amministratore
+            const cookies = new cookies_1.default(req, res);
+            let jwt = cookies.get("jwt");
+            if (!jwt) {
+                return res.status(403).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+            }
+            if (yield isAdmin(jwt)) {
+                // L'utente è un amministratore, consenti l'accesso alla route '/autori'
+                (0, autore_routes_1.default)(req, res, next);
+            }
+            else {
+                // L'utente non è un amministratore, restituisci un errore 403
+                return res.status(403).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+            }
+        }));
         this.app.get('/', (_, res) => res.status(code_enum_1.Code.OK).send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Welcome to the Lumina API v1.0.0')));
         this.app.all('*', (_, res) => res.status(code_enum_1.Code.NOT_FOUND).send(new response_1.HttpResponse(code_enum_1.Code.NOT_FOUND, status_enum_1.Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
     }

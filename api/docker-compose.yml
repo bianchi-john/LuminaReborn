@@ -21,7 +21,8 @@ services:
       SERVICE_TAGS: prod
       SERVICE_NAME: mysqldb
     networks:
-      - internalnet
+      internalnet: 
+        ipv4_address: 172.22.0.7
 
   nodeapp:
     container_name: nodeappcontainer
@@ -44,7 +45,9 @@ services:
     depends_on:
       - mysqldb
     networks:
-      - internalnet
+      internalnet: 
+        ipv4_address: 172.22.0.6
+
   nginx:
     image: nginx:alpine
     hostname: nginx
@@ -54,35 +57,56 @@ services:
     ports:
       - 8088:80
     networks:
-      - internalnet
+      internalnet: 
+        ipv4_address: 172.22.0.5
+
   mongo:
     image: mongo
     logging:
       driver: none
+    networks:
+      internalnet: 
+        ipv4_address: 172.22.0.8
+
   user-manager-api:
     image: moreillon/user-manager-mongoose
     environment:
-      MONGODB_URL: mongodb://mongo
-      JWT_SECRET: keyboard_cat
+      MONGODB_URL: mongodb://172.22.0.8
+      JWT_SECRET: sonoVVNÀAFINVASDVNNSJljnval
     ports:
       - "7071:80"
     depends_on:
       - mongo
+    networks:
+      internalnet: 
+        ipv4_address: 172.22.0.4
 
   user-manager-front:
     image: moreillon/user-manager-mongoose-front
     logging:
       driver: none
     environment:
-      VUE_APP_USER_MANAGER_API_URL: /proxy/api
+      VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
+    networks:
+      internalnet: 
+        ipv4_address: 172.22.0.3
+
   user-manager-front-proxy:
     image: moreillon/api-proxy
     environment:
-      PROXY_API: http://user-manager-api
-      PROXY_ROOT: http://nginx
+      PROXY_API: http://172.22.0.4
+      PROXY_ROOT: http://172.22.0.5
     ports:
       - "8081:80"
+    networks:
+      internalnet: 
+        ipv4_address: 172.22.0.2
 
 networks:
   internalnet:
     driver: bridge
+    ipam:
+      driver: default
+      config: 
+        - subnet: 172.22.0.0/24
+          gateway: 172.22.0.1

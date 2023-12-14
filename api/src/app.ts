@@ -1,4 +1,9 @@
-import express, { Request, Response, Application } from 'express';
+import express, { Request, Response, Application, NextFunction } from 'express';
+import { HttpResponse } from './domain/response';
+import { Code } from './enum/code.enum';
+import { Status } from './enum/status.enum';
+import Cookies from "cookies"
+
 import ip from 'ip';
 import cors from 'cors';
 import userRoutes from './routes/user.routes';
@@ -33,13 +38,48 @@ import tds_schede_autoreRoutes from './routes/tds_schede_autore.routes'
 import tds_schede_immagineRoutes from './routes/tds_schede_immagine.routes'
 import searchRoutes from './routes/search.routes'
 import authMiddleware from '@moreillon/express_identification_middleware';
-
-
 import process from 'process';
+import axios from "axios"
 
-import { HttpResponse } from './domain/response';
-import { Code } from './enum/code.enum';
-import { Status } from './enum/status.enum';
+
+const adminOnly = async (jwt: string): Promise<boolean> => {
+  try {
+    const response = await axios.get('http://172.22.0.2/proxy/api/users', {
+      params: { jwt }
+    });
+
+    // Se la richiesta alla risorsa degli utenti ha successo (200), considera l'utente un amministratore
+    return response.status === 200;
+  } catch (error) {
+    // Se la richiesta fallisce con un 403, considera l'utente non un amministratore
+    return false;
+  }
+};
+
+const authenticateAndAuthorize = async (req: Request, res: Response, next: NextFunction) => {
+  const cookies = new Cookies(req, res);
+  const jwt = cookies.get("jwt");
+
+  if (!jwt) {
+    return res.status(403).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+  }
+
+  try {
+    const isAdminUser = await isAdmin(jwt);
+
+    if (isAdminUser) {
+      // L'utente è un amministratore, consenti l'accesso alla route
+      autoreRoutes(req, res, next);
+    } else {
+      // L'utente non è un amministratore, restituisci un errore 403
+      return res.status(403).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+    }
+  } catch (error) {
+    // Gestisci gli errori durante la verifica dell'amministratore
+    console.error("Error during isAdmin check:", error);
+    return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+  }
+};
 
 export class App {
   private readonly app: Application;
@@ -52,24 +92,23 @@ export class App {
     this.middleWare();
     this.routes();
     this.nodeOptions = ['--max-old-space-size=4096'];
-
   }
 
   listen(): void {
     process.env.NODE_OPTIONS = '--max-old-space-size=4096'; // Imposta le opzioni del nodo
     this.app.listen(this.port);
     console.info(`${this.APPLICATION_RUNNING} ${ip.address()}:${this.port}`);
-        console.info(`${this.APPLICATION_RUNNING} ${ip.address()}:${this.port}`);
+    console.info(`${this.APPLICATION_RUNNING} ${ip.address()}:${this.port}`);
   }
 
   private middleWare(): void {
     this.app.use(cors({ origin: '*' }));
     this.app.use(express.json());
-    const authOptions = { url: 'http://0.0.0.0:7071' };
-    this.app.use(authMiddleware(authOptions));
   }
 
   private routes(): void {
+    const authOptions = { url: 'http://172.22.0.2' };
+
     this.app.use('/users', userRoutes);
     this.app.use('/schede', schedaRoutes);
     this.app.use('/bibliografie', bibliografiaRoutes);
@@ -95,13 +134,20 @@ export class App {
     this.app.use('/tds_schede_tecniche', tds_schede_tecnicaRoutes);
     this.app.use('/tds_schede_ubicazioni', tds_schede_ubicazioneRoutes);
     this.app.use('/tds_users_schede', tds_users_schedaRoutes);
-    this.app.use('/tecniche', tecnicaRoutes);
     this.app.use('/ubicazioni', ubicazioneRoutes);
-    this.app.use('/autori', autoreRoutes);
     this.app.use('/immagini', immagineRoutes);
     this.app.use('/tds_schede_autori', tds_schede_autoreRoutes);
     this.app.use('/tds_schede_immagini', tds_schede_immagineRoutes);
     this.app.use('/search', searchRoutes);
+
+    // Blocco la route tecniche disponibile solamente per gli autenticati
+    this.app.use('/tecniche', authMiddleware(authOptions));
+    this.app.use('/tecniche', tecnicaRoutes);
+    
+    // Blocco la route autori disponibile solamente per gli autenticati e amministratori
+    this.app.use('/autori', authMiddleware(authOptions));
+    this.app.use('/autori', adminOnly);
+    this.app.use('/autori', autoreRoutes);
 
     this.app.get('/', (_: Request, res: Response)=> res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Welcome to the Lumina API v1.0.0')));
     this.app.all('*', (_: Request, res: Response)=> res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));

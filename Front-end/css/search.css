@@ -4,6 +4,11 @@
   margin-top: 80px;
 }
 
+.loginDiv{
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 .card {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -110,12 +115,21 @@ html {
   .text_informations{
     min-width: 600px
   }
+
+.loginDiv{
+  margin-top: -40px;
+  padding-bottom: 42px;
+  }
 }
 
 
 @media only screen and (max-width: 1000px) {
   .text_informations{
     min-width: 400px
+  }
+  .loginDiv{
+    margin-top: -40px;
+    padding-bottom: 42px;
   }
 }
 
@@ -153,4 +167,10 @@ html {
     width: auto;
   }
 
+}
+@media only screen and (max-width: 575px) {
+  .loginDiv{
+    margin-top: -5px;
+    padding-bottom: 42px;
+  }
 }
