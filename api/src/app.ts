@@ -42,7 +42,7 @@ import process from 'process';
 import axios from "axios"
 
 
-const adminOnly = async (jwt: string): Promise<boolean> => {
+const isAdmin = async (jwt: string): Promise<boolean> => {
   try {
     const response = await axios.get('http://172.22.0.2/proxy/api/users', {
       params: { jwt }
@@ -56,7 +56,7 @@ const adminOnly = async (jwt: string): Promise<boolean> => {
   }
 };
 
-const authenticateAndAuthorize = async (req: Request, res: Response, next: NextFunction) => {
+const onlyAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const cookies = new Cookies(req, res);
   const jwt = cookies.get("jwt");
 
@@ -146,7 +146,7 @@ export class App {
     
     // Blocco la route autori disponibile solamente per gli autenticati e amministratori
     this.app.use('/autori', authMiddleware(authOptions));
-    this.app.use('/autori', adminOnly);
+    this.app.use('/autori', onlyAdmin);
     this.app.use('/autori', autoreRoutes);
 
     this.app.get('/', (_: Request, res: Response)=> res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Welcome to the Lumina API v1.0.0')));
