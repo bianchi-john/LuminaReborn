@@ -4,9 +4,28 @@
   margin-top: 80px;
 }
 
+.logout-btn {
+  background-color: red;
+  border-color: red
+}
+
 .loginDiv{
   display: flex;
   flex-direction: row-reverse;
+}
+
+.loginDiv a {
+  margin-right: 6px
+}
+
+.schedatore {
+  background-color: orange;
+  border-color: orange
+}
+
+.admin {
+  background-color: green;
+  border-color: green
 }
 
 .card {
@@ -59,21 +78,17 @@ html {
   max-width: 300px;
 }
 
-
 .card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border: 1px solid rgba(0,0,0,.125); /* Spessore del bordo e colore */
   border-radius: 5px; /* Raggio dei contorni stondati */
-
-
 }
 
 .gruppo_giorni {
   display: flex;
   margin-bottom: 5px;
-
 }
 
 .gruppo_date {
@@ -141,7 +156,6 @@ html {
     min-width: 10px
   }
 }
-
 
 
 @media only screen and (max-width: 780px) {

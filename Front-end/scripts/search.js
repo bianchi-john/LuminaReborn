@@ -1,3 +1,74 @@
+document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+async function checkLoginStatus() {
+  const jwtCookie = getCookie('jwt');
+  const loginDiv = document.querySelector('.loginDiv');
+
+  if (jwtCookie) {
+    // Effettua la chiamata GET per verificare il ruolo dell'utente
+    const response = await fetch('http://172.22.0.2/proxy/api/users', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtCookie}`
+      }
+    });
+
+    if (response.ok) {
+      // L'utente è autenticato e ha un ruolo di amministratore
+      loginDiv.innerHTML = '<a href="#" class="btn btn-primary logout-btn" onclick="logout()">Logout</a>';
+      
+      // Aggiungi il bottone "Schedatore"
+      const schedatoreButton = document.createElement('a');
+      schedatoreButton.href = 'schedatore.html';
+      schedatoreButton.className = 'btn btn-primary schedatore';
+      schedatoreButton.innerText = 'Schedatore';
+      loginDiv.appendChild(schedatoreButton);
+
+      // Verifica se l'utente è un amministratore
+      const userData = await response.json();
+      if (userData) {
+        // L'utente è un amministratore, aggiungi il bottone "Admin"
+        const adminButton = document.createElement('a');
+        adminButton.href = 'admin.html';
+        adminButton.className = 'btn btn-primary admin';
+        adminButton.innerText = 'Admin';
+        loginDiv.appendChild(adminButton);
+      }
+    } else {
+      // L'utente potrebbe non essere autenticato o non avere il ruolo di amministratore
+      loginDiv.innerHTML = '<a href="#" class="btn btn-primary logout-btn" onclick="logout()">Logout</a>';
+      
+      // Aggiungi solo il bottone "Schedatore"
+      const schedatoreButton = document.createElement('a');
+      schedatoreButton.href = 'schedatore.html';
+      schedatoreButton.className = 'btn btn-primary schedatore';
+      schedatoreButton.innerText = 'Schedatore';
+      loginDiv.appendChild(schedatoreButton);
+    }
+  }
+}
+
+async function logout() {
+  // Elimina il cookie jwt
+  document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+  
+  // Ricarica la pagina
+  location.reload();
+}
+
+// Funzione per ottenere il valore di un cookie per nome
+function getCookie(name) {
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.startsWith(name + '=')) {
+      return cookie.substring(name.length + 1);
+    }
+  }
+  return null;
+}
+
+
 // Funzione che aggiunge i suggerimenti alle textbox
 function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
   const inputElement = document.getElementById(suggestionId);
