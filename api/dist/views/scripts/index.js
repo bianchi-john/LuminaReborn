@@ -1,74 +1,3 @@
-document.addEventListener('DOMContentLoaded', checkLoginStatus);
-
-async function checkLoginStatus() {
-  const jwtCookie = getCookie('jwt');
-  const loginDiv = document.querySelector('.loginDiv');
-
-  if (jwtCookie) {
-    // Effettua la chiamata GET per verificare il ruolo dell'utente
-    const response = await fetch('http://172.22.0.2/proxy/api/users', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${jwtCookie}`
-      }
-    });
-
-    if (response.ok) {
-      // L'utente è autenticato e ha un ruolo di amministratore
-      loginDiv.innerHTML = '<a href="#" class="btn btn-primary logout-btn" onclick="logout()">Logout</a>';
-      
-      // Aggiungi il bottone "Schedatore"
-      const schedatoreButton = document.createElement('a');
-      schedatoreButton.href = 'schedatore.html';
-      schedatoreButton.className = 'btn btn-primary schedatore';
-      schedatoreButton.innerText = 'Schedatore';
-      loginDiv.appendChild(schedatoreButton);
-
-      // Verifica se l'utente è un amministratore
-      const userData = await response.json();
-      if (userData) {
-        // L'utente è un amministratore, aggiungi il bottone "Admin"
-        const adminButton = document.createElement('a');
-        adminButton.href = 'admin.html';
-        adminButton.className = 'btn btn-primary admin';
-        adminButton.innerText = 'Admin';
-        loginDiv.appendChild(adminButton);
-      }
-    } else {
-      // L'utente potrebbe non essere autenticato o non avere il ruolo di amministratore
-      loginDiv.innerHTML = '<a href="#" class="btn btn-primary logout-btn" onclick="logout()">Logout</a>';
-      
-      // Aggiungi solo il bottone "Schedatore"
-      const schedatoreButton = document.createElement('a');
-      schedatoreButton.href = 'schedatore.html';
-      schedatoreButton.className = 'btn btn-primary schedatore';
-      schedatoreButton.innerText = 'Schedatore';
-      loginDiv.appendChild(schedatoreButton);
-    }
-  }
-}
-
-async function logout() {
-  // Elimina il cookie jwt
-  document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-  
-  // Ricarica la pagina
-  location.reload();
-}
-
-// Funzione per ottenere il valore di un cookie per nome
-function getCookie(name) {
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].trim();
-    if (cookie.startsWith(name + '=')) {
-      return cookie.substring(name.length + 1);
-    }
-  }
-  return null;
-}
-
-
 // Funzione che aggiunge i suggerimenti alle textbox
 function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
   const inputElement = document.getElementById(suggestionId);
@@ -89,72 +18,6 @@ function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
   });
 }
 
-function retrieveSuggestion() {
-  const categoriaSelect = document.getElementById('categoria');
-  const classificazioneSelect = document.getElementById('classificazione');
-
-  const opzioniClassificazione = [
-    'Dipinti', 'Mosaici', 'Sculture e frammenti lapidei', 'Piccola plastica',
-    'Elementi architettonici', 'Disegni, stampe e matrici', 'Fotografie',
-    'Libri e riviste', 'Manoscritti', 'Armi e armature', 'Tessuti e moda',
-    'Gioielleria e ornamenti', 'Paramenti sacri, oggetti liturgici e devozionali',
-    'Utensili e strumenti di lavoro', 'Materiali organici, fossili e resti umani',
-    'Tarsie', 'Arredi e mobili', 'Medaglie, monete e gemme', 'Calchi',
-    'Lapidi e cippi funerari', 'Urne, sarcofagi e casse tombali',
-    'Vasellame ceramico', 'Vasellame metallico', 'Vetri',
-    'Sigilli e impronte di sigilli', 'Strumenti musicali', 'Giocattoli', 'Altro'
-  ];
-
-  const opzioniCategoria = ['Opera firmata', 'Opera attribuita', 'Opera documentata'];
-
-  function createOptionElement(value) {
-    const optionElement = document.createElement('option');
-    optionElement.value = value;
-    optionElement.textContent = value;
-    return optionElement;
-  }
-
-  opzioniCategoria.forEach(opzione => {
-    const optionElement = createOptionElement(opzione);
-    categoriaSelect.appendChild(optionElement);
-  });
-
-  opzioniClassificazione.forEach(opzione => {
-    const optionElement = createOptionElement(opzione);
-    classificazioneSelect.appendChild(optionElement);
-  });
-
-  const urls = [
-    "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/tecniche"
-  ];
-
-  const risultati = {};
-
-  Promise.all(
-    urls.map(url =>
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          const nomeDizionario = url.split("/").pop();
-          risultati[nomeDizionario] = data;
-        })
-    )
-  )
-    .then(() => {
-      const listaMateriali = new Set(risultati.materiali.data.map(materiale => materiale.nome_materiale));
-      const listaDescrizioni = new Set(risultati.tecniche.data.map(tecniche => tecniche.nome_tecnica));
-
-      const arrayListaMateriali = Array.from(listaMateriali);
-      const arrayListaDescrizioni = Array.from(listaDescrizioni);
-
-      addSuggestion('nome_materiale', 'nome_materialeSuggerimenti', arrayListaMateriali);
-      addSuggestion('nome_tecnica', 'nome_tecnicaSuggerimenti', arrayListaDescrizioni);
-    })
-    .catch(error => {
-      console.error("Si è verificato un errore:", error);
-    });
-}
 
 
 // Funzione per ottenere il valore selezionato per il primo form di date
@@ -267,7 +130,7 @@ function createCard(data, index) {
   cardBodyDiv.appendChild(textInformations);
 
   var cardLink = document.createElement("a");
-  cardLink.href = "scheda.html?id=" + index;
+  cardLink.href = "scheda?id=" + index;
   cardLink.appendChild(cardBodyDiv);
   cardDiv.appendChild(cardLink);
   return cardDiv;
@@ -521,7 +384,6 @@ $(document).ready(function () {
   initializeUI();
 
   function initializeUI() {
-    retrieveSuggestion();
     addEventListeners();
     setupTooltip();
     initInputValidation();
