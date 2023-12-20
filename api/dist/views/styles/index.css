@@ -4,10 +4,6 @@
   margin-top: 80px;
 }
 
-.logout-btn {
-  background-color: red;
-  border-color: red
-}
 
 .loginDiv{
   display: flex;
@@ -187,4 +183,62 @@ html {
     margin-top: -5px;
     padding-bottom: 42px;
   }
+}
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  text-align: left; /* Imposta l'allineamento a sinistra */
+
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+  display: block; /* Rende i link elementi di blocco */
+  padding: 8px; /* Aggiunge spaziatura tra i link */
+
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+.openButton {
+  position: absolute;
+  top: 10px; 
+  right: 10px; 
+  z-index: 9999; 
+}
+.loginDiv a {
+  margin-right: 6px;
+  margin-bottom: 10px; /* Aggiungi margine inferiore */
+}
+
+.schedatore-and-admin-only,
+.admin-only {
+  margin-bottom: 10px; /* Aggiungi margine inferiore */
 }

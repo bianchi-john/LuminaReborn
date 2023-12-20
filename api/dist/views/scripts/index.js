@@ -397,8 +397,26 @@ $(document).ready(function () {
         handleSearch();
       }
     });
-    
-  }
+    $('.openSidenav').on("click", function() {
+      var sidenavWidth = $('#mySidenav').width();
+      if (sidenavWidth === 0) {
+        $('#mySidenav').css("width", "250px");
+      } else {
+        $('#mySidenav').css("width", "0");
+      }
+    });
+
+
+    // Quando viene cliccato l'elemento con classe 'closebtn'
+    $('.closebtn').on("click", function() {
+      $('#mySidenav').css("width", "0");
+    });
+    $('.logout').on("click", function() {
+      document.cookie = "jwt=; path=/;";
+      location.reload();
+
+    });
+    }
 
 });
 

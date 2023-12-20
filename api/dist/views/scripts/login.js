@@ -34,4 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorMessageElement = document.getElementById('errorMessage');
     errorMessageElement.innerHTML = message;
   }
+
+
 });
