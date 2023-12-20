@@ -1,27 +1,15 @@
-# Lumina Reborn
+# LUMiNA Reborn
 ## Project for "Lucca National Museums"
-
-Made with:
-
-- Mysql
-- NodeJs
-- Docker
-- Bootstrap
-## Installation
 
 Setup and run:
 
 ```sh
-sudo systemctl stop mysql.service 
 cd api
 npm i
-npm run start:build
-docker-compose up -d --build
-./QUERY.sh
+npm run start:build && docker-compose up -d --build
 ```
 
 Run
-
 ```sh
 docker-compose up  -d
 ```
@@ -32,74 +20,20 @@ docker-compose down && docker-compose up -d
 ```
 
 Delete all and recreate
-
 ```sh
+# Elimino tutto i container e immagini
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force &&  docker network prune --force
-sudo rm -rf data
 npm run start:build && docker-compose up -d --build
-./QUERY.sh
 ```
 
-NPM
+Altro:
+
+Local run node container
 
 ```sh
 npm run start:build
 npm run start:dev
 ```
-
-MYSQL
-
-```sh
-sudo systemctl start mysql.service 
-sudo systemctl stop mysql.service 
-mysql -u root -p
-```
-
-DOCKER
-
-```sh
-
-# List all containers (only IDs)
-docker ps -aq && docker images
-
-# Stop all running containers and Remove all containers and Remove all images
-docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) --force &&  docker network prune --force
-
-# List all containers (only IDs)
-docker ps -aq && docker images
-
-docker-compose up -d --build
-
-docker ps 
-docker container attach nodeappcontainer
-
-docker exec -it mysqlcontainer bash
-mysql -u root -p
-letmein
-USE luminadb;
-set global max_connections = 9999999;
-
-
-#Restart docker service       
-sudo systemctl restart docker.socket docker.service
-show variables like "max_connections";
-
-
-```
-
-Other
-
-```sh
-https://www.youtube.com/watch?v=aUMGAFE5pPM
-https://github.com/getarrays/tsnodemysqlapi
-```
-
-
-## License
-
-MIT
-
-**Free Software, Hell Yeah!**
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
