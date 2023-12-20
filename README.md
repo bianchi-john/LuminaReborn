@@ -34,7 +34,7 @@ docker-compose down && docker-compose up -d
 Delete all and recreate
 
 ```sh
-docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker  rmi$(docker images -q) --force &&  docker network prune --force
+docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force &&  docker network prune --force
 sudo rm -rf data
 npm run start:build && docker-compose up -d --build
 ./QUERY.sh
