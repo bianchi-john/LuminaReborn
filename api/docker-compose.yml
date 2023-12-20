@@ -21,40 +21,86 @@ services:
       SERVICE_TAGS: prod
       SERVICE_NAME: mysqldb
     networks:
-      - internalnet
+      internalnet: 
+        ipv4_address: 172.22.0.7
 
   nodeapp:
     container_name: nodeappcontainer
     build: .
     image: nodeapp:v1
     environment:
-      DB_HOST: mysqldb
+      DB_HOST: mysqldb 
       DB_USER: admin
       DB_PASSWORD: letmein
       DB_NAME: luminadb
       DB_PORT: 3306
-      DB_CONNECTION_LIMIT: 10
+      DB_CONNECTION_LIMIT: 100
       SERVER_PORT: 3000
       SERVICE_TAGS: prod
       SERVICE_NAME: nodeappservice
+      VUE_APP_USER_MANAGER_API_URL: user-manager-api:7071
     ports:
       - 3000:3000
     expose:
       - 3000
     depends_on:
       - mysqldb
+      - user-manager-api
     networks:
-      - internalnet
-  nginx:
-    image: nginx:alpine
-    container_name: nginxcontainer
-    volumes:
-      - ../Front-end:/usr/share/nginx/html
+      internalnet: 
+        ipv4_address: 172.22.0.6
+
+  mongo:
+    image: mongo
+    logging:
+      driver: none
+    networks:
+      internalnet: 
+        ipv4_address: 172.22.0.8
+
+  user-manager-api:
+    image: moreillon/user-manager-mongoose
+    environment:
+      MONGODB_URL: mongodb://172.22.0.8
+      JWT_SECRET: sonoVVNÀAFINVASDVNNSJljnval
     ports:
-      - 80:80
+      - "7071:80"
+    depends_on:
+      - mongo
     networks:
-      - internalnet
+      internalnet: 
+        ipv4_address: 172.22.0.4
+
+  user-manager-front:
+    image: moreillon/user-manager-mongoose-front
+    logging:
+      driver: none
+    environment:
+      VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
+    networks:
+      internalnet: 
+        ipv4_address: 172.22.0.3
 
 networks:
   internalnet:
     driver: bridge
+    ipam:
+      driver: default
+      config: 
+        - subnet: 172.22.0.0/24
+          gateway: 172.22.0.1
+
+
+  # user-manager-front-proxy:
+  #   image: moreillon/api-proxy
+  #   logging:
+  #     driver: none
+  #   environment:
+  #     VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
+  #     PROXY_API: http://user-manager-api:7071
+  #     PROXY_ROOT: http://nodeapp:3000
+  #   ports:
+  #     - "8081:80"
+  #   networks:
+  #     internalnet:
+  #       ipv4_address: 172.22.0.2

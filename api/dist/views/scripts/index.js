@@ -18,72 +18,6 @@ function addSuggestion(suggestionId, suggestionTextBox, suggestions) {
   });
 }
 
-function retrieveSuggestion() {
-  const categoriaSelect = document.getElementById('categoria');
-  const classificazioneSelect = document.getElementById('classificazione');
-
-  const opzioniClassificazione = [
-    'Dipinti', 'Mosaici', 'Sculture e frammenti lapidei', 'Piccola plastica',
-    'Elementi architettonici', 'Disegni, stampe e matrici', 'Fotografie',
-    'Libri e riviste', 'Manoscritti', 'Armi e armature', 'Tessuti e moda',
-    'Gioielleria e ornamenti', 'Paramenti sacri, oggetti liturgici e devozionali',
-    'Utensili e strumenti di lavoro', 'Materiali organici, fossili e resti umani',
-    'Tarsie', 'Arredi e mobili', 'Medaglie, monete e gemme', 'Calchi',
-    'Lapidi e cippi funerari', 'Urne, sarcofagi e casse tombali',
-    'Vasellame ceramico', 'Vasellame metallico', 'Vetri',
-    'Sigilli e impronte di sigilli', 'Strumenti musicali', 'Giocattoli', 'Altro'
-  ];
-
-  const opzioniCategoria = ['Opera firmata', 'Opera attribuita', 'Opera documentata'];
-
-  function createOptionElement(value) {
-    const optionElement = document.createElement('option');
-    optionElement.value = value;
-    optionElement.textContent = value;
-    return optionElement;
-  }
-
-  opzioniCategoria.forEach(opzione => {
-    const optionElement = createOptionElement(opzione);
-    categoriaSelect.appendChild(optionElement);
-  });
-
-  opzioniClassificazione.forEach(opzione => {
-    const optionElement = createOptionElement(opzione);
-    classificazioneSelect.appendChild(optionElement);
-  });
-
-  const urls = [
-    "http://0.0.0.0:3000/materiali",
-    "http://0.0.0.0:3000/tecniche"
-  ];
-
-  const risultati = {};
-
-  Promise.all(
-    urls.map(url =>
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          const nomeDizionario = url.split("/").pop();
-          risultati[nomeDizionario] = data;
-        })
-    )
-  )
-    .then(() => {
-      const listaMateriali = new Set(risultati.materiali.data.map(materiale => materiale.nome_materiale));
-      const listaDescrizioni = new Set(risultati.tecniche.data.map(tecniche => tecniche.nome_tecnica));
-
-      const arrayListaMateriali = Array.from(listaMateriali);
-      const arrayListaDescrizioni = Array.from(listaDescrizioni);
-
-      addSuggestion('nome_materiale', 'nome_materialeSuggerimenti', arrayListaMateriali);
-      addSuggestion('nome_tecnica', 'nome_tecnicaSuggerimenti', arrayListaDescrizioni);
-    })
-    .catch(error => {
-      console.error("Si è verificato un errore:", error);
-    });
-}
 
 
 // Funzione per ottenere il valore selezionato per il primo form di date
@@ -196,7 +130,7 @@ function createCard(data, index) {
   cardBodyDiv.appendChild(textInformations);
 
   var cardLink = document.createElement("a");
-  cardLink.href = "scheda.html?id=" + index;
+  cardLink.href = "scheda?id=" + index;
   cardLink.appendChild(cardBodyDiv);
   cardDiv.appendChild(cardLink);
   return cardDiv;
@@ -450,7 +384,6 @@ $(document).ready(function () {
   initializeUI();
 
   function initializeUI() {
-    retrieveSuggestion();
     addEventListeners();
     setupTooltip();
     initInputValidation();
@@ -464,8 +397,26 @@ $(document).ready(function () {
         handleSearch();
       }
     });
-    
-  }
+    $('.openSidenav').on("click", function() {
+      var sidenavWidth = $('#mySidenav').width();
+      if (sidenavWidth === 0) {
+        $('#mySidenav').css("width", "250px");
+      } else {
+        $('#mySidenav').css("width", "0");
+      }
+    });
+
+
+    // Quando viene cliccato l'elemento con classe 'closebtn'
+    $('.closebtn').on("click", function() {
+      $('#mySidenav').css("width", "0");
+    });
+    $('.logout').on("click", function() {
+      document.cookie = "jwt=; path=/;";
+      location.reload();
+
+    });
+    }
 
 });
 

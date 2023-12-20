@@ -4,6 +4,26 @@
   margin-top: 80px;
 }
 
+
+.loginDiv{
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.loginDiv a {
+  margin-right: 6px
+}
+
+.schedatore {
+  background-color: orange;
+  border-color: orange
+}
+
+.admin {
+  background-color: green;
+  border-color: green
+}
+
 .card {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -54,21 +74,17 @@ html {
   max-width: 300px;
 }
 
-
 .card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border: 1px solid rgba(0,0,0,.125); /* Spessore del bordo e colore */
   border-radius: 5px; /* Raggio dei contorni stondati */
-
-
 }
 
 .gruppo_giorni {
   display: flex;
   margin-bottom: 5px;
-
 }
 
 .gruppo_date {
@@ -110,12 +126,21 @@ html {
   .text_informations{
     min-width: 600px
   }
+
+.loginDiv{
+  margin-top: -40px;
+  padding-bottom: 42px;
+  }
 }
 
 
 @media only screen and (max-width: 1000px) {
   .text_informations{
     min-width: 400px
+  }
+  .loginDiv{
+    margin-top: -40px;
+    padding-bottom: 42px;
   }
 }
 
@@ -127,7 +152,6 @@ html {
     min-width: 10px
   }
 }
-
 
 
 @media only screen and (max-width: 780px) {
@@ -153,4 +177,68 @@ html {
     width: auto;
   }
 
+}
+@media only screen and (max-width: 575px) {
+  .loginDiv{
+    margin-top: -5px;
+    padding-bottom: 42px;
+  }
+}
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  text-align: left; /* Imposta l'allineamento a sinistra */
+
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+  display: block; /* Rende i link elementi di blocco */
+  padding: 8px; /* Aggiunge spaziatura tra i link */
+
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+.openButton {
+  position: absolute;
+  top: 10px; 
+  right: 10px; 
+  z-index: 9999; 
+}
+.loginDiv a {
+  margin-right: 6px;
+  margin-bottom: 10px; /* Aggiungi margine inferiore */
+}
+
+.schedatore-and-admin-only,
+.admin-only {
+  margin-bottom: 10px; /* Aggiungi margine inferiore */
 }
