@@ -13,6 +13,31 @@ CREATE TABLE `users` (
   `password` text
 );
 
+DROP TABLE IF EXISTS statoScheda;
+
+CREATE TABLE `statoScheda` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+   -- bozza = 0, pending = 1, approvata = 2
+  `stato` int, 
+  `commento` text
+);
+
+DROP TABLE IF EXISTS tds_schede_statoScheda;
+
+CREATE TABLE `tds_schede_statoScheda` (
+  `id_scheda` int PRIMARY KEY,
+  `id_stato` int
+);
+
+DROP TABLE IF EXISTS tds_stato_schedeUser
+
+CREATE TABLE `tds_stato_schedeUser` (
+  `id_stato` int PRIMARY KEY,
+  -- user è lo user id
+  `id_user` int
+);
+
+
 DROP TABLE IF EXISTS schede;
 
 CREATE TABLE `schede` (
@@ -25,6 +50,14 @@ CREATE TABLE `schede` (
   `classificazione` text 
 );
 
+DROP TABLE IF EXISTS tds_users_schede;
+
+CREATE TABLE `tds_users_schede` (
+  `id_user` int,
+  `id_scheda` int,
+  `data_modifica` timestamp
+);
+
 DROP TABLE IF EXISTS autori;
 
 CREATE TABLE `autori` (
@@ -35,7 +68,6 @@ CREATE TABLE `autori` (
   `nome` text
 );
 
-
 DROP TABLE IF EXISTS tds_schede_autori;
 
 
@@ -43,7 +75,6 @@ CREATE TABLE `tds_schede_autori` (
   `id_scheda` int,
   `id_autore` int
 );
-
 
 DROP TABLE IF EXISTS cronologie;
 
@@ -59,26 +90,15 @@ CREATE TABLE `cronologie` (
   `anno_data_a` text
 );
 
-
 DROP TABLE IF EXISTS tds_schede_cronologie;
-
 
 CREATE TABLE `tds_schede_cronologie` (
   `id_scheda` int,
   `id_cronologia` int
 );
 
-DROP TABLE IF EXISTS tds_users_schede;
-
-
-CREATE TABLE `tds_users_schede` (
-  `id_user` int,
-  `id_scheda` int,
-  `data_modifica` timestamp
-);
 
 DROP TABLE IF EXISTS materiali;
-
 
 CREATE TABLE `materiali` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -96,7 +116,6 @@ CREATE TABLE `tds_schede_materiali` (
 
 DROP TABLE IF EXISTS tecniche;
 
-
 CREATE TABLE `tecniche` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `nome_tecnica` text,
@@ -104,7 +123,6 @@ CREATE TABLE `tecniche` (
 );
 
 DROP TABLE IF EXISTS tds_schede_tecniche;
-
 
 CREATE TABLE `tds_schede_tecniche` (
   `id_scheda` int,
@@ -165,9 +183,7 @@ CREATE TABLE `inventari` (
   `descrizione` text
 );
 
-
 DROP TABLE IF EXISTS tds_schede_inventari;
-
 
 
 CREATE TABLE `tds_schede_inventari` (
@@ -185,7 +201,6 @@ CREATE TABLE `provenienze` (
   `note` text
 );
 
-
 DROP TABLE IF EXISTS tds_schede_provenienze;
 
 
@@ -195,7 +210,6 @@ CREATE TABLE `tds_schede_provenienze` (
 );
 
 DROP TABLE IF EXISTS mostre;
-
 
 CREATE TABLE `mostre` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -280,7 +294,6 @@ CREATE TABLE `tds_schede_documentazioniFotografiche` (
   `id_documentazioneFotografica` int
 );
 
-
 ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
 ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
@@ -336,3 +349,11 @@ ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_documen
 ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
 
 ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`);
+
+ALTER TABLE `tds_schede_statoScheda` ADD FOREIGN KEY (`id_stato`) REFERENCES `statoScheda` (`id`);
+
+ALTER TABLE `tds_schede_statoScheda` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+
+ALTER TABLE `tds_stato_schedeUser` ADD FOREIGN KEY (`id_stato`) REFERENCES `statoScheda` (`id`);
+
+ALTER TABLE `tds_stato_schedeUser` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);

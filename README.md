@@ -6,7 +6,7 @@ Setup and run:
 ```sh
 cd api
 npm i
-npm run start:build && docker-compose up -d --build
+npm run start:build && docker network create extern && docker-compose up -d --build
 ```
 
 Run
@@ -16,7 +16,7 @@ docker-compose up  -d
 
 Restart
 ```sh
- docker-compose down && npm run start:build && docker-compose up -d --build
+ docker-compose down && npm run start:build && docker network create extern && docker-compose up -d --build
  
  ```
 
@@ -24,7 +24,7 @@ Delete all and recreate
 ```sh
 # Elimino tutto i container e immagini
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force &&  docker network prune --force
-npm run start:build && docker-compose up -d --build
+npm run start:build && docker network create extern && docker-compose up -d --build
 ```
 
 Altro:
