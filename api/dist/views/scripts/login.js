@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+  $("#errorMessage").hide();
+
   document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -31,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function showError(message) {
-    const errorMessageElement = document.getElementById('errorMessage');
-    errorMessageElement.innerHTML = message;
+    $("#errorMessage").show();
+    $("#errorMessage").html(message);
   }
 
 

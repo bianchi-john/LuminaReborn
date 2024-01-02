@@ -5,7 +5,7 @@
 }
 
 
-.loginDiv{
+.loginDiv {
   display: flex;
   flex-direction: row-reverse;
 }
@@ -78,8 +78,10 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 1px solid rgba(0,0,0,.125); /* Spessore del bordo e colore */
-  border-radius: 5px; /* Raggio dei contorni stondati */
+  border: 1px solid rgba(0, 0, 0, .125);
+  /* Spessore del bordo e colore */
+  border-radius: 5px;
+  /* Raggio dei contorni stondati */
 }
 
 .gruppo_giorni {
@@ -104,7 +106,7 @@ html {
 }
 
 .selectBox {
-    width: 300px;
+  width: 300px;
 }
 
 .image-tooltip {
@@ -114,31 +116,32 @@ html {
   margin-top: 2px;
 }
 
-.card-body{
-  display:flex;
+.card-body {
+  display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
-  
+
 }
 
 
 @media only screen and (min-width: 1001px) {
-  .text_informations{
+  .text_informations {
     min-width: 600px
   }
 
-.loginDiv{
-  margin-top: -40px;
-  padding-bottom: 42px;
+  .loginDiv {
+    margin-top: -40px;
+    padding-bottom: 42px;
   }
 }
 
 
 @media only screen and (max-width: 1000px) {
-  .text_informations{
+  .text_informations {
     min-width: 400px
   }
-  .loginDiv{
+
+  .loginDiv {
     margin-top: -40px;
     padding-bottom: 42px;
   }
@@ -148,7 +151,8 @@ html {
   .card-image {
     display: none;
   }
-  .text_informations{
+
+  .text_informations {
     min-width: 10px
   }
 }
@@ -167,23 +171,28 @@ html {
   .date-form {
     min-width: 95px;
   }
-  #toggleSearchFunctions{
+
+  #toggleSearchFunctions {
     font-size: 14px;
   }
-  #searchButton{
+
+  #searchButton {
     font-size: 14px;
   }
+
   .selectBox {
     width: auto;
   }
 
 }
+
 @media only screen and (max-width: 575px) {
-  .loginDiv{
+  .loginDiv {
     margin-top: -5px;
     padding-bottom: 42px;
   }
 }
+
 .sidenav {
   height: 100%;
   width: 0;
@@ -195,7 +204,8 @@ html {
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
-  text-align: left; /* Imposta l'allineamento a sinistra */
+  text-align: left;
+  /* Imposta l'allineamento a sinistra */
 
 }
 
@@ -206,8 +216,10 @@ html {
   color: #818181;
   display: block;
   transition: 0.3s;
-  display: block; /* Rende i link elementi di blocco */
-  padding: 8px; /* Aggiunge spaziatura tra i link */
+  display: block;
+  /* Rende i link elementi di blocco */
+  padding: 8px;
+  /* Aggiunge spaziatura tra i link */
 
 }
 
@@ -221,24 +233,36 @@ html {
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
+  cursor: pointer;
+
 }
 
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
 }
+
 .openButton {
   position: absolute;
-  top: 10px; 
-  right: 10px; 
-  z-index: 9999; 
+  top: 10px;
+  left: 10px;
+  z-index: 9999;
+  cursor: pointer;
 }
+
 .loginDiv a {
   margin-right: 6px;
-  margin-bottom: 10px; /* Aggiungi margine inferiore */
+  margin-bottom: 10px;
+  /* Aggiungi margine inferiore */
 }
 
 .schedatore-and-admin-only,
 .admin-only {
-  margin-bottom: 10px; /* Aggiungi margine inferiore */
+  margin-bottom: 10px;
+  /* Aggiungi margine inferiore */
 }

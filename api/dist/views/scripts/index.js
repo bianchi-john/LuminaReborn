@@ -416,7 +416,17 @@ $(document).ready(function () {
       location.reload();
 
     });
-    }
+
+    $(".openButton").click(function() {
+      $(".openButton").hide();
+    });
+    $(".closebtn").click(function() {
+      setTimeout(function() {
+        $(".openButton").show();
+      }, 700); 
+    });
+    
+  }
 
 });
 
