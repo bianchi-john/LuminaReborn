@@ -49,6 +49,7 @@ services:
     networks:
       internalnet: 
         ipv4_address: 172.22.0.6
+      extern:
 
   mongo:
     image: mongo
@@ -82,6 +83,8 @@ services:
         ipv4_address: 172.22.0.3
 
 networks:
+  extern:
+    external: true
   internalnet:
     driver: bridge
     ipam:
@@ -89,7 +92,6 @@ networks:
       config: 
         - subnet: 172.22.0.0/24
           gateway: 172.22.0.1
-
 
   # user-manager-front-proxy:
   #   image: moreillon/api-proxy
