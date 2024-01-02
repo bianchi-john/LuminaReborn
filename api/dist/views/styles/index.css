@@ -255,6 +255,10 @@ html {
   cursor: pointer;
 }
 
+.openButton:hover { 
+  text-decoration: none; 
+} 
+
 .loginDiv a {
   margin-right: 6px;
   margin-bottom: 10px;
