@@ -16,7 +16,7 @@ docker-compose up  -d
 
 Restart
 ```sh
- docker-compose down && npm run start:build && docker network create extern && docker-compose up -d --build
+ docker-compose down && npm run start:build && docker-compose up -d --build
  
  ```
 

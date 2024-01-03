@@ -29,7 +29,13 @@
           <a href="login" class="login">Login</a>
         <% } %>
         <% if (userType==='admin' || userType==='schedatore' ) { %>
-          <a href="#" class="schedatore-and-admin-only">Schedatore</a>
+          <button class="schedatore-and-admin-only dropdown-btn">Schedatore
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-container">
+            <a href="#">Bozze</a>
+            <a href="#">Schede in approvazione</a>
+          </div>
         <% } %>
         <% if (userType==='admin' ) { %>
           <a href="#" class="admin-only">Amministratore</a>
