@@ -25,6 +25,17 @@ const isAdmin = async (jwt: string): Promise<boolean | string> => {
 
     if (response.status === 200) {
       const userData = response.data;
+      // Controllo della data di creazione del token
+      const creationTimestamp = new Date(userData.creation_date).getTime();
+      const eightHoursAgo = new Date().getTime() - 8 * 60 * 60 * 1000;
+
+      // Per testare che funzioni gli do un minuto di tempo
+      // const eightHoursAgo = new Date().getTime() - 1 * 60 * 1000; // 1 minuto fa
+
+      if (creationTimestamp < eightHoursAgo) {
+        // Il token è più vecchio di 8 ore, consideralo non valido
+        return false;
+      }
 
       // Controlla se è presente la proprietà isAdmin e se è impostata su true
       if (userData.isAdmin === true) {
