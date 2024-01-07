@@ -17,7 +17,7 @@ import querystring from 'querystring';
 
 const viewsPath = path.join(__dirname, './views'); // Cartella contenente i file HTML
 
-const isAdmin = async (jwt: string): Promise<boolean | string> => {
+const isCookieOk = async (jwt: string): Promise<boolean | string> => {
   try {
     const response = await axios.get('http://172.22.0.4/users/self', {
       params: { jwt }
@@ -37,7 +37,7 @@ const isAdmin = async (jwt: string): Promise<boolean | string> => {
         return false;
       }
 
-      // Controlla se è presente la proprietà isAdmin e se è impostata su true
+      // Controlla se è presente la proprietà isCookieOk e se è impostata su true
       if (userData.isAdmin === true) {
         return 'admin';
       } else if (!userData.hasOwnProperty('isAdmin')) {
@@ -60,11 +60,12 @@ const onlyAdmin = async (req: Request, res: Response, next: NextFunction, route:
   const jwt = cookies.get("jwt");
 
   if (!jwt) {
-    return res.status(403).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+    res.status(403).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+    return res.redirect('/');
   }
 
   try {
-    const isAdminUser = await isAdmin(jwt);
+    const isAdminUser = await isCookieOk(jwt);
 
     if (isAdminUser) {
       // L'utente è un amministratore, consenti l'accesso alla route
@@ -75,7 +76,7 @@ const onlyAdmin = async (req: Request, res: Response, next: NextFunction, route:
     }
   } catch (error) {
     // Gestisci gli errori durante la verifica dell'amministratore
-    console.error("Error during isAdmin check:", error);
+    console.error("Error during isCookieOk check:", error);
     return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
   }
 };
@@ -134,7 +135,7 @@ export class App {
         }
 
         try {
-          const userType = await isAdmin(jwt);
+          const userType = await isCookieOk(jwt);
 
           if (userType === 'admin') {
             // L'utente è un amministratore
@@ -147,7 +148,7 @@ export class App {
             res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
           }
         } catch (error) {
-          console.error("Error during isAdmin check:", error);
+          console.error("Error during isCookieOk check:", error);
           return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
         }
       });
@@ -193,7 +194,89 @@ export class App {
           res.status(500).send(error);
         }
       });
-      
+
+
+      // BOZZE
+      this.app.get('/bozze', async (req: Request, res: Response) => {
+        const cookies = new Cookies(req, res);
+        const jwt = cookies.get("jwt");
+
+        if (!jwt) {
+          // Il cookie JWT non è presente, gestisci di conseguenza
+          return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+        }
+
+        try {
+          const userType = await isCookieOk(jwt);
+
+          if (userType === 'admin' || userType === 'schedatore') {
+            // L'utente è un amministratore
+            res.render('bozze', { cssFilePath: '/styles/bozze.css', jsFilePath: '/scripts/bozze.js', imgFilePath: '/img', userType: userType });
+          } else {
+            // L'utente non è né amministratore né schedatore
+            res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: userType });
+          }
+        } catch (error) {
+          console.error("Error during isCookieOk check:", error);
+          return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+        }
+      });
+
+
+      // SCHEDE IN APPROVAZIONE
+      this.app.get('/schedeInApprovazione', async (req: Request, res: Response) => {
+        const cookies = new Cookies(req, res);
+        const jwt = cookies.get("jwt");
+
+        if (!jwt) {
+          // Il cookie JWT non è presente, gestisci di conseguenza
+          return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+        }
+
+        try {
+          const userType = await isCookieOk(jwt);
+
+          if (userType === 'admin' || userType === 'schedatore') {
+            // L'utente è un amministratore
+            res.render('schedeInApprovazione', { cssFilePath: '/styles/schedeInApprovazione.css', jsFilePath: '/scripts/schedeInApprovazione.js', imgFilePath: '/img', userType: userType });
+          } else {
+            // L'utente non è né amministratore né schedatore
+            res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+          }
+        } catch (error) {
+          console.error("Error during isCookieOk check:", error);
+          return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+        }
+      });
+
+
+      // AMMINISTRATORE
+        this.app.get('/amministratore', async (req: Request, res: Response) => {
+        const cookies = new Cookies(req, res);
+        const jwt = cookies.get("jwt");
+
+        if (!jwt) {
+          // Il cookie JWT non è presente, gestisci di conseguenza
+          return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+        }
+
+        try {
+          const userType = await isCookieOk(jwt);
+
+          if (userType === 'admin') {
+            // L'utente è un amministratore
+            res.render('amministratore', { cssFilePath: '/styles/amministratore.css', jsFilePath: '/scripts/amministratore.js', imgFilePath: '/img', userType: userType });
+          } else {
+            // L'utente non è né amministratore né schedatore
+            res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+          }
+        } catch (error) {
+          console.error("Error during isCookieOk check:", error);
+          return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+        }
+      });
+
+
 
     this.app.all('*', (_: Request, res: Response)=> res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
   }
