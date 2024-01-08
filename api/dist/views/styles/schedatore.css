@@ -237,7 +237,7 @@
   
   /* Add an active class to the active dropdown button */
   .active {
-    background-color: green;
+    background-color: #007bff;
     color: white;
   }
   
@@ -339,7 +339,7 @@
   
   /* Add an active class to the active dropdown button */
   .active {
-    background-color: green;
+    background-color: #007bff;
     color: white;
   }
   
@@ -362,5 +362,5 @@
   }
   
   .dropdown-container a{
-    font-size: 22px;
+    font-size: 19px;
   }
