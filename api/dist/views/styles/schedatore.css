@@ -1,0 +1,366 @@
+/* SEARCH PAGE */
+
+#result {
+    margin-top: 80px;
+  }
+  
+  
+  .loginDiv {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+  
+  .loginDiv a {
+    margin-right: 6px
+  }
+  
+  .schedatore {
+    background-color: orange;
+    border-color: orange
+  }
+  
+  .admin {
+    background-color: green;
+    border-color: green
+  }
+  
+  .card {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  .custom-tooltip-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 5px;
+    display: none;
+    margin-top: 5px;
+  
+  
+  }
+  
+  .custom-tooltip-content.show {
+    display: inline;
+    margin-top: 5px;
+    display: inline;
+    margin-top: 5px;
+    margin-left: 8px;
+    z-index: 2;
+    margin-right: 10px;
+  
+  }
+  
+  #searchButton {
+    margin-top: 5px;
+  }
+  
+  #toggleSearchFunctions {
+    margin-top: 5px;
+    background-color: #2e1273;
+    border-color: #2e1273;
+  }
+  
+  .image-container {
+    margin-top: auto;
+    margin-bottom: auto;
+    width: auto;
+    overflow: hidden;
+    padding-left: 40px;
+    max-width: 300px;
+  }
+  
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid rgba(0, 0, 0, .125);
+    /* Spessore del bordo e colore */
+    border-radius: 5px;
+    /* Raggio dei contorni stondati */
+  }
+  
+  .gruppo_giorni {
+    display: flex;
+    margin-bottom: 5px;
+  }
+  
+  .gruppo_date {
+    margin-left: 40px;
+    margin-right: 40px;
+    font-size: 14px;
+  }
+  
+  .ambito_storico {
+    margin-top: 14px;
+  }
+  
+  .date-form {
+    width: 150px;
+    font-size: 10px;
+    margin-left: 6px;
+  }
+  
+  .selectBox {
+    width: 300px;
+  }
+  
+  .image-tooltip {
+    vertical-align: middle;
+    border-style: none;
+    width: 28px;
+    margin-top: 2px;
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  
+  }
+  
+  
+  @media only screen and (min-width: 1001px) {
+    .text_informations {
+      min-width: 600px
+    }
+  
+    .loginDiv {
+      margin-top: -40px;
+      padding-bottom: 42px;
+    }
+  }
+  
+  
+  @media only screen and (max-width: 1000px) {
+    .text_informations {
+      min-width: 400px
+    }
+  
+    .loginDiv {
+      margin-top: -40px;
+      padding-bottom: 42px;
+    }
+  }
+  
+  @media only screen and (max-width: 800px) {
+    .card-image {
+      display: none;
+    }
+  
+    .text_informations {
+      min-width: 10px
+    }
+  }
+  
+  
+  @media only screen and (max-width: 780px) {
+    .card-image {
+      display: none;
+    }
+  
+    .gruppo_date {
+      margin-left: 0px;
+      margin-left: 0px;
+    }
+  
+    .date-form {
+      min-width: 95px;
+    }
+  
+    #toggleSearchFunctions {
+      font-size: 14px;
+    }
+  
+    #searchButton {
+      font-size: 14px;
+    }
+  
+    .selectBox {
+      width: auto;
+    }
+  
+  }
+  
+  @media only screen and (max-width: 575px) {
+    .loginDiv {
+      margin-top: -5px;
+      padding-bottom: 42px;
+    }
+  }
+  
+  
+  
+  /* Fixed sidenav, full height */
+  .sidenav {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  /* Style the sidenav links and the dropdown button */
+  .sidenav a, .dropdown-btn {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #818181;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  /* On mouse-over */
+  .sidenav a:hover, .dropdown-btn:hover {
+    color: #f1f1f1;
+  }
+  
+  /* Main content */
+  .main {
+    margin-left: 200px; /* Same as the width of the sidenav */
+    font-size: 20px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+  }
+  
+  /* Add an active class to the active dropdown button */
+  .active {
+    background-color: green;
+    color: white;
+  }
+  
+  /* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+  .dropdown-container {
+    display: none;
+    background-color: #262626;
+    padding-left: 8px;
+  }
+  
+  /* Optional: Style the caret down icon */
+  .fa-caret-down {
+    float: right;
+    padding-right: 8px;
+  }
+  
+  /* Some media queries for responsiveness */
+  @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+  }
+  
+  .openButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 0;
+    cursor: pointer;
+  }
+  
+  .openButton:hover { 
+    text-decoration: none; 
+  } 
+  
+  .loginDiv a {
+    margin-right: 6px;
+    margin-bottom: 10px;
+    /* Aggiungi margine inferiore */
+  }
+  
+  
+  
+  a.login{
+    font-size: 35px;
+    margin-top: -7px;
+    margin-left: 35px;
+  }
+  
+  .mySidenav{
+    z-index: 2;
+  }
+  
+  #mySidenav{
+    width: 0;
+  }
+  
+  
+  
+  
+  /* Fixed sidenav, full height */
+  .sidenav {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  /* Style the sidenav links and the dropdown button */
+  .sidenav a, .dropdown-btn {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    border: none;
+    background: none;
+    width:100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  /* On mouse-over */
+  .sidenav a:hover, .dropdown-btn:hover {
+    color: #f1f1f1;
+  }
+  
+  /* Main content */
+  .main {
+    margin-left: 200px; /* Same as the width of the sidenav */
+    font-size: 20px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+  }
+  
+  /* Add an active class to the active dropdown button */
+  .active {
+    background-color: green;
+    color: white;
+  }
+  
+  /* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+  .dropdown-container {
+    display: none;
+    background-color: #262626;
+    padding-left: 8px;
+  }
+  
+  /* Optional: Style the caret down icon */
+  .fa-caret-down {
+    float: right;
+    padding-right: 8px;
+  }
+  
+  a.closebtn{
+    margin-top: -20px!important;
+    font-size: 40px!important;
+  }
+  
+  .dropdown-container a{
+    font-size: 22px;
+  }
