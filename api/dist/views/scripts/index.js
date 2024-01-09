@@ -67,8 +67,8 @@ function createCard(data, index) {
 
   var titleElement = document.createElement("h5");
   titleElement.classList.add("card-title", "mb-2", "text-muted");
-  titleElement.innerHTML =  data.titolo_opera ;
-  
+  titleElement.innerHTML = data.titolo_opera;
+
 
   var autoreElement = document.createElement("p");
   autoreElement.classList.add("card-text");
@@ -229,7 +229,7 @@ function handleSearch() {
       mese_a = '01'
     }
   }
-  
+
   if (anno_a) {
     var data_da = anno_da + '-' + mese_da + '-' + giorno_da;
     var data_a = anno_a + '-' + mese_a + '-' + giorno_a;
@@ -392,44 +392,13 @@ $(document).ready(function () {
   function addEventListeners() {
     $("#toggleSearchFunctions").on("click", toggleAdvancedSearch);
     $("#searchButton").on("click", handleSearch);
-    $(window).on("keydown", function(event) {
+    $(window).on("keydown", function (event) {
       if (event.which === 13) { // 13 è il codice del tasto "Invio"
         handleSearch();
       }
     });
-    $('.openSidenav').on("click", function() {
-      var sidenavWidth = $('#mySidenav').width();
-      if (sidenavWidth === 0) {
-        $('#mySidenav').css("width", "250px");
-      } 
-    });
 
 
-    // Quando viene cliccato l'elemento con classe 'closebtn'
-    $('.closebtn').on("click", function() {
-      $('#mySidenav').css("width", "0");
-    });
-    $('.logout').on("click", function() {
-      document.cookie = "jwt=; path=/;";
-      location.reload();
-
-    });
-
-    //* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
-    var dropdown = document.getElementsByClassName("dropdown-btn");
-    var i;
-  
-    for (i = 0; i < dropdown.length; i++) {
-      dropdown[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var dropdownContent = this.nextElementSibling;
-        if (dropdownContent.style.display === "block") {
-          dropdownContent.style.display = "none";
-        } else {
-          dropdownContent.style.display = "block";
-        }
-      });
-    }
   }
 
 });

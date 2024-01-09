@@ -25,67 +25,8 @@ const search_routes_1 = __importDefault(require("./routes/search.routes"));
 const process_1 = __importDefault(require("process"));
 const axios_1 = __importDefault(require("axios"));
 const path_1 = __importDefault(require("path")); // Aggiunto il modulo 'path' per gestire i percorsi dei file
+const authHelpers_1 = require("./helpers/authHelpers"); // Importa le funzioni dal modulo
 const viewsPath = path_1.default.join(__dirname, './views'); // Cartella contenente i file HTML
-const isCookieOk = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const response = yield axios_1.default.get('http://172.22.0.4/users/self', {
-            params: { jwt }
-        });
-        if (response.status === 200) {
-            const userData = response.data;
-            // Controllo della data di creazione del token
-            const creationTimestamp = new Date(userData.creation_date).getTime();
-            const eightHoursAgo = new Date().getTime() - 8 * 60 * 60 * 1000;
-            // Per testare che funzioni gli do un minuto di tempo
-            // const eightHoursAgo = new Date().getTime() - 1 * 60 * 1000; // 1 minuto fa
-            if (creationTimestamp < eightHoursAgo) {
-                // Il token è più vecchio di 8 ore, consideralo non valido
-                return false;
-            }
-            // Controlla se è presente la proprietà isCookieOk e se è impostata su true
-            if (userData.isAdmin === true) {
-                return 'admin';
-            }
-            else if (!userData.hasOwnProperty('isAdmin')) {
-                return 'schedatore';
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
-    }
-    catch (error) {
-        // Se la richiesta fallisce con un 403, considera l'utente non un amministratore o uno schedatore
-        return false;
-    }
-});
-const onlyAdmin = (req, res, next, route) => __awaiter(void 0, void 0, void 0, function* () {
-    const cookies = new cookies_1.default(req, res);
-    const jwt = cookies.get("jwt");
-    if (!jwt) {
-        res.status(403).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
-        return res.redirect('/');
-    }
-    try {
-        const isAdminUser = yield isCookieOk(jwt);
-        if (isAdminUser) {
-            // L'utente è un amministratore, consenti l'accesso alla route
-            route(req, res, next);
-        }
-        else {
-            // L'utente non è un amministratore, restituisci un errore 403
-            return res.status(403).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
-        }
-    }
-    catch (error) {
-        // Gestisci gli errori durante la verifica dell'amministratore
-        console.error("Error during isCookieOk check:", error);
-        return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
-    }
-});
 class App {
     constructor(port = process_1.default.env.SERVER_PORT || 3000) {
         this.port = port;
@@ -124,21 +65,21 @@ class App {
             const jwt = cookies.get("jwt");
             if (!jwt) {
                 // Il cookie JWT non è presente, gestisci di conseguenza
-                return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield isCookieOk(jwt);
+                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
                 if (userType === 'admin') {
                     // L'utente è un amministratore
-                    res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: 'admin' });
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: 'admin' });
                 }
                 else if (userType === 'schedatore') {
                     // L'utente è uno schedatore
-                    res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: 'schedatore' });
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: 'schedatore' });
                 }
                 else {
                     // L'utente non è né amministratore né schedatore
-                    res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
                 }
             }
             catch (error) {
@@ -148,11 +89,11 @@ class App {
         }));
         // SCHEDA
         this.app.get('/scheda', (req, res) => {
-            res.render('scheda', { cssFilePath: '/styles/scheda.css', jsFilePath: '/scripts/scheda.js', imgFilePath: '/img' });
+            res.render('scheda', { cssFilePath: '/styles/scheda.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/scheda.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img' });
         });
         //LOGIN
         this.app.get('/login', (req, res) => {
-            res.render('login', { cssFilePath: '/styles/login.css', jsFilePath: '/scripts/login.js', imgFilePath: '/img' });
+            res.render('login', { cssFilePath: '/styles/login.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/login.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img' });
         });
         this.app.post('/login', (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { username, password } = req.body;
@@ -187,17 +128,17 @@ class App {
             const jwt = cookies.get("jwt");
             if (!jwt) {
                 // Il cookie JWT non è presente, gestisci di conseguenza
-                return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield isCookieOk(jwt);
+                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
                     // L'utente è un amministratore
-                    res.render('bozze', { cssFilePath: '/styles/bozze.css', jsFilePath: '/scripts/bozze.js', imgFilePath: '/img', userType: userType });
+                    res.render('bozze', { cssFilePath: '/styles/bozze.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozze.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
                 else {
                     // L'utente non è né amministratore né schedatore
-                    res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: userType });
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
             }
             catch (error) {
@@ -211,17 +152,17 @@ class App {
             const jwt = cookies.get("jwt");
             if (!jwt) {
                 // Il cookie JWT non è presente, gestisci di conseguenza
-                return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield isCookieOk(jwt);
+                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
                     // L'utente è un amministratore
-                    res.render('schedeInApprovazione', { cssFilePath: '/styles/schedeInApprovazione.css', jsFilePath: '/scripts/schedeInApprovazione.js', imgFilePath: '/img', userType: userType });
+                    res.render('schedeInApprovazione', { cssFilePath: '/styles/schedeInApprovazione.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/schedeInApprovazione.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
                 else {
                     // L'utente non è né amministratore né schedatore
-                    res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
                 }
             }
             catch (error) {
@@ -235,17 +176,17 @@ class App {
             const jwt = cookies.get("jwt");
             if (!jwt) {
                 // Il cookie JWT non è presente, gestisci di conseguenza
-                return res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield isCookieOk(jwt);
+                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
                 if (userType === 'admin') {
                     // L'utente è un amministratore
-                    res.render('amministratore', { cssFilePath: '/styles/amministratore.css', jsFilePath: '/scripts/amministratore.js', imgFilePath: '/img', userType: userType });
+                    res.render('amministratore', { cssFilePath: '/styles/amministratore.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/amministratore.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
                 else {
                     // L'utente non è né amministratore né schedatore
-                    res.render('index', { cssFilePath: '/styles/index.css', jsFilePath: '/scripts/index.js', imgFilePath: '/img', userType: null });
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
                 }
             }
             catch (error) {
