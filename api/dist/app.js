@@ -133,7 +133,7 @@ class App {
             try {
                 const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
-                    // L'utente è un amministratore
+                    // L'utente è un amministratore o schedaotore
                     res.render('bozze', { cssFilePath: '/styles/bozze.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozze.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
                 else {
@@ -157,7 +157,7 @@ class App {
             try {
                 const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
-                    // L'utente è un amministratore
+                    // L'utente è un amministratore o schedaotore
                     res.render('schedeInApprovazione', { cssFilePath: '/styles/schedeInApprovazione.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/schedeInApprovazione.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
                 else {
@@ -187,6 +187,30 @@ class App {
                 else {
                     // L'utente non è né amministratore né schedatore
                     res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
+                }
+            }
+            catch (error) {
+                console.error("Error during isCookieOk check:", error);
+                return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+            }
+        }));
+        // BOZZAEDITOR
+        this.app.get('/bozzaEditor', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const cookies = new cookies_1.default(req, res);
+            const jwt = cookies.get("jwt");
+            if (!jwt) {
+                // Il cookie JWT non è presente, gestisci di conseguenza
+                return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
+            }
+            try {
+                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
+                if (userType === 'admin' || userType === 'schedatore') {
+                    // L'utente è un amministratore o schedaotore
+                    res.render('bozzaEditor', { cssFilePath: '/styles/bozzaEditor.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozzaEditor.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+                }
+                else {
+                    // L'utente non è né amministratore né schedatore
+                    res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
                 }
             }
             catch (error) {

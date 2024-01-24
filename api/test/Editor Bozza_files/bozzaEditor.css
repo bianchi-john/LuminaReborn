@@ -1,0 +1,30 @@
+.form-group{
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.form-group p {
+    margin-bottom: 0px;
+}
+
+.submit{
+    display: flex;
+    justify-content: center;
+    margin-top: 26px;
+    margin-bottom: 50px;
+}
+
+.removeButton{
+    display: none;
+}
+
+input{
+margin-bottom: 10px;
+}
+
+select {
+    display: block;
+    width: 215px;
+    margin-top:10px;
+}

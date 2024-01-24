@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<!-- saved from url=(0034)http://172.22.0.6:3000/bozzaEditor -->
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Editor Bozza</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./Editor Bozza_files/bootstrap.min.css">
+  <script src="./Editor Bozza_files/jquery.slim.min.js"></script>
+  <script src="./Editor Bozza_files/popper.min.js"></script>
+  <script src="./Editor Bozza_files/bootstrap.bundle.min.js"></script>
+  <link rel="icon" type="image/png" href="http://172.22.0.6:3000/img/favicon/favicon.png">
+  <script src="./Editor Bozza_files/bozzaEditor.js"></script>
+  <script src="./Editor Bozza_files/sidebar.js"></script>
+  <link rel="stylesheet" href="./Editor Bozza_files/bozzaEditor.css">
+  <link rel="stylesheet" href="./Editor Bozza_files/sidebar.css">
+</head>
+<body data-new-gr-c-s-check-loaded="14.1150.0" data-gr-ext-installed=""><div class="jumbotron text-center">
+  <div id="mySidenav" class="sidenav">
+    <a class="closebtn">×</a>
+      <a href="http://172.22.0.6:3000/bozzaEditor#" class="logout">Logout</a>
+      <button class="schedatore-and-admin-only dropdown-btn">Schedatore
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-container">
+        <a href="http://172.22.0.6:3000/bozze">Bozze</a>
+        <a href="http://172.22.0.6:3000/schedeInApprovazione">Schede in approvazione</a>
+      </div>
+    <a href="http://172.22.0.6:3000/amministratore" class="admin-only">Amministratore</a>
+  </div>
+  <a class="openSidebar openButton">
+    <span style="font-size:30px;cursor:pointer openSidebar">☰ </span>
+  </a>
+  <h1>Editor di bozze</h1>
+</div>
+
+    <div class="row">
+        <div class="col title">
+            <div class="card mt-2">
+                <div class="card-header">Titolo opera</div>
+                <div class="card-body title" id="titolo">
+                    <input type="text" id="titleInput1" name="titleInput1">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col copertina">
+                    <div class="card">
+                        <div class="card-header" data-target="#copertina">Immagine di copertina</div>
+                <div class="container">
+        <div class="card-body copertina " id="copertina">
+                            <form action="/action_page.php">
+                                <input type="file" id="img" name="img" accept="image/*">
+                              </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-2 autori">
+                <div class="card-header">Autore/i</div>
+                <div class="card-body">
+                    <div class="field">
+                        <div id="textboxContainer1">
+                            <div class="form-group" id="group1">
+                                <p>Formula precedente</p>
+                                <input type="text" id="formula_precedente1" name="formula_precedente1">
+                                <p>Formula successiva</p>
+                                <input type="text" id="formula_successiva1" name="formula_successiva1">
+                                <p>Categoria</p>
+                                <input type="text" id="categoria1" name="categoria1">
+                                <p>Nome</p>
+                                <input type="text" id="nome1" name="nome1">
+                                <p>Seleziona preesistente</p>
+                                <select name="autoriSelect1" id="autoriSelect1" onchange="handleSelectChange(this)">
+                                    <option value="" selected>---</option>
+                                    <option value="autori1">Lista di tutti gli autori</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="aggiungiGruppo('textboxContainer1', 'group1', 'formula_precedente', 'formula_successiva', 'categoria', 'nome')">Aggiungi</button>
+                        <button class='removeButton' onclick="rimuoviGruppo('textboxContainer1')">Rimuovi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col cronologie">
+            <div class="card">
+                <div class="card-header" data-target="#cronologie">Cronologia</div>
+                <div class="card-body cronologie" id="cronologie">
+                    <div class="field">
+                        <p>Etichetta data</p>
+                        <input type="text" id="etichetta_data1" name="etichetta_data1">
+                        <p>Giorno data da</p>
+                        <input type="text" id="giorno_data_da1" name="giorno_data_da1">
+                        <p>Mese data da</p>
+                        <input type="text" id="mese_data_da1" name="mese_data_da1">
+                        <p>Anno data da</p>
+                        <input type="text" id="anno_data_da1" name="anno_data_da1">
+                        <p>Giorno data a</p>
+                        <input type="text" id="giorno_data_a1" name="giorno_data_a1">
+                        <p>Mese data a</p>
+                        <input type="text" id="mese_data_a1" name="mese_data_a1">
+                        <p>Anno data a</p>
+                        <input type="text" id="anno_data_a1" name="anno_data_a1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col ambito">
+            <div class="card">
+                <div class="card-header" data-target="#ambito">Ambito</div>
+                <div class="card-body ambito " id="ambito">
+                    <input type="text" id="ambitoInput1" name="ambitoInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col ubicazioni">
+            <div class="card">
+                <div class="card-header" data-target="#ubicazioni">Ubicazione</div>
+                <div class="card-body ubicazioni" id="ubicazioni">
+                    <div id="textboxContainer3">
+                        <p>Ubicazione</p>
+                        <input type="text" id="ubicazione1" name="ubicazione1">
+                        <p>Descizione</p>
+                        <input type="text" id="descrizione1" name="descrizione1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col inventari">
+            <div class="card">
+                <div class="card-header" data-target="#inventari">Numero di inventario</div>
+                <div class="card-body inventari " id="inventari">
+                    <input type="text" id="inventariInput1" name="inventariInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col giuridica">
+            <div class="card">
+                <div class="card-header" data-target="#giuridica">Proprietà giuridica</div>
+                <div class="card-body giuridica " id="giuridica">
+                    <input type="text" id="giuridicaInput1" name="giuridicaInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col classificazione">
+            <div class="card">
+                <div class="card-header" data-target="#classificazione">Classificazione opera
+                </div>
+                <div class="card-body classificazione" id="classificazione">
+                    <select name="classificazione" id="classificazione">
+                        <option value="categoriaOpera0">---</option>
+                        <option value="categoriaOpera1">Dipinti</option>
+                        <option value="categoriaOpera2">Mosaici</option>
+                        <option value="categoriaOpera3">Sculture e frammenti lapidei</option>
+                        <option value="categoriaOpera4">Piccola plastica</option>
+                        <option value="categoriaOpera5">Elementi architettonici</option>
+                        <option value="categoriaOpera6">Disegni, stampe e matrici</option>
+                        <option value="categoriaOpera7">Fotografie</option></option>
+                        <option value="categoriaOpera8">Libri e riviste</option>
+                        <option value="categoriaOpera9">Manoscritti</option>
+                        <option value="categoriaOpera10">Armi e armature</option>
+                        <option value="categoriaOpera11">Tessuti e moda</option>
+                        <option value="categoriaOpera12">Gioielleria e ornamenti</option>
+                        <option value="categoriaOpera13">Paramenti sacri, oggetti liturgici e devozionali</option>
+                        <option value="categoriaOpera14">Utensili e strumenti di lavoro</option>
+                        <option value="categoriaOpera15">Materiali organici, fossili e resti umani</option>
+                        <option value="categoriaOpera16">Tarsie</option>
+                        <option value="categoriaOpera17">Arredi e mobili</option>
+                        <option value="categoriaOpera18">Medaglie, monete e gemme</option>
+                        <option value="categoriaOpera19">Calchi</option>
+                        <option value="categoriaOpera20">Lapidi e cippi funerari</option>
+                        <option value="categoriaOpera21">Urne, sarcofagi e casse tombali</option>
+                        <option value="categoriaOpera22">Vasellame ceramico</option>
+                        <option value="categoriaOpera23">Vasellame metallico</option>
+                        <option value="categoriaOpera24">Vetri</option>
+                        <option value="categoriaOpera25">Sigilli e impronte di sigilli</option>
+                        <option value="categoriaOpera26">Strumenti musicali</option>
+                        <option value="categoriaOpera27">Giocattoli</option>
+                        <option value="categoriaOpera28">Altro</option>                        
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col materiali">
+            <div class="card">
+                <div class="card-header" data-target="#materiali">Materiali</div>
+                <div class="card-body " id="materiali">
+                    <input type="text" id="materialiInput1" name="materialiInput1">
+                    <p>Seleziona preesistente</p>
+                    <select name="materialiSelect" onchange="handleSelectChange(this)">
+                        <option value="" selected>---</option>
+                        <option value="materiali1">Lisa di tutti i materiali</option>  
+                    </select>
+                </div>
+            </div>
+        </div>  
+    </div>
+    <div class="row mt-2">
+        <div class="col tecniche">
+            <div class="card">
+                <div class="card-header" data-target="#tecniche">Tecniche</div>
+                <div class="card-body tecniche" id="tecniche">
+                    <input type="text" name="tecnicheInput1" id="tecnicheInput1">
+                    <p>Seleziona preesistente</p>
+                    <select name="tecnicheSelect" onchange="handleSelectChange(this)">
+                        <option value="">---</option>
+                        <option value="tecniche1">Tecnica 1</option>
+                    </select>
+                </div>  
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col misure">
+            <div class="card">
+                <div class="card-header" data-target="#misure">Misure</div>
+                <div class="card-body misureContent " id="misure">
+                    <input type="text" id="misureInput1" name="misureInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col provenienze">
+            <div class="card">
+                <div class="card-header" data-target="#provenienze">Provenienze</div>
+                <div class="card-body provenienze " id="provenienze">
+                    <input type="text" id="provenienzeInput1" name="provenienzeInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col iscrizioni">
+            <div class="card">
+                <div class="card-header" data-target="#iscrizioni">Iscrizioni</div>
+                <div class="card-body iscrizioni " id="iscrizioni">
+                    <input type="text" id="iscrizioniInput1" name="iscrizioniInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col storia_espositiva">
+            <div class="card">
+                <div class="card-header" data-target="#storia_espositiva">Vicende
+                    collezionistiche e storia espositiva</div>
+                <div class="card-body storia_espositiva " id="storia_espositiva">
+                    <input type="text" id="storia_espositivaInput1" name="storia_espositivaInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col descrizione_sintetica">
+            <div class="card">
+                <div class="card-header" data-target="#descrizione_sintetica">Descrizione
+                    sintetica</div>
+                <div class="card-body descrizione_sintetica " id="descrizione_sintetica">
+                    <input type="text" id="descrizione_sinteticaInput1" name="descrizione_sinteticaInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col corpo_scheda">
+            <div class="card">
+                <div class="card-header" data-target="#corpo_scheda">Commento storico-critico</div>
+                <div class="card-body corpo_scheda " id="corpo_scheda">
+                    <input type="text" id="corpo_schedaInput1" name="corpo_schedaInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col mostre">
+            <div class="card">
+                <div class="card-header" data-target="#mostre">Mostre</div>
+                <div class="card-body mostre " id="mostre">
+                    <input type="text" id="mostreInput1" name="mostreInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col bibliografie">
+            <div class="card">
+                <div class="card-header" data-target="#bibliografie">Bibliografia</div>
+                <div class="card-body bibliografie " id="bibliografie">
+                    <input type="text" id="bibliografieInput1" name="bibliografieInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col altreBibliografie">
+            <div class="card">
+                <div class="card-header" data-target="#altreBibliografie">Altra bibliografia
+                </div>
+                <div class="card-body altreBibliografie " id="altreBibliografie">
+                    <input type="text" id="altrebibliografieInput1" name="altrebibliografieInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col documentazioneFotografica">
+            <div class="card">
+                <div class="card-header" data-target="#documentazioneFotografica">
+                    Documentazione fotografica</div>
+                <div class="card-body documentazioneFotografica " id="documentazioneFotografica">
+                    <input type="text" id="documentazioneFotograficaInput1" name="documentazioneFotograficaInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col note">
+            <div class="card">
+                <div class="card-header" data-target="#note">
+                    Note</div>
+                <div class="card-body note" id="note">
+                    <input type="text" id="noteInput1" name="noteInput1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="submit">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    <div class="footer-space"></div>
+</div>
+
+</body>
+</html>
