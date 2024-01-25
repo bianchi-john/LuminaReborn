@@ -18,9 +18,9 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
     document.getElementById(containerId).appendChild(nuovoGruppo);
 
     // Controllo se c'è una select
-    if ($('#' + groupId + ' select').length > 0) {
+    if ($('#' + containerId + ' select').length > 0) {
         // Se c'è, prendi l'elemento <select> e mettilo in una variabile
-        var selectElement = $('#group1 select');
+        var selectElement = $('#' + containerId + ' select');
         var newSelectElement = selectElement.clone();
         // Ottieni l'attuale id
         var currentId = newSelectElement.attr('id');
@@ -34,10 +34,10 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
         newSelectElement.prop('name', newId);
         var nuovoParagrafo = document.createElement("p");
         // Aggiungi il testo al paragrafo
-        nuovoParagrafo.textContent = "Cerca elemento preesistente";
+        nuovoParagrafo.textContent = "Seleziona preesistente";
+        document.getElementById(nuovoGruppo.id).append(nuovoParagrafo);
+
         document.getElementById(nuovoGruppo.id).append(newSelectElement[0]);
-
-
     }
     if (numeroFigli > 1) {
         var bottoneRimuovi = document.querySelector(`button[onclick="rimuoviGruppo('${containerId}')"]`);
@@ -65,7 +65,7 @@ function rimuoviGruppo(containerId) {
 
 function handleSelectChange(selectElement) {
     // Ottieni il div padre
-    var parentDiv = selectElement.closest('.card-body');
+    var parentDiv = selectElement.closest('.form-group');
     // Seleziona tutti gli elementi di tipo input all'interno del div padre
     var inputElements = parentDiv.querySelectorAll('input');
     // Verifica se l'opzione selezionata non è la prima
@@ -85,12 +85,54 @@ function handleSelectChange(selectElement) {
 
 
 
-$(document).ready(function () {
-    $(".aggiungiBtn").on("click", function () {
-        aggiungiGruppo();
-    });
+let gruppoCounter = 1;
+let misuraCounter = 1;
 
-    $(".rimuoviBtn").on("click", function () {
-        rimuoviGruppo();
+function aggiungiMisura(containerId) {
+    const misureContainer = document.getElementById(containerId);
+
+    const newMisureGroup = document.createElement('div');
+    newMisureGroup.className = 'form-group';
+    newMisureGroup.id = `misureGroup${gruppoCounter}${misuraCounter}`;
+
+    // Clona il primo gruppo misure e cambia gli ID
+    const templateMisureGroup = document.getElementById('gruppoMisure1');
+    const clonedGroup = templateMisureGroup.cloneNode(true);
+    cambiaID(clonedGroup, gruppoCounter, misuraCounter);
+
+    newMisureGroup.appendChild(clonedGroup);
+    misureContainer.appendChild(newMisureGroup);
+
+    misuraCounter++;
+}
+
+function aggiungiGruppoMisure() {
+    const textboxContainer = document.getElementById('textboxContainerMacroMisure');
+
+    const newGroup = document.createElement('div');
+    newGroup.className = 'form-group';
+    newGroup.id = `group${gruppoCounter}`;
+
+    // Clona il primo gruppo misure e cambia gli ID
+    const templateGroup = document.getElementById('misureGroup11');
+    const clonedGroup = templateGroup.cloneNode(true);
+    cambiaID(clonedGroup, gruppoCounter);
+
+    newGroup.appendChild(clonedGroup);
+    textboxContainer.appendChild(newGroup);
+
+    misuraCounter = 1; // Resetta il contatore delle misure per il nuovo gruppo
+    gruppoCounter++;
+}
+
+function cambiaID(elemento, gruppo, misura) {
+    // Funzione per cambiare gli ID all'interno di un elemento clonato
+    elemento.querySelectorAll('[id]').forEach((el) => {
+        el.id = el.id.replace(/\d+/g, ''); // Rimuove numeri dagli ID
+        el.id += gruppo;
+
+        if (misura) {
+            el.id += misura;
+        }
     });
-});
+}
