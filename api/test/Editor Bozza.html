@@ -252,49 +252,49 @@
 
                 <div class="card-body">
                     <div class="field">
-                        <div id="textboxContainerMacroMisure">
-                            <div class="form-group" id="gruppoMisure1">
+                        <div id="textboxContainerMisure">
+                            <div class="form-group gruppoMisure" id="gruppoMisure1">
                                 <p>Titolo Gruppo Misure</p>
-                                <input type="text" id="Titolo1" name="Titolo1">
+                                <input type="text" id="Titolo1" name="Titolo">
                                 <p>Intero/Parziale</p>
-                                <input type="text" id="Intero-Parziale1" name="Intero-Parziale1">
+                                <input type="text" id="Intero-Parziale1" name="Intero-Parziale">
                                 </br>
                                 </br>
-                                <button onclick="aggiungiGruppoMisure()">Aggiungi gruppo misure</button>
-                                <button class='removeButton'>Rimuovi</button>
                                 <p>Misure</p>
-                                <div class="field" id="misureContainer1">
-                                    <div class="form-group" id="misureGroup11">
+                                <div class="field">
+                                    <div class="form-group misure" id="misureGroup11">
                                         <p>Direzione</p>
-                                        <select name="Direzione11" id="Direzione11">
+                                        <select name="Direzione" id="Direzione11">
                                             <option value="" selected>---</option>
                                             <option value="Direzione11">Lista di tutte le direzioni</option>
                                         </select>
                                         <p>Tipo</p>
-                                        <select name="Tipo11" id="Tipo11">
+                                        <select name="Tipo" id="Tipo11">
                                             <option value="" selected>---</option>
                                             <option value="Tipo11">Lista di tutte i tipi</option>
                                         </select>
                                         <p>Valore</p>
-                                        <input type="text" id="Valore11" name="Valore11">
+                                        <input type="text" id="Valore11" name="Valore">
                                         <p>Unità</p>
-                                        <select name="Unita11" id="Unita11">
+                                        <select name="Unita" id="Unita11">
                                             <option value="" selected>---</option>
                                             <option value="Unita11">Lista di tutte le unità</option>
                                         </select>
                                         </br>
-                                        <button onclick="aggiungiMisura('misureContainer1')">Aggiungi misure</button>
-                                        <button class='removeButton'>Rimuovi</button>
                                     </div>
                                 </div>
+                                <button onclick="aggiungiMisura('gruppoMisure1')">Aggiungi misura</button>
+                                <button onclick="rimuoviMisura('gruppoMisure1')" id='removeButtonMisure'>Rimuovi</button>
                             </div>
                         </div>
+                        
+                        <button onclick="aggiungiGruppoMisure('textboxContainerMisure')">Aggiungi gruppo misure</button>
+                        <button onclick="rimuoviGruppoMisure('textboxContainerMisure')" id='removeButtonGruppiMisure'>Rimuovi gruppo misure</button>
                     </div>
                 </div>
 
 
 <!-- ######################################################################### -->
-
 
             </div>
         </div>

@@ -61,8 +61,6 @@ function rimuoviGruppo(containerId) {
     }
 }
 
-
-
 function handleSelectChange(selectElement) {
     // Ottieni il div padre
     var parentDiv = selectElement.closest('.form-group');
@@ -83,56 +81,177 @@ function handleSelectChange(selectElement) {
     }
 }
 
+    ///////////////////////
+    ///////////////////////
+
+    // LOGICA PER LE MISURE
+
+    ///////////////////////
+    ///////////////////////
 
 
-let gruppoCounter = 1;
-let misuraCounter = 1;
+
+
+
+function aggiungiGruppoMisure(containerId) {
+    // Ottengo il numero di gruppi di misure nella pagina
+    const container = document.getElementById('textboxContainerMisure');
+    const numeroGruppiMisure = (container.getElementsByClassName('gruppoMisure')).length;
+    // Creo un nuovo gruppo con gli id corretti
+    var nuovoCodiceHTML = generaCodiceGruppoMisure(numeroGruppiMisure + 1);
+    // Aggiungi il nuovo codice all'elemento
+    container.innerHTML += nuovoCodiceHTML;
+
+    bottoneRimuovi = document.getElementById('removeButtonGruppiMisure');
+    bottoneRimuovi.style.display = 'inline';
+
+}
+
+
+function rimuoviGruppoMisure(containerId) {
+    // Ottieni il contenitore delle misure
+    var textboxContainer = document.getElementById(containerId);
+
+    // Trova tutti gli elementi con classe "gruppoMisure"
+    var gruppoMisureElements = textboxContainer.getElementsByClassName('gruppoMisure');
+
+    // Verifica se ci sono elementi da rimuovere
+    if (gruppoMisureElements.length > 2) {
+        // Ottieni l'ultimo elemento e rimuovilo
+        var ultimoElemento = gruppoMisureElements[gruppoMisureElements.length - 1];
+        ultimoElemento.parentNode.removeChild(ultimoElemento);
+    } 
+    if (gruppoMisureElements.length == 2) {
+        var ultimoElemento = gruppoMisureElements[gruppoMisureElements.length - 1];
+        ultimoElemento.parentNode.removeChild(ultimoElemento);
+        bottoneRimuovi = document.getElementById('removeButtonGruppiMisure');
+        bottoneRimuovi.style.display = 'none';
+    }
+    else {
+        console.log('errore during removing gruppo misure stuff')
+    }
+
+
+}
+
+
+
+
+function generaCodiceGruppoMisure(id) {
+    // Codice HTML con segnaposto § e ç
+    var nuovoCodice = `
+        <div class="form-group gruppoMisure" id="gruppoMisure${id}">
+            <p>Titolo Gruppo Misure</p>
+                <input type="text" id="Titolo${id}" name="Titolo">
+            <p>Intero/Parziale</p>
+            <input type="text" id="Intero-Parziale${id}" name="Intero-Parziale">
+            </br>
+            </br>
+            <p>Misure</p>
+            <div class="field">
+                <div class="form-group misure" id="misureGroup${id}1">
+                    <p>Direzione</p>
+                    <select name="Direzione" id="Direzione${id}1">
+                        <option value="" selected>---</option>
+                        <option value="Direzione${id}1">Lista di tutte le direzioni</option>
+                    </select>
+                    <p>Tipo</p>
+                    <select name="Tipo" id="Tipo${id}1">
+                        <option value="" selected>---</option>
+                        <option value="Tipo${id}1">Lista di tutte i tipi</option>
+                    </select>
+                    <p>Valore</p>
+                    <input type="text" id="Valore${id}1" name="Valore">
+                    <p>Unità</p>
+                    <select name="Unita" id="Unita${id}1">
+                        <option value="" selected>---</option>
+                        <option value="Unita${id}1">Lista di tutte le unità</option>
+                    </select>
+                    </br>
+                    </div>
+                </div>
+            <button onclick="aggiungiMisura('gruppoMisure${id}')">Aggiungi misura</button>
+            <button onclick="rimuoviMisura('gruppoMisure${id}')" class='removeButtonMisure'>Rimuovi</button>
+        </div>
+    `;
+    return nuovoCodice;
+}
 
 function aggiungiMisura(containerId) {
-    const misureContainer = document.getElementById(containerId);
 
-    const newMisureGroup = document.createElement('div');
-    newMisureGroup.className = 'form-group';
-    newMisureGroup.id = `misureGroup${gruppoCounter}${misuraCounter}`;
+    // Ottengo il numero del gruppo misure corrente
+    var numeroGruppo = containerId.match(/\d+/g).map(Number);
+    // Ottengo il numero delle misure nel div corrente
+    var numeroMisure = document.getElementById(containerId).getElementsByClassName('misure').length;
 
-    // Clona il primo gruppo misure e cambia gli ID
-    const templateMisureGroup = document.getElementById('gruppoMisure1');
-    const clonedGroup = templateMisureGroup.cloneNode(true);
-    cambiaID(clonedGroup, gruppoCounter, misuraCounter);
 
-    newMisureGroup.appendChild(clonedGroup);
-    misureContainer.appendChild(newMisureGroup);
+    // Creo un nuovo gruppo con gli id corretti
+    var nuovoCodiceHTML = generaCodiceMisure(numeroGruppo, numeroMisure +1);
+    var primoElemento = document.getElementById(containerId).getElementsByClassName('field')[0];
 
-    misuraCounter++;
+    // Aggiungo il nuovo codice HTML al fondo del primo elemento
+    primoElemento.innerHTML += nuovoCodiceHTML;
+
+
+    bottoneRimuovi = document.getElementById('removeButtonMisure');
+    bottoneRimuovi.style.display = 'inline';
+
 }
 
-function aggiungiGruppoMisure() {
-    const textboxContainer = document.getElementById('textboxContainerMacroMisure');
+function rimuoviMisura(containerId) {
 
-    const newGroup = document.createElement('div');
-    newGroup.className = 'form-group';
-    newGroup.id = `group${gruppoCounter}`;
+    // Ottieni l'elemento padre (gruppoMisure1)
+    var gruppoMisureElement = document.getElementById(containerId);
+    bottoneRimuovi = document.getElementById('removeButtonGruppiMisure');
+    bottoneRimuovi.style.display = 'none';
 
-    // Clona il primo gruppo misure e cambia gli ID
-    const templateGroup = document.getElementById('misureGroup11');
-    const clonedGroup = templateGroup.cloneNode(true);
-    cambiaID(clonedGroup, gruppoCounter);
+    // Trova tutti gli elementi con le classi "form-group" e "misure" all'interno di gruppoMisure1
+    var misuraElements = gruppoMisureElement.querySelectorAll('.form-group.misure');
 
-    newGroup.appendChild(clonedGroup);
-    textboxContainer.appendChild(newGroup);
+    // Verifica se ci sono elementi da rimuovere
+    if (misuraElements.length > 2) {
+        // Ottieni l'ultimo elemento e rimuovilo
+        var ultimoMisuraElement = misuraElements[misuraElements.length - 1];
+        ultimoMisuraElement.parentNode.removeChild(ultimoMisuraElement);
 
-    misuraCounter = 1; // Resetta il contatore delle misure per il nuovo gruppo
-    gruppoCounter++;
+    } 
+    if (misuraElements.length == 2) {
+        var ultimoMisuraElement = misuraElements[misuraElements.length - 1];
+        ultimoMisuraElement.parentNode.removeChild(ultimoMisuraElement);
+        bottoneRimuovi = document.getElementById('removeButtonMisure');
+        bottoneRimuovi.style.display = 'none';
+    }
+    else {
+        console.log("Nessun elemento con le classi 'form-group' e 'misure' da rimuovere.");
+    }
 }
 
-function cambiaID(elemento, gruppo, misura) {
-    // Funzione per cambiare gli ID all'interno di un elemento clonato
-    elemento.querySelectorAll('[id]').forEach((el) => {
-        el.id = el.id.replace(/\d+/g, ''); // Rimuove numeri dagli ID
-        el.id += gruppo;
 
-        if (misura) {
-            el.id += misura;
-        }
-    });
+
+function generaCodiceMisure(numeroGruppo, numeroMisure) {
+    var code = `
+            <div class="form-group misure" id="misureGroup${numeroGruppo}${numeroMisure}">
+                <p>Direzione</p>
+                <select name="Direzione" id="Direzione${numeroGruppo}${numeroMisure}">
+                    <option value="" selected>---</option>
+                    <option value="Direzione${numeroGruppo}${numeroMisure}">Lista di tutte le direzioni</option>
+                </select>
+                <p>Tipo</p>
+                <select name="Tipo" id="Tipo${numeroGruppo}${numeroMisure}">
+                    <option value="" selected>---</option>
+                    <option value="Tipo${numeroGruppo}${numeroMisure}">Lista di tutte i tipi</option>
+                </select>
+                <p>Valore</p>
+                <input type="text" id="Valore${numeroGruppo}${numeroMisure}" name="Valore">
+                <p>Unità</p>
+                <select name="Unita" id="Unita${numeroGruppo}${numeroMisure}">
+                    <option value="" selected>---</option>
+                    <option value="Unita${numeroGruppo}${numeroMisure}">Lista di tutte le unità</option>
+                </select>
+                </br>
+                </div>
+        `;
+    return code;
+
+    
 }

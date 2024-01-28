@@ -19,6 +19,16 @@
     display: none;
 }
 
+#removeButtonGruppiMisure{
+    display: none;
+}
+
+
+#removeButtonMisure{
+    display: none;
+}
+
+
 select {
     display: block;
     width: 215px;
