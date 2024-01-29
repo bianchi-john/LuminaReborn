@@ -230,7 +230,7 @@ export class App {
 
         if (userType === 'admin' || userType === 'schedatore') {
           // L'utente è un amministratore o schedaotore
-          res.render('bozzaEditor', { cssFilePath: '/styles/bozzaEditor.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozzaEditor.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+          res.render('bozzaEditor', { richTextScript: '/scripts/richText.js', richTextStyle: '/styles/richText.css', cssFilePath: '/styles/bozzaEditor.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozzaEditor.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
         } else {
           // L'utente non è né amministratore né schedatore
           res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });

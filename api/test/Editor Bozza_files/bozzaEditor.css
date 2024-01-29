@@ -19,24 +19,25 @@
     display: none;
 }
 
-#removeButtonGruppiMisure{
+#removeButtonGruppiMisure {
     display: none;
 }
 
-#rimuoviMostre{
+#rimuoviMostre {
     display: none;
 
 }
-#rimuoviBibliografie{
+
+#rimuoviBibliografie {
     display: none;
 }
 
-#rimuoviAltreBibliografie{
+#rimuoviAltreBibliografie {
     display: none;
 }
 
 
-#removeButtonMisure{
+.removeButtonMisure {
     display: none;
 }
 
@@ -44,7 +45,7 @@
 select {
     display: block;
     width: 215px;
-    margin-top:10px;
+    margin-top: 10px;
 }
 
 .field p {
@@ -52,6 +53,10 @@ select {
     margin-bottom: -1px
 }
 
-#rimuoviDocFotografiche{
+#rimuoviDocFotografiche {
     display: none;
+}
+
+.row .card {
+    margin-bottom: 20px;
 }

@@ -8,7 +8,6 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
     let numeroFigli = container.childElementCount;
     numeroFigli = numeroFigli + 1
     nuovoGruppo.id = groupId + numeroFigli;
-    console.log(inputIds)
     let inputHtml = '';
 
     var nameValue = $("#Provenienza1").prop("name");
@@ -88,13 +87,13 @@ function handleSelectChange(selectElement) {
     }
 }
 
-    ///////////////////////
-    ///////////////////////
+///////////////////////
+///////////////////////
 
-    // LOGICA PER LE MISURE
+// LOGICA PER LE MISURE
 
-    ///////////////////////
-    ///////////////////////
+///////////////////////
+///////////////////////
 
 
 
@@ -127,7 +126,7 @@ function rimuoviGruppoMisure(containerId) {
         // Ottieni l'ultimo elemento e rimuovilo
         var ultimoElemento = gruppoMisureElements[gruppoMisureElements.length - 1];
         ultimoElemento.parentNode.removeChild(ultimoElemento);
-    } 
+    }
     if (gruppoMisureElements.length == 2) {
         var ultimoElemento = gruppoMisureElements[gruppoMisureElements.length - 1];
         ultimoElemento.parentNode.removeChild(ultimoElemento);
@@ -193,15 +192,15 @@ function aggiungiMisura(containerId) {
 
 
     // Creo un nuovo gruppo con gli id corretti
-    var nuovoCodiceHTML = generaCodiceMisure(numeroGruppo, numeroMisure +1);
+    var nuovoCodiceHTML = generaCodiceMisure(numeroGruppo, numeroMisure + 1);
     var primoElemento = document.getElementById(containerId).getElementsByClassName('field')[0];
 
     // Aggiungo il nuovo codice HTML al fondo del primo elemento
     primoElemento.innerHTML += nuovoCodiceHTML;
 
 
-    bottoneRimuovi = document.getElementById('removeButtonMisure');
-    bottoneRimuovi.style.display = 'inline';
+    bottoneRimuovi = document.getElementById(containerId).getElementsByClassName('removeButtonMisure');
+    bottoneRimuovi[0].style.display = 'inline';
 
 }
 
@@ -209,8 +208,6 @@ function rimuoviMisura(containerId) {
 
     // Ottieni l'elemento padre (gruppoMisure1)
     var gruppoMisureElement = document.getElementById(containerId);
-    bottoneRimuovi = document.getElementById('removeButtonGruppiMisure');
-    bottoneRimuovi.style.display = 'none';
 
     // Trova tutti gli elementi con le classi "form-group" e "misure" all'interno di gruppoMisure1
     var misuraElements = gruppoMisureElement.querySelectorAll('.form-group.misure');
@@ -221,12 +218,12 @@ function rimuoviMisura(containerId) {
         var ultimoMisuraElement = misuraElements[misuraElements.length - 1];
         ultimoMisuraElement.parentNode.removeChild(ultimoMisuraElement);
 
-    } 
+    }
     if (misuraElements.length == 2) {
         var ultimoMisuraElement = misuraElements[misuraElements.length - 1];
         ultimoMisuraElement.parentNode.removeChild(ultimoMisuraElement);
-        bottoneRimuovi = document.getElementById('removeButtonMisure');
-        bottoneRimuovi.style.display = 'none';
+        bottoneRimuovi = gruppoMisureElement.getElementsByClassName('removeButtonMisure');
+        bottoneRimuovi[0].style.display = 'none';
     }
     else {
         console.log("Nessun elemento con le classi 'form-group' e 'misure' da rimuovere.");
@@ -265,21 +262,21 @@ function generaCodiceMisure(numeroGruppo, numeroMisure) {
 
 
 
-    ///////////////////////
-    ///////////////////////
+///////////////////////
+///////////////////////
 
-    // LOGICA PER LE MOSTRE
+// LOGICA PER LE MOSTRE
 
-    ///////////////////////
-    ///////////////////////
+///////////////////////
+///////////////////////
 
 
-function aggiungiGruppoMostre(){
+function aggiungiGruppoMostre() {
     var numero = document.getElementById('mostre').getElementsByClassName('form-group').length;
     numero = numero + 1;
 
 
-    var codice= `
+    var codice = `
 
     <div class="form-group">
 
@@ -382,19 +379,19 @@ function aggiungiGruppoMostre(){
     bottoneRimuovi = document.getElementById('rimuoviMostre');
     bottoneRimuovi.style.display = 'inline';
     var textAreas = document.querySelectorAll(".textBox");
-    textAreas.forEach(function(textArea) {
-      // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
-      textArea.addEventListener('input', function() {
-        initDoc(textArea);
-      });
+    textAreas.forEach(function (textArea) {
+        // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
+        textArea.addEventListener('input', function () {
+            initDoc(textArea);
+        });
     });
-  
+
 }
 
 
 
 
-function rimuoviGruppoMostre(){
+function rimuoviGruppoMostre() {
     var contenitore = document.getElementById('mostre');
     var formGroups = contenitore.getElementsByClassName('form-group');
     // Verifica se ci sono elementi con la classe 'form-group'
@@ -403,12 +400,12 @@ function rimuoviGruppoMostre(){
         var ultimoFormGroup = formGroups[formGroups.length - 1];
         // Rimuovi l'elemento dal suo genitore
         ultimoFormGroup.parentNode.removeChild(ultimoFormGroup);
-        
-            if (formGroups.length == 1) {
-                // Ottieni l'ultimo elemento e rimuovilo
-                bottoneRimuovi = document.getElementById('rimuoviMostre');
-                bottoneRimuovi.style.display = 'none';
-            } 
+
+        if (formGroups.length == 1) {
+            // Ottieni l'ultimo elemento e rimuovilo
+            bottoneRimuovi = document.getElementById('rimuoviMostre');
+            bottoneRimuovi.style.display = 'none';
+        }
     }
     else {
         console.log("Nessun elemento con la classe 'form-group' trovato.");
@@ -417,22 +414,22 @@ function rimuoviGruppoMostre(){
 
 
 
-    ///////////////////////
-    ///////////////////////
+///////////////////////
+///////////////////////
 
-    // LOGICA PER LE BIBLIOGRAFIE
+// LOGICA PER LE BIBLIOGRAFIE
 
-    ///////////////////////
-    ///////////////////////
+///////////////////////
+///////////////////////
 
 
 
-    function aggiungiGruppoBibliografie(){
-        var numero = document.getElementById('bibliografie').getElementsByClassName('formBibliografia').length;
-        numero = numero + 1;
-    
-    
-        var codice= `
+function aggiungiGruppoBibliografie() {
+    var numero = document.getElementById('bibliografie').getElementsByClassName('formBibliografia').length;
+    numero = numero + 1;
+
+
+    var codice = `
     
         <form name="compForm" class="formBibliografia">
         <input type="hidden" name="myDoc">
@@ -534,26 +531,26 @@ function rimuoviGruppoMostre(){
         </p>
     </form>
 `;
-    
-        var contenitore = document.getElementById('bibliografie');
-        // Aggiungo il nuovo codice HTML al fondo del primo elemento
-        contenitore.innerHTML += codice;
-        bottoneRimuovi = document.getElementById('rimuoviBibliografie');
-        bottoneRimuovi.style.display = 'inline';
-        var textAreas = document.querySelectorAll(".textBox");
-        textAreas.forEach(function(textArea) {
-          // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
-          textArea.addEventListener('input', function() {
-            initDoc(textArea);
-          });
-        });
-      
-    }
-    
-    
-    
 
-function rimuoviGruppoBibliografie(){
+    var contenitore = document.getElementById('bibliografie');
+    // Aggiungo il nuovo codice HTML al fondo del primo elemento
+    contenitore.innerHTML += codice;
+    bottoneRimuovi = document.getElementById('rimuoviBibliografie');
+    bottoneRimuovi.style.display = 'inline';
+    var textAreas = document.querySelectorAll(".textBox");
+    textAreas.forEach(function (textArea) {
+        // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
+        textArea.addEventListener('input', function () {
+            initDoc(textArea);
+        });
+    });
+
+}
+
+
+
+
+function rimuoviGruppoBibliografie() {
     var contenitore = document.getElementById('bibliografie');
     var formGroups = contenitore.getElementsByClassName('formBibliografia');
     // Verifica se ci sono elementi con la classe 'form-group'
@@ -562,38 +559,38 @@ function rimuoviGruppoBibliografie(){
         var ultimoFormGroup = formGroups[formGroups.length - 1];
         // Rimuovi l'elemento dal suo genitore
         ultimoFormGroup.parentNode.removeChild(ultimoFormGroup);
-            if (formGroups.length == 1) {
-                // Ottieni l'ultimo elemento e rimuovilo
-                bottoneRimuovi = document.getElementById('rimuoviBibliografie');
-                bottoneRimuovi.style.display = 'none';
-            } 
+        if (formGroups.length == 1) {
+            // Ottieni l'ultimo elemento e rimuovilo
+            bottoneRimuovi = document.getElementById('rimuoviBibliografie');
+            bottoneRimuovi.style.display = 'none';
+        }
     }
     else {
         console.log("Nessun elemento con la classe 'form-group' trovato.");
     }
 }
-    
 
 
 
 
 
-    ///////////////////////
-    ///////////////////////
 
-    // LOGICA PER LE ALTRE BIBLIOGRAFIE
+///////////////////////
+///////////////////////
 
-    ///////////////////////
-    ///////////////////////
+// LOGICA PER LE ALTRE BIBLIOGRAFIE
+
+///////////////////////
+///////////////////////
 
 
 
-    function aggiungiGruppoAltreBibliografie(){
-        var numero = document.getElementById('altreBibliografie').getElementsByClassName('formAltraBibliografia').length;
-        numero = numero + 1;
-    
-    
-        var codice= `
+function aggiungiGruppoAltreBibliografie() {
+    var numero = document.getElementById('altreBibliografie').getElementsByClassName('formAltraBibliografia').length;
+    numero = numero + 1;
+
+
+    var codice = `
     
         <form name="compForm" class="formAltraBibliografia">
         <input type="hidden" name="myDoc">
@@ -695,26 +692,26 @@ function rimuoviGruppoBibliografie(){
         </p>
     </form>
 `;
-    
-        var contenitore = document.getElementById('altreBibliografie');
-        // Aggiungo il nuovo codice HTML al fondo del primo elemento
-        contenitore.innerHTML += codice;
-        bottoneRimuovi = document.getElementById('rimuoviAltreBibliografie');
-        bottoneRimuovi.style.display = 'inline';
-        var textAreas = document.querySelectorAll(".textBox");
-        textAreas.forEach(function(textArea) {
-          // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
-          textArea.addEventListener('input', function() {
-            initDoc(textArea);
-          });
-        });
-      
-    }
-    
-    
-    
 
-function rimuoviGruppoAltreBibliografie(){
+    var contenitore = document.getElementById('altreBibliografie');
+    // Aggiungo il nuovo codice HTML al fondo del primo elemento
+    contenitore.innerHTML += codice;
+    bottoneRimuovi = document.getElementById('rimuoviAltreBibliografie');
+    bottoneRimuovi.style.display = 'inline';
+    var textAreas = document.querySelectorAll(".textBox");
+    textAreas.forEach(function (textArea) {
+        // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
+        textArea.addEventListener('input', function () {
+            initDoc(textArea);
+        });
+    });
+
+}
+
+
+
+
+function rimuoviGruppoAltreBibliografie() {
     var contenitore = document.getElementById('altreBibliografie');
     var formGroups = contenitore.getElementsByClassName('formAltraBibliografia');
     // Verifica se ci sono elementi con la classe 'form-group'
@@ -723,35 +720,35 @@ function rimuoviGruppoAltreBibliografie(){
         var ultimoFormGroup = formGroups[formGroups.length - 1];
         // Rimuovi l'elemento dal suo genitore
         ultimoFormGroup.parentNode.removeChild(ultimoFormGroup);
-            if (formGroups.length == 1) {
-                // Ottieni l'ultimo elemento e rimuovilo
-                bottoneRimuovi = document.getElementById('rimuoviAltreBibliografie');
-                bottoneRimuovi.style.display = 'none';
-            } 
+        if (formGroups.length == 1) {
+            // Ottieni l'ultimo elemento e rimuovilo
+            bottoneRimuovi = document.getElementById('rimuoviAltreBibliografie');
+            bottoneRimuovi.style.display = 'none';
+        }
     }
     else {
         console.log("Nessun elemento con la classe 'form-group' trovato.");
     }
 }
-    
-
-
-    ///////////////////////
-    ///////////////////////
-
-    // LOGICA PER DOCUMENTAZIONI FOTOGRAFICHE
-
-    ///////////////////////
-    ///////////////////////
 
 
 
-    function aggiungiGruppoDocFotografiche(){
-        var numero = document.getElementById('documentazioneFotografica').getElementsByClassName('form-group').length;
-        numero = numero + 1;
-    
-    
-        var codice= `
+///////////////////////
+///////////////////////
+
+// LOGICA PER DOCUMENTAZIONI FOTOGRAFICHE
+
+///////////////////////
+///////////////////////
+
+
+
+function aggiungiGruppoDocFotografiche() {
+    var numero = document.getElementById('documentazioneFotografica').getElementsByClassName('form-group').length;
+    numero = numero + 1;
+
+
+    var codice = `
     
         <div class="form-group">
         <p>Didascalia</p>
@@ -763,18 +760,18 @@ function rimuoviGruppoAltreBibliografie(){
         </form>
         </div>
         `;
-    
-        var contenitore = document.getElementById('documentazioneFotografica');
-        // Aggiungo il nuovo codice HTML al fondo del primo elemento
-        contenitore.innerHTML += codice;
-        bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
-        bottoneRimuovi.style.display = 'inline';      
-    }
-    
-    
-    
 
-function rimuoviGruppoDocFotografiche(){
+    var contenitore = document.getElementById('documentazioneFotografica');
+    // Aggiungo il nuovo codice HTML al fondo del primo elemento
+    contenitore.innerHTML += codice;
+    bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
+    bottoneRimuovi.style.display = 'inline';
+}
+
+
+
+
+function rimuoviGruppoDocFotografiche() {
     var contenitore = document.getElementById('documentazioneFotografica');
     var formGroups = contenitore.getElementsByClassName('form-group');
     // Verifica se ci sono elementi con la classe 'form-group'
@@ -783,11 +780,11 @@ function rimuoviGruppoDocFotografiche(){
         var ultimoFormGroup = formGroups[formGroups.length - 1];
         // Rimuovi l'elemento dal suo genitore
         ultimoFormGroup.parentNode.removeChild(ultimoFormGroup);
-            if (formGroups.length == 1) {
-                // Ottieni l'ultimo elemento e rimuovilo
-                bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
-                bottoneRimuovi.style.display = 'none';
-            } 
+        if (formGroups.length == 1) {
+            // Ottieni l'ultimo elemento e rimuovilo
+            bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
+            bottoneRimuovi.style.display = 'none';
+        }
     }
     else {
         console.log("Nessun elemento con la classe 'form-group' trovato.");

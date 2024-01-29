@@ -164,15 +164,15 @@
                     <div class="card-body">
                         <div class="field">
                             <div id="textboxContainerAutori">
-                                <div class="form-group" id="group1">
+                                <div class="form-group" id="groupAutori1">
                                     <p>Formula precedente</p>
-                                    <input type="text" id="Formula_precedente1" name="formula_precedente1">
+                                    <input type="text" id="Formula_precedente1" name="Formula precedente">
                                     <p>Formula successiva</p>
-                                    <input type="text" id="Formula_successiva1" name="formula_successiva1">
+                                    <input type="text" id="Formula_successiva1" name="Formula successiva">
                                     <p>Categoria</p>
-                                    <input type="text" id="Categoria1" name="categoria1">
+                                    <input type="text" id="Categoria1" name="Categoria">
                                     <p>Nome</p>
-                                    <input type="text" id="Nome1" name="nome1">
+                                    <input type="text" id="Nome1" name="Nome">
                                     <p>Seleziona preesistente</p>
                                     <select name="autoriSelect1" id="autoriSelect1" onchange="handleSelectChange(this)">
                                         <option value="" selected>---</option>
@@ -181,7 +181,7 @@
                                 </div>
                             </div>
                             <button
-                                onclick="aggiungiGruppo('textboxContainerAutori', 'group1', 'Formula_precedente', 'Formula_successiva', 'Categoria', 'Nome')">Aggiungi</button>
+                                onclick="aggiungiGruppo('textboxContainerAutori', 'groupAutori', 'Formula_precedente', 'Formula_successiva', 'Categoria', 'Nome')">Aggiungi</button>
                             <button class='removeButton'
                                 onclick="rimuoviGruppo('textboxContainerAutori')">Rimuovi</button>
                         </div>
@@ -308,9 +308,9 @@
                     <div class="card-body">
                         <div class="field">
                             <div id="textboxContainerMateriali">
-                                <div class="form-group" id="group1">
+                                <div class="form-group" id="materiali-group1">
                                     <p>Materiale</p>
-                                    <input type="text" id="Materiale1" name="Materiale1">
+                                    <input type="text" id="Materiale1" name="Materiale">
                                     <p>Seleziona preesistente</p>
                                     <select name="materialiSelect1" id="materialiSelect1"
                                         onchange="handleSelectChange(this)">
@@ -320,7 +320,7 @@
                                 </div>
                             </div>
                             <button
-                                onclick="aggiungiGruppo('textboxContainerMateriali', 'group1', 'Materiale')">Aggiungi</button>
+                                onclick="aggiungiGruppo('textboxContainerMateriali', 'materiali-group1', 'Materiale')">Aggiungi</button>
                             <button class='removeButton'
                                 onclick="rimuoviGruppo('textboxContainerMateriali')">Rimuovi</button>
                         </div>
@@ -335,9 +335,9 @@
                     <div class="card-body">
                         <div class="field">
                             <div id="textboxContainerTecniche">
-                                <div class="form-group" id="group1">
+                                <div class="form-group" id="tecniche-group1">
                                     <p>Tecnica</p>
-                                    <input type="text" id="Tecnica1" name="Tecnica1">
+                                    <input type="text" id="Tecnica1" name="Tecnica">
                                     <p>Seleziona preesistente</p>
                                     <select name="tecnicheSelect1" id="tecnicheSelect1"
                                         onchange="handleSelectChange(this)">
@@ -347,7 +347,7 @@
                                 </div>
                             </div>
                             <button
-                                onclick="aggiungiGruppo('textboxContainerTecniche', 'group1', 'Tecnica')">Aggiungi</button>
+                                onclick="aggiungiGruppo('textboxContainerTecniche', 'tecniche-group1', 'Tecnica')">Aggiungi</button>
                             <button class='removeButton'
                                 onclick="rimuoviGruppo('textboxContainerTecniche')">Rimuovi</button>
                         </div>
@@ -394,7 +394,7 @@
                                     </div>
                                     <button onclick="aggiungiMisura('gruppoMisure1')">Aggiungi misura</button>
                                     <button onclick="rimuoviMisura('gruppoMisure1')"
-                                        id='removeButtonMisure'>Rimuovi</button>
+                                        class='removeButtonMisure'>Rimuovi</button>
                                 </div>
                             </div>
 
@@ -414,7 +414,7 @@
                     <div class="card-body">
                         <div class="field">
                             <div id="textboxContainerProvenienze">
-                                <div class="form-group" id="group1">
+                                <div class="form-group" id="provenienze-group1">
                                     <p>Provenienza</p>
                                     <input type="text" id="Provenienza1" name="Provenienza">
                                     <p>Descrizione</p>
@@ -425,7 +425,7 @@
                             </div>
                         </div>
                         <button
-                            onclick="aggiungiGruppo('textboxContainerProvenienze', 'group1', 'Provenienza','DescrizioneProvenienza', 'NoteProvenienza')">Aggiungi</button>
+                            onclick="aggiungiGruppo('textboxContainerProvenienze', 'provenienze-group1', 'Provenienza','DescrizioneProvenienza', 'NoteProvenienza')">Aggiungi</button>
                         <button class='removeButton'
                             onclick="rimuoviGruppo('textboxContainerProvenienze')">Rimuovi</button>
                     </div>
@@ -1247,17 +1247,18 @@
                         <div id="documentazioneFotografica">
                             <div class="form-group">
                                 <p>Didascalia</p>
-                                <input type="text" id="documentazioneFotograficaInput1" name="documentazioneFotografica">
+                                <input type="text" id="documentazioneFotograficaInput1"
+                                    name="documentazioneFotografica">
                                 <br><br>
                                 <p>Immagine</p>
                                 <form id='documentazioneFotograficaFoto\'>
                                     <input type="file" id="img" name="img" accept="image/*">
                                 </form>
                             </div>
-                        </div>    
+                        </div>
                         <button onclick="aggiungiGruppoDocFotografiche()">Aggiungi</button>
                         <button id='rimuoviDocFotografiche' onclick="rimuoviGruppoDocFotografiche()">Rimuovi</button>
-                    </div>    
+                    </div>
                 </div>
             </div>
         </div>
@@ -1278,4 +1279,5 @@
         <div class="footer-space"></div>
     </div>
 </body>
+
 </html>
