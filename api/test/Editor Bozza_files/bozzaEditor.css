@@ -23,6 +23,18 @@
     display: none;
 }
 
+#rimuoviMostre{
+    display: none;
+
+}
+#rimuoviBibliografie{
+    display: none;
+}
+
+#rimuoviAltreBibliografie{
+    display: none;
+}
+
 
 #removeButtonMisure{
     display: none;
@@ -38,4 +50,8 @@ select {
 .field p {
     margin-top: 7px;
     margin-bottom: -1px
+}
+
+#rimuoviDocFotografiche{
+    display: none;
 }
