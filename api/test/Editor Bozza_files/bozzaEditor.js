@@ -790,3 +790,72 @@ function rimuoviGruppoDocFotografiche() {
         console.log("Nessun elemento con la classe 'form-group' trovato.");
     }
 }
+
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+/////////// LOGICA PER L'INVIO DEI DATI (CHIAMATA POST) /////////////
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+
+function uploadData() {
+    
+    // Ottieni i dati dai campi del modulo
+
+    
+    var titolo = document.getElementById("titolo").value;
+    
+    var copertina = document.getElementById('copertina');
+    copertina = copertina.value;
+
+    var formData = {
+        titolo: titolo,
+        copertina: copertina
+    };
+    
+    // Itera attraverso i form degli autori
+    var numAutoriForms = document.querySelectorAll('[id^="groupAutori"]').length;
+    for (var i = 1; i <= numAutoriForms; i++) {
+        var formulaPrecedente = document.getElementById("Formula_precedente" + i).value;
+        var formulaSuccessiva = document.getElementById("Formula_successiva" + i).value;
+        var categoria = document.getElementById("Categoria" + i).value;
+        var nome = document.getElementById("Nome" + i).value;
+        var autoriSelect = document.getElementById("autoriSelect" + i);
+        var autoriSelectValue = autoriSelect.selectedIndex !== 0 ? autoriSelect.value : '';
+
+
+        // Aggiungi dati del form degli autori all'oggetto formData
+        formData["Formula_precedente" + i] = formulaPrecedente;
+        formData["Formula_successiva" + i] = formulaSuccessiva;
+        formData["Categoria" + i] = categoria;
+        formData["Nome" + i] = nome;
+        formData["AutorePreesistente" + i] = autoriSelectValue
+    }
+
+
+
+
+
+    let asd = 3;
+
+    // Esegui la richiesta POST
+    fetch('http://172.22.0.6:3000/postNewScheda', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Gestisci la risposta del server (se necessario)
+        console.log('Risposta dal server:', data);
+    })
+    .catch(error => {
+        console.error('Errore durante la richiesta POST:', error);
+    });
+}
