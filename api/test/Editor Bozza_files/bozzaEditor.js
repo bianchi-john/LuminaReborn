@@ -8,9 +8,16 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
     let numeroFigli = container.childElementCount;
     numeroFigli = numeroFigli + 1
     nuovoGruppo.id = groupId + numeroFigli;
+    console.log(inputIds)
     let inputHtml = '';
+
+    var nameValue = $("#Provenienza1").prop("name");
+
+
     inputIds.forEach((id, index) => {
-        inputHtml += `<p>${id.replace(/_/g, ' ')}</p>
+        elemento = document.getElementById(id + '1');
+        nome = elemento.getAttribute("name");
+        inputHtml += `<p>${nome}</p>
         <input type="text" id="${id}${numeroFigli}" name="${id}${numeroFigli}">`;
     });
 

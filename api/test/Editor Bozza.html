@@ -40,6 +40,8 @@
                 <div class="card-header">Titolo opera</div>
                 <div class="card-body title" id="titolo">
                     <input type="text" id="titleInput1" name="titleInput1">
+                    
+
                 </div>
             </div>
             <div class="row mt-2">
@@ -245,11 +247,6 @@
         <div class="col misure">
             <div class="card">
                 <div class="card-header" data-target="#misure">Misure</div>
-
-
-<!-- ######################################################################### -->
-
-
                 <div class="card-body">
                     <div class="field">
                         <div id="textboxContainerMisure">
@@ -292,21 +289,29 @@
                         <button onclick="rimuoviGruppoMisure('textboxContainerMisure')" id='removeButtonGruppiMisure'>Rimuovi gruppo misure</button>
                     </div>
                 </div>
-
-
-<!-- ######################################################################### -->
-
             </div>
         </div>
     </div>
-
     <div class="row mt-2">
         <div class="col provenienze">
             <div class="card">
-                <div class="card-header" data-target="#provenienze">Provenienze</div>
-                <div class="card-body provenienze " id="provenienze">
-                    <input type="text" id="provenienzeInput1" name="provenienzeInput1">
-                </div>
+            <div class="card-header">Provenienze</div>
+                <div class="card-body">
+                    <div class="field">
+                        <div id="textboxContainerProvenienze">
+                            <div class="form-group" id="group1">
+                                <p>Provenienza</p>
+                                <input type="text" id="Provenienza1" name="Provenienza">
+                                <p>Descrizione</p>
+                                <input type="text" id="DescrizioneProvenienza1" name="Descrizione">
+                                <p>Note</p>
+                                <input type="text" id="NoteProvenienza1" name="Note">
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="aggiungiGruppo('textboxContainerProvenienze', 'group1', 'Provenienza','DescrizioneProvenienza', 'NoteProvenienza')">Aggiungi</button>
+                    <button class='removeButton' onclick="rimuoviGruppo('textboxContainerProvenienze')">Rimuovi</button>
+                </div>    
             </div>
         </div>
     </div>
