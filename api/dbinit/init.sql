@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS luminadb;
 
 USE luminadb;
 
-DROP TABLE IF EXISTS users;
+DROP   TABLE IF EXISTS users;
 
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
