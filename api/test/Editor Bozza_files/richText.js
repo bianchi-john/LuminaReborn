@@ -1,17 +1,27 @@
 var oDoc, sDefTxt;
 
-function initDoc() {
-  oDoc = document.getElementById("textBox");
+function initDoc(textArea) {
+  oDoc = textArea;
   sDefTxt = oDoc.innerHTML;
-  if (document.compForm.switchMode.checked) { setDocMode(true); }
+
+  // Trova la checkbox più vicina all'area di testo attuale
+  var switchModeCheckbox = oDoc.closest("form").querySelector(".switchMode");
+  if (switchModeCheckbox && switchModeCheckbox.checked) { 
+    setDocMode(true); 
+  }
 }
+
+
 
 function formatDoc(sCmd, sValue) {
   if (validateMode()) { document.execCommand(sCmd, false, sValue); oDoc.focus(); }
 }
 
 function validateMode() {
-  if (!document.compForm.switchMode.checked) { return true ; }
+  var switchModeCheckbox = oDoc.closest(".card-body").querySelector(".switchMode");
+  if (!switchModeCheckbox || !switchModeCheckbox.checked) { 
+    return true;
+  }
   alert("Uncheck \"Show HTML\".");
   oDoc.focus();
   return false;
@@ -24,7 +34,7 @@ function setDocMode(bToSource) {
     oDoc.innerHTML = "";
     var oPre = document.createElement("pre");
     oDoc.contentEditable = false;
-    oPre.id = "sourceText";
+    oPre.className = "sourceText";
     oPre.contentEditable = true;
     oPre.appendChild(oContent);
     oDoc.appendChild(oPre);
@@ -50,8 +60,13 @@ function printDoc() {
   oPrntWin.document.close();
 }
 
-
 window.onload = function() {
-  // Chiamare la funzione initDoc() quando la pagina è completamente caricata
-  initDoc();
+  // Trova tutte le textarea con la classe "textBox" e assegna la funzione initDoc a ciascuna
+  var textAreas = document.querySelectorAll(".textBox");
+  textAreas.forEach(function(textArea) {
+    // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
+    textArea.addEventListener('input', function() {
+      initDoc(textArea);
+    });
+  });
 };

@@ -262,3 +262,25 @@ function generaCodiceMisure(numeroGruppo, numeroMisure) {
 
     
 }
+
+
+
+
+// RICH TEXT
+
+
+// function aggiungiGruppoRichText(baseName) {
+//     count++; // Incrementa il contatore
+//     const container = document.getElementById('textBoxContainer');
+
+//     // Crea una nuova textbox
+//     const newTextBox = document.createElement('div');
+//     newTextBox.setAttribute('id', 'textBox');
+//     newTextBox.setAttribute('richTextData', `${baseName}${count}`);
+//     newTextBox.setAttribute('contenteditable', 'true');
+//     newTextBox.innerHTML = '<p></p>';
+
+//     // Aggiungi la nuova textbox al container
+//     container.appendChild(newTextBox);
+// }
+
