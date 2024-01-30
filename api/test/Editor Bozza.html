@@ -151,7 +151,7 @@
                 <div class="row mt-2">
                     <div class="col copertina">
                         <div class="card">
-                            <div class="card-header" data-target="#copertina" >Immagine di copertina</div>
+                            <div class="card-header" data-target="#copertina">Immagine di copertina</div>
                             <div class="card-body copertina">
                                 <form id="copertinaForm">
                                     <input type="file" multiple="false" accept="image/*" id=copertina>
@@ -268,7 +268,7 @@
                     </div>
                     <div class="card-body classificazione">
                         <select name="classificazione" id="classificazione">
-                            <option >---</option>
+                            <option>---</option>
                             <option value="Dipinti">Dipinti</option>
                             <option value="Mosaici">Mosaici</option>
                             <option value="Sculture e frammenti lapidei">Sculture e frammenti lapidei</option>
@@ -281,9 +281,11 @@
                             <option value="Armi e armature">Armi e armature</option>
                             <option value="Tessuti e moda">Tessuti e moda</option>
                             <option value="Gioielleria e ornamenti">Gioielleria e ornamenti</option>
-                            <option value="Paramenti sacri, oggetti liturgici e devozionali">Paramenti sacri, oggetti liturgici e devozionali</option>
+                            <option value="Paramenti sacri, oggetti liturgici e devozionali">Paramenti sacri, oggetti
+                                liturgici e devozionali</option>
                             <option value="Utensili e strumenti di lavoro">Utensili e strumenti di lavoro</option>
-                            <option value="Materiali organici, fossili e resti umani">Materiali organici, fossili e resti umani</option>
+                            <option value="Materiali organici, fossili e resti umani">Materiali organici, fossili e
+                                resti umani</option>
                             <option value="Tarsie">Tarsie</option>
                             <option value="Arredi e mobili">Arredi e mobili</option>
                             <option value="Medaglie, monete e gemme">Medaglie, monete e gemme</option>
@@ -1123,7 +1125,7 @@
                         <div class="card">
                             <div class="card-header" data-target="#altreBibliografie">Altra bibliografia
                             </div>
-                            <div class="card-body altreBibliografie">
+                            <div class="card-body">
                                 <div id='altreBibliografie'>
                                     <form name="compForm" class="formAltraBibliografia">
                                         <input type="hidden" name="myDoc">
@@ -1233,6 +1235,10 @@
                                         </p>
                                     </form>
                                 </div>
+                                <button onclick="aggiungiGruppoAltreBibliografie()">Aggiungi</button>
+                                <button id='rimuoviAltreBibliografie'
+                                    onclick="rimuoviGruppoAltreBibliografie()">Rimuovi</button>
+
                             </div>
                         </div>
                     </div>
@@ -1240,7 +1246,7 @@
             </div>
         </div>
         <div class="row mt-2">
-            <div class="col documentazioneFotografica">
+            <div class="col">
                 <div class="card">
                     <div class="card-header" data-target="#documentazioneFotografica">
                         Documentazione fotografica</div>
@@ -1269,7 +1275,7 @@
                     <div class="card-header" data-target="#note">
                         Note</div>
                     <div class="card-body note" id="note">
-                        <input type="text" id="noteInput1" name="noteInput1">
+                        <input type="text" id="noteInput" name="noteInput1">
                     </div>
                 </div>
             </div>

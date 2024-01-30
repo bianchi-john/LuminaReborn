@@ -810,21 +810,15 @@ function rimuoviGruppoDocFotografiche() {
 
 
 function uploadData() {
-    
-    // Ottieni i dati dai campi del modulo
-
-    
-
-
     var formData = {};
-    
+
     // Itera attraverso i form degli autori
     var numAutoriForms = document.querySelectorAll('[id^="groupAutori"]').length;
     for (var i = 1; i <= numAutoriForms; i++) {
-        var formulaPrecedente = document.getElementById("Formula_precedente" + i).value;
-        var formulaSuccessiva = document.getElementById("Formula_successiva" + i).value;
-        var categoria = document.getElementById("Categoria" + i).value;
-        var nome = document.getElementById("Nome" + i).value;
+        var formulaPrecedente = document.getElementById("Formula_precedente" + i).value  ? document.getElementById("Formula_precedente" + i).value : "";
+        var formulaSuccessiva = document.getElementById("Formula_successiva" + i).value  ? document.getElementById("Formula_successiva" + i).value : "";
+        var categoria = document.getElementById("Categoria" + i).value  ? document.getElementById("Categoria" + i).value : "";
+        var nome = document.getElementById("Nome" + i).value  ? document.getElementById("Nome" + i).value : "";
         var autoriSelect = document.getElementById("autoriSelect" + i);
         var autoriSelectValue = autoriSelect.selectedIndex !== 0 ? autoriSelect.value : '';
 
@@ -840,7 +834,7 @@ function uploadData() {
     // Itera attraverso i form dei materiali
     var numMaterialiForms = document.querySelectorAll('[id^="materiali-group"]').length;
     for (var i = 1; i <= numMaterialiForms; i++) {
-        var materiale = document.getElementById("materiale" + i).value;
+        var materiale = document.getElementById("materiale" + i).value  ? document.getElementById("materiale" + i).value : "";
         var materialiSelect = document.getElementById("materialiSelect" + i);
         var materialiSelectValue = materialiSelect.selectedIndex !== 0 ? materialiSelect.value : '';
         formData["Materiale" + i] = materiale
@@ -850,18 +844,18 @@ function uploadData() {
     // Itera attraverso i form delle tecniche
     var numTecnicheForms = document.querySelectorAll('[id^="tecniche-group"]').length;
     for (var i = 1; i <= numTecnicheForms; i++) {
-        var tecnica = document.getElementById("tenica" + i).value;
+        var tecnica = document.getElementById("Tecnica" + i).value ? document.getElementById("Tecnica" + i).value : "";
         var tecnicaSelect = document.getElementById("tecnicheSelect" + i);
         var tecnicaSelectValue = tecnicaSelect.selectedIndex !== 0 ? materialiSelect.value : '';
-        formData["tecnica" + i] = tecnica
+        formData["Tecnica" + i] = tecnica
         formData["TencicaPreesistente" + i] = tecnicaSelectValue
     }
 
     // Itera attraverso i form delle misure
     var numGruppoMisure = document.querySelectorAll('[id^="gruppoMisure"]').length;
     for (var i = 1; i <= numGruppoMisure; i++) {
-        var titoloMisure = document.getElementById("Titolo" + i).value;
-        var interoParziale = document.getElementById("Intero-Parziale" + i).value;
+        var titoloMisure = document.getElementById("Titolo" + i).value  ? document.getElementById("Titolo" + i).value : "";
+        var interoParziale = document.getElementById("Intero-Parziale" + i).value  ? document.getElementById("Intero-Parziale" + i).value : "";
 
         // Aggiungi dati del form delle misure all'oggetto formData
         formData["TitoloMisure" + i] = titoloMisure;
@@ -870,10 +864,10 @@ function uploadData() {
         // Itera attraverso i form delle singole misure all'interno del gruppo
         var numMisureForms = document.querySelectorAll('[id^="misureGroup' + i + '"]').length;
         for (var j = 1; j <= numMisureForms; j++) {
-            var direzione = document.getElementById("Direzione" + i + j).value;
-            var tipo = document.getElementById("Tipo" + i + j).value;
-            var valore = document.getElementById("Valore" + i + j).value;
-            var unita = document.getElementById("Unita" + i + j).value;
+            var direzione = document.getElementById("Direzione" + i + j).value  ? document.getElementById("Direzione"+ i + j).value : "";
+            var tipo = document.getElementById("Tipo" + i + j).value  ? document.getElementById("Tipo"+ i + j).value : "";
+            var valore = document.getElementById("Valore" + i + j).value  ? document.getElementById("Valore" + i + j).value : "";
+            var unita = document.getElementById("Unita" + i + j).value  ? document.getElementById("Unita"+ i + j).value : "";
 
             // Aggiungi dati della misura all'oggetto formData
             formData["Direzione" + i + j] = direzione;
@@ -883,35 +877,123 @@ function uploadData() {
         }
     }
 
+    // Itera attraverso i form delle provenienze
+    var numProvenienzeForms = document.querySelectorAll('[id^="provenienze-group"]').length;
+    for (var i = 1; i <= numProvenienzeForms; i++) {
+        var provenienza = document.getElementById("Provenienza" + i).value  ? document.getElementById("Provenienza" + i).value : "";
+        var descrizioneProvenienza = document.getElementById("DescrizioneProvenienza" + i).value  ? document.getElementById("DescrizioneProvenienza" + i).value : "";
+        var noteProvenienza = document.getElementById("NoteProvenienza" + i).value  ? document.getElementById("NoteProvenienza" + i).value : "";
+
+        // Aggiungi dati del form delle provenienze all'oggetto formData
+        formData["Provenienza" + i] = provenienza;
+        formData["DescrizioneProvenienza" + i] = descrizioneProvenienza;
+        formData["NoteProvenienza" + i] = noteProvenienza;
+    }
+
+    formData["iscrizioni"] = document.getElementById("iscrizioni").value  ? document.getElementById("iscrizioni" + i).value : "";
+    formData["storia_espositiva"] = document.getElementById("storia_espositiva").value  ? document.getElementById("storia_espositiva" + i).value : "";
+    formData["descrizione_sintetica"] = document.getElementById("descrizione_sintetica").value  ? document.getElementById("descrizione_sintetica" + i).value : "";
+    formData["corpo_scheda"] = document.getElementById("corpo_scheda").value  ? document.getElementById("corpo_scheda" + i).value : "";
 
 
 
+    // Itera attraverso i form delle mostre
+    var numMostreForms = document.querySelectorAll('[id^="mostre"]').length;
+    for (var i = 1; i <= numMostreForms; i++) {
+        // Ottieni i dati del contenuto modificabile (HTML)
+        var titoloMostra = document.getElementById("titoloMostra" + i).innerHTML;
+
+        // Aggiungi dati del contenuto HTML del form delle mostre all'oggetto formData
+        formData["TitoloMostra" + i] = titoloMostra;
+
+        // Altri dati delle mostre
+        var curatore = document.getElementById("Curatore" + i).value  ? document.getElementById("Curatore" + i).value : "";
+        var giornoInizio = document.getElementById("giornoDataInizioMostra" + i).value  ? document.getElementById("giornoDataInizioMostra" + i).value : "";
+        var meseInizio = document.getElementById("meseDataInizioMostra" + i).value  ? document.getElementById("meseDataInizioMostra" + i).value : "";
+        var annoInizio = document.getElementById("annoDataInizioMostra" + i).value  ? document.getElementById("annoDataInizioMostra" + i).value : "";
+        var giornoFine = document.getElementById("giornoDataFineMostra" + i).value  ? document.getElementById("giornoDataFineMostra" + i).value : "";
+        var meseFine = document.getElementById("meseDataFineMostra" + i).value  ? document.getElementById("meseDataFineMostra" + i).value : "";
+        var annoFine = document.getElementById("annoDataFineMostra" + i).value  ? document.getElementById("annoDataFineMostra" + i).value : "";
+        var luogoMostra = document.getElementById("luogoMostra" + i).value  ? document.getElementById("luogoMostra" + i).value : "";
+        var descrizioneMostra = document.getElementById("descrizioneMostra" + i).value  ? document.getElementById("descrizioneMostra" + i).value : "";
+
+        // Aggiungi altri dati delle mostre all'oggetto formData
+        formData["Curatore" + i] = curatore;
+        formData["GiornoInizioMostra" + i] = giornoInizio;
+        formData["MeseInizioMostra" + i] = meseInizio;
+        formData["AnnoInizioMostra" + i] = annoInizio;
+        formData["GiornoFineMostra" + i] = giornoFine;
+        formData["MeseFineMostra" + i] = meseFine;
+        formData["AnnoFineMostra" + i] = annoFine;
+        formData["LuogoMostra" + i] = luogoMostra;
+        formData["DescrizioneMostra" + i] = descrizioneMostra;
+    }
+
+    var numGruppoBibliografie = document.querySelectorAll('.formBibliografia').length;
+    for (var i = 1; i <= numGruppoBibliografie; i++) {
+        var bibliografiaContent = document.getElementById("bibliografia" + i).innerHTML;
+
+        // Aggiungi dati del form della bibliografia all'oggetto formData
+        formData["bibliografia" + i] = bibliografiaContent;
+    }
+
+    var numGruppoAltreBibliografie = document.querySelectorAll('.altreBibliografie').length;
+    for (var i = 1; i <= numGruppoAltreBibliografie; i++) {
+        var altraBibliografiaContent = document.getElementById("altrabibliografia" + i).value ? document.getElementById("altrabibliografia" + i).value : "";
+
+        // Aggiungi dati del form della bibliografia all'oggetto formData
+        formData["altraBibliografia" + i] = altraBibliografiaContent;
+    }
+    // Itera attraverso i form della documentazione fotografica
+    // Itera attraverso i form della documentazione fotografica
+    // Itera attraverso i form della documentazione fotografica
+    var numDocumentazioneForms = document.querySelectorAll('[class^="documentazioneFotografica"]').length;
+    for (var i = 1; i <= numDocumentazioneForms; i++) {
+        var didascalia = document.getElementById("documentazioneFotograficaInput" + i).value ? document.getElementById("documentazioneFotograficaInput" + i).value : "";
+        var immagineFileInput = document.getElementById("documentazioneFotograficaFoto" + i);
+
+        // Verifica se l'elemento è presente prima di chiamare querySelector
+        if (immagineFileInput) {
+            var inputTypeFile = immagineFileInput.querySelector('input[type="file"]');
+            var immagineFile = inputTypeFile ? inputTypeFile.files.length > 0 ? inputTypeFile.files[0] : null : null;
+        
+        }
+        // Aggiungi dati del form della documentazione fotografica all'oggetto formData
+        formData["Didascalia" + i] = didascalia;
+
+        // Carica il file immagine se presente
+        if (immagineFile) {
+            formData["Immagine" + i] = immagineFile;
+        } else {
+            formData["Immagine" + i] = ''; // Imposta una stringa vuota se l'utente non ha inserito un file
+        }
+    }
 
 
 
-    
+    formData["noteInput"] = document.getElementById("noteInput").value  ? document.getElementById("noteInput" + i).value : "";
+
+    formData["titolo"] = document.getElementById("titolo").value  ? document.getElementById("titolo" + i).value : "";
+
+    formData["copertina"] = document.getElementById('copertina').value ? document.getElementById("copertina" + i).value : "";
 
 
-    formData["titolo"] =  document.getElementById("titolo").value;
+    formData["etichetta_data"] = document.getElementById('etichetta_data').value ? document.getElementById("etichetta_data" + i).value : "";
+    formData["giorno_data_da"] = document.getElementById('giorno_data_da').value ? document.getElementById("giorno_data_da" + i).value : "";
+    formData["mese_data_da"] = document.getElementById('mese_data_da').value ? document.getElementById("mese_data_da" + i).value : "";
+    formData["anno_data_da"] = document.getElementById('anno_data_da').value ? document.getElementById("anno_data_da" + i).value : "";
+    formData["giorno_data_a"] = document.getElementById('giorno_data_a').value ? document.getElementById("giorno_data_a" + i).value : "";
+    formData["mese_data_a"] = document.getElementById('mese_data_a').value ? document.getElementById("mese_data_a" + i).value : "";
+    formData["anno_data_a"] = document.getElementById('anno_data_a').value ? document.getElementById("anno_data_a" + i).value : "";
 
-    formData["copertina"]= document.getElementById('copertina').value
+    formData["ambito"] = document.getElementById('ambitoInput').value ? document.getElementById("ambitoInput" + i).value : "";
 
-    formData["etichetta_data"] = document.getElementById('etichetta_data').value 
-    formData["giorno_data_da"] = document.getElementById('giorno_data_da').value
-    formData["mese_data_da"] = document.getElementById('mese_data_da').value
-    formData["anno_data_da"] = document.getElementById('anno_data_da').value 
-    formData["giorno_data_a"] = document.getElementById('giorno_data_a').value
-    formData["mese_data_a"] = document.getElementById('mese_data_a').value 
-    formData["anno_data_a"] = document.getElementById('anno_data_a').value 
+    formData["ubicazione"] = document.getElementById('ubicazione').value ? document.getElementById("ubicazione" + i).value : "";
+    formData["descrizione"] = document.getElementById('descrizione').value ? document.getElementById("descrizione" + i).value : "";
 
-    formData["ambito"] = document.getElementById('ambitoInput').value 
+    formData["inventario"] = document.getElementById('inventariInput').value ? document.getElementById("inventariInput" + i).value : "";
 
-    formData["ubicazione"] = document.getElementById('ubicazione').value 
-    formData["descrizione"] = document.getElementById('descrizione').value 
-
-    formData["inventario"] = document.getElementById('inventariInput').value 
-
-    formData["giuridica"] = document.getElementById('giuridicaInput').value 
+    formData["giuridica"] = document.getElementById('giuridicaInput').value ? document.getElementById("giuridicaInput" + i).value : "";
 
     var classificazione = document.getElementById("classificazione");
     formData['classificazione'] = classificazione.selectedIndex !== 0 ? classificazione.value : '';
@@ -929,12 +1011,12 @@ function uploadData() {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
-    .then(data => {
-        // Gestisci la risposta del server (se necessario)
-        console.log('Risposta dal server:', data);
-    })
-    .catch(error => {
-        console.error('Errore durante la richiesta POST:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            // Gestisci la risposta del server (se necessario)
+            console.log('Risposta dal server:', data);
+        })
+        .catch(error => {
+            console.error('Errore durante la richiesta POST:', error);
+        });
 }
