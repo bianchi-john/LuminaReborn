@@ -198,19 +198,19 @@
                     <div class="card-body cronologie" id="cronologie">
                         <div class="field">
                             <p>Etichetta data</p>
-                            <input type="text" id="etichetta_data1" name="etichetta_data1">
+                            <input type="text" id="etichetta_data" name="etichetta_data1">
                             <p>Giorno data da</p>
-                            <input type="text" id="giorno_data_da1" name="giorno_data_da1">
+                            <input type="text" id="giorno_data_da" name="giorno_data_da">
                             <p>Mese data da</p>
-                            <input type="text" id="mese_data_da1" name="mese_data_da1">
+                            <input type="text" id="mese_data_da" name="mese_data_da">
                             <p>Anno data da</p>
-                            <input type="text" id="anno_data_da1" name="anno_data_da1">
+                            <input type="text" id="anno_data_da" name="anno_data_da">
                             <p>Giorno data a</p>
-                            <input type="text" id="giorno_data_a1" name="giorno_data_a1">
+                            <input type="text" id="giorno_data_a" name="giorno_data_a">
                             <p>Mese data a</p>
-                            <input type="text" id="mese_data_a1" name="mese_data_a1">
+                            <input type="text" id="mese_data_a" name="mese_data_a">
                             <p>Anno data a</p>
-                            <input type="text" id="anno_data_a1" name="anno_data_a1">
+                            <input type="text" id="anno_data_a" name="anno_data_a">
                         </div>
                     </div>
                 </div>
@@ -221,7 +221,7 @@
                 <div class="card">
                     <div class="card-header" data-target="#ambito">Ambito</div>
                     <div class="card-body ambito " id="ambito">
-                        <input type="text" id="ambitoInput1" name="ambitoInput1">
+                        <input type="text" id="ambitoInput" name="ambito">
                     </div>
                 </div>
             </div>
@@ -233,9 +233,9 @@
                     <div class="card-body ubicazioni field" id="ubicazioni">
                         <div id="textboxContainerUbicazioni ">
                             <p>Ubicazione</p>
-                            <input type="text" id="ubicazione1" name="ubicazione1">
+                            <input type="text" id="ubicazione" name="ubicazione">
                             <p>Descizione</p>
-                            <input type="text" id="descrizione1" name="descrizione1">
+                            <input type="text" id="descrizione" name="descrizione">
                         </div>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                 <div class="card">
                     <div class="card-header" data-target="#inventari">Numero di inventario</div>
                     <div class="card-body inventari " id="inventari">
-                        <input type="text" id="inventariInput1" name="inventariInput1">
+                        <input type="text" id="inventariInput" name="inventariInput">
                     </div>
                 </div>
             </div>
@@ -256,7 +256,7 @@
                 <div class="card">
                     <div class="card-header" data-target="#giuridica">Proprietà giuridica</div>
                     <div class="card-body giuridica " id="giuridica">
-                        <input type="text" id="giuridicaInput1" name="giuridicaInput1">
+                        <input type="text" id="giuridicaInput" name="giuridicaInput">
                     </div>
                 </div>
             </div>
@@ -266,38 +266,37 @@
                 <div class="card">
                     <div class="card-header" data-target="#classificazione">Classificazione opera
                     </div>
-                    <div class="card-body classificazione" id="classificazione">
+                    <div class="card-body classificazione">
                         <select name="classificazione" id="classificazione">
-                            <option value="categoriaOpera0">---</option>
-                            <option value="categoriaOpera1">Dipinti</option>
-                            <option value="categoriaOpera2">Mosaici</option>
-                            <option value="categoriaOpera3">Sculture e frammenti lapidei</option>
-                            <option value="categoriaOpera4">Piccola plastica</option>
-                            <option value="categoriaOpera5">Elementi architettonici</option>
-                            <option value="categoriaOpera6">Disegni, stampe e matrici</option>
-                            <option value="categoriaOpera7">Fotografie</option>
-                            </option>
-                            <option value="categoriaOpera8">Libri e riviste</option>
-                            <option value="categoriaOpera9">Manoscritti</option>
-                            <option value="categoriaOpera10">Armi e armature</option>
-                            <option value="categoriaOpera1">Tessuti e moda</option>
-                            <option value="categoriaOpera12">Gioielleria e ornamenti</option>
-                            <option value="categoriaOpera13">Paramenti sacri, oggetti liturgici e devozionali</option>
-                            <option value="categoriaOpera14">Utensili e strumenti di lavoro</option>
-                            <option value="categoriaOpera15">Materiali organici, fossili e resti umani</option>
-                            <option value="categoriaOpera16">Tarsie</option>
-                            <option value="categoriaOpera17">Arredi e mobili</option>
-                            <option value="categoriaOpera18">Medaglie, monete e gemme</option>
-                            <option value="categoriaOpera19">Calchi</option>
-                            <option value="categoriaOpera20">Lapidi e cippi funerari</option>
-                            <option value="categoriaOpera21">Urne, sarcofagi e casse tombali</option>
-                            <option value="categoriaOpera22">Vasellame ceramico</option>
-                            <option value="categoriaOpera23">Vasellame metallico</option>
-                            <option value="categoriaOpera24">Vetri</option>
-                            <option value="categoriaOpera25">Sigilli e impronte di sigilli</option>
-                            <option value="categoriaOpera26">Strumenti musicali</option>
-                            <option value="categoriaOpera27">Giocattoli</option>
-                            <option value="categoriaOpera28">Altro</option>
+                            <option >---</option>
+                            <option value="Dipinti">Dipinti</option>
+                            <option value="Mosaici">Mosaici</option>
+                            <option value="Sculture e frammenti lapidei">Sculture e frammenti lapidei</option>
+                            <option value="Piccola plastica">Piccola plastica</option>
+                            <option value="Elementi architettonici">Elementi architettonici</option>
+                            <option value="Disegni, stampe e matrici">Disegni, stampe e matrici</option>
+                            <option value="Fotografie">Fotografie</option>
+                            <option value="Libri e riviste">Libri e riviste</option>
+                            <option value="Manoscritti">Manoscritti</option>
+                            <option value="Armi e armature">Armi e armature</option>
+                            <option value="Tessuti e moda">Tessuti e moda</option>
+                            <option value="Gioielleria e ornamenti">Gioielleria e ornamenti</option>
+                            <option value="Paramenti sacri, oggetti liturgici e devozionali">Paramenti sacri, oggetti liturgici e devozionali</option>
+                            <option value="Utensili e strumenti di lavoro">Utensili e strumenti di lavoro</option>
+                            <option value="Materiali organici, fossili e resti umani">Materiali organici, fossili e resti umani</option>
+                            <option value="Tarsie">Tarsie</option>
+                            <option value="Arredi e mobili">Arredi e mobili</option>
+                            <option value="Medaglie, monete e gemme">Medaglie, monete e gemme</option>
+                            <option value="Calchi">Calchi</option>
+                            <option value="Lapidi e cippi funerari">Lapidi e cippi funerari</option>
+                            <option value="Urne, sarcofagi e casse tombali">Urne, sarcofagi e casse tombali</option>
+                            <option value="Vasellame ceramico">Vasellame ceramico</option>
+                            <option value="Vasellame metallico">Vasellame metallico</option>
+                            <option value="Vetri">Vetri</option>
+                            <option value="Sigilli e impronte di sigilli">Sigilli e impronte di sigilli</option>
+                            <option value="Strumenti musicali">Strumenti musicali</option>
+                            <option value="Giocattoli">Giocattoli</option>
+                            <option value="Altro">Altro</option>
                         </select>
                     </div>
                 </div>
@@ -312,9 +311,9 @@
                             <div id="textboxContainerMateriali">
                                 <div class="form-group" id="materiali-group1">
                                     <p>Materiale</p>
-                                    <input type="text" id="Materiale1" name="Materiale">
+                                    <input type="text" id="materiale1" name="Materiale">
                                     <p>Seleziona preesistente</p>
-                                    <select name="materialiSelect1" id="materialiSelect1"
+                                    <select name="materialiSelect" id="materialiSelect1"
                                         onchange="handleSelectChange(this)">
                                         <option selected>---</option>
                                         <option value="materiali1">Lista di tutti i materiali</option>
@@ -322,7 +321,7 @@
                                 </div>
                             </div>
                             <button
-                                onclick="aggiungiGruppo('textboxContainerMateriali', 'materiali-group1', 'Materiale')">Aggiungi</button>
+                                onclick="aggiungiGruppo('textboxContainerMateriali', 'materiali-group1', 'materiale')">Aggiungi</button>
                             <button class='removeButton'
                                 onclick="rimuoviGruppo('textboxContainerMateriali')">Rimuovi</button>
                         </div>

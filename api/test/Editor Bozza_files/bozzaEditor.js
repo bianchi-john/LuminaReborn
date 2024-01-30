@@ -792,12 +792,19 @@ function rimuoviGruppoDocFotografiche() {
 }
 
 
-
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
 /////////// LOGICA PER L'INVIO DEI DATI (CHIAMATA POST) /////////////
 
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
@@ -807,15 +814,9 @@ function uploadData() {
     // Ottieni i dati dai campi del modulo
 
     
-    var titolo = document.getElementById("titolo").value;
-    
-    var copertina = document.getElementById('copertina');
-    copertina = copertina.value;
 
-    var formData = {
-        titolo: titolo,
-        copertina: copertina
-    };
+
+    var formData = {};
     
     // Itera attraverso i form degli autori
     var numAutoriForms = document.querySelectorAll('[id^="groupAutori"]').length;
@@ -836,6 +837,84 @@ function uploadData() {
         formData["AutorePreesistente" + i] = autoriSelectValue
     }
 
+    // Itera attraverso i form dei materiali
+    var numMaterialiForms = document.querySelectorAll('[id^="materiali-group"]').length;
+    for (var i = 1; i <= numMaterialiForms; i++) {
+        var materiale = document.getElementById("materiale" + i).value;
+        var materialiSelect = document.getElementById("materialiSelect" + i);
+        var materialiSelectValue = materialiSelect.selectedIndex !== 0 ? materialiSelect.value : '';
+        formData["Materiale" + i] = materiale
+        formData["MaterialePreesistente" + i] = materialiSelectValue
+    }
+
+    // Itera attraverso i form delle tecniche
+    var numTecnicheForms = document.querySelectorAll('[id^="tecniche-group"]').length;
+    for (var i = 1; i <= numTecnicheForms; i++) {
+        var tecnica = document.getElementById("tenica" + i).value;
+        var tecnicaSelect = document.getElementById("tecnicheSelect" + i);
+        var tecnicaSelectValue = tecnicaSelect.selectedIndex !== 0 ? materialiSelect.value : '';
+        formData["tecnica" + i] = tecnica
+        formData["TencicaPreesistente" + i] = tecnicaSelectValue
+    }
+
+    // Itera attraverso i form delle misure
+    var numGruppoMisure = document.querySelectorAll('[id^="gruppoMisure"]').length;
+    for (var i = 1; i <= numGruppoMisure; i++) {
+        var titoloMisure = document.getElementById("Titolo" + i).value;
+        var interoParziale = document.getElementById("Intero-Parziale" + i).value;
+
+        // Aggiungi dati del form delle misure all'oggetto formData
+        formData["TitoloMisure" + i] = titoloMisure;
+        formData["InteroParziale" + i] = interoParziale;
+
+        // Itera attraverso i form delle singole misure all'interno del gruppo
+        var numMisureForms = document.querySelectorAll('[id^="misureGroup' + i + '"]').length;
+        for (var j = 1; j <= numMisureForms; j++) {
+            var direzione = document.getElementById("Direzione" + i + j).value;
+            var tipo = document.getElementById("Tipo" + i + j).value;
+            var valore = document.getElementById("Valore" + i + j).value;
+            var unita = document.getElementById("Unita" + i + j).value;
+
+            // Aggiungi dati della misura all'oggetto formData
+            formData["Direzione" + i + j] = direzione;
+            formData["Tipo" + i + j] = tipo;
+            formData["Valore" + i + j] = valore;
+            formData["Unita" + i + j] = unita;
+        }
+    }
+
+
+
+
+
+
+
+    
+
+
+    formData["titolo"] =  document.getElementById("titolo").value;
+
+    formData["copertina"]= document.getElementById('copertina').value
+
+    formData["etichetta_data"] = document.getElementById('etichetta_data').value 
+    formData["giorno_data_da"] = document.getElementById('giorno_data_da').value
+    formData["mese_data_da"] = document.getElementById('mese_data_da').value
+    formData["anno_data_da"] = document.getElementById('anno_data_da').value 
+    formData["giorno_data_a"] = document.getElementById('giorno_data_a').value
+    formData["mese_data_a"] = document.getElementById('mese_data_a').value 
+    formData["anno_data_a"] = document.getElementById('anno_data_a').value 
+
+    formData["ambito"] = document.getElementById('ambitoInput').value 
+
+    formData["ubicazione"] = document.getElementById('ubicazione').value 
+    formData["descrizione"] = document.getElementById('descrizione').value 
+
+    formData["inventario"] = document.getElementById('inventariInput').value 
+
+    formData["giuridica"] = document.getElementById('giuridicaInput').value 
+
+    var classificazione = document.getElementById("classificazione");
+    formData['classificazione'] = classificazione.selectedIndex !== 0 ? classificazione.value : '';
 
 
 
