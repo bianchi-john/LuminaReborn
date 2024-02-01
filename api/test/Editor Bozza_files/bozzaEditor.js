@@ -1066,9 +1066,8 @@ function uploadData() {
 
 
 
-    formData["noteInput"] = document.getElementById("noteInput").innerText ? document.getElementById("noteInput").innerText : "";
 
-    formData["titolo"] = document.getElementById("titolo").innerText ? document.getElementById("titolo").innerText : "";
+    formData["titolo_opera"] = document.getElementById("titolo").innerText ? document.getElementById("titolo").innerText : "";
 
     formData["copertina"] = document.getElementById('copertina').innerText ? document.getElementById("copertina").innerText : "";
 
@@ -1093,7 +1092,7 @@ function uploadData() {
     var classificazione = document.getElementById("classificazione");
     formData['classificazione'] = classificazione.selectedIndex !== 0 ? classificazione.value : '';
 
-    formData["note"] = document.getElementById("noteInput").value ? document.getElementById("noteInput").value : "";
+    formData["commento"] = document.getElementById("commentoInput").value ? document.getElementById("commentoInput").value : "";
 
 
 

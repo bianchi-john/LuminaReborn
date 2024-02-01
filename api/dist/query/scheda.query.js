@@ -18,7 +18,62 @@ exports.QUERY = {
     SELECT_DOCUMENTAZIONIFOTOGRAFICHE: 'SELECT * FROM documentazioniFotografiche JOIN tds_schede_documentazioniFotografiche ON documentazioniFotografiche.id = tds_schede_documentazioniFotografiche.id_documentazioneFotografica WHERE tds_schede_documentazioniFotografiche.id_scheda =  ?',
     SELECT_MISURE: 'SELECT m.*, tsgm.* FROM misure AS m JOIN tds_schede_gruppo_misure AS tsgm ON m.id_gruppo_misure = tsgm.id JOIN tds_schede_misure AS tsm ON tsgm.id = tsm.id_gruppo_misure WHERE tsm.id_scheda = ?',
     SELECT_SCHEDATORI: 'SELECT * FROM users JOIN tds_users_schede ON users.id = tds_users_schede.id_user WHERE tds_users_schede.id_scheda = ?',
-    CREATE_SCHEDA: '',
     UPDATE_SCHEDA: 'UPDATE schede SET id = ?, titolo_opera = ?,  corpo_scheda = ?, iscrizioni = ?, descrizione_sintetica = ?, storia_espositiva = ?, classificazione = ? WHERE id = ?',
-    DELETE_SCHEDA: 'DELETE FROM schede WHERE id = ?'
+    DELETE_SCHEDA: 'DELETE FROM schede WHERE id = ?',
+    CREATE_SCHEDA: (schedaData) => {
+        const fields = [
+            'titolo_opera', 'corpo_scheda', 'iscrizioni',
+            'descrizione_sintetica', 'storia_espositiva', 'classificazione'
+        ];
+        const values = fields.map(field => schedaData[field]);
+        const placeholders = fields.map(() => '?');
+        const query = `
+          INSERT INTO schede (${fields.join(', ')})
+          VALUES (${placeholders.join(', ')});
+        `;
+        return {
+            query,
+            values,
+        };
+    },
+    CREATE_SCHEDA_AUTORI: (schedaId, autoriData) => {
+        const autoriQueries = [];
+        const tdsSchedeAutoriQueries = [];
+        const autoriValues = [];
+        for (let i = 1; i <= 10; i++) {
+            const formulaPrecedente = autoriData[`Formula_precedente${i}`];
+            const formulaSuccessiva = autoriData[`Formula_successiva${i}`];
+            const categoria = autoriData[`Categoria${i}`];
+            const nome = autoriData[`NomeAutore${i}`];
+            const autorePreesistente = autoriData[`AutorePreesistente${i}`];
+            if (formulaPrecedente || formulaSuccessiva || categoria || nome || autorePreesistente) {
+                autoriValues.push(formulaPrecedente, formulaSuccessiva, categoria, nome);
+                autoriQueries.push(`
+            INSERT INTO autori (formula_precedente, formula_successiva, categoria, nome)
+            VALUES (?, ?, ?, ?);
+        `);
+                tdsSchedeAutoriQueries.push(`
+            INSERT INTO tds_schede_autori (id_scheda, id_autore)
+            VALUES (?, LAST_INSERT_ID());
+        `);
+            }
+        }
+        const finalAutoreQuery = autoriQueries.join('\n');
+        const finalTdsSchedeAutoriQuery = tdsSchedeAutoriQueries.join('\n');
+        const finalQuery = `
+        START TRANSACTION;
+
+        ${finalAutoreQuery}
+
+        ${finalTdsSchedeAutoriQuery}
+
+        COMMIT;
+    `;
+        return {
+            query: finalQuery,
+            values: [schedaId, ...autoriValues],
+        };
+    },
+    CREATE_SCHEDA_MATERIALE: '',
+    CREATE_SCHEDA_TECNICA: '',
 };

@@ -100,11 +100,33 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getScheda = getScheda;
 const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
-    let scheda = Object.assign({}, req.body);
+    // Estrai i dati dalla richiesta
+    let schedaData = Object.assign({}, req.body);
     try {
         const pool = yield (0, mysql_config_1.connection)();
-        const result = yield pool.query(scheda_query_1.QUERY.CREATE_SCHEDA, Object.values(scheda));
-        scheda = Object.assign({ id: result[0].insertId }, req.body);
+        // Inserisci la scheda nella tabella principale
+        const { query, values } = scheda_query_1.QUERY.CREATE_SCHEDA(schedaData);
+        const resultScheda = yield pool.query(query, values);
+        // Estrai l'id della scheda appena inserita
+        const schedaId = resultScheda[0].insertId;
+        // Inserisci gli altri dati nelle tabelle di collegamento
+        yield Promise.all([
+            ...schedaData.autori.map((autoreData) => __awaiter(void 0, void 0, void 0, function* () {
+                const autoreQuery = scheda_query_1.QUERY.CREATE_SCHEDA_AUTORI(schedaId, autoreData);
+                yield pool.query(autoreQuery.query, autoreQuery.values);
+            })),
+            // Inserisci materiali
+            ...schedaData.materiali.map((materialeId) => __awaiter(void 0, void 0, void 0, function* () {
+                yield pool.query(scheda_query_1.QUERY.CREATE_SCHEDA_MATERIALE, [schedaId, schedaData]);
+            })),
+            // Inserisci tecniche
+            ...schedaData.tecniche.map((tecnicaId) => __awaiter(void 0, void 0, void 0, function* () {
+                yield pool.query(scheda_query_1.QUERY.CREATE_SCHEDA_TECNICA, [schedaId, schedaData]);
+            })),
+            // ... Aggiungi altre tabelle di collegamento se necessario
+        ]);
+        // Costruisci la scheda risultante
+        const scheda = Object.assign({ id: schedaId }, schedaData);
         return res.status(code_enum_1.Code.CREATED)
             .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Scheda created', scheda));
     }
