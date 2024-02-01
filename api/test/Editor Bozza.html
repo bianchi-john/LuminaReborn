@@ -177,7 +177,7 @@
                                     <input type="text" id="Nome1" name="Nome">
                                     <p>Seleziona preesistente</p>
                                     <select name="autoriSelect1" id="autoriSelect1" onchange="handleSelectChange(this)">
-                                        <option selected>---</option>
+                                        <option selected></option>
                                         <option value="autori1">Lista di tutti gli autori</option>
                                     </select>
                                 </div>
@@ -268,7 +268,7 @@
                     </div>
                     <div class="card-body classificazione">
                         <select name="classificazione" id="classificazione">
-                            <option>---</option>
+                            <option></option>
                             <option value="Dipinti">Dipinti</option>
                             <option value="Mosaici">Mosaici</option>
                             <option value="Sculture e frammenti lapidei">Sculture e frammenti lapidei</option>
@@ -317,7 +317,7 @@
                                     <p>Seleziona preesistente</p>
                                     <select name="materialiSelect" id="materialiSelect1"
                                         onchange="handleSelectChange(this)">
-                                        <option selected>---</option>
+                                        <option selected></option>
                                         <option value="materiali1">Lista di tutti i materiali</option>
                                     </select>
                                 </div>
@@ -344,7 +344,7 @@
                                     <p>Seleziona preesistente</p>
                                     <select name="tecnicheSelect1" id="tecnicheSelect1"
                                         onchange="handleSelectChange(this)">
-                                        <option selected>---</option>
+                                        <option selected></option>
                                         <option value="tecniche1">Lista di tutte le teniche</option>
                                     </select>
                                 </div>
@@ -377,19 +377,19 @@
                                         <div class="form-group misure" id="misureGroup11">
                                             <p>Direzione</p>
                                             <select name="Direzione" id="Direzione11">
-                                                <option selected>---</option>
+                                                <option selected></option>
                                                 <option value="Direzione11">Lista di tutte le direzioni</option>
                                             </select>
                                             <p>Tipo</p>
                                             <select name="Tipo" id="Tipo11">
-                                                <option selected>---</option>
+                                                <option selected></option>
                                                 <option value="Tipo11">Lista di tutte i tipi</option>
                                             </select>
                                             <p>Valore</p>
                                             <input type="text" id="Valore11" name="Valore">
                                             <p>Unità</p>
                                             <select name="Unita" id="Unita11">
-                                                <option selected>---</option>
+                                                <option selected></option>
                                                 <option value="Unita11">Lista di tutte le unità</option>
                                             </select>
                                             </br>
@@ -428,7 +428,7 @@
                             </div>
                         </div>
                         <button
-                            onclick="aggiungiGruppo('textboxContainerProvenienze', 'provenienze-group1', 'Provenienza','DescrizioneProvenienza', 'NoteProvenienza')">Aggiungi</button>
+                            onclick="aggiungiGruppo('textboxContainerProvenienze', 'provenienze-group', 'Provenienza','DescrizioneProvenienza', 'NoteProvenienza')">Aggiungi</button>
                         <button class='removeButton'
                             onclick="rimuoviGruppo('textboxContainerProvenienze')">Rimuovi</button>
                     </div>
@@ -871,7 +871,7 @@
                     <div class="card-header" data-target="#mostre">Mostre</div>
                     <div class="card-body mostre">
                         <div id="mostre">
-                            <div class="form-group">
+                            <div class="form-group" id="mostre-group1">
                                 <form name="compForm">
                                     <input type="hidden" name="myDoc">
                                     <div class="toolBar1">
@@ -1271,13 +1271,7 @@
         </div>
         <div class="row mt-2">
             <div class="col note">
-                <div class="card">
-                    <div class="card-header" data-target="#note">
-                        Note</div>
-                    <div class="card-body note" id="note">
-                        <input type="text" id="noteInput" name="noteInput1">
-                    </div>
-                </div>
+                AutorePreesistente1
             </div>
         </div>
         <div class="submit">

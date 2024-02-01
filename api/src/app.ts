@@ -6,7 +6,7 @@ import Cookies from "cookies"
 import ip from 'ip';
 import cors from 'cors';
 import schedaRoutes from './routes/scheda.routes';
-import searchRoutes from './routes/search.routes'
+import searchRoutes from './routes/search.routes';
 import authMiddleware from '@moreillon/express_identification_middleware';
 import process from 'process';
 import axios from "axios"

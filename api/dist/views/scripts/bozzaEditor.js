@@ -10,8 +10,6 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
     nuovoGruppo.id = groupId + numeroFigli;
     let inputHtml = '';
 
-    var nameValue = $("#Provenienza1").prop("name");
-
 
     inputIds.forEach((id, index) => {
         elemento = document.getElementById(id + '1');
@@ -26,7 +24,11 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
     // Controllo se c'è una select
     if ($('#' + containerId + ' select').length > 0) {
         // Se c'è, prendi l'elemento <select> e mettilo in una variabile
-        var selectElement = $('#' + containerId + ' select');
+        // var selectElement = $('#' + containerId + ' select');
+
+        var selectElement = document.querySelectorAll('#' + containerId + ' select');
+        var selectElement = selectElement[selectElement.length - 1].id;
+        selectElement = $('#' + selectElement);
         var newSelectElement = selectElement.clone();
         // Ottieni l'attuale id
         var currentId = newSelectElement.attr('id');
@@ -103,14 +105,15 @@ function aggiungiGruppoMisure(containerId) {
     // Ottengo il numero di gruppi di misure nella pagina
     const container = document.getElementById('textboxContainerMisure');
     const numeroGruppiMisure = (container.getElementsByClassName('gruppoMisure')).length;
+
     // Creo un nuovo gruppo con gli id corretti
     var nuovoCodiceHTML = generaCodiceGruppoMisure(numeroGruppiMisure + 1);
-    // Aggiungi il nuovo codice all'elemento
-    container.innerHTML += nuovoCodiceHTML;
+
+    // Aggiungo il nuovo codice HTML dopo l'ultimo elemento nel container
+    container.insertAdjacentHTML('beforeend', nuovoCodiceHTML);
 
     bottoneRimuovi = document.getElementById('removeButtonGruppiMisure');
     bottoneRimuovi.style.display = 'inline';
-
 }
 
 
@@ -158,19 +161,19 @@ function generaCodiceGruppoMisure(id) {
                 <div class="form-group misure" id="misureGroup${id}1">
                     <p>Direzione</p>
                     <select name="Direzione" id="Direzione${id}1">
-                        <option value="" selected>---</option>
+                        <option value="" selected></option>
                         <option value="Direzione${id}1">Lista di tutte le direzioni</option>
                     </select>
                     <p>Tipo</p>
                     <select name="Tipo" id="Tipo${id}1">
-                        <option value="" selected>---</option>
+                        <option value="" selected></option>
                         <option value="Tipo${id}1">Lista di tutte i tipi</option>
                     </select>
                     <p>Valore</p>
                     <input type="text" id="Valore${id}1" name="Valore">
                     <p>Unità</p>
                     <select name="Unita" id="Unita${id}1">
-                        <option value="" selected>---</option>
+                        <option value="" selected></option>
                         <option value="Unita${id}1">Lista di tutte le unità</option>
                     </select>
                     </br>
@@ -183,26 +186,61 @@ function generaCodiceGruppoMisure(id) {
     return nuovoCodice;
 }
 
-function aggiungiMisura(containerId) {
+// function aggiungiMisura(containerId) {
+// // Ottengo il numero del gruppo misure corrente
+// var numeroGruppo = containerId.match(/\d+/g).map(Number);
+// // Ottengo il numero delle misure nel div corrente
+// var numeroMisure = document.getElementById(containerId).getElementsByClassName('misure').length;
 
+// // Creo un nuovo gruppo con gli id corretti
+// var nuovoCodiceHTML = generaCodiceMisure(numeroGruppo, numeroMisure + 1);
+// var primoElemento = document.getElementById(containerId).getElementsByClassName('field')[0];
+
+// // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
+// primoElemento.insertAdjacentHTML('beforeend', nuovoCodiceHTML);
+
+// bottoneRimuovi = document.getElementById(containerId).getElementsByClassName('removeButtonMisure');
+// bottoneRimuovi[0].style.display = 'inline';
+// }
+
+
+function aggiungiMisura(containerId) {
     // Ottengo il numero del gruppo misure corrente
     var numeroGruppo = containerId.match(/\d+/g).map(Number);
     // Ottengo il numero delle misure nel div corrente
     var numeroMisure = document.getElementById(containerId).getElementsByClassName('misure').length;
+    numeroMisure = numeroMisure + 1;
 
+    // Ottieni l'elemento "misureGroup11" da clonare
+    var templateElement = document.getElementById("misureGroup11");
 
-    // Creo un nuovo gruppo con gli id corretti
-    var nuovoCodiceHTML = generaCodiceMisure(numeroGruppo, numeroMisure + 1);
+    // Clona l'elemento
+    var nuovoElemento = templateElement.cloneNode(true);
+
+    // Modifica gli id e altri attributi in base ai parametri
+    nuovoElemento.id = "misureGroup" + numeroGruppo + numeroMisure;
+    nuovoElemento.querySelector("[name='Direzione']").id = "Direzione" + numeroGruppo + numeroMisure;
+    nuovoElemento.querySelector("[name='Tipo']").id = "Tipo" + numeroGruppo + numeroMisure;
+    nuovoElemento.querySelector("[name='Valore']").id = "Valore" + numeroGruppo + numeroMisure;
+    nuovoElemento.querySelector("[name='Unita']").id = "Unita" + numeroGruppo + numeroMisure;
+
+    // Modifica gli option value in base ai parametri
+    var optionElements = nuovoElemento.querySelectorAll("select option");
+    optionElements.forEach(function (option) {
+        option.value = option.value.replace(/\d+/, numeroGruppo + numeroMisure);
+    });
     var primoElemento = document.getElementById(containerId).getElementsByClassName('field')[0];
 
-    // Aggiungo il nuovo codice HTML al fondo del primo elemento
-    primoElemento.innerHTML += nuovoCodiceHTML;
+    // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
+    primoElemento.insertAdjacentHTML('beforeend', nuovoElemento.outerHTML);
 
 
-    bottoneRimuovi = document.getElementById(containerId).getElementsByClassName('removeButtonMisure');
-    bottoneRimuovi[0].style.display = 'inline';
 
+    return nuovoElemento.outerHTML;
 }
+
+
+
 
 function rimuoviMisura(containerId) {
 
@@ -237,19 +275,19 @@ function generaCodiceMisure(numeroGruppo, numeroMisure) {
             <div class="form-group misure" id="misureGroup${numeroGruppo}${numeroMisure}">
                 <p>Direzione</p>
                 <select name="Direzione" id="Direzione${numeroGruppo}${numeroMisure}">
-                    <option value="" selected>---</option>
+                    <option value="" selected></option>
                     <option value="Direzione${numeroGruppo}${numeroMisure}">Lista di tutte le direzioni</option>
                 </select>
                 <p>Tipo</p>
                 <select name="Tipo" id="Tipo${numeroGruppo}${numeroMisure}">
-                    <option value="" selected>---</option>
+                    <option value="" selected></option>
                     <option value="Tipo${numeroGruppo}${numeroMisure}">Lista di tutte i tipi</option>
                 </select>
                 <p>Valore</p>
                 <input type="text" id="Valore${numeroGruppo}${numeroMisure}" name="Valore">
                 <p>Unità</p>
                 <select name="Unita" id="Unita${numeroGruppo}${numeroMisure}">
-                    <option value="" selected>---</option>
+                    <option value="" selected></option>
                     <option value="Unita${numeroGruppo}${numeroMisure}">Lista di tutte le unità</option>
                 </select>
                 </br>
@@ -278,7 +316,7 @@ function aggiungiGruppoMostre() {
 
     var codice = `
 
-    <div class="form-group">
+    <div class="form-group" id="mostre-group${numero}">
 
     <form name="compForm">
         <input type="hidden" name="myDoc">
@@ -372,12 +410,13 @@ function aggiungiGruppoMostre() {
     </div>
 
     `;
-
     var contenitore = document.getElementById('mostre');
-    // Aggiungo il nuovo codice HTML al fondo del primo elemento
-    contenitore.innerHTML += codice;
+    // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
+    contenitore.insertAdjacentHTML('beforeend', codice);
+
     bottoneRimuovi = document.getElementById('rimuoviMostre');
     bottoneRimuovi.style.display = 'inline';
+
     var textAreas = document.querySelectorAll(".textBox");
     textAreas.forEach(function (textArea) {
         // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
@@ -385,6 +424,7 @@ function aggiungiGruppoMostre() {
             initDoc(textArea);
         });
     });
+
 
 }
 
@@ -534,9 +574,11 @@ function aggiungiGruppoBibliografie() {
 
     var contenitore = document.getElementById('bibliografie');
     // Aggiungo il nuovo codice HTML al fondo del primo elemento
-    contenitore.innerHTML += codice;
+    contenitore.insertAdjacentHTML('beforeend', codice);
+
     bottoneRimuovi = document.getElementById('rimuoviBibliografie');
     bottoneRimuovi.style.display = 'inline';
+
     var textAreas = document.querySelectorAll(".textBox");
     textAreas.forEach(function (textArea) {
         // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
@@ -544,6 +586,7 @@ function aggiungiGruppoBibliografie() {
             initDoc(textArea);
         });
     });
+
 
 }
 
@@ -694,10 +737,12 @@ function aggiungiGruppoAltreBibliografie() {
 `;
 
     var contenitore = document.getElementById('altreBibliografie');
-    // Aggiungo il nuovo codice HTML al fondo del primo elemento
-    contenitore.innerHTML += codice;
+    // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
+    contenitore.insertAdjacentHTML('beforeend', codice);
+
     bottoneRimuovi = document.getElementById('rimuoviAltreBibliografie');
     bottoneRimuovi.style.display = 'inline';
+
     var textAreas = document.querySelectorAll(".textBox");
     textAreas.forEach(function (textArea) {
         // Assegna la funzione initDoc direttamente all'evento di ciascuna textarea
@@ -705,6 +750,7 @@ function aggiungiGruppoAltreBibliografie() {
             initDoc(textArea);
         });
     });
+
 
 }
 
@@ -760,12 +806,15 @@ function aggiungiGruppoDocFotografiche() {
         </form>
         </div>
         `;
-
     var contenitore = document.getElementById('documentazioneFotografica');
-    // Aggiungo il nuovo codice HTML al fondo del primo elemento
-    contenitore.innerHTML += codice;
-    bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
+    var bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
+
+    // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
+    contenitore.insertAdjacentHTML('beforeend', codice);
+
+    // Visualizzo il bottone di rimozione
     bottoneRimuovi.style.display = 'inline';
+
 }
 
 
@@ -791,16 +840,65 @@ function rimuoviGruppoDocFotografiche() {
     }
 }
 
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
+
+
+
 
 /////////// LOGICA PER L'INVIO DEI DATI (CHIAMATA POST) /////////////
 
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -815,47 +913,44 @@ function uploadData() {
     // Itera attraverso i form degli autori
     var numAutoriForms = document.querySelectorAll('[id^="groupAutori"]').length;
     for (var i = 1; i <= numAutoriForms; i++) {
-        var formulaPrecedente = document.getElementById("Formula_precedente" + i).value  ? document.getElementById("Formula_precedente" + i).value : "";
-        var formulaSuccessiva = document.getElementById("Formula_successiva" + i).value  ? document.getElementById("Formula_successiva" + i).value : "";
-        var categoria = document.getElementById("Categoria" + i).value  ? document.getElementById("Categoria" + i).value : "";
-        var nome = document.getElementById("Nome" + i).value  ? document.getElementById("Nome" + i).value : "";
-        var autoriSelect = document.getElementById("autoriSelect" + i);
-        var autoriSelectValue = autoriSelect.selectedIndex !== 0 ? autoriSelect.value : '';
+        var formulaPrecedente = document.getElementById("Formula_precedente" + i).value ? document.getElementById("Formula_precedente" + i).value : "";
+        var formulaSuccessiva = document.getElementById("Formula_successiva" + i).value ? document.getElementById("Formula_successiva" + i).value : "";
+        var categoria = document.getElementById("Categoria" + i).value ? document.getElementById("Categoria" + i).value : "";
+        var nome = document.getElementById("Nome" + i).value ? document.getElementById("Nome" + i).value : "";
+        var autoriSelect = document.getElementById("autoriSelect" + i).value;
 
 
         // Aggiungi dati del form degli autori all'oggetto formData
         formData["Formula_precedente" + i] = formulaPrecedente;
         formData["Formula_successiva" + i] = formulaSuccessiva;
         formData["Categoria" + i] = categoria;
-        formData["Nome" + i] = nome;
-        formData["AutorePreesistente" + i] = autoriSelectValue
+        formData["NomeAutore" + i] = nome;
+        formData["AutorePreesistente" + i] = autoriSelect
     }
 
     // Itera attraverso i form dei materiali
     var numMaterialiForms = document.querySelectorAll('[id^="materiali-group"]').length;
     for (var i = 1; i <= numMaterialiForms; i++) {
-        var materiale = document.getElementById("materiale" + i).value  ? document.getElementById("materiale" + i).value : "";
-        var materialiSelect = document.getElementById("materialiSelect" + i);
-        var materialiSelectValue = materialiSelect.selectedIndex !== 0 ? materialiSelect.value : '';
+        var materiale = document.getElementById("materiale" + i).value ? document.getElementById("materiale" + i).value : "";
+        var materialiSelect = document.getElementById("materialiSelect" + i).value;;
         formData["Materiale" + i] = materiale
-        formData["MaterialePreesistente" + i] = materialiSelectValue
+        formData["MaterialePreesistente" + i] = materialiSelect
     }
 
     // Itera attraverso i form delle tecniche
     var numTecnicheForms = document.querySelectorAll('[id^="tecniche-group"]').length;
     for (var i = 1; i <= numTecnicheForms; i++) {
         var tecnica = document.getElementById("Tecnica" + i).value ? document.getElementById("Tecnica" + i).value : "";
-        var tecnicaSelect = document.getElementById("tecnicheSelect" + i);
-        var tecnicaSelectValue = tecnicaSelect.selectedIndex !== 0 ? materialiSelect.value : '';
+        var tecnicaSelect = document.getElementById("tecnicheSelect" + i).value;
         formData["Tecnica" + i] = tecnica
-        formData["TencicaPreesistente" + i] = tecnicaSelectValue
+        formData["TencicaPreesistente" + i] = tecnicaSelect
     }
 
     // Itera attraverso i form delle misure
     var numGruppoMisure = document.querySelectorAll('[id^="gruppoMisure"]').length;
     for (var i = 1; i <= numGruppoMisure; i++) {
-        var titoloMisure = document.getElementById("Titolo" + i).value  ? document.getElementById("Titolo" + i).value : "";
-        var interoParziale = document.getElementById("Intero-Parziale" + i).value  ? document.getElementById("Intero-Parziale" + i).value : "";
+        var titoloMisure = document.getElementById("Titolo" + i).value ? document.getElementById("Titolo" + i).value : "";
+        var interoParziale = document.getElementById("Intero-Parziale" + i).value ? document.getElementById("Intero-Parziale" + i).value : "";
 
         // Aggiungi dati del form delle misure all'oggetto formData
         formData["TitoloMisure" + i] = titoloMisure;
@@ -864,10 +959,10 @@ function uploadData() {
         // Itera attraverso i form delle singole misure all'interno del gruppo
         var numMisureForms = document.querySelectorAll('[id^="misureGroup' + i + '"]').length;
         for (var j = 1; j <= numMisureForms; j++) {
-            var direzione = document.getElementById("Direzione" + i + j).value  ? document.getElementById("Direzione"+ i + j).value : "";
-            var tipo = document.getElementById("Tipo" + i + j).value  ? document.getElementById("Tipo"+ i + j).value : "";
-            var valore = document.getElementById("Valore" + i + j).value  ? document.getElementById("Valore" + i + j).value : "";
-            var unita = document.getElementById("Unita" + i + j).value  ? document.getElementById("Unita"+ i + j).value : "";
+            var direzione = document.getElementById("Direzione" + i + j).value;
+            var tipo = document.getElementById("Tipo" + i + j).value;
+            var valore = document.getElementById("Valore" + i + j).value ? document.getElementById("Valore" + i + j).value : "";
+            var unita = document.getElementById("Unita" + i + j).value;
 
             // Aggiungi dati della misura all'oggetto formData
             formData["Direzione" + i + j] = direzione;
@@ -880,9 +975,9 @@ function uploadData() {
     // Itera attraverso i form delle provenienze
     var numProvenienzeForms = document.querySelectorAll('[id^="provenienze-group"]').length;
     for (var i = 1; i <= numProvenienzeForms; i++) {
-        var provenienza = document.getElementById("Provenienza" + i).value  ? document.getElementById("Provenienza" + i).value : "";
-        var descrizioneProvenienza = document.getElementById("DescrizioneProvenienza" + i).value  ? document.getElementById("DescrizioneProvenienza" + i).value : "";
-        var noteProvenienza = document.getElementById("NoteProvenienza" + i).value  ? document.getElementById("NoteProvenienza" + i).value : "";
+        var provenienza = document.getElementById("Provenienza" + i).value ? document.getElementById("Provenienza" + i).value : "";
+        var descrizioneProvenienza = document.getElementById("DescrizioneProvenienza" + i).value ? document.getElementById("DescrizioneProvenienza" + i).value : "";
+        var noteProvenienza = document.getElementById("NoteProvenienza" + i).value ? document.getElementById("NoteProvenienza" + i).value : "";
 
         // Aggiungi dati del form delle provenienze all'oggetto formData
         formData["Provenienza" + i] = provenienza;
@@ -890,15 +985,15 @@ function uploadData() {
         formData["NoteProvenienza" + i] = noteProvenienza;
     }
 
-    formData["iscrizioni"] = document.getElementById("iscrizioni").value  ? document.getElementById("iscrizioni" + i).value : "";
-    formData["storia_espositiva"] = document.getElementById("storia_espositiva").value  ? document.getElementById("storia_espositiva" + i).value : "";
-    formData["descrizione_sintetica"] = document.getElementById("descrizione_sintetica").value  ? document.getElementById("descrizione_sintetica" + i).value : "";
-    formData["corpo_scheda"] = document.getElementById("corpo_scheda").value  ? document.getElementById("corpo_scheda" + i).value : "";
+    formData["iscrizioni"] = document.getElementById("iscrizioni").innerHTML ? document.getElementById("iscrizioni").innerHTML : "";
+    formData["storia_espositiva"] = document.getElementById("storia_espositiva").innerHTML ? document.getElementById("storia_espositiva").innerHTML : "";
+    formData["descrizione_sintetica"] = document.getElementById("descrizione_sintetica").innerHTML ? document.getElementById("descrizione_sintetica").innerHTML : "";
+    formData["corpo_scheda"] = document.getElementById("corpo_scheda").innerHTML ? document.getElementById("corpo_scheda").innerHTML : "";
 
 
 
     // Itera attraverso i form delle mostre
-    var numMostreForms = document.querySelectorAll('[id^="mostre"]').length;
+    var numMostreForms = document.querySelectorAll('[id^="mostre-group"]').length;
     for (var i = 1; i <= numMostreForms; i++) {
         // Ottieni i dati del contenuto modificabile (HTML)
         var titoloMostra = document.getElementById("titoloMostra" + i).innerHTML;
@@ -907,15 +1002,15 @@ function uploadData() {
         formData["TitoloMostra" + i] = titoloMostra;
 
         // Altri dati delle mostre
-        var curatore = document.getElementById("Curatore" + i).value  ? document.getElementById("Curatore" + i).value : "";
-        var giornoInizio = document.getElementById("giornoDataInizioMostra" + i).value  ? document.getElementById("giornoDataInizioMostra" + i).value : "";
-        var meseInizio = document.getElementById("meseDataInizioMostra" + i).value  ? document.getElementById("meseDataInizioMostra" + i).value : "";
-        var annoInizio = document.getElementById("annoDataInizioMostra" + i).value  ? document.getElementById("annoDataInizioMostra" + i).value : "";
-        var giornoFine = document.getElementById("giornoDataFineMostra" + i).value  ? document.getElementById("giornoDataFineMostra" + i).value : "";
-        var meseFine = document.getElementById("meseDataFineMostra" + i).value  ? document.getElementById("meseDataFineMostra" + i).value : "";
-        var annoFine = document.getElementById("annoDataFineMostra" + i).value  ? document.getElementById("annoDataFineMostra" + i).value : "";
-        var luogoMostra = document.getElementById("luogoMostra" + i).value  ? document.getElementById("luogoMostra" + i).value : "";
-        var descrizioneMostra = document.getElementById("descrizioneMostra" + i).value  ? document.getElementById("descrizioneMostra" + i).value : "";
+        var curatore = document.getElementById("Curatore" + i).value ? document.getElementById("Curatore" + i).value : "";
+        var giornoInizio = document.getElementById("giornoDataInizioMostra" + i).value ? document.getElementById("giornoDataInizioMostra" + i).value : "";
+        var meseInizio = document.getElementById("meseDataInizioMostra" + i).value ? document.getElementById("meseDataInizioMostra" + i).value : "";
+        var annoInizio = document.getElementById("annoDataInizioMostra" + i).value ? document.getElementById("annoDataInizioMostra" + i).value : "";
+        var giornoFine = document.getElementById("giornoDataFineMostra" + i).value ? document.getElementById("giornoDataFineMostra" + i).value : "";
+        var meseFine = document.getElementById("meseDataFineMostra" + i).value ? document.getElementById("meseDataFineMostra" + i).value : "";
+        var annoFine = document.getElementById("annoDataFineMostra" + i).value ? document.getElementById("annoDataFineMostra" + i).value : "";
+        var luogoMostra = document.getElementById("luogoMostra" + i).value ? document.getElementById("luogoMostra" + i).value : "";
+        var descrizioneMostra = document.getElementById("descrizioneMostra" + i).value ? document.getElementById("descrizioneMostra" + i).value : "";
 
         // Aggiungi altri dati delle mostre all'oggetto formData
         formData["Curatore" + i] = curatore;
@@ -939,15 +1034,15 @@ function uploadData() {
 
     var numGruppoAltreBibliografie = document.querySelectorAll('.altreBibliografie').length;
     for (var i = 1; i <= numGruppoAltreBibliografie; i++) {
-        var altraBibliografiaContent = document.getElementById("altrabibliografia" + i).value ? document.getElementById("altrabibliografia" + i).value : "";
+        var altraBibliografiaContent = document.getElementById("altrabibliografia" + i).innerHTML ? document.getElementById("altrabibliografia" + i).innerHTML : "";
 
         // Aggiungi dati del form della bibliografia all'oggetto formData
         formData["altraBibliografia" + i] = altraBibliografiaContent;
     }
+
+
     // Itera attraverso i form della documentazione fotografica
-    // Itera attraverso i form della documentazione fotografica
-    // Itera attraverso i form della documentazione fotografica
-    var numDocumentazioneForms = document.querySelectorAll('[class^="documentazioneFotografica"]').length;
+    var numDocumentazioneForms = document.getElementById('documentazioneFotografica').getElementsByClassName('form-group').length;
     for (var i = 1; i <= numDocumentazioneForms; i++) {
         var didascalia = document.getElementById("documentazioneFotograficaInput" + i).value ? document.getElementById("documentazioneFotograficaInput" + i).value : "";
         var immagineFileInput = document.getElementById("documentazioneFotograficaFoto" + i);
@@ -956,7 +1051,7 @@ function uploadData() {
         if (immagineFileInput) {
             var inputTypeFile = immagineFileInput.querySelector('input[type="file"]');
             var immagineFile = inputTypeFile ? inputTypeFile.files.length > 0 ? inputTypeFile.files[0] : null : null;
-        
+
         }
         // Aggiungi dati del form della documentazione fotografica all'oggetto formData
         formData["Didascalia" + i] = didascalia;
@@ -971,40 +1066,41 @@ function uploadData() {
 
 
 
-    formData["noteInput"] = document.getElementById("noteInput").value  ? document.getElementById("noteInput" + i).value : "";
+    formData["noteInput"] = document.getElementById("noteInput").innerText ? document.getElementById("noteInput").innerText : "";
 
-    formData["titolo"] = document.getElementById("titolo").value  ? document.getElementById("titolo" + i).value : "";
+    formData["titolo"] = document.getElementById("titolo").innerText ? document.getElementById("titolo").innerText : "";
 
-    formData["copertina"] = document.getElementById('copertina').value ? document.getElementById("copertina" + i).value : "";
+    formData["copertina"] = document.getElementById('copertina').innerText ? document.getElementById("copertina").innerText : "";
 
 
-    formData["etichetta_data"] = document.getElementById('etichetta_data').value ? document.getElementById("etichetta_data" + i).value : "";
-    formData["giorno_data_da"] = document.getElementById('giorno_data_da').value ? document.getElementById("giorno_data_da" + i).value : "";
-    formData["mese_data_da"] = document.getElementById('mese_data_da').value ? document.getElementById("mese_data_da" + i).value : "";
-    formData["anno_data_da"] = document.getElementById('anno_data_da').value ? document.getElementById("anno_data_da" + i).value : "";
-    formData["giorno_data_a"] = document.getElementById('giorno_data_a').value ? document.getElementById("giorno_data_a" + i).value : "";
-    formData["mese_data_a"] = document.getElementById('mese_data_a').value ? document.getElementById("mese_data_a" + i).value : "";
-    formData["anno_data_a"] = document.getElementById('anno_data_a').value ? document.getElementById("anno_data_a" + i).value : "";
+    formData["etichetta_data"] = document.getElementById('etichetta_data').innerText ? document.getElementById("etichetta_data").innerText : "";
+    formData["giorno_data_da"] = document.getElementById('giorno_data_da').innerText ? document.getElementById("giorno_data_da").innerText : "";
+    formData["mese_data_da"] = document.getElementById('mese_data_da').innerText ? document.getElementById("mese_data_da").innerText : "";
+    formData["anno_data_da"] = document.getElementById('anno_data_da').innerText ? document.getElementById("anno_data_da").innerText : "";
+    formData["giorno_data_a"] = document.getElementById('giorno_data_a').innerText ? document.getElementById("giorno_data_a").innerText : "";
+    formData["mese_data_a"] = document.getElementById('mese_data_a').innerText ? document.getElementById("mese_data_a").innerText : "";
+    formData["anno_data_a"] = document.getElementById('anno_data_a').innerText ? document.getElementById("anno_data_a").innerText : "";
 
-    formData["ambito"] = document.getElementById('ambitoInput').value ? document.getElementById("ambitoInput" + i).value : "";
+    formData["ambito"] = document.getElementById('ambitoInput').innerText ? document.getElementById("ambitoInput").innerText : "";
 
-    formData["ubicazione"] = document.getElementById('ubicazione').value ? document.getElementById("ubicazione" + i).value : "";
-    formData["descrizione"] = document.getElementById('descrizione').value ? document.getElementById("descrizione" + i).value : "";
+    formData["ubicazione"] = document.getElementById('ubicazione').innerText ? document.getElementById("ubicazione").innerText : "";
+    formData["descrizione"] = document.getElementById('descrizione').innerText ? document.getElementById("descrizione").innerText : "";
 
-    formData["inventario"] = document.getElementById('inventariInput').value ? document.getElementById("inventariInput" + i).value : "";
+    formData["inventario"] = document.getElementById('inventariInput').innerText ? document.getElementById("inventariInput").innerText : "";
 
-    formData["giuridica"] = document.getElementById('giuridicaInput').value ? document.getElementById("giuridicaInput" + i).value : "";
+    formData["giuridica"] = document.getElementById('giuridicaInput').innerText ? document.getElementById("giuridicaInput").innerText : "";
 
     var classificazione = document.getElementById("classificazione");
     formData['classificazione'] = classificazione.selectedIndex !== 0 ? classificazione.value : '';
 
+    formData["note"] = document.getElementById("noteInput").value ? document.getElementById("noteInput").value : "";
 
 
 
     let asd = 3;
 
     // Esegui la richiesta POST
-    fetch('http://172.22.0.6:3000/postNewScheda', {
+    fetch('http://10.180.53.210:5000/schede', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
