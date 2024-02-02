@@ -6,6 +6,7 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
+import { YourValidationResult, validateSchedaData } from '../validator/bozzaValidator';
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
@@ -94,52 +95,48 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
   }
 };
 
+
+
+
+
+// ###########################################################################################
+
+
+
 export const createScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
-
-  // Estrai i dati dalla richiesta
-  let schedaData: any = { ...req.body };
-
+  let scheda: Scheda = { ...req.body };
   try {
+        // Esegui i controlli di validazione
+        const validationResult: YourValidationResult = await validateSchedaData(scheda);
+
+        if (!validationResult.isValid) {
+          return res.status(Code.BAD_REQUEST)
+            .send(new HttpResponse(
+              Code.BAD_REQUEST,
+              Status.BAD_REQUEST,
+              validationResult.errorMessage || 'Errore di validazione non specificato'
+            ));
+        }
+    
     const pool = await connection();
-
-    // Inserisci la scheda nella tabella principale
-    const { query, values } = QUERY.CREATE_SCHEDA(schedaData);
-    const resultScheda = await pool.query(query, values);
-
-    // Estrai l'id della scheda appena inserita
-    const schedaId: number = (resultScheda[0] as ResultSetHeader).insertId;
-    const autoriData = [];
-    let index = 1;
-
-    while (schedaData[`NomeAutore${index}`] || schedaData[`Formula_precedente${index}`] || schedaData[`Formula_successiva${index}`] || schedaData[`Categoria${index}`] || schedaData[`AutorePreesistente${index}`]) {
-      autoriData.push({
-        Formula_precedente: schedaData[`Formula_precedente${index}`],
-        Formula_successiva: schedaData[`Formula_successiva${index}`],
-        Categoria: schedaData[`Categoria${index}`],
-        NomeAutore: schedaData[`NomeAutore${index}`],
-        AutorePreesistente: schedaData[`AutorePreesistente${index}`],
-      });
-      index++;
-    }
-
-    // Inserisci gli altri dati nelle tabelle di collegamento
-    await Promise.all(
-      autoriData && Array.isArray(autoriData)
-        ? autoriData.map(async (autoriData: any) => {
-          const autoreQuery = QUERY.CREATE_SCHEDA_AUTORI(schedaId, autoriData);
-          await pool.query(autoreQuery.query, autoreQuery.values);
-        })
-        : []
-    );
+    const result: ResultSet = await pool.query(QUERY.CREATE_SCHEDA, Object.values(scheda));
+    scheda = { id: (result[0] as ResultSetHeader).insertId, ...req.body };
     return res.status(Code.CREATED)
-      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Scheda created', schedaData));
+      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Scheda created', scheda));
   } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
       .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
   }
 };
+
+
+// ###########################################################################################
+
+
+
+
 
 export const updateScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);

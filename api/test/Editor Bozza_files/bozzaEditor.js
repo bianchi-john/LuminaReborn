@@ -1095,23 +1095,46 @@ function uploadData() {
     formData["commento"] = document.getElementById("commentoInput").value ? document.getElementById("commentoInput").value : "";
 
 
+    // Tolgo i campi vuoti dai dati che invio
+    const cleanObject = {};
+    
+    Object.keys(formData).forEach(key => {
+      const value = formData[key];
+      if (value !== "") {
+        cleanObject[key] = value;
+      }
+    });
+
 
     let asd = 3;
 
-    // Esegui la richiesta POST
-    fetch('http://10.180.53.210:5000/schede', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+// Esegui la richiesta POST
+fetch('http://10.180.53.210:5000/schede', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(cleanObject)
+})
+    .then(response => {
+        if (!response.ok) {
+            // Se lo status della risposta non è OK (ad esempio 400 - Bad Request)
+            throw response.json();
+        }
+        return response.json();
     })
-        .then(response => response.json())
-        .then(data => {
-            // Gestisci la risposta del server (se necessario)
-            console.log('Risposta dal server:', data);
-        })
-        .catch(error => {
-            console.error('Errore durante la richiesta POST:', error);
+    .then(data => {
+        // Gestisci la risposta del server (se necessario)
+        console.log('Risposta dal server:', data);
+    })
+    .catch(errorPromise => {
+        // Se la richiesta fallisce o il server restituisce un 400
+        console.error('Errore durante la richiesta POST:', errorPromise);
+
+        // Ottieni il corpo della risposta dal server
+        errorPromise.then(errorMessage => {
+            // Mostra un alert con il messaggio di errore
+            alert(`Errore di compilazione: ${errorMessage.message}`);
         });
+    });
 }

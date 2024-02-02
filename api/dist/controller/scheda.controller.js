@@ -15,6 +15,7 @@ const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const scheda_query_1 = require("../query/scheda.query");
+const bozzaValidator_1 = require("../validator/bozzaValidator");
 const getSchede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
@@ -98,10 +99,17 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getScheda = getScheda;
+// ###########################################################################################
 const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     // Estrai i dati dalla richiesta
     let schedaData = Object.assign({}, req.body);
+    // Esegui i controlli di validazione
+    const validationResult = (0, bozzaValidator_1.validateSchedaData)(schedaData);
+    if (!validationResult.isValid) {
+        return res.status(code_enum_1.Code.BAD_REQUEST)
+            .send(new response_1.HttpResponse(code_enum_1.Code.BAD_REQUEST, status_enum_1.Status.BAD_REQUEST, validationResult.errorMessage || 'Errore di validazione non specificato'));
+    }
     try {
         const pool = yield (0, mysql_config_1.connection)();
         // Inserisci la scheda nella tabella principale
@@ -109,26 +117,27 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const resultScheda = yield pool.query(query, values);
         // Estrai l'id della scheda appena inserita
         const schedaId = resultScheda[0].insertId;
+        const autoriData = [];
+        let index = 1;
+        while (schedaData[`NomeAutore${index}`] || schedaData[`Formula_precedente${index}`] || schedaData[`Formula_successiva${index}`] || schedaData[`Categoria${index}`] || schedaData[`AutorePreesistente${index}`]) {
+            autoriData.push({
+                Formula_precedente: schedaData[`Formula_precedente${index}`],
+                Formula_successiva: schedaData[`Formula_successiva${index}`],
+                Categoria: schedaData[`Categoria${index}`],
+                NomeAutore: schedaData[`NomeAutore${index}`],
+                AutorePreesistente: schedaData[`AutorePreesistente${index}`],
+            });
+            index++;
+        }
         // Inserisci gli altri dati nelle tabelle di collegamento
-        yield Promise.all([
-            ...schedaData.autori.map((autoreData) => __awaiter(void 0, void 0, void 0, function* () {
-                const autoreQuery = scheda_query_1.QUERY.CREATE_SCHEDA_AUTORI(schedaId, autoreData);
+        yield Promise.all(autoriData && Array.isArray(autoriData)
+            ? autoriData.map((autoriData) => __awaiter(void 0, void 0, void 0, function* () {
+                const autoreQuery = scheda_query_1.QUERY.CREATE_SCHEDA_AUTORI(schedaId, autoriData);
                 yield pool.query(autoreQuery.query, autoreQuery.values);
-            })),
-            // Inserisci materiali
-            ...schedaData.materiali.map((materialeId) => __awaiter(void 0, void 0, void 0, function* () {
-                yield pool.query(scheda_query_1.QUERY.CREATE_SCHEDA_MATERIALE, [schedaId, schedaData]);
-            })),
-            // Inserisci tecniche
-            ...schedaData.tecniche.map((tecnicaId) => __awaiter(void 0, void 0, void 0, function* () {
-                yield pool.query(scheda_query_1.QUERY.CREATE_SCHEDA_TECNICA, [schedaId, schedaData]);
-            })),
-            // ... Aggiungi altre tabelle di collegamento se necessario
-        ]);
-        // Costruisci la scheda risultante
-        const scheda = Object.assign({ id: schedaId }, schedaData);
+            }))
+            : []);
         return res.status(code_enum_1.Code.CREATED)
-            .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Scheda created', scheda));
+            .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Scheda created', schedaData));
     }
     catch (error) {
         console.error(error);
@@ -137,6 +146,7 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.createScheda = createScheda;
+// ###########################################################################################
 const updateScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     let scheda = Object.assign({}, req.body);

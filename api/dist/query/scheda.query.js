@@ -40,38 +40,21 @@ exports.QUERY = {
         const autoriQueries = [];
         const tdsSchedeAutoriQueries = [];
         const autoriValues = [];
-        for (let i = 1; i <= 10; i++) {
-            const formulaPrecedente = autoriData[`Formula_precedente${i}`];
-            const formulaSuccessiva = autoriData[`Formula_successiva${i}`];
-            const categoria = autoriData[`Categoria${i}`];
-            const nome = autoriData[`NomeAutore${i}`];
-            const autorePreesistente = autoriData[`AutorePreesistente${i}`];
-            if (formulaPrecedente || formulaSuccessiva || categoria || nome || autorePreesistente) {
-                autoriValues.push(formulaPrecedente, formulaSuccessiva, categoria, nome);
-                autoriQueries.push(`
-            INSERT INTO autori (formula_precedente, formula_successiva, categoria, nome)
-            VALUES (?, ?, ?, ?);
-        `);
-                tdsSchedeAutoriQueries.push(`
-            INSERT INTO tds_schede_autori (id_scheda, id_autore)
-            VALUES (?, LAST_INSERT_ID());
-        `);
-            }
-        }
-        const finalAutoreQuery = autoriQueries.join('\n');
-        const finalTdsSchedeAutoriQuery = tdsSchedeAutoriQueries.join('\n');
-        const finalQuery = `
-        START TRANSACTION;
-
-        ${finalAutoreQuery}
-
-        ${finalTdsSchedeAutoriQuery}
-
-        COMMIT;
-    `;
+        const formulaPrecedente = Object.entries(autoriData).filter(([key]) => key.includes("Formula_precedente")).map(([_, value]) => value);
+        const formulaSuccessiva = Object.entries(autoriData).filter(([key]) => key.includes("formula_successiva")).map(([_, value]) => value);
+        const categoria = Object.entries(autoriData).filter(([key]) => key.includes("Categoria")).map(([_, value]) => value);
+        const nome = Object.entries(autoriData).filter(([key]) => key.includes("NomeAutore")).map(([_, value]) => value);
+        const autorePreesistente = Object.entries(autoriData).filter(([key]) => key.includes("AutorePreesistente")).map(([_, value]) => value);
+        // if (autorePreesistente) {
+        // }
+        autoriQueries.push(`INSERT INTO autori (formula_precedente, formula_successiva, categoria, nome) VALUES ('${formulaPrecedente}', '${formulaSuccessiva}', '${categoria}', '${nome}')`);
+        tdsSchedeAutoriQueries.push(`INSERT INTO tds_schede_autori (id_scheda, id_autore) SELECT ${schedaId}, LAST_INSERT_ID()`);
+        const finalAutoreQuery = autoriQueries.join('; ');
+        const finalTdsSchedeAutoriQuery = tdsSchedeAutoriQueries.join('; ');
+        const finalQuery = `START TRANSACTION; ${finalAutoreQuery}; ${finalTdsSchedeAutoriQuery}; COMMIT;`;
         return {
             query: finalQuery,
-            values: [schedaId, ...autoriValues],
+            values: [], // Non sono necessari valori aggiuntivi in questo caso
         };
     },
     CREATE_SCHEDA_MATERIALE: '',
