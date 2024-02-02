@@ -197,20 +197,47 @@
                     <div class="card-header" data-target="#cronologie">Cronologia</div>
                     <div class="card-body cronologie" id="cronologie">
                         <div class="field">
+                        <div class="form-group">
+                            <label>Ricerca in data</label>
+                            <div class="gruppo_date">
+                                <p>Data da</p>
+                                <div class="gruppo_giorni">
+                                <input type="text" class="form-control date-form" id="giorno_data_da" placeholder="Giorno (1-31)">
+                                <input type="text" class="form-control date-form" id="mese_data_da" placeholder="Mese (1-12)">
+                                <input type="text" class="form-control date-form" id="anno_data_da" placeholder="Anno (es. 2023)">
+                                </div>
+                            </br>
+
+                                <label>
+                                <input type="radio" class="ambito_storico" name="ambito_storico_data_da" value="avanti" id="avanti_data_da"
+                                    checked>a.C.
+                                </label>
+                                <label>
+                                <input type="radio" class="ambito_storico" name="ambito_storico_data_da" value="dopo" id="dopo_data_da">d.C.
+                                </label>
+                            </div>
+                            </div>
+                
+                            <div class="form-group">
+                            <div class="gruppo_date">
+                                <p>Data a</p>
+                                <div class="gruppo_giorni">
+                                <input type="text" class="form-control date-form" id="giorno_data_a" placeholder="Giorno (1-31)">
+                                <input type="text" class="form-control date-form" id="mese_data_a" placeholder="Mese (1-12)">
+                                <input type="text" class="form-control date-form" id="anno_data_a" placeholder="Anno (es. 2023)">
+                                </div>
+                            </br>
+                                <label>
+                                <input type="radio" class="ambito_storico" name="ambito_storico_data_a" value="avanti" id="avanti_a"
+                                    checked>a.C.
+                                </label>
+                                <label>
+                                <input type="radio" class="ambito_storico" name="ambito_storico_data_a" value="dopo" id="dopo_a">d.C.
+                                </label>
+                            </div>
+                            </div>
                             <p>Etichetta data</p>
-                            <input type="text" id="etichetta_data" name="etichetta_data1">
-                            <p>Giorno data da</p>
-                            <input type="text" id="giorno_data_da" name="giorno_data_da">
-                            <p>Mese data da</p>
-                            <input type="text" id="mese_data_da" name="mese_data_da">
-                            <p>Anno data da</p>
-                            <input type="text" id="anno_data_da" name="anno_data_da">
-                            <p>Giorno data a</p>
-                            <input type="text" id="giorno_data_a" name="giorno_data_a">
-                            <p>Mese data a</p>
-                            <input type="text" id="mese_data_a" name="mese_data_a">
-                            <p>Anno data a</p>
-                            <input type="text" id="anno_data_a" name="anno_data_a">
+                            <input type="text" id="etichetta_data" name="etichetta_data">
                         </div>
                     </div>
                 </div>
@@ -978,19 +1005,21 @@
                                 </form>
                                 <p>Curatore</p>
                                 <input type="text" id="Curatore1" name="Curatore">
-                                <p>Giorno inizio</p>
-                                <input type="text" id="giornoDataInizioMostra1" name="Giorno inizio">
-                                <p>Mese inizio</p>
-                                <input type="text" id="meseDataInizioMostra1" name="Mese inizio">
-                                <p>Anno inizio</p>
-                                <input type="text" id="annoDataInizioMostra1" name="Anno inizio">
-                                <p>Giorno fine</p>
-                                <input type="text" id="giornoDataFineMostra1" name="Giorno fine">
-                                <p>Mese fine</p>
-                                <input type="text" id="meseDataFineMostra1" name="Mese fine">
-                                <p>Anno fine</p>
-                                <input type="text" id="annoDataFineMostra1" name="Anno fine">
-                                <p>Logo</p>
+                                <div class="gruppo_giorni date-form">
+                                    <p>Giorno inizo</p>
+                                    <input type="text" class="form-control date-form" id="giornoDataInizioMostra1" placeholder="Giorno (1-31)">
+                                    <p>Mese inizo</p>
+                                    <input type="text" class="form-control date-form" id="meseDataInizioMostra1" placeholder="Mese (1-12)">
+                                    <p>Anno inizo</p>
+                                    <input type="text" class="form-control date-form" id="annoDataInizioMostra1" placeholder="Anno (es. 2023)">
+                                    <p>Giorno fine</p>
+                                    <input type="text" class="form-control date-form" id="giornoDataFineMostra1" placeholder="Giorno (1-31)">
+                                    <p>Mese fine</p>
+                                    <input type="text" class="form-control date-form" id="meseDataFineMostra1" placeholder="Mese (1-12)">
+                                    <p>Anno fine</p>
+                                    <input type="text" class="form-control date-form" id="annoDataFineMostra1" placeholder="Anno (es. 2023)">
+                                </div>
+                                <p>Luogo</p>
                                 <input type="text" id="luogoMostra1" name="Logo mostra">
                                 <p>Descizione</p>
                                 <input type="text" id="descrizioneMostra1" name="Descizione mostra">

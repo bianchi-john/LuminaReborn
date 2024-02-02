@@ -7,6 +7,8 @@ import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
 import { YourValidationResult, validateSchedaData } from '../validator/bozzaValidator';
+import { insertScheda, insertAutori, insertCronologie, insertUbicazioni } from '../services/schedaService';
+
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
@@ -99,31 +101,39 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
 
 
 
-// ###########################################################################################
-
+// ####################### CREATE BOZZA ##############################
 
 
 export const createScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
+  
   let scheda: Scheda = { ...req.body };
-  try {
-        // Esegui i controlli di validazione
-        const validationResult: YourValidationResult = await validateSchedaData(scheda);
 
-        if (!validationResult.isValid) {
-          return res.status(Code.BAD_REQUEST)
-            .send(new HttpResponse(
-              Code.BAD_REQUEST,
-              Status.BAD_REQUEST,
-              validationResult.errorMessage || 'Errore di validazione non specificato'
-            ));
-        }
-    
+  try {
+    // Esegui i controlli di validazione
+    const validationResult: YourValidationResult = await validateSchedaData(scheda);
+
+    if (!validationResult.isValid) {
+      return res.status(Code.BAD_REQUEST)
+        .send(new HttpResponse(
+          Code.BAD_REQUEST,
+          Status.BAD_REQUEST,
+          validationResult.errorMessage || 'Errore di validazione non specificato'
+        ));
+    }
+
+    // Inserisci la scheda e ottieni l'ID della scheda appena inserita
+    const schedaId = await insertScheda(scheda);
     const pool = await connection();
-    const result: ResultSet = await pool.query(QUERY.CREATE_SCHEDA, Object.values(scheda));
-    scheda = { id: (result[0] as ResultSetHeader).insertId, ...req.body };
+    // Autori
+    await insertAutori(pool, schedaId, scheda);
+    // Ubicazioni
+    await insertCronologie(pool, schedaId, scheda);
+    await insertUbicazioni(pool, schedaId, scheda);
+
+
     return res.status(Code.CREATED)
-      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Scheda created', scheda));
+      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Creata la bozza con id ' + schedaId));
   } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
@@ -133,6 +143,17 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
 
 
 // ###########################################################################################
+
+
+
+
+
+
+
+
+
+
+
 
 
 

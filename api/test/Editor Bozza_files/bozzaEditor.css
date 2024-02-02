@@ -60,3 +60,6 @@ select {
 .row .card {
     margin-bottom: 20px;
 }
+.date-form {
+    width: 215px!important;
+}

@@ -1,6 +1,7 @@
 import { Scheda } from "../interface/scheda";
 
 
+
 export const QUERY = {
   SELECT_SCHEDE: 'SELECT * FROM schede',
   SELECT_SCHEDA: 'SELECT * FROM schede WHERE id = ?',
@@ -20,5 +21,12 @@ export const QUERY = {
   SELECT_SCHEDATORI: 'SELECT * FROM users JOIN tds_users_schede ON users.id = tds_users_schede.id_user WHERE tds_users_schede.id_scheda = ?',
   UPDATE_SCHEDA: 'UPDATE schede SET id = ?, titolo_opera = ?,  corpo_scheda = ?, iscrizioni = ?, descrizione_sintetica = ?, storia_espositiva = ?, classificazione = ? WHERE id = ?',
   DELETE_SCHEDA: 'DELETE FROM schede WHERE id = ?',
-  CREATE_SCHEDA: '',
+  INSERT_SCHEDA: 'INSERT INTO schede (titolo_opera, corpo_scheda, iscrizioni, descrizione_sintetica, storia_espositiva, classificazione) VALUES (?, ?, ?, ?, ?, ?)',
+  INSERT_AUTORE: 'INSERT INTO autori (formula_precedente, formula_successiva, categoria, nome) VALUES (?, ?, ?, ?)',
+  INSERT_TDS_SCHEDA_AUTORI: 'INSERT INTO tds_schede_autori (id_scheda, id_autore) VALUES (?, ?)',
+  INSERT_CONOLOGIA:'INSERT INTO cronologie (ambito_storico, etichetta_data, giorno_data_da, mese_data_da, anno_data_da, giorno_data_a, mese_data_a, anno_data_a) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  INSERT_TDS_SCHEDA_CONOLOGIA:'INSERT INTO tds_schede_cronologie (id_scheda, id_cronologia) VALUES (?, ?)',
+  INSERT_UBICAZIONE:'INSERT INTO ubicazioni (ubicazione, descrizione) VALUES (?, ?)',
+  INSERT_TDS_SCHEDA_UBICAZIONE:'INSERT INTO tds_schede_ubicazioni (id_scheda, id_ubicazione) VALUES (?, ?)',
+
 };
