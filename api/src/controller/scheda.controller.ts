@@ -6,8 +6,8 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
-import { YourValidationResult, validateSchedaData } from '../validator/bozzaValidator';
-import { insertScheda, insertAutori, insertCronologie, insertUbicazioni } from '../services/schedaService';
+import { YourValidationResult, validateSchedaData } from '../helpers/bozzaValidator';
+import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure } from '../helpers/schedaService';
 
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
@@ -101,9 +101,6 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
 
 
 
-// ####################### CREATE BOZZA ##############################
-
-
 export const createScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
   
@@ -125,11 +122,18 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     // Inserisci la scheda e ottieni l'ID della scheda appena inserita
     const schedaId = await insertScheda(scheda);
     const pool = await connection();
-    // Autori
     await insertAutori(pool, schedaId, scheda);
-    // Ubicazioni
     await insertCronologie(pool, schedaId, scheda);
     await insertUbicazioni(pool, schedaId, scheda);
+    await insertInventario(pool, schedaId, scheda);
+    await insertMateriali(pool, schedaId, scheda);
+    await insertTecniche(pool, schedaId, scheda);
+    await insertProvenienze(pool, schedaId, scheda);
+    await insertMostre(pool, schedaId, scheda);
+    await insertBibliografia(pool, schedaId, scheda);
+    await insertAltraBibliografia(pool, schedaId, scheda);
+    await insertDocFotografica(pool, schedaId, scheda);
+    await insertMisure(pool, schedaId, scheda);
 
 
     return res.status(Code.CREATED)
@@ -140,24 +144,6 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
       .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
   }
 };
-
-
-// ###########################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const updateScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);

@@ -1,3 +1,46 @@
+
+
+///////////////////////
+///////////////////////
+
+// LOGICA PER LA GESTIONE DELLE DATE
+
+///////////////////////
+///////////////////////
+
+
+function initInputValidation() {
+
+  
+    const inputs = document.querySelectorAll('.date-form');
+  
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const isNumericInput = /^\d*$/.test(input.value);
+        const isDayInput = input.id.includes('giorno');
+        const isMonthInput = input.id.includes('mese');
+        const isYearInput = input.id.includes('anno');
+  
+        if (!isNumericInput) {
+          input.value = input.value.replace(/[^\d]/g, '');
+        }
+  
+        if ((isDayInput || isMonthInput) && input.value > 31) {
+          input.value = '31';
+        }
+  
+        if (isMonthInput && input.value > 12) {
+          input.value = '12';
+        }
+  
+        if (isYearInput && input.value.length > 4) {
+          input.value = input.value.slice(0, 4);
+        }
+      });
+    });
+  }
+  
+
 let count = 1;
 
 function aggiungiGruppo(containerId, groupId, ...inputIds) {
@@ -390,18 +433,20 @@ function aggiungiGruppoMostre() {
     </form>
     <p>Curatore</p>
     <input type="text" id="Curatore${numero}" name="Curatore">
-    <p>Giorno inizio</p>
-    <input type="text" id="giornoDataInizioMostra${numero}" name="Giorno inizio">
-    <p>Mese inizio</p>
-    <input type="text" id="meseDataInizioMostra${numero}" name="Mese inizio">
-    <p>Anno inizio</p>
-    <input type="text" id="annoDataInizioMostra${numero}" name="Anno inizio">
-    <p>Giorno fine</p>
-    <input type="text" id="giornoDataFineMostra${numero}" name="Giorno fine">
-    <p>Mese fine</p>
-    <input type="text" id="meseDataFineMostra${numero}" name="Mese fine">
-    <p>Anno fine</p>
-    <input type="text" id="annoDataFineMostra${numero}" name="Anno fine">
+    <div class="gruppo_giorni date-form">
+        <p>Giorno inizo</p>
+        <input type="text" class="form-control date-form" id="giornoDataInizioMostra${numero}" placeholder="Giorno (1-31)">
+        <p>Mese inizo</p>
+        <input type="text" class="form-control date-form" id="meseDataInizioMostra${numero}" placeholder="Mese (1-12)">
+        <p>Anno inizo</p>
+        <input type="text" class="form-control date-form" id="annoDataInizioMostra${numero}" placeholder="Anno (es. 2023)">
+        <p>Giorno fine</p>
+        <input type="text" class="form-control date-form" id="giornoDataFineMostra${numero}" placeholder="Giorno (1-31)">
+        <p>Mese fine</p>
+        <input type="text" class="form-control date-form" id="meseDataFineMostra${numero}" placeholder="Mese (1-12)">
+        <p>Anno fine</p>
+        <input type="text" class="form-control date-form" id="annoDataFineMostra${numero}" placeholder="Anno (es. 2023)">
+    </div>
     <p>Logo</p>
     <input type="text" id="luogoMostra${numero}" name="Logo mostra">
     <p>Descizione</p>
@@ -424,7 +469,7 @@ function aggiungiGruppoMostre() {
             initDoc(textArea);
         });
     });
-
+    initInputValidation();  
 
 }
 
@@ -1072,22 +1117,39 @@ function uploadData() {
     formData["copertina"] = document.getElementById('copertina').innerText ? document.getElementById("copertina").innerText : "";
 
 
-    formData["etichetta_data"] = document.getElementById('etichetta_data').innerText ? document.getElementById("etichetta_data").innerText : "";
-    formData["giorno_data_da"] = document.getElementById('giorno_data_da').innerText ? document.getElementById("giorno_data_da").innerText : "";
-    formData["mese_data_da"] = document.getElementById('mese_data_da').innerText ? document.getElementById("mese_data_da").innerText : "";
-    formData["anno_data_da"] = document.getElementById('anno_data_da').innerText ? document.getElementById("anno_data_da").innerText : "";
-    formData["giorno_data_a"] = document.getElementById('giorno_data_a').innerText ? document.getElementById("giorno_data_a").innerText : "";
-    formData["mese_data_a"] = document.getElementById('mese_data_a').innerText ? document.getElementById("mese_data_a").innerText : "";
-    formData["anno_data_a"] = document.getElementById('anno_data_a').innerText ? document.getElementById("anno_data_a").innerText : "";
+    formData["etichetta_data"] = document.getElementById('etichetta_data').value ? document.getElementById("etichetta_data").value : "";
+    formData["giorno_data_da"] = document.getElementById('giorno_data_da').value ? document.getElementById("giorno_data_da").value : "";
+    formData["mese_data_da"] = document.getElementById('mese_data_da').value ? document.getElementById("mese_data_da").value : "";
+    formData["giorno_data_a"] = document.getElementById('giorno_data_a').value ? document.getElementById("giorno_data_a").value : "";
+    formData["mese_data_a"] = document.getElementById('mese_data_a').value ? document.getElementById("mese_data_a").value : "";
+    formData["anno_data_a"] = document.getElementById('anno_data_a').value ? document.getElementById("anno_data_a").value : "";
+    formData["anno_data_da"] = document.getElementById('anno_data_da').value ? document.getElementById("anno_data_da").value : "";
 
-    formData["ambito"] = document.getElementById('ambitoInput').innerText ? document.getElementById("ambitoInput").innerText : "";
+// Verifica che anno_data_a esista e non sia una stringa vuota prima di applicare l'ambito_storico
+if (formData["anno_data_a"]) {
+    // Verifica l'ambito_storico per l'anno_data_a
+    if (document.getElementById('avanti_a').checked) {
+      formData["anno_data_a"] = "-" + formData["anno_data_a"];
+    }
+  }
+  
+  // Verifica che anno_data_da esista e non sia una stringa vuota prima di applicare l'ambito_storico
+  if (formData["anno_data_da"]) {
+    // Verifica l'ambito_storico per l'anno_data_da
+    if (document.getElementById('avanti_data_da').checked) {
+      formData["anno_data_da"] = "-" + formData["anno_data_da"];
+    }
+  }
 
-    formData["ubicazione"] = document.getElementById('ubicazione').innerText ? document.getElementById("ubicazione").innerText : "";
-    formData["descrizione"] = document.getElementById('descrizione').innerText ? document.getElementById("descrizione").innerText : "";
 
-    formData["inventario"] = document.getElementById('inventariInput').innerText ? document.getElementById("inventariInput").innerText : "";
+    formData["ambito"] = document.getElementById('ambitoInput').value ? document.getElementById("ambitoInput").value : "";
 
-    formData["giuridica"] = document.getElementById('giuridicaInput').innerText ? document.getElementById("giuridicaInput").innerText : "";
+    formData["ubicazione"] = document.getElementById('ubicazione').value ? document.getElementById("ubicazione").value : "";
+    formData["descrizione"] = document.getElementById('descrizione').value ? document.getElementById("descrizione").value : "";
+
+    formData["inventario"] = document.getElementById('inventariInput').value ? document.getElementById("inventariInput").value : "";
+
+    formData["giuridica"] = document.getElementById('giuridicaInput').value ? document.getElementById("giuridicaInput").value : "";
 
     var classificazione = document.getElementById("classificazione");
     formData['classificazione'] = classificazione.selectedIndex !== 0 ? classificazione.value : '';
@@ -1095,23 +1157,51 @@ function uploadData() {
     formData["commento"] = document.getElementById("commentoInput").value ? document.getElementById("commentoInput").value : "";
 
 
+    // Tolgo i campi vuoti dai dati che invio
+    const cleanObject = {};
+    
+    Object.keys(formData).forEach(key => {
+      const value = formData[key];
+      if (value !== "") {
+        cleanObject[key] = value;
+      }
+    });
+
 
     let asd = 3;
 
-    // Esegui la richiesta POST
-    fetch('http://10.180.53.210:5000/schede', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+// Esegui la richiesta POST
+fetch('http://10.180.53.210:5000/schede', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(cleanObject)
+})
+    .then(response => {
+        if (!response.ok) {
+            // Se lo status della risposta non è OK (ad esempio 400 - Bad Request)
+            throw response.json();
+        }
+        return response.json();
     })
-        .then(response => response.json())
-        .then(data => {
-            // Gestisci la risposta del server (se necessario)
-            console.log('Risposta dal server:', data);
-        })
-        .catch(error => {
-            console.error('Errore durante la richiesta POST:', error);
+    .then(data => {
+        // Gestisci la risposta del server (se necessario)
+        console.log('Risposta dal server:', data);
+    })
+    .catch(errorPromise => {
+        // Se la richiesta fallisce o il server restituisce un 400
+        console.error('Errore durante la richiesta POST:', errorPromise);
+
+        // Ottieni il corpo della risposta dal server
+        errorPromise.then(errorMessage => {
+            // Mostra un alert con il messaggio di errore
+            alert(`Errore di compilazione: ${errorMessage.message}`);
         });
+    });
 }
+
+
+$(document).ready(function () {
+    initInputValidation();  
+})

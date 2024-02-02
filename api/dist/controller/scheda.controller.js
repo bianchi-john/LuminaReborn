@@ -15,8 +15,8 @@ const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const scheda_query_1 = require("../query/scheda.query");
-const bozzaValidator_1 = require("../validator/bozzaValidator");
-const schedaService_1 = require("../services/schedaService");
+const bozzaValidator_1 = require("../helpers/bozzaValidator");
+const schedaService_1 = require("../helpers/schedaService");
 const getSchede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
@@ -100,7 +100,6 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getScheda = getScheda;
-// ###########################################################################################
 const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     let scheda = Object.assign({}, req.body);
@@ -112,12 +111,22 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 .send(new response_1.HttpResponse(code_enum_1.Code.BAD_REQUEST, status_enum_1.Status.BAD_REQUEST, validationResult.errorMessage || 'Errore di validazione non specificato'));
         }
         // Inserisci la scheda e ottieni l'ID della scheda appena inserita
-        const schedaId = yield (0, schedaService_1.insertSchedaAndAutori)(scheda);
+        const schedaId = yield (0, schedaService_1.insertScheda)(scheda);
         const pool = yield (0, mysql_config_1.connection)();
-        // Inserisci gli autori
         yield (0, schedaService_1.insertAutori)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertCronologie)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertUbicazioni)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertInventario)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertMateriali)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertTecniche)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertProvenienze)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertMostre)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertBibliografia)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertAltraBibliografia)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertDocFotografica)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertMisure)(pool, schedaId, scheda);
         return res.status(code_enum_1.Code.CREATED)
-            .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Scheda created', scheda));
+            .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Creata la bozza con id ' + schedaId));
     }
     catch (error) {
         console.error(error);
@@ -126,7 +135,6 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.createScheda = createScheda;
-// ###########################################################################################
 const updateScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     let scheda = Object.assign({}, req.body);
