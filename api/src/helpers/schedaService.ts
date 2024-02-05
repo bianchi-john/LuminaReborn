@@ -1,8 +1,10 @@
 // schedaService.ts
 import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { Scheda } from '../interface/scheda';
+import { UserData } from '../interface/user';
 import { QUERY } from '../query/scheda.query';
 import { connection } from '../config/mysql.config';
+
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
@@ -53,7 +55,7 @@ export async function insertAutori(pool: any, schedaId: number, scheda: Scheda):
 
         const thisId = (result[0] as ResultSetHeader).insertId;
 
-        // Collega l'autore alla scheda nella tabella tds_schede_autori
+        // Collega  la scheda con la funzione tds
         promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_AUTORI, [schedaId, thisId]));
       } else {
         // Se nessuna delle chiavi è presente, esce dal ciclo
@@ -98,7 +100,7 @@ export async function insertCronologie(pool: any, schedaId: number, scheda: Sche
 
       const thisId = (result[0] as ResultSetHeader).insertId;
 
-      // Collega l'autore alla scheda nella tabella tds_schede_autori
+      // Collega  la scheda con la funzione tds
       promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_CONOLOGIA, [schedaId, thisId]));
     }
 
@@ -128,7 +130,7 @@ export async function insertUbicazioni(pool: any, schedaId: number, scheda: Sche
 
       const thisId = (result[0] as ResultSetHeader).insertId;
 
-      // Collega l'autore alla scheda nella tabella tds_schede_autori
+      // Collega  la scheda con la funzione tds
       promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_UBICAZIONE, [schedaId, thisId]));
     }
 
@@ -138,10 +140,6 @@ export async function insertUbicazioni(pool: any, schedaId: number, scheda: Sche
     console.error('Errore durante l\'inserimento di ubicazioni:', error);
     throw new Error('Errore durante l\'inserimento di ubicazioni');
   }
-
-
-
-
 
 }
 
@@ -161,7 +159,7 @@ export async function insertInventario(pool: any, schedaId: number, scheda: Sche
 
       const thisId = (result[0] as ResultSetHeader).insertId;
 
-      // Collega l'autore alla scheda nella tabella tds_schede_autori
+      // Collega  la scheda con la funzione tds
       promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_INVENTARIO, [schedaId, thisId]));
     }
 
@@ -493,3 +491,45 @@ export async function insertMisure(pool: any, schedaId: number, scheda: Scheda):
     }
   }
 }
+
+
+
+
+export async function insertUser(pool: any, schedaId: number, scheda: Scheda, userData: UserData): Promise<void> {
+  try {
+    const promises = [];
+
+    // Verifica se lo user esiste già
+    const userExistsQuery = `SELECT username FROM users WHERE username = ?;`;
+    const [userExistsResult] = await pool.query(userExistsQuery, [userData.username]);
+
+    let userId;
+
+    if (userExistsResult.length > 0) {
+      // Lo user esiste già, prendi l'id
+      const userExistsQuery = `SELECT id FROM users WHERE username = ?;`;
+      const [userExistsResult] = await pool.query(userExistsQuery, [userData.username]);
+  
+      userId = userExistsResult[0].id;
+      console.log(`Lo user l'id ${userData.username} esiste già. ID: ${userExistsResult[0].id}`);
+    } else {
+      const firstResult: ResultSet = await pool.query(QUERY.INSERT_USER, [userData.isAdmin, userData.username, userData.display_name]);
+      userId = (firstResult[0] as ResultSetHeader).insertId;
+    }
+
+    const secondResult: ResultSet = await pool.query(QUERY.INSERT_STATOSCHEDA, [0, scheda.commento || '']);
+    const statoSchedaID = (secondResult[0] as ResultSetHeader).insertId;
+
+    // Collega la scheda con la funzione tds
+    promises.push(pool.query(QUERY.INSERT_TDS_SCHEDE_STATOSCHEDA, [schedaId, statoSchedaID]));
+    promises.push(pool.query(QUERY.INSERT_TDS_STATO_SCHEDAUSER, [statoSchedaID, userId]));
+    promises.push(pool.query(QUERY.INSERT_TDS_USER_SCHEDA, [userId, schedaId, new Date()]));
+
+    await Promise.all(promises);
+  } catch (error) {
+    console.error('Errore durante l\'inserimento di user:', error);
+    throw new Error('Errore durante l\'inserimento di user');
+  }
+}
+
+

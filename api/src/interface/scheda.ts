@@ -7,5 +7,4 @@ export interface Scheda {
     storia_espositiva: string;
     classificazione: string;
     [key: string]: string | number;
-
 }

@@ -1171,7 +1171,7 @@ if (formData["anno_data_a"]) {
     let asd = 3;
 
 // Esegui la richiesta POST
-fetch('http://10.180.53.210:5000/schede', {
+fetch('http://172.22.0.6:3000/schede', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -1183,7 +1183,7 @@ fetch('http://10.180.53.210:5000/schede', {
             // Se lo status della risposta non è OK (ad esempio 400 - Bad Request)
             throw response.json();
         }
-        return response.json();
+        alert(`Scheda creata con successo. Attendi qualche secondo per poterla visulizzare nella pagina dedicata`);
     })
     .then(data => {
         // Gestisci la risposta del server (se necessario)

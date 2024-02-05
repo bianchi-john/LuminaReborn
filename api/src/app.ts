@@ -7,14 +7,13 @@ import ip from 'ip';
 import cors from 'cors';
 import schedaRoutes from './routes/scheda.routes';
 import searchRoutes from './routes/search.routes';
-import authMiddleware from '@moreillon/express_identification_middleware';
+import schedatoreRoutes from './routes/schedatore.routes';
+import amministratoreRoutes from './routes/amministratore.routes';
+
 import process from 'process';
 import axios from "axios"
 import path from 'path'; // Aggiunto il modulo 'path' per gestire i percorsi dei file
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import querystring from 'querystring';
-import { isCookieOk, onlyAdmin } from './helpers/authHelpers'; // Importa le funzioni dal modulo
+import { cookieChecker } from './helpers/authHelpers'; // Importa le funzioni dal modulo
 
 const viewsPath = path.join(__dirname, './views'); // Cartella contenente i file HTML
 
@@ -52,6 +51,9 @@ export class App {
     // SERVICES
     this.app.use('/schede', schedaRoutes);
     this.app.use('/search', searchRoutes);
+    this.app.use('/schedatore', schedatoreRoutes);
+    this.app.use('/admin', amministratoreRoutes);
+
 
 
     // PAGES, SCRIPTS AND STYLES
@@ -73,7 +75,7 @@ export class App {
       }
 
       try {
-        const userType = await isCookieOk(jwt);
+        const userType = await cookieChecker(jwt);
 
         if (userType === 'admin') {
           // L'utente è un amministratore
@@ -86,7 +88,7 @@ export class App {
           res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
         }
       } catch (error) {
-        console.error("Error during isCookieOk check:", error);
+        console.error("Error during cookieChecker check:", error);
         return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
       }
     });
@@ -145,7 +147,7 @@ export class App {
       }
 
       try {
-        const userType = await isCookieOk(jwt);
+        const userType = await cookieChecker(jwt);
 
         if (userType === 'admin' || userType === 'schedatore') {
           // L'utente è un amministratore o schedaotore
@@ -155,7 +157,7 @@ export class App {
           res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
         }
       } catch (error) {
-        console.error("Error during isCookieOk check:", error);
+        console.error("Error during cookieChecker check:", error);
         return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
       }
     });
@@ -172,7 +174,7 @@ export class App {
       }
 
       try {
-        const userType = await isCookieOk(jwt);
+        const userType = await cookieChecker(jwt);
 
         if (userType === 'admin' || userType === 'schedatore') {
           // L'utente è un amministratore o schedaotore
@@ -182,7 +184,7 @@ export class App {
           res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
         }
       } catch (error) {
-        console.error("Error during isCookieOk check:", error);
+        console.error("Error during cookieChecker check:", error);
         return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
       }
     });
@@ -199,7 +201,7 @@ export class App {
       }
 
       try {
-        const userType = await isCookieOk(jwt);
+        const userType = await cookieChecker(jwt);
 
         if (userType === 'admin') {
           // L'utente è un amministratore
@@ -209,7 +211,7 @@ export class App {
           res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
         }
       } catch (error) {
-        console.error("Error during isCookieOk check:", error);
+        console.error("Error during cookieChecker check:", error);
         return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
       }
     });
@@ -226,7 +228,7 @@ export class App {
       }
 
       try {
-        const userType = await isCookieOk(jwt);
+        const userType = await cookieChecker(jwt);
 
         if (userType === 'admin' || userType === 'schedatore') {
           // L'utente è un amministratore o schedaotore
@@ -236,7 +238,7 @@ export class App {
           res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
         }
       } catch (error) {
-        console.error("Error during isCookieOk check:", error);
+        console.error("Error during cookieChecker check:", error);
         return res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
       }
     });

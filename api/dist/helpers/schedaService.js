@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertMisure = exports.insertDocFotografica = exports.insertAltraBibliografia = exports.insertBibliografia = exports.insertMostre = exports.insertProvenienze = exports.insertTecniche = exports.insertMateriali = exports.insertInventario = exports.insertUbicazioni = exports.insertCronologie = exports.insertAutori = exports.insertScheda = void 0;
+exports.insertUser = exports.insertMisure = exports.insertDocFotografica = exports.insertAltraBibliografia = exports.insertBibliografia = exports.insertMostre = exports.insertProvenienze = exports.insertTecniche = exports.insertMateriali = exports.insertInventario = exports.insertUbicazioni = exports.insertCronologie = exports.insertAutori = exports.insertScheda = void 0;
 const scheda_query_1 = require("../query/scheda.query");
 const mysql_config_1 = require("../config/mysql.config");
 // schedaService.ts
@@ -54,7 +54,7 @@ function insertAutori(pool, schedaId, scheda) {
                         scheda[`NomeAutore${i}`] || '',
                     ]);
                     const thisId = result[0].insertId;
-                    // Collega l'autore alla scheda nella tabella tds_schede_autori
+                    // Collega  la scheda con la funzione tds
                     promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_AUTORI, [schedaId, thisId]));
                 }
                 else {
@@ -97,7 +97,7 @@ function insertCronologie(pool, schedaId, scheda) {
                     scheda.anno_data_a || ''
                 ]);
                 const thisId = result[0].insertId;
-                // Collega l'autore alla scheda nella tabella tds_schede_autori
+                // Collega  la scheda con la funzione tds
                 promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_CONOLOGIA, [schedaId, thisId]));
             }
             yield Promise.all(promises);
@@ -121,7 +121,7 @@ function insertUbicazioni(pool, schedaId, scheda) {
                     scheda.descrizione || ''
                 ]);
                 const thisId = result[0].insertId;
-                // Collega l'autore alla scheda nella tabella tds_schede_autori
+                // Collega  la scheda con la funzione tds
                 promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_UBICAZIONE, [schedaId, thisId]));
             }
             yield Promise.all(promises);
@@ -145,7 +145,7 @@ function insertInventario(pool, schedaId, scheda) {
                     scheda.giuridica || ''
                 ]);
                 const thisId = result[0].insertId;
-                // Collega l'autore alla scheda nella tabella tds_schede_autori
+                // Collega  la scheda con la funzione tds
                 promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_INVENTARIO, [schedaId, thisId]));
             }
             yield Promise.all(promises);
@@ -440,3 +440,37 @@ function insertMisure(pool, schedaId, scheda) {
     });
 }
 exports.insertMisure = insertMisure;
+function insertUser(pool, schedaId, scheda, userData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const promises = [];
+            // Verifica se lo user esiste già
+            const userExistsQuery = `SELECT username FROM users WHERE username = ?;`;
+            const [userExistsResult] = yield pool.query(userExistsQuery, [userData.username]);
+            let userId;
+            if (userExistsResult.length > 0) {
+                // Lo user esiste già, prendi l'id
+                const userExistsQuery = `SELECT id FROM users WHERE username = ?;`;
+                const [userExistsResult] = yield pool.query(userExistsQuery, [userData.username]);
+                userId = userExistsResult[0].id;
+                console.log(`Lo user l'id ${userData.username} esiste già. ID: ${userExistsResult[0].id}`);
+            }
+            else {
+                const firstResult = yield pool.query(scheda_query_1.QUERY.INSERT_USER, [userData.isAdmin, userData.username, userData.display_name]);
+                userId = firstResult[0].insertId;
+            }
+            const secondResult = yield pool.query(scheda_query_1.QUERY.INSERT_STATOSCHEDA, [0, scheda.commento || '']);
+            const statoSchedaID = secondResult[0].insertId;
+            // Collega la scheda con la funzione tds
+            promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDE_STATOSCHEDA, [schedaId, statoSchedaID]));
+            promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_STATO_SCHEDAUSER, [statoSchedaID, userId]));
+            promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_USER_SCHEDA, [userId, schedaId, new Date()]));
+            yield Promise.all(promises);
+        }
+        catch (error) {
+            console.error('Errore durante l\'inserimento di user:', error);
+            throw new Error('Errore durante l\'inserimento di user');
+        }
+    });
+}
+exports.insertUser = insertUser;

@@ -46,4 +46,9 @@ exports.QUERY = {
     INSERT_GRUPPO_MISURE: 'INSERT INTO tds_schede_gruppo_misure (intero_parziale, titolo_gruppo_misure) VALUES (?, ?)',
     INSERT_MISURE: 'INSERT INTO misure (direzione, tipo, valore, unita_di_misura, id_gruppo_misure) VALUES (?, ?, ?, ?, ?)',
     INSERT_TDS_SCHEDA_MISURE: 'INSERT INTO tds_schede_misure (id_scheda, id_gruppo_misure) VALUES (?, ?)',
+    INSERT_USER: 'INSERT INTO users (isAdmin, username, display_name) VALUES (?, ?, ?)',
+    INSERT_STATOSCHEDA: 'INSERT INTO statoScheda (stato, commento) VALUES(?, ?)',
+    INSERT_TDS_SCHEDE_STATOSCHEDA: 'INSERT INTO tds_schede_statoScheda (id_scheda, id_stato) VALUES (?, ?)',
+    INSERT_TDS_STATO_SCHEDAUSER: 'INSERT INTO tds_stato_schedeUser (id_stato, id_user) VALUES (?, ?)',
+    INSERT_TDS_USER_SCHEDA: 'INSERT INTO tds_users_schede (id_user, id_scheda, data_modifica) VALUES (?, ?, ?)',
 };

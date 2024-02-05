@@ -6,11 +6,10 @@ DROP   TABLE IF EXISTS users;
 
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `user_role` int,
-  `email` text,
-  `first_name` text,
-  `last_name` text,
-  `password` text
+  `isAdmin` text,
+  `username` text,
+  `display_name` text,
+  `external_id` text
 );
 
 DROP TABLE IF EXISTS statoScheda;
@@ -29,7 +28,7 @@ CREATE TABLE `tds_schede_statoScheda` (
   `id_stato` int
 );
 
-DROP TABLE IF EXISTS tds_stato_schedeUser
+DROP TABLE IF EXISTS tds_stato_schedeUser;
 
 CREATE TABLE `tds_stato_schedeUser` (
   `id_stato` int PRIMARY KEY,

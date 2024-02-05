@@ -17,6 +17,7 @@ const status_enum_1 = require("../enum/status.enum");
 const scheda_query_1 = require("../query/scheda.query");
 const bozzaValidator_1 = require("../helpers/bozzaValidator");
 const schedaService_1 = require("../helpers/schedaService");
+const authHelpers_1 = require("../helpers/authHelpers"); // Importa le funzioni dal modulo
 const getSchede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
@@ -113,6 +114,8 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Inserisci la scheda e ottieni l'ID della scheda appena inserita
         const schedaId = yield (0, schedaService_1.insertScheda)(scheda);
         const pool = yield (0, mysql_config_1.connection)();
+        // Mi prendo l'user
+        const userData = yield (0, authHelpers_1.getUseData)(req, res);
         yield (0, schedaService_1.insertAutori)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertCronologie)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertUbicazioni)(pool, schedaId, scheda);
@@ -125,8 +128,15 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         yield (0, schedaService_1.insertAltraBibliografia)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertDocFotografica)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertMisure)(pool, schedaId, scheda);
-        return res.status(code_enum_1.Code.CREATED)
-            .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Creata la bozza con id ' + schedaId));
+        if (userData !== false) {
+            yield (0, schedaService_1.insertUser)(pool, schedaId, scheda, userData);
+            return res.status(code_enum_1.Code.CREATED)
+                .send(new response_1.HttpResponse(code_enum_1.Code.CREATED, status_enum_1.Status.CREATED, 'Creata la bozza con id ' + schedaId));
+        }
+        else {
+            return res.status(code_enum_1.Code.INTERNAL_SERVER_ERROR)
+                .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Problema di verifica dell utente'));
+        }
     }
     catch (error) {
         console.error(error);

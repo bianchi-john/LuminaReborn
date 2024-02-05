@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { connection } from '../config/mysql.config';
 import { HttpResponse } from '../domain/response';
@@ -7,8 +6,9 @@ import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
 import { YourValidationResult, validateSchedaData } from '../helpers/bozzaValidator';
-import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure } from '../helpers/schedaService';
-
+import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure , insertUser} from '../helpers/schedaService';
+import { getUseData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
+import { Request, Response } from 'express';
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
@@ -122,6 +122,11 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     // Inserisci la scheda e ottieni l'ID della scheda appena inserita
     const schedaId = await insertScheda(scheda);
     const pool = await connection();
+
+    // Mi prendo l'user
+    const userData = await getUseData(req, res);
+
+
     await insertAutori(pool, schedaId, scheda);
     await insertCronologie(pool, schedaId, scheda);
     await insertUbicazioni(pool, schedaId, scheda);
@@ -135,10 +140,17 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     await insertDocFotografica(pool, schedaId, scheda);
     await insertMisure(pool, schedaId, scheda);
 
+    
+    if (userData !== false) {
+      await insertUser(pool, schedaId, scheda, userData);
 
-    return res.status(Code.CREATED)
-      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Creata la bozza con id ' + schedaId));
-  } catch (error: unknown) {
+      return res.status(Code.CREATED)
+        .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Creata la bozza con id ' + schedaId));
+    } else {
+      return res.status(Code.INTERNAL_SERVER_ERROR)
+        .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Problema di verifica dell utente'));
+    }
+    } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
       .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));

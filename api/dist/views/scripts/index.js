@@ -241,7 +241,7 @@ function handleSearch() {
 
   document.getElementById('result').innerHTML = '';
 
-  var url = 'http://0.0.0.0:3000/search/?';
+  var url = 'http://172.22.0.6:3000/search/?';
   var queries = [];
 
   if (advancedSearchFields.style.display === "none") {
