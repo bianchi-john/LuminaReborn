@@ -1183,7 +1183,7 @@ fetch('http://172.22.0.6:3000/schede', {
             // Se lo status della risposta non è OK (ad esempio 400 - Bad Request)
             throw response.json();
         }
-        alert(`Scheda creata con successo. Attendi qualche secondo per poterla visulizzare nella pagina dedicata`);
+        mostraModale(`Scheda creata con successo. Attendi qualche secondo per poterla visulizzare nella pagina dedicata`);
     })
     .then(data => {
         // Gestisci la risposta del server (se necessario)
@@ -1196,10 +1196,41 @@ fetch('http://172.22.0.6:3000/schede', {
         // Ottieni il corpo della risposta dal server
         errorPromise.then(errorMessage => {
             // Mostra un alert con il messaggio di errore
-            alert(`Errore di compilazione: ${errorMessage.message}`);
+            mostraModale(`Errore di compilazione: ${errorMessage.message}`);
         });
     });
 }
+
+
+
+    // Funzione per mostrare la modale
+    function mostraModale(testo) {
+        // Creare la modale
+        var modal = $('<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
+                        <div class="modal-dialog" role="document">\
+                            <div class="modal-content">\
+                                <div class="modal-header">\
+                                    <h5 class="modal-title" id="exampleModalLabel">Messaggio</h5>\
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                                        <span aria-hidden="true">&times;</span>\
+                                    </button>\
+                                </div>\
+                                <div class="modal-body">' + testo + '</div>\
+                            </div>\
+                        </div>\
+                    </div>');
+
+        // Aggiungi la modale al documento
+        $('body').append(modal);
+
+        // Mostra la modale
+        modal.modal('show');
+
+        // Chiudi la modale dopo 3 secondi
+        setTimeout(function () {
+            modal.modal('hide');
+        }, 3000);
+    }
 
 
 $(document).ready(function () {

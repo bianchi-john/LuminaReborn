@@ -8,7 +8,7 @@ import cors from 'cors';
 import schedaRoutes from './routes/scheda.routes';
 import searchRoutes from './routes/search.routes';
 import schedatoreRoutes from './routes/schedatore.routes';
-import amministratoreRoutes from './routes/amministratore.routes';
+import adminRoutes from './routes/admin.routes';
 
 import process from 'process';
 import axios from "axios"
@@ -51,8 +51,8 @@ export class App {
     // SERVICES
     this.app.use('/schede', schedaRoutes);
     this.app.use('/search', searchRoutes);
-    this.app.use('/schedatore', schedatoreRoutes);
-    this.app.use('/admin', amministratoreRoutes);
+    this.app.use('/manageBozze', schedatoreRoutes);
+    this.app.use('/admin', adminRoutes);
 
 
 

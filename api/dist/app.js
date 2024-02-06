@@ -23,7 +23,7 @@ const cors_1 = __importDefault(require("cors"));
 const scheda_routes_1 = __importDefault(require("./routes/scheda.routes"));
 const search_routes_1 = __importDefault(require("./routes/search.routes"));
 const schedatore_routes_1 = __importDefault(require("./routes/schedatore.routes"));
-const amministratore_routes_1 = __importDefault(require("./routes/amministratore.routes"));
+const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const process_1 = __importDefault(require("process"));
 const axios_1 = __importDefault(require("axios"));
 const path_1 = __importDefault(require("path")); // Aggiunto il modulo 'path' per gestire i percorsi dei file
@@ -56,8 +56,8 @@ class App {
         // SERVICES
         this.app.use('/schede', scheda_routes_1.default);
         this.app.use('/search', search_routes_1.default);
-        this.app.use('/schedatore', schedatore_routes_1.default);
-        this.app.use('/admin', amministratore_routes_1.default);
+        this.app.use('/manageBozze', schedatore_routes_1.default);
+        this.app.use('/admin', admin_routes_1.default);
         // PAGES, SCRIPTS AND STYLES
         this.app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
         this.app.use('/styles', express_1.default.static(path_1.default.join(__dirname, 'views/styles')));

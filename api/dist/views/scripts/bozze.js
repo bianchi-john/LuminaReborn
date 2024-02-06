@@ -1,7 +1,7 @@
 // Aggiungi questa parte di script per effettuare la chiamata GET al caricamento della pagina
 $(document).ready(function () {
   $.ajax({
-    url: "http://172.22.0.6:3000/schedatore",
+    url: "http://172.22.0.6:3000/manageBozze",
     type: "GET",
     success: function (data) {
       console.log("Chiamata GET riuscita:", data);
@@ -62,3 +62,51 @@ function createTable(data) {
   // Aggiungi la tabella al container
   container.prepend(table);
 }
+
+$(document).ready(function () {
+  // ... il codice per la chiamata GET rimane invariato ...
+
+  // Funzione per gestire l'eliminazione di una scheda
+  function deleteScheda(id) {
+    $.ajax({
+      url: "http://172.22.0.6:3000/manageBozze?id=" + id, // Assumi che ci sia un endpoint per eliminare la scheda con l'id specificato
+      type: "DELETE",
+      success: function () {
+        console.log("Chiamata DELETE riuscita");
+        // Ricarica la pagina
+        location.reload();
+        // Mostra la finestra modale di successo
+        showModal("Operazione avvenuta con successo");
+      },
+      error: function (error) {
+        console.error("Errore nella chiamata DELETE:", error);
+      }
+    });
+  }
+
+  // Funzione per mostrare la finestra modale
+  function showModal(message) {
+    // Crea il markup per la finestra modale
+    var modal = $("<div>").addClass("modal");
+    var modalContent = $("<div>").addClass("modal-content").appendTo(modal);
+    $("<p>").text(message).appendTo(modalContent);
+
+    // Aggiungi la finestra modale al corpo del documento
+    $("body").append(modal);
+
+    // Mostra la finestra modale
+    modal.show();
+
+    // Nascondi la finestra modale dopo 3 secondi (puoi modificare questo valore)
+    setTimeout(function () {
+      modal.hide();
+    }, 3000);
+  }
+
+  // Evento click per gestire l'eliminazione quando si preme il bottone "Elimina"
+  $(".container").on("click", ".btn-danger", function () {
+    var schedaId = $(this).closest("tr").find("td:first").text(); // Assume che l'ID sia nella prima colonna della riga
+    deleteScheda(schedaId);
+  });
+});
+

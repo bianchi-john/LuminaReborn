@@ -10,5 +10,6 @@ exports.QUERY = {
       JOIN tds_schede_statoScheda ON schede.id = tds_schede_statoScheda.id_scheda
       JOIN statoScheda ON tds_schede_statoScheda.id_stato = statoScheda.id
       WHERE users.username = ? AND statoScheda.stato = 0;
-      `
+      `,
+    DELETE_SCHEDE_PER_SCHEDATORE: 'DELETE FROM schede WHERE id = ?'
 };
