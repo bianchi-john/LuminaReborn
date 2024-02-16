@@ -1,3 +1,93 @@
+///////////////////////
+///////////////////////
+
+// LOGICA PER LA GESTIONE DELLA DROPBOX DI CARICAMENTO DELL'IMMAGINE DI COPERTINA
+
+///////////////////////
+///////////////////////
+var base64Image = '';
+
+function setupImageUpload() {
+
+    function readFile(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var htmlPreview =
+                    '<img width="200" src="' + e.target.result + '" />' +
+                    '<p>' + input.files[0].name + '</p>';
+                var wrapperZone = $(input).parent();
+                var previewZone = $(input).parent().parent().find('.preview-zone');
+                var boxZone = $(input).parent().parent().find('.preview-zone').find('.box').find('.box-body');
+
+                wrapperZone.removeClass('dragover');
+                previewZone.removeClass('hidden');
+                boxZone.empty();
+                boxZone.append(htmlPreview);
+                $('.dropzone-wrapper').hide()
+                $('.reset-button').css('display', 'list-item');
+
+                // Memorizza la base64 dell'immagine
+                base64Image = e.target.result;
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $(".dropzone").change(function () {
+        readFile(this);
+    });
+
+
+    $('.dropzone-wrapper').on('dragover', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).addClass('dragover');
+    });
+
+    $('.dropzone-wrapper').on('dragleave', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass('dragover');
+    });
+
+    $('.reset-button').on('click', function () {
+        var boxZone = $(this).parents('.preview-zone').find('.box-body');
+        var previewZone = $(this).parents('.preview-zone');
+        var dropzone = $(this).parents('.form-group').find('.dropzone');
+        $('.dropzone-wrapper').show()
+
+        boxZone.empty();
+        previewZone.addClass('hidden');
+        $('.reset-button').css('display', 'none');
+
+
+    });
+
+    $('#sendImage').on('click', function () {
+        // Invia l'immagine in base64 al server
+        $.ajax({
+            url: 'http://172.22.0.6:3000/',
+            type: 'POST',
+            data: {
+                image: base64Image
+            },
+            success: function (response) {
+                console.log('Immagine inviata con successo:', response);
+            },
+            error: function (error) {
+                console.error('Errore durante l\'invio dell\'immagine:', error);
+            }
+        });
+    });
+}
+
+
+
+
+
 
 
 ///////////////////////
@@ -11,35 +101,35 @@
 
 function initInputValidation() {
 
-  
+
     const inputs = document.querySelectorAll('.date-form');
-  
+
     inputs.forEach(input => {
-      input.addEventListener('input', () => {
-        const isNumericInput = /^\d*$/.test(input.value);
-        const isDayInput = input.id.includes('giorno');
-        const isMonthInput = input.id.includes('mese');
-        const isYearInput = input.id.includes('anno');
-  
-        if (!isNumericInput) {
-          input.value = input.value.replace(/[^\d]/g, '');
-        }
-  
-        if ((isDayInput || isMonthInput) && input.value > 31) {
-          input.value = '31';
-        }
-  
-        if (isMonthInput && input.value > 12) {
-          input.value = '12';
-        }
-  
-        if (isYearInput && input.value.length > 4) {
-          input.value = input.value.slice(0, 4);
-        }
-      });
+        input.addEventListener('input', () => {
+            const isNumericInput = /^\d*$/.test(input.value);
+            const isDayInput = input.id.includes('giorno');
+            const isMonthInput = input.id.includes('mese');
+            const isYearInput = input.id.includes('anno');
+
+            if (!isNumericInput) {
+                input.value = input.value.replace(/[^\d]/g, '');
+            }
+
+            if ((isDayInput || isMonthInput) && input.value > 31) {
+                input.value = '31';
+            }
+
+            if (isMonthInput && input.value > 12) {
+                input.value = '12';
+            }
+
+            if (isYearInput && input.value.length > 4) {
+                input.value = input.value.slice(0, 4);
+            }
+        });
     });
-  }
-  
+}
+
 
 let count = 1;
 
@@ -469,7 +559,7 @@ function aggiungiGruppoMostre() {
             initDoc(textArea);
         });
     });
-    initInputValidation();  
+    initInputValidation();
 
 }
 
@@ -823,14 +913,26 @@ function rimuoviGruppoAltreBibliografie() {
 }
 
 
-
-///////////////////////
-///////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 // LOGICA PER DOCUMENTAZIONI FOTOGRAFICHE
 
-///////////////////////
-///////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 
 
@@ -898,22 +1000,6 @@ function rimuoviGruppoDocFotografiche() {
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-
-
 
 
 
@@ -921,35 +1007,20 @@ function rimuoviGruppoDocFotografiche() {
 
 
 
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
-
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
 
 
 function uploadData() {
@@ -1086,37 +1157,8 @@ function uploadData() {
     }
 
 
-    // Itera attraverso i form della documentazione fotografica
-    var numDocumentazioneForms = document.getElementById('documentazioneFotografica').getElementsByClassName('form-group').length;
-    for (var i = 1; i <= numDocumentazioneForms; i++) {
-        var didascalia = document.getElementById("documentazioneFotograficaInput" + i).value ? document.getElementById("documentazioneFotograficaInput" + i).value : "";
-        var immagineFileInput = document.getElementById("documentazioneFotograficaFoto" + i);
-
-        // Verifica se l'elemento è presente prima di chiamare querySelector
-        if (immagineFileInput) {
-            var inputTypeFile = immagineFileInput.querySelector('input[type="file"]');
-            var immagineFile = inputTypeFile ? inputTypeFile.files.length > 0 ? inputTypeFile.files[0] : null : null;
-
-        }
-        // Aggiungi dati del form della documentazione fotografica all'oggetto formData
-        formData["Didascalia" + i] = didascalia;
-
-        // Carica il file immagine se presente
-        if (immagineFile) {
-            formData["Immagine" + i] = immagineFile;
-        } else {
-            formData["Immagine" + i] = ''; // Imposta una stringa vuota se l'utente non ha inserito un file
-        }
-    }
-
-
-
 
     formData["titolo_opera"] = document.getElementById("titolo").innerText ? document.getElementById("titolo").innerText : "";
-
-    formData["copertina"] = document.getElementById('copertina').innerText ? document.getElementById("copertina").innerText : "";
-
-
     formData["etichetta_data"] = document.getElementById('etichetta_data').value ? document.getElementById("etichetta_data").value : "";
     formData["giorno_data_da"] = document.getElementById('giorno_data_da').value ? document.getElementById("giorno_data_da").value : "";
     formData["mese_data_da"] = document.getElementById('mese_data_da').value ? document.getElementById("mese_data_da").value : "";
@@ -1125,21 +1167,21 @@ function uploadData() {
     formData["anno_data_a"] = document.getElementById('anno_data_a').value ? document.getElementById("anno_data_a").value : "";
     formData["anno_data_da"] = document.getElementById('anno_data_da').value ? document.getElementById("anno_data_da").value : "";
 
-// Verifica che anno_data_a esista e non sia una stringa vuota prima di applicare l'ambito_storico
-if (formData["anno_data_a"]) {
-    // Verifica l'ambito_storico per l'anno_data_a
-    if (document.getElementById('avanti_a').checked) {
-      formData["anno_data_a"] = "-" + formData["anno_data_a"];
+    // Verifica che anno_data_a esista e non sia una stringa vuota prima di applicare l'ambito_storico
+    if (formData["anno_data_a"]) {
+        // Verifica l'ambito_storico per l'anno_data_a
+        if (document.getElementById('avanti_a').checked) {
+            formData["anno_data_a"] = "-" + formData["anno_data_a"];
+        }
     }
-  }
-  
-  // Verifica che anno_data_da esista e non sia una stringa vuota prima di applicare l'ambito_storico
-  if (formData["anno_data_da"]) {
-    // Verifica l'ambito_storico per l'anno_data_da
-    if (document.getElementById('avanti_data_da').checked) {
-      formData["anno_data_da"] = "-" + formData["anno_data_da"];
+
+    // Verifica che anno_data_da esista e non sia una stringa vuota prima di applicare l'ambito_storico
+    if (formData["anno_data_da"]) {
+        // Verifica l'ambito_storico per l'anno_data_da
+        if (document.getElementById('avanti_data_da').checked) {
+            formData["anno_data_da"] = "-" + formData["anno_data_da"];
+        }
     }
-  }
 
 
     formData["ambito"] = document.getElementById('ambitoInput').value ? document.getElementById("ambitoInput").value : "";
@@ -1156,57 +1198,84 @@ if (formData["anno_data_a"]) {
 
     formData["commento"] = document.getElementById("commentoInput").value ? document.getElementById("commentoInput").value : "";
 
+    // Logica pre prendere le fotoo
+    const formGroupsFoto = document.querySelectorAll('#documentazioneFotografica .form-group');
+    let contaFoto = 2;
+
+    // Aggiungo per prima l'immagine di copertina
+    formData["immagine1"] = base64Image
+    formData["didascalia_immagine1"] = '';
+    // Per ogni elemento con classe "form-group"
+    formGroupsFoto.forEach(formGroup => {
+        // Ottieni la descrizione dall'input di testo all'interno dell'elemento
+        const description = formGroup.querySelector('input[type="text"]').value;
+    
+        // Ottieni l'immagine dall'elemento form all'interno dell'elemento
+        const imageInput = formGroup.querySelector('form input[type="file"]');
+        const imageFile = imageInput.files[0];
+    
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                const base64data = reader.result;
+                formData["immagine" + contaFoto] = base64data;
+                formData["didascalia_immagine" + contaFoto] = description;
+                contaFoto++;
+            };
+            reader.readAsDataURL(imageFile);
+        }
+    });
+    
+
 
     // Tolgo i campi vuoti dai dati che invio
     const cleanObject = {};
-    
-    Object.keys(formData).forEach(key => {
-      const value = formData[key];
-      if (value !== "") {
-        cleanObject[key] = value;
-      }
-    });
 
+    Object.keys(formData).forEach(key => {
+        const value = formData[key];
+        if (value !== "") {
+            cleanObject[key] = value;
+        }
+    });
 
     let asd = 3;
 
-// Esegui la richiesta POST
-fetch('http://172.22.0.6:3000/schede', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(cleanObject)
-})
-    .then(response => {
-        if (!response.ok) {
-            // Se lo status della risposta non è OK (ad esempio 400 - Bad Request)
-            throw response.json();
-        }
-        mostraModale(`Scheda creata con successo. Attendi qualche secondo per poterla visulizzare nella pagina dedicata`);
+    // Esegui la richiesta POST
+    fetch('http://172.22.0.6:3000/schede', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cleanObject)
     })
-    .then(data => {
-        // Gestisci la risposta del server (se necessario)
-        console.log('Risposta dal server:', data);
-    })
-    .catch(errorPromise => {
-        // Se la richiesta fallisce o il server restituisce un 400
-        console.error('Errore durante la richiesta POST:', errorPromise);
+        .then(response => {
+            if (!response.ok) {
+                // Se lo status della risposta non è OK (ad esempio 400 - Bad Request)
+                throw response.json();
+            }
+            mostraModale(`Scheda creata con successo. Attendi qualche secondo per poterla visulizzare nella pagina dedicata`);
+        })
+        .then(data => {
+            // Gestisci la risposta del server (se necessario)
+            console.log('Risposta dal server:', data);
+        })
+        .catch(errorPromise => {
+            // Se la richiesta fallisce o il server restituisce un 400
+            console.error('Errore durante la richiesta POST:', errorPromise);
 
-        // Ottieni il corpo della risposta dal server
-        errorPromise.then(errorMessage => {
-            // Mostra un alert con il messaggio di errore
-            mostraModale(`Errore di compilazione: ${errorMessage.message}`);
+            // Ottieni il corpo della risposta dal server
+            errorPromise.then(errorMessage => {
+                // Mostra un alert con il messaggio di errore
+                mostraModale(`Errore di compilazione: ${errorMessage.message}`);
+            });
         });
-    });
 }
 
 
-
-    // Funzione per mostrare la modale
-    function mostraModale(testo) {
-        // Creare la modale
-        var modal = $('<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
+// Funzione per mostrare la modale
+function mostraModale(testo) {
+    // Creare la modale
+    var modal = $('<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
                         <div class="modal-dialog" role="document">\
                             <div class="modal-content">\
                                 <div class="modal-header">\
@@ -1220,19 +1289,20 @@ fetch('http://172.22.0.6:3000/schede', {
                         </div>\
                     </div>');
 
-        // Aggiungi la modale al documento
-        $('body').append(modal);
+    // Aggiungi la modale al documento
+    $('body').append(modal);
 
-        // Mostra la modale
-        modal.modal('show');
+    // Mostra la modale
+    modal.modal('show');
 
-        // Chiudi la modale dopo 3 secondi
-        setTimeout(function () {
-            modal.modal('hide');
-        }, 3000);
-    }
+    // Chiudi la modale dopo 3 secondi
+    setTimeout(function () {
+        modal.modal('hide');
+    }, 3000);
+}
 
 
 $(document).ready(function () {
-    initInputValidation();  
+    initInputValidation();
+    setupImageUpload();
 })

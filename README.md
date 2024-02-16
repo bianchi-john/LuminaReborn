@@ -6,7 +6,7 @@ Setup and run:
 ```sh
 cd api
 npm i
-npm run start:build && docker network create extern && docker-compose up -d --build
+npm run start:build && docker-compose up -d --build
 ```
 
 Run
@@ -23,39 +23,33 @@ Delete all and recreate
 ```sh
 # Elimino tutto i container e immagini
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force &&  docker network prune --force
-npm run start:build && docker network create extern && docker-compose up -d --build
+npm run start:build && docker-compose up -d --build
 ```
 
-
+Issues:
+```sh
+# Recreate extern network
+docker network create extern
+```
 
 Altro:
 ```sh
-# List all containers (only IDs)
 docker ps -aq && docker images
-
 docker-compose up -d --build
-
 docker ps 
 docker container attach nodeappcontainer
-
 docker exec -it mysqlcontainer bash
 mysql -u root -p
 letmein
 USE luminadb;
 set global max_connections = 9999999;
 cd api && sudo rm -r data && docker-compose down && npm run start:build && docker-compose up -d --build
-
-
 #Restart docker service       
 sudo systemctl restart docker.socket docker.service
 show variables like "max_connections";
 
 ```
-
-
-
-
-
+Compile and start nodeapp
 ```sh
 npm run start:build
 npm run start:dev
