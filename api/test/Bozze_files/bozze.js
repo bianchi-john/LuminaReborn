@@ -16,14 +16,13 @@ function getBozzeOnPageLoad() {
 
 // INVIA
 function sendPostRequest(schedaId) {
-  fetch("http://172.22.0.6:3000/manageBozze?schedaId=" + schedaId, {
-    method: "POST",
-    body: JSON.stringify({ schedaId: schedaId })
+  fetch("http://172.22.0.6:3000/manageBozze?" + $.param({ id: schedaId }), {
+    method: "POST"
   })
     .then(response => {
       if (response.ok) {
-        console.log("Bozza inviata all'amministratore'");
-        showModal("Bozza inviata all'amministratore");
+        console.log("Chiamata POST riuscita");
+        showModal("Operazione avvenuta con successo");
       } else {
         showModal("Errore nella chiamata POST");
         console.error("Errore nella chiamata POST:", response.statusText);
@@ -35,18 +34,15 @@ function sendPostRequest(schedaId) {
     });
 }
 
-
-
 // ELIMINA
-function deleteScheda(schedaId) {
-  fetch("http://172.22.0.6:3000/manageBozze?id=" + schedaId, {
-    method: "DELETE",
-    body: JSON.stringify({ schedaId: schedaId })
+function deleteScheda(id) {
+  fetch("http://172.22.0.6:3000/manageBozze?id=" + id, {
+    method: "DELETE"
   })
     .then(response => {
       if (response.ok) {
-        console.log("Bozza eliminata");
-        showModal("Bozza eliminata");
+        console.log("Chiamata DELETE riuscita");
+        showModal("Operazione avvenuta con successo");
       } else {
         showModal("Errore nella chiamata DELETE");
         console.error("Errore nella chiamata DELETE:", response.statusText);
@@ -113,6 +109,7 @@ function showModal(testo) {
         <div class="modal-content">\
             <div class="modal-header">\
                 <h5 class="modal-title" id="exampleModalLabel">Messaggio</h5>\
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
                     <span aria-hidden="true">&times;</span>\
                 </button>\
             </div>\

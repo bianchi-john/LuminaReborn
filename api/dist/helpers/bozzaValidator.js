@@ -63,7 +63,9 @@ const allowedKeys = [
     "inventario",
     "giuridica",
     "classificazione",
-    "commento"
+    "commento",
+    "immagine",
+    "didascalia_immagine"
 ];
 const validateSchedaData = (schedaData) => __awaiter(void 0, void 0, void 0, function* () {
     // Controllo SQL injection

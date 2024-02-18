@@ -6,7 +6,7 @@ import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
 import { YourValidationResult, validateSchedaData } from '../helpers/bozzaValidator';
-import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure , insertUser} from '../helpers/schedaService';
+import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure , insertUser, insertImaagini} from '../helpers/schedaService';
 import { getUseData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
 import { Request, Response } from 'express';
 
@@ -139,6 +139,7 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     await insertAltraBibliografia(pool, schedaId, scheda);
     await insertDocFotografica(pool, schedaId, scheda);
     await insertMisure(pool, schedaId, scheda);
+    await insertImaagini(pool, schedaId, scheda);
 
     
     if (userData !== false) {

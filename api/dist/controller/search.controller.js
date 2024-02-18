@@ -125,7 +125,9 @@ const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         LEFT JOIN inventari i ON tsi.id_inventario = i.id
         LEFT JOIN tds_schede_immagini tsim ON s.id = tsim.id_scheda
         LEFT JOIN immagini imm ON tsim.id_immagine = imm.id
-        WHERE s.id = ` + uniqueResponses[i].id + `;`);
+        LEFT JOIN tds_schede_statoScheda tss ON s.id = tss.id_scheda
+        LEFT JOIN statoScheda ss ON tss.id_stato = ss.id
+        WHERE s.id = ` + uniqueResponses[i].id + ` AND ss.stato = 2;`);
             uniqueResponsesWithInformation.push(finalResult[0], uniqueResponses[i].id);
         }
         return res.status(code_enum_1.Code.OK)

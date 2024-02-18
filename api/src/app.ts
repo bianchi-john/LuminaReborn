@@ -40,6 +40,8 @@ export class App {
 
   private middleWare(): void {
     this.app.use(cors({ origin: '*' }));
+    this.app.use(express.json({ limit: '500mb' })); // Imposta il limite della richiesta JSON a 50 MB
+    this.app.use(express.urlencoded({ limit: '50mb', extended: true })); // Imposta il limite della richiesta URL codificata a 50 MB
     this.app.use(express.json());
     this.app.set('views', viewsPath);
     this.app.set('view engine', 'ejs');

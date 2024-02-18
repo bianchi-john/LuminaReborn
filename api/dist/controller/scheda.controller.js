@@ -128,6 +128,7 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         yield (0, schedaService_1.insertAltraBibliografia)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertDocFotografica)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertMisure)(pool, schedaId, scheda);
+        yield (0, schedaService_1.insertImaagini)(pool, schedaId, scheda);
         if (userData !== false) {
             yield (0, schedaService_1.insertUser)(pool, schedaId, scheda, userData);
             return res.status(code_enum_1.Code.CREATED)

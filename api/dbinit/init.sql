@@ -267,7 +267,7 @@ DROP TABLE IF EXISTS immagini;
 
 CREATE TABLE `immagini` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `path` text,
+  `data` LONGTEXT,
   `didascalia` text
 );
 

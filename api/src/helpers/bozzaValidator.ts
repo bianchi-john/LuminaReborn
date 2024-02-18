@@ -58,7 +58,9 @@ const allowedKeys = [
   "inventario",
   "giuridica",
   "classificazione",
-  "commento"
+  "commento",
+  "immagine",
+  "didascalia_immagine"
 ];
 
 

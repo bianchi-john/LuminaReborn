@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertUser = exports.insertMisure = exports.insertDocFotografica = exports.insertAltraBibliografia = exports.insertBibliografia = exports.insertMostre = exports.insertProvenienze = exports.insertTecniche = exports.insertMateriali = exports.insertInventario = exports.insertUbicazioni = exports.insertCronologie = exports.insertAutori = exports.insertScheda = void 0;
+exports.insertImaagini = exports.insertUser = exports.insertMisure = exports.insertDocFotografica = exports.insertAltraBibliografia = exports.insertBibliografia = exports.insertMostre = exports.insertProvenienze = exports.insertTecniche = exports.insertMateriali = exports.insertInventario = exports.insertUbicazioni = exports.insertCronologie = exports.insertAutori = exports.insertScheda = void 0;
 const scheda_query_1 = require("../query/scheda.query");
 const mysql_config_1 = require("../config/mysql.config");
 // schedaService.ts
@@ -474,3 +474,35 @@ function insertUser(pool, schedaId, scheda, userData) {
     });
 }
 exports.insertUser = insertUser;
+// Immagini
+function insertImaagini(pool, schedaId, scheda) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const promises = [];
+            let atLeastOneKeyPresent = false;
+            for (let i = 1;; i++) {
+                if (scheda[`immagine${i}`] ||
+                    scheda[`didascalia_immagine${i}`]) {
+                    atLeastOneKeyPresent = true; // almeno una chiave è presente
+                    const result = yield pool.query(scheda_query_1.QUERY.INSERT_IMMAGINI, [
+                        scheda[`immagine${i}`] || '', scheda[`didascalia_immagine`] || '',
+                    ]);
+                    const thisId = result[0].insertId;
+                    promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_IMMAGINI, [schedaId, thisId]));
+                }
+                else {
+                    // Se nessuna delle chiavi è presente, esce dal ciclo
+                    break;
+                }
+            }
+            if (atLeastOneKeyPresent) {
+                yield Promise.all(promises);
+            }
+        }
+        catch (error) {
+            console.error('Errore durante l\'inserimento immagini:', error);
+            throw new Error('Errore durante l\'inserimento immagini');
+        }
+    });
+}
+exports.insertImaagini = insertImaagini;

@@ -6,5 +6,6 @@ const schedatoreRoutes = (0, express_1.Router)();
 schedatoreRoutes.route('/')
     .get(schedatore_controller_1.getSchedeForSchedatore)
     .delete(schedatore_controller_1.deleteSchedaForSchedatore)
-    .post(schedatore_controller_1.schedaToAdmin);
+    .post(schedatore_controller_1.schedaToAdmin)
+    .put(schedatore_controller_1.withdrawScheda);
 exports.default = schedatoreRoutes;

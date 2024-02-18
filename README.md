@@ -23,7 +23,7 @@ Delete all and recreate
 ```sh
 # Elimino tutto i container e immagini
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force &&  docker network prune --force
-npm run start:build && docker-compose up -d --build
+npm run start:build  && docker-compose up -d --build
 ```
 
 Issues:

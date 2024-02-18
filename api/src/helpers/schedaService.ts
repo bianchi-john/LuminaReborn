@@ -533,3 +533,38 @@ export async function insertUser(pool: any, schedaId: number, scheda: Scheda, us
 }
 
 
+
+// Immagini
+export async function insertImaagini(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
+  try {
+    const promises = [];
+    let atLeastOneKeyPresent = false;
+
+    for (let i = 1; ; i++) {
+      if (
+        scheda[`immagine${i}`] ||
+        scheda[`didascalia_immagine${i}`]
+      ) {
+        atLeastOneKeyPresent = true; // almeno una chiave è presente
+
+        const result: ResultSet = await pool.query(QUERY.INSERT_IMMAGINI, [
+          scheda[`immagine${i}`] || '', scheda[`didascalia_immagine`] || '',
+        ]);
+
+        const thisId = (result[0] as ResultSetHeader).insertId;
+
+        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_IMMAGINI, [schedaId, thisId]));
+      } else {
+        // Se nessuna delle chiavi è presente, esce dal ciclo
+        break;
+      }
+    }
+
+    if (atLeastOneKeyPresent) {
+      await Promise.all(promises);
+    }
+  } catch (error) {
+    console.error('Errore durante l\'inserimento immagini:', error);
+    throw new Error('Errore durante l\'inserimento immagini');
+  }
+}
