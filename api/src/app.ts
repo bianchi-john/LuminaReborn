@@ -245,6 +245,14 @@ export class App {
       }
     });
 
+
+
+
+    // APPROVA BOZZA
+    this.app.get('/valutaBozza', (req: Request, res: Response) => {
+      res.render('valutaBozza', { cssFilePath: '/styles/scheda.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/valutaBozza.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img' });
+    });
+
     this.app.all('*', (_: Request, res: Response) => res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
   }
 }
