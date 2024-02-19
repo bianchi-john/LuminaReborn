@@ -105,11 +105,11 @@ function createCard(data, index) {
 
   var pathElement = document.createElement("p");
   pathElement.classList.add("card-text");
-  pathElement.textContent = data.path;
+  pathElement.textContent = data.data;
 
-  if (data.path) {
+  if (data.data) {
     var imgElement = document.createElement("img");
-    imgElement.src = data.path;
+    imgElement.src = data.data;
     var imageContainer = document.createElement("div");
     imgElement.classList.add("card-image");
     imageContainer.classList.add("image-container");

@@ -1185,7 +1185,6 @@ async function gatherData() {
 
         // Logica pre prendere le fotoo
         const formGroupsFoto = document.querySelectorAll('#documentazioneFotografica .form-group');
-        let contaFoto = 2;
 
         // Aggiungo per prima l'immagine di copertina
         formData["immagine1"] = base64Image
@@ -1206,7 +1205,8 @@ async function gatherData() {
                     reader.onerror = reject;
                     reader.readAsDataURL(imageFile);
                 });
-
+                
+                i = i + 2;
                 formData["immagine" + i] = base64data;
                 formData["didascalia_immagine" + i] = description;
             }

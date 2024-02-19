@@ -276,7 +276,7 @@ function populateWebPage(data) {
                     .attr('num', i + 1 + '/' + (data.data.immagini.length));
 
             }
-            var img = $('<img>').attr('src', data.data.immagini[i].data)
+            var img = $('<img>').attr('src', data.data.immagini[i].path)
                 .addClass('image').attr('alt', data.data.immagini[i].didascalia)
                 .on('contextmenu', function () { return false; })
 

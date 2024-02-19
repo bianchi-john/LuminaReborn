@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertImaagini = exports.insertUser = exports.insertMisure = exports.insertDocFotografica = exports.insertAltraBibliografia = exports.insertBibliografia = exports.insertMostre = exports.insertProvenienze = exports.insertTecniche = exports.insertMateriali = exports.insertInventario = exports.insertUbicazioni = exports.insertCronologie = exports.insertAutori = exports.insertScheda = void 0;
+exports.insertImmagini = exports.insertUser = exports.insertMisure = exports.insertDocFotografica = exports.insertAltraBibliografia = exports.insertBibliografia = exports.insertMostre = exports.insertProvenienze = exports.insertTecniche = exports.insertMateriali = exports.insertInventario = exports.insertUbicazioni = exports.insertCronologie = exports.insertAutori = exports.insertScheda = void 0;
 const scheda_query_1 = require("../query/scheda.query");
 const mysql_config_1 = require("../config/mysql.config");
 // schedaService.ts
@@ -475,7 +475,7 @@ function insertUser(pool, schedaId, scheda, userData) {
 }
 exports.insertUser = insertUser;
 // Immagini
-function insertImaagini(pool, schedaId, scheda) {
+function insertImmagini(pool, schedaId, scheda) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const promises = [];
@@ -505,4 +505,4 @@ function insertImaagini(pool, schedaId, scheda) {
         }
     });
 }
-exports.insertImaagini = insertImaagini;
+exports.insertImmagini = insertImmagini;

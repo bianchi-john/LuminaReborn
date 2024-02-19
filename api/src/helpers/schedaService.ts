@@ -535,7 +535,7 @@ export async function insertUser(pool: any, schedaId: number, scheda: Scheda, us
 
 
 // Immagini
-export async function insertImaagini(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
+export async function insertImmagini(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
   try {
     const promises = [];
     let atLeastOneKeyPresent = false;

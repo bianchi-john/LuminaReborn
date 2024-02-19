@@ -1,0 +1,254 @@
+.bold {
+  font-weight: bold;
+}
+
+.inline {
+  display: inline !important;
+}
+
+.carousel-inner {
+  width: 100% !important;
+  min-width: 250px;
+  display: inline-block;
+}
+
+li {
+  list-style-type: circle;
+}
+
+.title,
+.autori, 
+.schedatore,
+.cronologie,
+.ambito,
+.ubicazioni,
+.inventari,
+.giuridica,
+.classificazione,
+.materiali,
+.tecniche,
+.misure,
+.provenienze,
+.iscrizioni,
+.storia_espositiva,
+.descrizione_sintetica,
+.corpo_scheda,
+.mostre,
+.bibliografie,
+.altreBibliografie,
+.documentazioneFotografica{
+  display: none;
+}
+
+.footer-space {
+  height: 50px;
+}
+
+/* IMAGE CAROUSEL RULES */
+* {
+  box-sizing: border-box;
+}
+
+
+.numbertext {
+  float: right;
+  display: none;
+}
+
+.numImage{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 50%;
+}
+
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: white;
+  padding: 10px 0;
+  height: 150px;
+}
+
+.modal-content,
+#caption {
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {
+    -webkit-transform: scale(0);
+  }
+
+  to {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.close {
+  position: fixed;
+  top: 15px;
+  right: 35px;
+  color: red;
+  font-size: 70px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mySlides {
+  width: 50%;
+  margin: 0 auto;
+  display: none;
+}
+
+.mySlides.one {
+  display: block;
+}
+
+.next,
+.prev {
+  /* position: absolute; */
+  font-size: 40px;
+  color: white;
+  top: 45%;
+  cursor: pointer;
+  text-shadow: 0px 0px 2px black;
+
+  &:hover {
+    color: white;
+    text-decoration: inherit;
+  }
+
+  z-index: 1;
+}
+
+.next {
+  right: 13px;
+}
+
+.numbertext {
+  color: black;
+  font-size: 25px;
+}
+
+.mySlides {
+  width: 100%;
+}
+
+.image {
+  width: 200px;
+
+}
+
+.nw {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid rgba(0,0,0,.125); /* Spessore del bordo e colore */
+  border-radius: 5px; /* Raggio dei contorni stondati */
+  margin-top: 7px;
+
+}
+
+.slideshow-container {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media only screen and (max-width: 992px) {
+
+  .prev,
+  .next {
+    top: 35%;
+  }
+
+  .numbertext {
+    font-size: 20px;
+  }
+}
+
+
+@media only screen and (max-width: 768px) {
+
+  .numbertext {
+    font-size: 20px;
+  }
+
+  .prev,
+  .next {
+    top: 40%;
+  }
+}
+
+
+@media only screen and (max-width: 555px) {
+
+  .numbertext {
+    font-size: 20px;
+  }
+
+}
+
+
+
+@media only screen and (max-width: 455px) {
+
+  .numbertext {
+    font-size: 20px;
+  }
+
+}
+
+@media only screen and (max-width: 355px) {
+
+  .numbertext {
+    font-size: 20px;
+  }
+
+}
+
