@@ -22,6 +22,8 @@ const ip_1 = __importDefault(require("ip"));
 const cors_1 = __importDefault(require("cors"));
 const scheda_routes_1 = __importDefault(require("./routes/scheda.routes"));
 const search_routes_1 = __importDefault(require("./routes/search.routes"));
+const schedatore_routes_1 = __importDefault(require("./routes/schedatore.routes"));
+const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const process_1 = __importDefault(require("process"));
 const axios_1 = __importDefault(require("axios"));
 const path_1 = __importDefault(require("path")); // Aggiunto il modulo 'path' per gestire i percorsi dei file
@@ -45,6 +47,8 @@ class App {
     }
     middleWare() {
         this.app.use((0, cors_1.default)({ origin: '*' }));
+        this.app.use(express_1.default.json({ limit: '500mb' })); // Imposta il limite della richiesta JSON a 50 MB
+        this.app.use(express_1.default.urlencoded({ limit: '50mb', extended: true })); // Imposta il limite della richiesta URL codificata a 50 MB
         this.app.use(express_1.default.json());
         this.app.set('views', viewsPath);
         this.app.set('view engine', 'ejs');
@@ -54,6 +58,8 @@ class App {
         // SERVICES
         this.app.use('/schede', scheda_routes_1.default);
         this.app.use('/search', search_routes_1.default);
+        this.app.use('/manageBozze', schedatore_routes_1.default);
+        this.app.use('/admin', admin_routes_1.default);
         // PAGES, SCRIPTS AND STYLES
         this.app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
         this.app.use('/styles', express_1.default.static(path_1.default.join(__dirname, 'views/styles')));
@@ -68,7 +74,7 @@ class App {
                 return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
+                const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
                 if (userType === 'admin') {
                     // L'utente è un amministratore
                     res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: 'admin' });
@@ -83,7 +89,7 @@ class App {
                 }
             }
             catch (error) {
-                console.error("Error during isCookieOk check:", error);
+                console.error("Error during cookieChecker check:", error);
                 return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
             }
         }));
@@ -131,7 +137,7 @@ class App {
                 return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
+                const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
                     // L'utente è un amministratore o schedaotore
                     res.render('bozze', { cssFilePath: '/styles/bozze.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozze.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
@@ -142,7 +148,7 @@ class App {
                 }
             }
             catch (error) {
-                console.error("Error during isCookieOk check:", error);
+                console.error("Error during cookieChecker check:", error);
                 return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
             }
         }));
@@ -155,7 +161,7 @@ class App {
                 return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
+                const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
                     // L'utente è un amministratore o schedaotore
                     res.render('schedeInApprovazione', { cssFilePath: '/styles/schedeInApprovazione.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/schedeInApprovazione.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
@@ -166,7 +172,7 @@ class App {
                 }
             }
             catch (error) {
-                console.error("Error during isCookieOk check:", error);
+                console.error("Error during cookieChecker check:", error);
                 return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
             }
         }));
@@ -179,7 +185,7 @@ class App {
                 return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
+                const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
                 if (userType === 'admin') {
                     // L'utente è un amministratore
                     res.render('amministratore', { cssFilePath: '/styles/amministratore.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/amministratore.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
@@ -190,7 +196,7 @@ class App {
                 }
             }
             catch (error) {
-                console.error("Error during isCookieOk check:", error);
+                console.error("Error during cookieChecker check:", error);
                 return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
             }
         }));
@@ -203,7 +209,7 @@ class App {
                 return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
             }
             try {
-                const userType = yield (0, authHelpers_1.isCookieOk)(jwt);
+                const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
                 if (userType === 'admin' || userType === 'schedatore') {
                     // L'utente è un amministratore o schedaotore
                     res.render('bozzaEditor', { richTextScript: '/scripts/richText.js', richTextStyle: '/styles/richText.css', cssFilePath: '/styles/bozzaEditor.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozzaEditor.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
@@ -214,10 +220,14 @@ class App {
                 }
             }
             catch (error) {
-                console.error("Error during isCookieOk check:", error);
+                console.error("Error during cookieChecker check:", error);
                 return res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
             }
         }));
+        // APPROVA BOZZA
+        this.app.get('/valutaBozza', (req, res) => {
+            res.render('valutaBozza', { cssFilePath: '/styles/scheda.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/valutaBozza.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img' });
+        });
         this.app.all('*', (_, res) => res.status(code_enum_1.Code.NOT_FOUND).send(new response_1.HttpResponse(code_enum_1.Code.NOT_FOUND, status_enum_1.Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
     }
 }

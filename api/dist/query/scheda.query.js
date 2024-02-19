@@ -20,43 +20,37 @@ exports.QUERY = {
     SELECT_SCHEDATORI: 'SELECT * FROM users JOIN tds_users_schede ON users.id = tds_users_schede.id_user WHERE tds_users_schede.id_scheda = ?',
     UPDATE_SCHEDA: 'UPDATE schede SET id = ?, titolo_opera = ?,  corpo_scheda = ?, iscrizioni = ?, descrizione_sintetica = ?, storia_espositiva = ?, classificazione = ? WHERE id = ?',
     DELETE_SCHEDA: 'DELETE FROM schede WHERE id = ?',
-    CREATE_SCHEDA: (schedaData) => {
-        const fields = [
-            'titolo_opera', 'corpo_scheda', 'iscrizioni',
-            'descrizione_sintetica', 'storia_espositiva', 'classificazione'
-        ];
-        const values = fields.map(field => schedaData[field]);
-        const placeholders = fields.map(() => '?');
-        const query = `
-          INSERT INTO schede (${fields.join(', ')})
-          VALUES (${placeholders.join(', ')});
-        `;
-        return {
-            query,
-            values,
-        };
-    },
-    CREATE_SCHEDA_AUTORI: (schedaId, autoriData) => {
-        const autoriQueries = [];
-        const tdsSchedeAutoriQueries = [];
-        const autoriValues = [];
-        const formulaPrecedente = Object.entries(autoriData).filter(([key]) => key.includes("Formula_precedente")).map(([_, value]) => value);
-        const formulaSuccessiva = Object.entries(autoriData).filter(([key]) => key.includes("formula_successiva")).map(([_, value]) => value);
-        const categoria = Object.entries(autoriData).filter(([key]) => key.includes("Categoria")).map(([_, value]) => value);
-        const nome = Object.entries(autoriData).filter(([key]) => key.includes("NomeAutore")).map(([_, value]) => value);
-        const autorePreesistente = Object.entries(autoriData).filter(([key]) => key.includes("AutorePreesistente")).map(([_, value]) => value);
-        // if (autorePreesistente) {
-        // }
-        autoriQueries.push(`INSERT INTO autori (formula_precedente, formula_successiva, categoria, nome) VALUES ('${formulaPrecedente}', '${formulaSuccessiva}', '${categoria}', '${nome}')`);
-        tdsSchedeAutoriQueries.push(`INSERT INTO tds_schede_autori (id_scheda, id_autore) SELECT ${schedaId}, LAST_INSERT_ID()`);
-        const finalAutoreQuery = autoriQueries.join('; ');
-        const finalTdsSchedeAutoriQuery = tdsSchedeAutoriQueries.join('; ');
-        const finalQuery = `START TRANSACTION; ${finalAutoreQuery}; ${finalTdsSchedeAutoriQuery}; COMMIT;`;
-        return {
-            query: finalQuery,
-            values: [], // Non sono necessari valori aggiuntivi in questo caso
-        };
-    },
-    CREATE_SCHEDA_MATERIALE: '',
-    CREATE_SCHEDA_TECNICA: '',
+    INSERT_SCHEDA: 'INSERT INTO schede (titolo_opera, corpo_scheda, iscrizioni, descrizione_sintetica, storia_espositiva, classificazione) VALUES (?, ?, ?, ?, ?, ?)',
+    INSERT_AUTORE: 'INSERT INTO autori (formula_precedente, formula_successiva, categoria, nome) VALUES (?, ?, ?, ?)',
+    INSERT_TDS_SCHEDA_AUTORI: 'INSERT INTO tds_schede_autori (id_scheda, id_autore) VALUES (?, ?)',
+    INSERT_CONOLOGIA: 'INSERT INTO cronologie (ambito_storico, etichetta_data, giorno_data_da, mese_data_da, anno_data_da, giorno_data_a, mese_data_a, anno_data_a) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    INSERT_TDS_SCHEDA_CONOLOGIA: 'INSERT INTO tds_schede_cronologie (id_scheda, id_cronologia) VALUES (?, ?)',
+    INSERT_UBICAZIONE: 'INSERT INTO ubicazioni (ubicazione, descrizione) VALUES (?, ?)',
+    INSERT_TDS_SCHEDA_UBICAZIONE: 'INSERT INTO tds_schede_ubicazioni (id_scheda, id_ubicazione) VALUES (?, ?)',
+    INSERT_INVENTARIO: 'INSERT INTO inventari (numero_inventario, nome_inventario) VALUES (?, ?)',
+    INSERT_TDS_SCHEDA_INVENTARIO: 'INSERT INTO tds_schede_inventari (id_scheda, id_inventario) VALUES (?, ?)',
+    INSERT_MATERIALE: 'INSERT INTO materiali (nome_materiale) VALUES (?)',
+    INSERT_TDS_SCHEDA_MATERIALE: 'INSERT INTO tds_schede_materiali (id_scheda, id_materiale) VALUES (?, ?)',
+    INSERT_TECNICA: 'INSERT INTO tecniche (nome_tecnica) VALUES (?)',
+    INSERT_TDS_SCHEDA_TECNICA: 'INSERT INTO tds_schede_tecniche (id_scheda, id_tecnica) VALUES (?, ?)',
+    INSERT_PROVENIENZA: 'INSERT INTO provenienze (provenienza, descrizione, note) VALUES (?, ?, ?)',
+    INSERT_TDS_SCHEDA_PROVENIENZA: 'INSERT INTO tds_schede_provenienze (id_scheda, id_provenienza) VALUES (?, ?)',
+    INSERT_MOSTRA: 'INSERT INTO mostre (curatore, titolo_mostra, giorno_data_da, mese_data_da, anno_data_da, giorno_data_a, mese_data_a, anno_data_a, luogo_mostra, descrizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )',
+    INSERT_TDS_SCHEDA_MOSTRA: 'INSERT INTO tds_schede_mostre (id_scheda, id_mostra) VALUES (?, ?)',
+    INSERT_BIBILIOGRAFIA: 'INSERT INTO bibliografie (riferimento_bibliografico) VALUES (?)',
+    INSERT_TDS_SCHEDA_BIBILIOGRAFIA: 'INSERT INTO tds_schede_bibliografie (id_scheda, id_bibliografia) VALUES (?, ?)',
+    INSERT_ALTRABIBILIOGRAFIA: 'INSERT INTO altreBibliografie (riferimento_bibliografico) VALUES (?)',
+    INSERT_TDS_SCHEDA_ALTRABIBILIOGRAFIA: 'INSERT INTO tds_schede_altreBibliografie (id_scheda, id_altreBibliografie) VALUES (?, ?)',
+    INSERT_FOTOGRAFICA: 'INSERT INTO documentazioniFotografiche (riferimento_bibliografico) VALUES (?)',
+    INSERT_TDS_SCHEDA_FOTOGRAFICA: 'INSERT INTO tds_schede_documentazioniFotografiche (id_scheda, id_documentazioneFotografica) VALUES (?, ?)',
+    INSERT_GRUPPO_MISURE: 'INSERT INTO tds_schede_gruppo_misure (intero_parziale, titolo_gruppo_misure) VALUES (?, ?)',
+    INSERT_MISURE: 'INSERT INTO misure (direzione, tipo, valore, unita_di_misura, id_gruppo_misure) VALUES (?, ?, ?, ?, ?)',
+    INSERT_TDS_SCHEDA_MISURE: 'INSERT INTO tds_schede_misure (id_scheda, id_gruppo_misure) VALUES (?, ?)',
+    INSERT_IMMAGINI: 'INSERT INTO immagini (data, didascalia) VALUES (?, ?)',
+    INSERT_TDS_SCHEDA_IMMAGINI: 'INSERT INTO tds_schede_immagini (id_scheda, id_immagine) VALUES (?, ?)',
+    INSERT_USER: 'INSERT INTO users (isAdmin, username, display_name) VALUES (?, ?, ?)',
+    INSERT_STATOSCHEDA: 'INSERT INTO statoScheda (stato, commento) VALUES(?, ?)',
+    INSERT_TDS_SCHEDE_STATOSCHEDA: 'INSERT INTO tds_schede_statoScheda (id_scheda, id_stato) VALUES (?, ?)',
+    INSERT_TDS_STATO_SCHEDAUSER: 'INSERT INTO tds_stato_schedeUser (id_stato, id_user) VALUES (?, ?)',
+    INSERT_TDS_USER_SCHEDA: 'INSERT INTO tds_users_schede (id_user, id_scheda, data_modifica) VALUES (?, ?, ?)',
 };

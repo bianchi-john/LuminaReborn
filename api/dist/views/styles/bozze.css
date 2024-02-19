@@ -1,7 +1,8 @@
-  .choice-box{
-    border: 2px solid #007bff;
-    border-radius: 10px;
-    color: black;
-  }
-  
-  
+.btn{
+    margin-right: 5px;
+    margin-right: 5px;
+}
+.btn-success{
+    margin-bottom: 20px;
+    margin-top: 20px;
+}

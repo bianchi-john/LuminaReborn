@@ -105,11 +105,11 @@ function createCard(data, index) {
 
   var pathElement = document.createElement("p");
   pathElement.classList.add("card-text");
-  pathElement.textContent = data.path;
+  pathElement.textContent = data.data;
 
-  if (data.path) {
+  if (data.data) {
     var imgElement = document.createElement("img");
-    imgElement.src = data.path;
+    imgElement.src = data.data;
     var imageContainer = document.createElement("div");
     imgElement.classList.add("card-image");
     imageContainer.classList.add("image-container");
@@ -241,7 +241,7 @@ function handleSearch() {
 
   document.getElementById('result').innerHTML = '';
 
-  var url = 'http://0.0.0.0:3000/search/?';
+  var url = 'http://172.22.0.6:3000/search/?';
   var queries = [];
 
   if (advancedSearchFields.style.display === "none") {

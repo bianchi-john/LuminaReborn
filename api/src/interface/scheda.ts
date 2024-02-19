@@ -6,4 +6,5 @@ export interface Scheda {
     descrizione_sintetica: string;
     storia_espositiva: string;
     classificazione: string;
+    [key: string]: string | number;
 }

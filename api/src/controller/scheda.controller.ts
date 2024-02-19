@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { connection } from '../config/mysql.config';
 import { HttpResponse } from '../domain/response';
@@ -6,7 +5,10 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
-import { YourValidationResult, validateSchedaData } from '../validator/bozzaValidator';
+import { YourValidationResult, validateSchedaData } from '../helpers/bozzaValidator';
+import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure , insertUser, insertImmagini} from '../helpers/schedaService';
+import { getUseData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
+import { Request, Response } from 'express';
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
 
@@ -99,44 +101,62 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
 
 
 
-// ###########################################################################################
-
-
-
 export const createScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
+  
   let scheda: Scheda = { ...req.body };
-  try {
-        // Esegui i controlli di validazione
-        const validationResult: YourValidationResult = await validateSchedaData(scheda);
 
-        if (!validationResult.isValid) {
-          return res.status(Code.BAD_REQUEST)
-            .send(new HttpResponse(
-              Code.BAD_REQUEST,
-              Status.BAD_REQUEST,
-              validationResult.errorMessage || 'Errore di validazione non specificato'
-            ));
-        }
-    
+  try {
+    // Esegui i controlli di validazione
+    const validationResult: YourValidationResult = await validateSchedaData(scheda);
+
+    if (!validationResult.isValid) {
+      return res.status(Code.BAD_REQUEST)
+        .send(new HttpResponse(
+          Code.BAD_REQUEST,
+          Status.BAD_REQUEST,
+          validationResult.errorMessage || 'Errore di validazione non specificato'
+        ));
+    }
+
+    // Inserisci la scheda e ottieni l'ID della scheda appena inserita
+    const schedaId = await insertScheda(scheda);
     const pool = await connection();
-    const result: ResultSet = await pool.query(QUERY.CREATE_SCHEDA, Object.values(scheda));
-    scheda = { id: (result[0] as ResultSetHeader).insertId, ...req.body };
-    return res.status(Code.CREATED)
-      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Scheda created', scheda));
-  } catch (error: unknown) {
+
+    // Mi prendo l'user
+    const userData = await getUseData(req, res);
+
+
+    await insertAutori(pool, schedaId, scheda);
+    await insertCronologie(pool, schedaId, scheda);
+    await insertUbicazioni(pool, schedaId, scheda);
+    await insertInventario(pool, schedaId, scheda);
+    await insertMateriali(pool, schedaId, scheda);
+    await insertTecniche(pool, schedaId, scheda);
+    await insertProvenienze(pool, schedaId, scheda);
+    await insertMostre(pool, schedaId, scheda);
+    await insertBibliografia(pool, schedaId, scheda);
+    await insertAltraBibliografia(pool, schedaId, scheda);
+    await insertDocFotografica(pool, schedaId, scheda);
+    await insertMisure(pool, schedaId, scheda);
+    await insertImmagini(pool, schedaId, scheda);
+
+    
+    if (userData !== false) {
+      await insertUser(pool, schedaId, scheda, userData);
+
+      return res.status(Code.CREATED)
+        .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Creata la bozza con id ' + schedaId));
+    } else {
+      return res.status(Code.INTERNAL_SERVER_ERROR)
+        .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Problema di verifica dell utente'));
+    }
+    } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
       .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
   }
 };
-
-
-// ###########################################################################################
-
-
-
-
 
 export const updateScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <title>Valuta bozza</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="icon" type="image/png" href="/img/favicon/favicon.png">
+    <script src="<%= jsFilePath %>"></script>
+    <script src="<%= sidebarScript %>"></script>
+    <link rel="stylesheet" href="<%= cssFilePath %>">
+    <link rel="stylesheet" href="<%= sidebarStyle %>">
+</head>
+    
+<body>
+    <div class="jumbotron text-center">
+        <h1>Valuta Bozza</h1>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col title">
+                <div class="card mt-2">
+                    <div class="card-header">Titolo opera</div>
+                    <div class="card-body title" id="titolo">
+                    </div>
+                </div>
+                <div class="card mt-2 autori">
+                    <div class="card-header">Autore/i</div>
+                    <div class="card-body">
+                        <div class="item autori" id="autori">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div id="myModal" class="modal">
+                    <span class="close">&times;</span>
+                    <img class="modal-content" id="img01" oncontextmenu="return false">
+                    <div id="caption"></div>
+                </div>
+                <section class="nw">
+                    <br>
+                    <div class="slideshow-container">
+                    </div>
+                    <br>
+                </section>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col cronologie">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#cronologie" aria-expanded="true">Cronologia</div>
+                    <div class="card-body cronologie collapse show" id="cronologie">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col ambito">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#ambito" aria-expanded="true">Ambito</div>
+                    <div class="card-body ambito collapse show" id="ambito">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col ubicazioni">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#ubicazioni">Ubicazione
+                    </div>
+                    <div class="card-body ubicazioni collapse show" id="ubicazioni">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col inventari">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#inventari">Numero di inventario</div>
+                    <div class="card-body inventari collapse show" id="inventari">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col giuridica">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#giuridica">Proprietà giuridica</div>
+                    <div class="card-body giuridica collapse show" id="giuridica">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col classificazione">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#classificazione">Classificazione opera
+                    </div>
+                    <div class="card-body classificazione collapse show" id="classificazione">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col materiali">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#materiali">Materiali</div>
+                    <div class="card-body collapse show" id="materiali">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col tecniche">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#tecniche">Tecniche</div>
+                    <div class="card-body tecniche collapse show" id="tecniche">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col misure">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#misure">Misure</div>
+                    <div class="card-body misureContent collapse show" id="misure">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col provenienze">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#provenienze">Provenienze</div>
+                    <div class="card-body provenienze collapse show" id="provenienze">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col iscrizioni">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#iscrizioni">Iscrizioni</div>
+                    <div class="card-body iscrizioni collapse show" id="iscrizioni">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col storia_espositiva">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#storia_espositiva">Vicende
+                        collezionistiche e storia espositiva</div>
+                    <div class="card-body storia_espositiva collapse show" id="storia_espositiva">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col descrizione_sintetica">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#descrizione_sintetica">Descrizione
+                        sintetica</div>
+                    <div class="card-body descrizione_sintetica collapse show" id="descrizione_sintetica">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col corpo_scheda">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#corpo_scheda">Commento storico-critico</div>
+                    <div class="card-body corpo_scheda collapse" id="corpo_scheda">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col mostre">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#mostre">Mostre</div>
+                    <div class="card-body mostre collapse" id="mostre">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col bibliografie">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#bibliografie">Bibliografia</div>
+                    <div class="card-body bibliografie collapse" id="bibliografie">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col altreBibliografie">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#altreBibliografie">Altra bibliografia
+                    </div>
+                    <div class="card-body altreBibliografie collapse" id="altreBibliografie">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col documentazioneFotografica">
+                <div class="card">
+                    <div class="card-header" data-toggle="collapse" data-target="#documentazioneFotografica">
+                        Documentazione fotografica</div>
+                    <div class="card-body documentazioneFotografica collapse" id="documentazioneFotografica">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col">
+                <button type="button" class="btn btn-success" id="approvaButton">Approva</button>
+                <button type="button" class="btn btn-danger" id="rigettaButton">Rigetta</button>
+            </div>
+        </div>
+
+
+
+
+        <div class="footer-space"></div>
+    </div>
+</body>
+
+</html>

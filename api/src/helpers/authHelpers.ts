@@ -1,4 +1,3 @@
-// authMiddleware.ts
 
 import { Request, Response, NextFunction } from 'express';
 import { HttpResponse } from '../domain/response';
@@ -6,8 +5,9 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import Cookies from 'cookies';
 import axios from 'axios';
+import { UserData } from '../interface/user';
 
-export const isCookieOk = async (jwt: string): Promise<boolean | string> => {
+export const cookieChecker = async (jwt: string): Promise<boolean | string> => {
   try {
     const response = await axios.get('http://172.22.0.4/users/self', {
       params: { jwt }
@@ -55,7 +55,7 @@ export const onlyAdmin = async (
   }
 
   try {
-    const isAdminUser = await isCookieOk(jwt);
+    const isAdminUser = await cookieChecker(jwt);
 
     if (isAdminUser) {
       route(req, res, next);
@@ -65,7 +65,58 @@ export const onlyAdmin = async (
         .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
     }
   } catch (error) {
-    console.error('Error during isCookieOk check:', error);
+    console.error('Error during cookieChecker check:', error);
     res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+  }
+};
+
+
+
+
+
+
+const getJwtFromRequest = (req: Request, res: Response): string | undefined| boolean => {
+  try {
+    const cookies = new Cookies(req, res);
+    const jwt = cookies.get('jwt');
+
+    if (!jwt) {
+      // If JWT is not found in cookies, handle it gracefully
+      return false
+    }
+
+    return jwt;
+  } catch (error) {
+    // If an error occurs, handle it and return undefined
+    console.error('Error retrieving JWT:', error);
+    res.status(403).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Errore nel recupero del JWT'));
+    return undefined;
+  }
+};
+
+export const getUseData = async (req: Request, res: Response): Promise<UserData | false> => {
+  
+  let jwt = getJwtFromRequest(req, res);
+  if (jwt) {
+    try {
+      const response = await axios.get('http://172.22.0.4/users/self', {
+        params: { jwt }
+      });
+      if (response.status === 200) {
+        let userData: UserData = response.data;
+        return userData;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error('Non è stato possibile recuperare il nome utente dal sistema di gestione utenti:', error);
+      res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+      return false;
+    }
+
+  }
+  else {
+    return false;
+
   }
 };

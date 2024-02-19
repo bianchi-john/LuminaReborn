@@ -1,5 +1,4 @@
 "use strict";
-// authMiddleware.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onlyAdmin = exports.isCookieOk = void 0;
+exports.getUseData = exports.onlyAdmin = exports.cookieChecker = void 0;
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const cookies_1 = __importDefault(require("cookies"));
 const axios_1 = __importDefault(require("axios"));
-const isCookieOk = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
+const cookieChecker = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios_1.default.get('http://172.22.0.4/users/self', {
             params: { jwt }
@@ -50,7 +49,7 @@ const isCookieOk = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
         return false;
     }
 });
-exports.isCookieOk = isCookieOk;
+exports.cookieChecker = cookieChecker;
 const onlyAdmin = (req, res, next, route) => __awaiter(void 0, void 0, void 0, function* () {
     const cookies = new cookies_1.default(req, res);
     const jwt = cookies.get('jwt');
@@ -61,7 +60,7 @@ const onlyAdmin = (req, res, next, route) => __awaiter(void 0, void 0, void 0, f
         return res.redirect('/');
     }
     try {
-        const isAdminUser = yield (0, exports.isCookieOk)(jwt);
+        const isAdminUser = yield (0, exports.cookieChecker)(jwt);
         if (isAdminUser) {
             route(req, res, next);
         }
@@ -72,8 +71,51 @@ const onlyAdmin = (req, res, next, route) => __awaiter(void 0, void 0, void 0, f
         }
     }
     catch (error) {
-        console.error('Error during isCookieOk check:', error);
+        console.error('Error during cookieChecker check:', error);
         res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
     }
 });
 exports.onlyAdmin = onlyAdmin;
+const getJwtFromRequest = (req, res) => {
+    try {
+        const cookies = new cookies_1.default(req, res);
+        const jwt = cookies.get('jwt');
+        if (!jwt) {
+            // If JWT is not found in cookies, handle it gracefully
+            return false;
+        }
+        return jwt;
+    }
+    catch (error) {
+        // If an error occurs, handle it and return undefined
+        console.error('Error retrieving JWT:', error);
+        res.status(403).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Errore nel recupero del JWT'));
+        return undefined;
+    }
+};
+const getUseData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let jwt = getJwtFromRequest(req, res);
+    if (jwt) {
+        try {
+            const response = yield axios_1.default.get('http://172.22.0.4/users/self', {
+                params: { jwt }
+            });
+            if (response.status === 200) {
+                let userData = response.data;
+                return userData;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (error) {
+            console.error('Non è stato possibile recuperare il nome utente dal sistema di gestione utenti:', error);
+            res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+});
+exports.getUseData = getUseData;
