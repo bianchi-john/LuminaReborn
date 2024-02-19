@@ -29,6 +29,7 @@ npm run start:build  && docker-compose up -d --build
 Delete all:
 ```sh
 docker system prune
+docker system prune --all --volumes
 ```
 
 Issues:
