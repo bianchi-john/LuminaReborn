@@ -1,3 +1,4 @@
+
 .bold {
   font-weight: bold;
 }
@@ -198,6 +199,16 @@ li {
   flex-direction: row;
   margin-left: auto;
   margin-right: auto;
+}
+
+#approvaButton{
+  margin-right: 10px;
+}
+
+
+
+.modal-backdrop.show{
+  opacity: 0!important;
 }
 
 @media only screen and (max-width: 992px) {
