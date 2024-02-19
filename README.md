@@ -26,6 +26,11 @@ docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(do
 npm run start:build  && docker-compose up -d --build
 ```
 
+Delete all:
+```sh
+docker system prune
+```
+
 Issues:
 ```sh
 # Recreate extern network
