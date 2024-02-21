@@ -30,7 +30,7 @@ function showSlides(n) {
 
     for (i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
-        
+
     }
     slides[slideIndex - 1].style.display = "contents";
 }
@@ -103,29 +103,31 @@ function populateWebPage(data) {
 
 
     for (i = 0; i < data.data.autori.length; i++) {
-        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", ";}
-        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", ";}
-        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", ";}
-        if(data.data.autori[i].categoria) {document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>";}
+        if (data.data.autori[i].formula_precedente) { document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", "; }
+        if (data.data.autori[i].formula_successiva) { document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", "; }
+        if (data.data.autori[i].nome) { document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", "; }
+        if (data.data.autori[i].categoria) { document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>"; }
         $('.autori').removeClass('autori');
     }
 
     for (i = 0; i < data.data.schedatori.length; i++) {
-        if(data.data.schedatori[i].first_name) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].first_name + " ";}
-        if(data.data.schedatori[i].last_name){document.getElementById('schedatore').innerHTML += data.data.schedatori[i].last_name ;}
+        if (data.data.schedatori[i].first_name) { document.getElementById('schedatore').innerHTML += data.data.schedatori[i].first_name + " "; }
+        if (data.data.schedatori[i].last_name) { document.getElementById('schedatore').innerHTML += data.data.schedatori[i].last_name; }
         $('.schedatore').removeClass('schedatore');
     }
 
 
 
     for (i = 0; i < data.data.cronologie.length; i++) {
-        if(data.data.cronologie[i].etichetta_data) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data}
-        $('.cronologie').removeClass('cronologie'); 
+        if (data.data.cronologie[i].etichetta_data) { document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data }
+        $('.cronologie').removeClass('cronologie');
     }
 
     for (i = 0; i < data.data.cronologie.length; i++) {
-        if(data.data.cronologie[i].ambito_storico) {document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico
-    $('.ambito').removeClass('ambito'); }
+        if (data.data.cronologie[i].ambito_storico) {
+            document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico
+            $('.ambito').removeClass('ambito');
+        }
     }
 
 
@@ -140,12 +142,12 @@ function populateWebPage(data) {
         var nomeInventario = data.data.inventari[i].nome_inventario;
         var numeroInventario = data.data.inventari[i].numero_inventario;
         var descrizione = data.data.inventari[i].descrizione;
-    
+
         // Verifica se le stringhe sono vuote e, se non lo sono, le stampa
         document.getElementById('inventari').innerHTML += (nomeInventario !== "" ? nomeInventario : "");
         document.getElementById('inventari').innerHTML += (numeroInventario !== "" ? numeroInventario : "");
         document.getElementById('giuridica').innerHTML += (descrizione !== "" ? descrizione : "");
-    
+
         if (nomeInventario || numeroInventario) {
             $('.inventari').removeClass('inventari');
         }
@@ -153,18 +155,18 @@ function populateWebPage(data) {
             $('.giuridica').removeClass('giuridica');
         }
     }
-    
-    
+
+
 
     for (i = 0; i < data.data.materiali.length; i++) {
         document.getElementById('materiali').innerHTML += data.data.materiali[i].nome_materiale;
-        if (data.data.materiali[i].descrizione) {document.getElementById('materiali').innerHTML +=+ ", " + data.data.materiali[i].descrizione + " <br>";}
+        if (data.data.materiali[i].descrizione) { document.getElementById('materiali').innerHTML += + ", " + data.data.materiali[i].descrizione + " <br>"; }
         $('.materiali').removeClass('materiali');
     }
 
     for (i = 0; i < data.data.tecniche.length; i++) {
         document.getElementById('tecniche').innerHTML += data.data.tecniche[i].nome_tecnica
-        if (data.data.tecniche[i].descrizione) {document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>";}
+        if (data.data.tecniche[i].descrizione) { document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>"; }
         $('.tecniche').removeClass('tecniche');
     }
 
@@ -172,51 +174,51 @@ function populateWebPage(data) {
         var provenienza = data.data.provenienze[i].provenienza;
         var note = data.data.provenienze[i].note;
         var descrizione = data.data.provenienze[i].descrizione;
-    
+
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (provenienza && provenienza.trim() !== "") {
             document.getElementById('provenienze').innerHTML += provenienza + " ";
         }
-    
+
         if (note && note.trim() !== "") {
             document.getElementById('provenienze').innerHTML += note + " ";
         }
-    
+
         if (descrizione && descrizione.trim() !== "") {
             document.getElementById('provenienze').innerHTML += descrizione + " <br>";
         }
-    
+
         $('.provenienze').removeClass('provenienze');
     }
-        
+
     for (i = 0; i < data.data.mostre.length; i++) {
         var titoloMostra = data.data.mostre[i].titolo_mostra;
         var curatore = data.data.mostre[i].curatore;
         var dataMostra = data.data.mostre[i].data_mostra;
         var luogoMostra = data.data.mostre[i].luogo_mostra;
         var descrizione = data.data.mostre[i].descrizione;
-    
+
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (titoloMostra && titoloMostra.trim() !== "") {
             document.getElementById('mostre').innerHTML += titoloMostra + ", ";
         }
-    
+
         if (curatore && curatore.trim() !== "") {
             document.getElementById('mostre').innerHTML += curatore + ", ";
         }
-    
+
         if (dataMostra && dataMostra.trim() !== "") {
             document.getElementById('mostre').innerHTML += dataMostra + ", ";
         }
-    
+
         if (luogoMostra && luogoMostra.trim() !== "") {
             document.getElementById('mostre').innerHTML += luogoMostra + ", ";
         }
-    
+
         if (descrizione && descrizione.trim() !== "") {
             document.getElementById('mostre').innerHTML += descrizione + "<br>";
         }
-    
+
         $('.mostre').removeClass('mostre');
     }
 
@@ -253,7 +255,7 @@ function populateWebPage(data) {
             $('.misure').removeClass('misure');
 
         }
-    }); 
+    });
 
     Object.keys(raggruppamenti).forEach(function (gruppo) {
         $('.misureContent').append('<ol id="lista' + gruppo + '"></ol>');
@@ -291,30 +293,38 @@ function populateWebPage(data) {
 // Funzione per mostrare la finestra modale
 function showModal(testo) {
     // Crea il markup per la finestra modale
-    var modal = $('<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
+    var modal = $('<div class="modal fade modal-static" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
     <div class="modal-dialog" role="document">\
         <div class="modal-content">\
             <div class="modal-header">\
                 <h5 class="modal-title" id="exampleModalLabel">Messaggio</h5>\
-                    <span aria-hidden="true">&times;</span>\
-                </button>\
             </div>\
             <div class="modal-body">' + testo + '</div>\
         </div>\
     </div>\
   </div>');
 
-  // Aggiungi la modale al documento
-  $('body').append(modal);
+    // Aggiungi la modale al documento
+    $('body').append(modal);
 
-  // Mostra la modale
-  modal.modal('show');
+    // Mostra la modale
+    modal.modal('show');
 
-  // Nascondi la finestra modale dopo 3 secondi (puoi modificare questo valore)
-  setTimeout(function () {
-    modal.modal('hide');
-    location.reload(); // Ricarica la pagina dopo 3 secondi
-  }, 3000);
+    // Nascondi la finestra modale dopo 3 secondi (puoi modificare questo valore)
+    setTimeout(function () {
+        modal.modal('hide');
+    }, 3000);
+
+    // Gestisci l'evento click sullo sfondo della modale per evitare la chiusura
+    modal.on('click', function (event) {
+        if ($(event.target).hasClass('modal')) {
+            event.stopPropagation();
+        }
+    });
+    // Gestisci l'evento hidden.bs.modal per reindirizzare l'utente
+    modal.on('hidden.bs.modal', function () {
+        window.location.href = 'http://172.22.0.6:3000/bozze';
+    });
 }
 
 // INVIA
@@ -323,50 +333,50 @@ function sendPostRequest() {
     const schedaId = urlParams.get('id');
 
     fetch("http://172.22.0.6:3000/admin?schedaId=" + schedaId, {
-      method: "POST",
-      body: JSON.stringify({ schedaId: schedaId })
+        method: "POST",
+        body: JSON.stringify({ schedaId: schedaId })
     })
-      .then(response => {
-        if (response.ok) {
-          console.log("Bozza accettata'");
-          showModal("Bozza accettata");
-        } else {
-          showModal("Errore nella chiamata POST");
-          console.error("Errore nella chiamata POST:", response.statusText);
-        }
-      })
-      .catch(error => {
-        showModal("Errore nella chiamata POST");
-        console.error("Errore nella chiamata POST:", error);
-      });
-  }
-  
-  
-  
-  // ELIMINA
-  function deleteScheda() {
+        .then(response => {
+            if (response.ok) {
+                console.log("Bozza accettata'");
+                showModal("Bozza accettata. Disponibile per tutti gli utenti");
+            } else {
+                showModal("Errore nella chiamata POST");
+                console.error("Errore nella chiamata POST:", response.statusText);
+            }
+        })
+        .catch(error => {
+            showModal("Errore nella chiamata POST");
+            console.error("Errore nella chiamata POST:", error);
+        });
+}
+
+
+
+// ELIMINA
+function deleteScheda() {
     const urlParams = new URLSearchParams(window.location.search);
     const schedaId = urlParams.get('id');
 
     fetch("http://172.22.0.6:3000/admin?schedaId=" + schedaId, {
-      method: "DELETE",
-      body: JSON.stringify({ schedaId: schedaId })
+        method: "DELETE",
+        body: JSON.stringify({ schedaId: schedaId })
     })
-      .then(response => {
-        if (response.ok) {
-          console.log("Bozza rifiutata");
-          showModal("Bozza rifiutata");
-        } else {
-          showModal("Errore nella chiamata DELETE");
-          console.error("Errore nella chiamata DELETE:", response.statusText);
-        }
-      })
-      .catch(error => {
-        showModal("Errore nella chiamata DELETE");
-        console.error("Errore nella chiamata DELETE:", error);
-      });
-  }
-  
+        .then(response => {
+            if (response.ok) {
+                console.log("Bozza rifiutata");
+                showModal("Bozza rifiutata");
+            } else {
+                showModal("Errore nella chiamata DELETE");
+                console.error("Errore nella chiamata DELETE:", response.statusText);
+            }
+        })
+        .catch(error => {
+            showModal("Errore nella chiamata DELETE");
+            console.error("Errore nella chiamata DELETE:", error);
+        });
+}
+
 
 $(document).ready(function () {
     const queryString = window.location.search;
@@ -381,8 +391,8 @@ $(document).ready(function () {
     // Evento click per gestire l'invio quando si preme il bottone "Invia"
     $(".container").on("click", ".btn-success", function () {
         sendPostRequest();
-        });
-    
+    });
+
     // Evento click per gestire l'eliminazione quando si preme il bottone "Elimina"
     $(".container").on("click", ".btn-danger", function () {
         deleteScheda();

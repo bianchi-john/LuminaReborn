@@ -1205,7 +1205,7 @@ async function gatherData() {
                     reader.onerror = reject;
                     reader.readAsDataURL(imageFile);
                 });
-                
+
                 i = i + 2;
                 formData["immagine" + i] = base64data;
                 formData["didascalia_immagine" + i] = description;
@@ -1273,14 +1273,11 @@ async function sendData(data) {
 // Funzione per mostrare la modale
 function mostraModale(testo) {
     // Creare la modale
-    var modal = $('<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
+    var modal = $('<div class="modal fade modal-static" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
                         <div class="modal-dialog" role="document">\
                             <div class="modal-content">\
                                 <div class="modal-header">\
                                     <h5 class="modal-title" id="exampleModalLabel">Messaggio</h5>\
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
-                                        <span aria-hidden="true">&times;</span>\
-                                    </button>\
                                 </div>\
                                 <div class="modal-body">' + testo + '</div>\
                             </div>\
@@ -1297,8 +1294,19 @@ function mostraModale(testo) {
     setTimeout(function () {
         modal.modal('hide');
     }, 3000);
-}
 
+    // Gestisci l'evento click sullo sfondo della modale per evitare la chiusura
+    modal.on('click', function (event) {
+        if ($(event.target).hasClass('modal')) {
+            event.stopPropagation();
+        }
+    });
+    // Gestisci l'evento hidden.bs.modal per reindirizzare l'utente
+    modal.on('hidden.bs.modal', function () {
+        window.location.href = 'http://172.22.0.6:3000/bozze';
+    });
+
+}
 
 $(document).ready(function () {
     initInputValidation();
