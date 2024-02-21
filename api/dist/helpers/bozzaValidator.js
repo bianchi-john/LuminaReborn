@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateSchedaData = void 0;
-const promise_1 = require("mysql2/promise");
 const allowedKeys = [
     "Formula_precedente",
     "Formula_successiva",
@@ -68,15 +67,6 @@ const allowedKeys = [
     "didascalia_immagine"
 ];
 const validateSchedaData = (schedaData) => __awaiter(void 0, void 0, void 0, function* () {
-    // Controllo SQL injection
-    for (const key in schedaData) {
-        if (Object.prototype.hasOwnProperty.call(schedaData, key) && typeof schedaData[key] === 'string') {
-            const escapedValue = yield (0, promise_1.escape)(schedaData[key]);
-            if (escapedValue.slice(1, -1) !== schedaData[key]) {
-                return { isValid: false, errorMessage: `Potenziale attacco SQL injection rilevato nel campo ${key}` };
-            }
-        }
-    }
     // Controllo che le chiavi siano tra quelle consentite
     for (const key in schedaData) {
         if (!allowedKeys.some(allowedKey => key.includes(allowedKey))) {

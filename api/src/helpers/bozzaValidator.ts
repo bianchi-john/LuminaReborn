@@ -66,15 +66,7 @@ const allowedKeys = [
 
 
 export const validateSchedaData = async (schedaData: any): Promise<YourValidationResult> => {
-  // Controllo SQL injection
-  for (const key in schedaData) {
-    if (Object.prototype.hasOwnProperty.call(schedaData, key) && typeof schedaData[key] === 'string') {
-      const escapedValue = await escape(schedaData[key]);
-      if (escapedValue.slice(1, -1) !== schedaData[key]) {
-        return { isValid: false, errorMessage: `Potenziale attacco SQL injection rilevato nel campo ${key}` };
-      }
-    }
-  }
+
     // Controllo che le chiavi siano tra quelle consentite
     for (const key in schedaData) {
       if (!allowedKeys.some(allowedKey => key.includes(allowedKey))) {
