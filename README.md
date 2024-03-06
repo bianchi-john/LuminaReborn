@@ -1,6 +1,12 @@
 # LUMiNA Reborn
 ## Project for "Lucca National Museums"
 
+Requirements:
+
+   -Install node version v21.6.2 possibly via nvm. Here's a tutorial to follow:
+   https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-22-04
+
+
 Setup and run:
 
 ```sh
