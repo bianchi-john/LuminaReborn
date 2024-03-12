@@ -46,6 +46,7 @@
     </a>
     <h1>Editor di bozze</h1>
 </div>
+
 <div class="container">
     <div class="row">
         <div class="col title">
@@ -155,14 +156,19 @@
                     <div class="field">
                         <div id="textboxContainerAutori">
                             <div class="form-group" id="groupAutori1">
+                                <p>Nome</p>
+                                <input type="text" id="Nome1" name="Nome">
                                 <p>Formula precedente</p>
                                 <input type="text" id="Formula_precedente1" name="Formula precedente">
                                 <p>Formula successiva</p>
                                 <input type="text" id="Formula_successiva1" name="Formula successiva">
                                 <p>Categoria</p>
-                                <input type="text" id="Categoria1" name="Categoria">
-                                <p>Nome</p>
-                                <input type="text" id="Nome1" name="Nome">
+                                <select name="Categoria" id="Categoria1">
+                                    <option></option>
+                                    <option value="Opera firmata">Opera firmata</option>
+                                    <option value="Opera attribuita">Opera attribuita</option>
+                                    <option value="Opera documentata">Opera documentata</option>
+                                </select>
                                 <p>Seleziona preesistente</p>
                                 <select name="autoriSelect1" id="autoriSelect1" onchange="handleSelectChange(this)">
                                     <option selected=""></option>
@@ -170,8 +176,8 @@
                                 </select>
                             </div>
                         </div>
-                        <button onclick="aggiungiGruppo('textboxContainerAutori', 'groupAutori', 'Formula_precedente', 'Formula_successiva', 'Categoria', 'Nome')">Aggiungi</button>
-                        <button class="removeButton" onclick="rimuoviGruppo('textboxContainerAutori')">Rimuovi</button>
+                        <button onclick="aggiungiGruppoAutori()">Aggiungi</button>
+                        <button id="rimuoviAutori" onclick="rimuoviGruppoAutori()">Rimuovi</button>
                     </div>
                 </div>
             </div>
@@ -184,7 +190,6 @@
                 <div class="card-body cronologie" id="cronologie">
                     <div class="field">
                     <div class="form-group">
-                        <label>Ricerca in data</label>
                         <div class="gruppo_date">
                             <p>Data da</p>
                             <div class="gruppo_giorni">
@@ -244,7 +249,7 @@
                     <div id="textboxContainerUbicazioni ">
                         <p>Ubicazione</p>
                         <input type="text" id="ubicazione" name="ubicazione">
-                        <p>Descizione</p>
+                        <p>Note</p>
                         <input type="text" id="descrizione" name="descrizione">
                     </div>
                 </div>
@@ -279,35 +284,35 @@
                 <div class="card-body classificazione">
                     <select name="classificazione" id="classificazione">
                         <option></option>
-                        <option value="Dipinti">Dipinti</option>
-                        <option value="Mosaici">Mosaici</option>
-                        <option value="Sculture e frammenti lapidei">Sculture e frammenti lapidei</option>
+                        <option value="Dipinti">Dipinto</option>
+                        <option value="Mosaici">Mosaico</option>
+                        <option value="Sculture e frammenti lapidei">Scultura e frammento lapideo</option>
                         <option value="Piccola plastica">Piccola plastica</option>
-                        <option value="Elementi architettonici">Elementi architettonici</option>
-                        <option value="Disegni, stampe e matrici">Disegni, stampe e matrici</option>
-                        <option value="Fotografie">Fotografie</option>
-                        <option value="Libri e riviste">Libri e riviste</option>
-                        <option value="Manoscritti">Manoscritti</option>
-                        <option value="Armi e armature">Armi e armature</option>
-                        <option value="Tessuti e moda">Tessuti e moda</option>
-                        <option value="Gioielleria e ornamenti">Gioielleria e ornamenti</option>
-                        <option value="Paramenti sacri, oggetti liturgici e devozionali">Paramenti sacri, oggetti
-                            liturgici e devozionali</option>
-                        <option value="Utensili e strumenti di lavoro">Utensili e strumenti di lavoro</option>
-                        <option value="Materiali organici, fossili e resti umani">Materiali organici, fossili e
-                            resti umani</option>
-                        <option value="Tarsie">Tarsie</option>
-                        <option value="Arredi e mobili">Arredi e mobili</option>
-                        <option value="Medaglie, monete e gemme">Medaglie, monete e gemme</option>
-                        <option value="Calchi">Calchi</option>
-                        <option value="Lapidi e cippi funerari">Lapidi e cippi funerari</option>
-                        <option value="Urne, sarcofagi e casse tombali">Urne, sarcofagi e casse tombali</option>
+                        <option value="Elementi architettonici">Elemento architettonico</option>
+                        <option value="Disegni, stampe e matrici">Disegno, stampa e matrice</option>
+                        <option value="Fotografie">Fotografia</option>
+                        <option value="Libri e riviste">Libro e rivista</option>
+                        <option value="Manoscritti">Manoscritto</option>
+                        <option value="Armi e armature">Arma e armatura</option>
+                        <option value="Tessuti e moda">Tessuto e moda</option>
+                        <option value="Gioielleria e ornamenti">Gioielleria e ornamento</option>
+                        <option value="Paramenti sacri, oggetti liturgici e devozionali">Paramento sacro, oggetto
+                            liturgico e devozionale</option>
+                        <option value="Utensili e strumenti di lavoro">Utensile e strumento di lavoro</option>
+                        <option value="Materiali organici, fossili e resti umani">Materiale organico, fossile e
+                            resto umano</option>
+                        <option value="Tarsie">Tarsia</option>
+                        <option value="Arredi e mobili">Arredo e mobilio</option>
+                        <option value="Medaglie, monete e gemme">Medaglia, moneta e gemma</option>
+                        <option value="Calchi">Calco</option>
+                        <option value="Lapidi e cippi funerari">Lapide e cippo funerario</option>
+                        <option value="Urne, sarcofagi e casse tombali">Urna, sarcofago e cassa tombale</option>
                         <option value="Vasellame ceramico">Vasellame ceramico</option>
                         <option value="Vasellame metallico">Vasellame metallico</option>
-                        <option value="Vetri">Vetri</option>
-                        <option value="Sigilli e impronte di sigilli">Sigilli e impronte di sigilli</option>
-                        <option value="Strumenti musicali">Strumenti musicali</option>
-                        <option value="Giocattoli">Giocattoli</option>
+                        <option value="Vetri">Vetro</option>
+                        <option value="Sigilli e impronte di sigilli">Sigillo e impronte di sigilli</option>
+                        <option value="Strumenti musicali">Strumento musicale</option>
+                        <option value="Giocattoli">Giocattolo</option>
                         <option value="Altro">Altro</option>
                     </select>
                 </div>
@@ -1066,11 +1071,12 @@
         </div>
     </div>
     <div class="submit">
-        <button type="submit" class="btn btn-primary" id="uploadData" onclick="gatherAndSendData()">Invia</button>
+        <button type="submit" class="btn btn-primary" id="uploadData">Salva bozza</button>
+        <button type="submit" class="btn btn-warning" id="regret">Annulla l'inserimento</button>
+
     </div>
     <div class="footer-space"></div>
 </div>
-
 
 </body>
 

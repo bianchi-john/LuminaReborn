@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start:build": "tsc -p . && copyfiles -u 1 src/views/**/*.ejs dist",
+    "start:build": "tsc -p . && rsync -av src/views/ dist/views/",
     "start:dev": "nodemon --exec ts-node src/index.ts",
     "start:prod": "tsc -p . && NODE_ENV=prod node dist/index.js"
   },

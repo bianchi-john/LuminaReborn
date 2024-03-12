@@ -5,6 +5,8 @@
 
 ///////////////////////
 ///////////////////////
+
+
 var base64Image = '';
 
 function setupImageUpload() {
@@ -142,7 +144,6 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
     if ($('#' + containerId + ' select').length > 0) {
         // Se c'è, prendi l'elemento <select> e mettilo in una variabile
         // var selectElement = $('#' + containerId + ' select');
-
         var selectElement = document.querySelectorAll('#' + containerId + ' select');
         var selectElement = selectElement[selectElement.length - 1].id;
         selectElement = $('#' + selectElement);
@@ -161,7 +162,6 @@ function aggiungiGruppo(containerId, groupId, ...inputIds) {
         // Aggiungi il testo al paragrafo
         nuovoParagrafo.textContent = "Seleziona preesistente";
         document.getElementById(nuovoGruppo.id).append(nuovoParagrafo);
-
         document.getElementById(nuovoGruppo.id).append(newSelectElement[0]);
     }
     if (numeroFigli > 1) {
@@ -900,11 +900,6 @@ function rimuoviGruppoAltreBibliografie() {
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
 
 // LOGICA PER DOCUMENTAZIONI FOTOGRAFICHE
 
@@ -912,12 +907,6 @@ function rimuoviGruppoAltreBibliografie() {
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-
 
 
 function aggiungiGruppoDocFotografiche() {
@@ -971,15 +960,89 @@ function rimuoviGruppoDocFotografiche() {
     }
 }
 
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+// LOGICA PER AUTORI
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
+
+
+
+
+
+function aggiungiGruppoAutori() {
+    var numero = document.getElementById('textboxContainerAutori').getElementsByClassName('form-group').length;
+    numero = numero + 1;
+
+
+    var codice = `
+                    <div class="form-group" id="groupAutori${numero}">
+                    <p>Nome</p>
+                    <input type="text" id="Nome${numero}" name="Nome">
+                    <p>Formula precedente</p>
+                    <input type="text" id="Formula_precedente${numero}" name="Formula precedente">
+                    <p>Formula successiva</p>
+                    <input type="text" id="Formula_successiva${numero}" name="Formula successiva">
+                    <p>Categoria</p>
+                    <select name="Categoria" id="Categoria${numero}">
+                        <option></option>
+                        <option value="Opera firmata">Opera firmata</option>
+                        <option value="Opera attribuita">Opera attribuita</option>
+                        <option value="Opera documentata">Opera documentata</option>
+                    </select>
+                    <p>Seleziona preesistente</p>
+                    <select name="autoriSelect${numero}" id="autoriSelect${numero}" onchange="handleSelectChange(this)">
+                        <option selected=""></option>
+                        <option value="autori${numero}">Lista di tutti gli autori</option>
+                    </select>
+                </div>
+
+        `;
+    var contenitore = document.getElementById('textboxContainerAutori');
+    var bottoneRimuovi = document.getElementById('rimuoviAutori');
+
+    // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
+    contenitore.insertAdjacentHTML('beforeend', codice);
+
+    // Visualizzo il bottone di rimozione
+    bottoneRimuovi.style.display = 'inline';
+
+}
+
+
+
+function rimuoviGruppoAutori() {
+    var contenitore = document.getElementById('textboxContainerAutori');
+    var formGroups = contenitore.getElementsByClassName('form-group');
+    // Verifica se ci sono elementi con la classe 'form-group'
+    if (formGroups.length > 0) {
+        // Ottieni l'ultimo elemento con la classe 'form-group'
+        var ultimoFormGroup = formGroups[formGroups.length - 1];
+        // Rimuovi l'elemento dal suo genitore
+        ultimoFormGroup.parentNode.removeChild(ultimoFormGroup);
+        if (formGroups.length == 1) {
+            // Ottieni l'ultimo elemento e rimuovilo
+            bottoneRimuovi = document.getElementById('rimuoviAutori');
+            bottoneRimuovi.style.display = 'none';
+        }
+    }
+    else {
+        console.log("Nessun elemento con la classe 'form-group' trovato.");
+    }
+}
+
+
+
+
+
+
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -995,15 +1058,6 @@ function rimuoviGruppoDocFotografiche() {
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
 
 
 
@@ -1014,18 +1068,18 @@ async function gatherData() {
         // Itera attraverso i form degli autori
         var numAutoriForms = document.querySelectorAll('[id^="groupAutori"]').length;
         for (var i = 1; i <= numAutoriForms; i++) {
+            var nome = document.getElementById("Nome" + i).value ? document.getElementById("Nome" + i).value : "";
             var formulaPrecedente = document.getElementById("Formula_precedente" + i).value ? document.getElementById("Formula_precedente" + i).value : "";
             var formulaSuccessiva = document.getElementById("Formula_successiva" + i).value ? document.getElementById("Formula_successiva" + i).value : "";
             var categoria = document.getElementById("Categoria" + i).value ? document.getElementById("Categoria" + i).value : "";
-            var nome = document.getElementById("Nome" + i).value ? document.getElementById("Nome" + i).value : "";
             var autoriSelect = document.getElementById("autoriSelect" + i).value;
 
 
             // Aggiungi dati del form degli autori all'oggetto formData
+            formData["NomeAutore" + i] = nome;
             formData["Formula_precedente" + i] = formulaPrecedente;
             formData["Formula_successiva" + i] = formulaSuccessiva;
             formData["Categoria" + i] = categoria;
-            formData["NomeAutore" + i] = nome;
             formData["AutorePreesistente" + i] = autoriSelect
         }
 
@@ -1230,17 +1284,17 @@ async function gatherData() {
 }
 
 
-
-async function gatherAndSendData() {
-    try {
-        const data = await gatherData();
-        await sendData(data);
-    } catch (error) {
-        console.error('Errore durante la raccolta e l\'invio dei dati:', error.message);
-        mostraModale(`Errore di compilazione: ${error.message}`);
-    }
+function uploadData(){
+    $("#uploadData").click(async function(e) {
+        try {
+            const data = await gatherData();
+            await sendData(data);
+        } catch (error) {
+            console.error('Errore durante la raccolta e l\'invio dei dati:', error.message);
+            mostraModale(`Errore di compilazione: ${error.message}`);
+        }
+    })
 }
-
 
 async function sendData(data) {
     try {
@@ -1308,7 +1362,44 @@ function mostraModale(testo) {
 
 }
 
+function regret() {
+
+    const annullaBtn = document.getElementById("regret");
+
+    annullaBtn.addEventListener("click", function() {
+      const modal = document.createElement("div");
+      modal.classList.add("modal");
+      modal.innerHTML = `
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Annullamento lavoro</h5>
+            </div>
+            <div class="modal-body">
+              Sei sicuro di voler annullare il lavoro?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continua l'inserimento</button>
+              <button type="button" class="btn btn-danger" onclick="window.location.href = 'http://172.22.0.6:3000/bozze'">Conferma</button>
+            </div>
+          </div>
+        </div>
+      `;
+    
+      document.body.appendChild(modal);
+      $(modal).modal("show");
+
+      // Logica per chiudere la modale
+      $(".btn-secondary, .btn-close").click(function() {
+        $(modal).modal("hide");
+      });
+    });   
+}
+
+    
 $(document).ready(function () {
     initInputValidation();
     setupImageUpload();
+    regret();
+    uploadData();
 })

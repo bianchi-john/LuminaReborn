@@ -68,7 +68,7 @@ export class App {
     this.app.get('/valutaBozza', handleValutaBozzaPage);
 
     // SERVICES
-    const authOptions = { url: 'http://172.22.0.2' };
+    const authOptions = { url: process.env.AUTH_URL};
     this.app.use('/schede', schedaRoutes);
     this.app.use('/search', searchRoutes);
     this.app.use('/manageBozze', schedatoreRoutes);
