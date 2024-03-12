@@ -76,7 +76,7 @@ function createTable(data) {
   // Aggiungi le righe della tabella con i dati
   data.forEach(function (scheda) {
     var row = $("<tr>").appendTo(tbody);
-    $("<td class='"+scheda.id+"'>").text(scheda.id).appendTo(row);
+    $("<td class='" + scheda.id + "'>").text(scheda.id).appendTo(row);
     $("<td>").text(scheda.titolo_opera).appendTo(row);
 
     // Aggiungi i bottoni con le azioni
@@ -106,8 +106,8 @@ function createTable(data) {
 
 // Funzione per mostrare la finestra modale
 function showModal(testo) {
-    // Crea il markup per la finestra modale
-    var modal = $('<div class="modal fade modal-static" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
+  // Crea il markup per la finestra modale
+  var modal = $('<div class="modal fade modal-static" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
                         <div class="modal-dialog" role="document">\
                             <div class="modal-content">\
                                 <div class="modal-header">\
@@ -131,21 +131,64 @@ function showModal(testo) {
   }, 3000);
 }
 
+function handleEliminaButtonClick(button) {
+  var schedaId = button.closest("tr").find("td:first").text();
+  mostraModaleConfermaEliminazione(schedaId);
+}
+function handleInviaButtonClick(button) {
+  var schedaId = button.closest("tr").find("td:first").text();
+  mostraModaleConfermaInvio(schedaId);
+}
+
+function mostraModaleConfermaEliminazione(schedaId) {
+  // Mostra la modale di conferma
+  $('#deleteModal').modal('show');
+
+  // Chiudi la modale quando viene cliccato "Annulla" o il pulsante di chiusura ('x')
+  $('#deleteModal').on('hidden.bs.modal', function (e) {
+    // Rimuovi il gestore dell'evento una volta che la modale è stata chiusa
+    $(this).off('hidden.bs.modal');
+  });
+
+  // Se viene cliccato il pulsante "Conferma" nella modale di conferma, procedi con l'invio
+  $('#deleteModal').on('click', '.btn-conferma', function () {
+    $('#deleteModal').modal('hide');
+    deleteScheda(schedaId);
+  });
+}
+function mostraModaleConfermaInvio(schedaId) {
+  // Mostra la modale di conferma
+  $('#confermaModal').modal('show');
+
+  // Chiudi la modale quando viene cliccato "Annulla" o il pulsante di chiusura ('x')
+  $('#confermaModal').on('hidden.bs.modal', function (e) {
+    // Rimuovi il gestore dell'evento una volta che la modale è stata chiusa
+    $(this).off('hidden.bs.modal');
+  });
+
+  // Se viene cliccato il pulsante "Conferma" nella modale di conferma, procedi con l'eliminazione
+  $('#confermaModal').on('click', '.btn-conferma', function () {
+    $('#confermaModal').modal('hide');
+    sendPostRequest(schedaId);
+  });
+}
 
 $(document).ready(function () {
-    // Chiamata GET al caricamento della pagina
-    getBozzeOnPageLoad();
+  // Chiamata GET al caricamento della pagina
+  getBozzeOnPageLoad();
 
-    // Evento click per gestire l'invio quando si preme il bottone "Invia"
-    $(".container").on("click", ".btn-primary", function () {
-      var schedaId = $(this).closest("tr").find("td:first").text(); // Assume che l'ID sia nella prima colonna della riga
-      sendPostRequest(schedaId);
-    });
+  // Evento click per gestire l'invio quando si preme il bottone "Invia"
+  $(".container").on("click", ".btn-primary", function () {
+    handleInviaButtonClick($(this));
+    // var schedaId = $(this).closest("tr").find("td:first").text(); // Assume che l'ID sia nella prima colonna della riga
+    // sendPostRequest(schedaId);
+  });
 
   // Evento click per gestire l'eliminazione quando si preme il bottone "Elimina"
   $(".container").on("click", ".btn-danger", function () {
-    var schedaId = $(this).closest("tr").find("td:first").text(); // Assume che l'ID sia nella prima colonna della riga
-    deleteScheda(schedaId);
+    handleEliminaButtonClick($(this));
   });
+
+
 });
 

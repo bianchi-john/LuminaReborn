@@ -1396,7 +1396,7 @@ function regret() {
     });   
 }
 
-    
+
 $(document).ready(function () {
     initInputValidation();
     setupImageUpload();
