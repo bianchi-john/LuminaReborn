@@ -72,7 +72,116 @@ function setupImageUpload() {
 
 
 
+///////////////////////
+///////////////////////
 
+// LOGIA PER IL REPERIMENTO DEI SUGGERIMENTI E DEGLI ELEMENTI GIÀ PRESENTI
+
+///////////////////////
+///////////////////////
+function getSuggestions() {
+    // Creazione dell'oggetto XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+
+    // Definizione della funzione da eseguire quando la richiesta è completata
+    xhr.onreadystatechange = function () {
+        // Controllo dello stato della richiesta
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            // Controllo dello stato della risposta
+            if (xhr.status === 200) {
+                // Successo: la risposta è stata ricevuta correttamente
+                var response = JSON.parse(xhr.responseText);
+                var autori = response.data[0].autori;
+                var materiali = response.data[0].materiali;
+                var tecniche = response.data[0].tecniche;
+
+                // Popolare select per autori
+                populateSelect(autori, 'autoriSelect1');
+
+                // Popolare select per materiali
+                populateSelect(materiali, 'materialiSelect1');
+
+                // Popolare select per tecniche
+                populateSelect(tecniche, 'tecnicheSelect1');
+
+                // Aggiungi suggerimenti per campi di input misure
+                addInputSuggestions(misure);
+
+
+            } else {
+                // Errore: la richiesta non è stata completata correttamente
+                console.error('Si è verificato un errore durante la richiesta:', xhr.status);
+            }
+        }
+    };
+
+    // Apertura della richiesta GET verso l'URL specificato
+    xhr.open('GET', 'http://172.22.0.6:3000/suggestions', true);
+
+    // Invio della richiesta
+    xhr.send();
+}
+
+function populateSelect(data, selectId) {
+    // Ottieni la select HTML
+    var select = document.getElementById(selectId);
+
+    // Rimuovi tutte le opzioni esistenti dalla select
+    select.innerHTML = '';
+
+    // Aggiungi un'opzione vuota
+    var emptyOption = document.createElement('option');
+    emptyOption.value = '';
+    emptyOption.textContent = '---';
+    select.appendChild(emptyOption);
+
+    // Aggiungi una nuova opzione per ogni elemento di data
+    data.forEach(function (item) {
+        // Verifica se almeno una chiave (ad eccezione di "id") ha un valore non vuoto
+        var hasNonEmptyValue = Object.keys(item).some(function (key) {
+            return key !== "id" && item[key] !== "";
+        });
+
+        if (hasNonEmptyValue) {
+            var option = document.createElement('option');
+            option.value = item.id;
+
+            // Creare un array con tutti i valori tranne l'id
+            var itemValues = Object.keys(item).filter(function (key) {
+                return key !== "id" && item[key] !== ""; // Escludi l'id e i valori vuoti
+            }).map(function (key) {
+                return item[key];
+            });
+            var itemText = itemValues.join(" "); // Concatena i valori con uno spazio
+            option.textContent = itemText;
+            select.appendChild(option);
+        }
+    });
+}
+
+
+
+function showSuggestionsTooltip(inputElement, suggestionText) {
+    // Creare un elemento per il tooltip
+    var tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = suggestionText;
+
+    // Posizionare il tooltip vicino all'input
+    var inputRect = inputElement.getBoundingClientRect();
+    tooltip.style.top = (inputRect.top + inputElement.offsetHeight) + 'px';
+    tooltip.style.left = inputRect.left + 'px';
+
+    // Aggiungere il tooltip al DOM
+    document.body.appendChild(tooltip);
+
+    // Rimuovere il tooltip quando l'utente clicca al di fuori
+    document.addEventListener('click', function (event) {
+        if (event.target !== inputElement) {
+            tooltip.remove();
+        }
+    });
+}
 
 
 
@@ -256,11 +365,7 @@ function rimuoviGruppoMisure(containerId) {
     else {
         console.log('errore during removing gruppo misure stuff')
     }
-
-
 }
-
-
 
 
 function generaCodiceGruppoMisure(id) {
@@ -303,23 +408,6 @@ function generaCodiceGruppoMisure(id) {
     return nuovoCodice;
 }
 
-// function aggiungiMisura(containerId) {
-// // Ottengo il numero del gruppo misure corrente
-// var numeroGruppo = containerId.match(/\d+/g).map(Number);
-// // Ottengo il numero delle misure nel div corrente
-// var numeroMisure = document.getElementById(containerId).getElementsByClassName('misure').length;
-
-// // Creo un nuovo gruppo con gli id corretti
-// var nuovoCodiceHTML = generaCodiceMisure(numeroGruppo, numeroMisure + 1);
-// var primoElemento = document.getElementById(containerId).getElementsByClassName('field')[0];
-
-// // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
-// primoElemento.insertAdjacentHTML('beforeend', nuovoCodiceHTML);
-
-// bottoneRimuovi = document.getElementById(containerId).getElementsByClassName('removeButtonMisure');
-// bottoneRimuovi[0].style.display = 'inline';
-// }
-
 
 function aggiungiMisura(containerId) {
     // Ottengo il numero del gruppo misure corrente
@@ -341,22 +429,23 @@ function aggiungiMisura(containerId) {
     nuovoElemento.querySelector("[name='Valore']").id = "Valore" + numeroGruppo + numeroMisure;
     nuovoElemento.querySelector("[name='Unita']").id = "Unita" + numeroGruppo + numeroMisure;
 
-    // Modifica gli option value in base ai parametri
-    var optionElements = nuovoElemento.querySelectorAll("select option");
-    optionElements.forEach(function (option) {
-        option.value = option.value.replace(/\d+/, numeroGruppo + numeroMisure);
-    });
     var primoElemento = document.getElementById(containerId).getElementsByClassName('field')[0];
+
+    if (numeroMisure > 1) {
+        // Risali alla gerarchia DOM per trovare il genitore comune
+        var genitoreComune = primoElemento.closest('.gruppoMisure');
+
+        // Trova l'elemento con classe "removeButtonMisure" all'interno di genitoreComune
+        var removeButton = genitoreComune.querySelector('.removeButtonMisure');
+
+        // Modifica la visibilità dell'elemento removeButton
+        removeButton.style.display = 'inline';
+    }
 
     // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
     primoElemento.insertAdjacentHTML('beforeend', nuovoElemento.outerHTML);
-
-
-
     return nuovoElemento.outerHTML;
 }
-
-
 
 
 function rimuoviMisura(containerId) {
@@ -386,7 +475,6 @@ function rimuoviMisura(containerId) {
 }
 
 
-
 function generaCodiceMisure(numeroGruppo, numeroMisure) {
     var code = `
             <div class="form-group misure" id="misureGroup${numeroGruppo}${numeroMisure}">
@@ -412,8 +500,6 @@ function generaCodiceMisure(numeroGruppo, numeroMisure) {
         `;
     return code;
 }
-
-
 
 
 
@@ -982,28 +1068,26 @@ function aggiungiGruppoAutori() {
 
 
     var codice = `
-                    <div class="form-group" id="groupAutori${numero}">
-                    <p>Nome</p>
-                    <input type="text" id="Nome${numero}" name="Nome">
-                    <p>Formula precedente</p>
-                    <input type="text" id="Formula_precedente${numero}" name="Formula precedente">
-                    <p>Formula successiva</p>
-                    <input type="text" id="Formula_successiva${numero}" name="Formula successiva">
-                    <p>Categoria</p>
-                    <select name="Categoria" id="Categoria${numero}">
-                        <option></option>
-                        <option value="Opera firmata">Opera firmata</option>
-                        <option value="Opera attribuita">Opera attribuita</option>
-                        <option value="Opera documentata">Opera documentata</option>
-                    </select>
-                    <p>Seleziona preesistente</p>
-                    <select name="autoriSelect${numero}" id="autoriSelect${numero}" onchange="handleSelectChange(this)">
-                        <option selected=""></option>
-                        <option value="autori${numero}">Lista di tutti gli autori</option>
-                    </select>
-                </div>
-
-        `;
+    <div class="form-group" id="groupAutori${numero}">
+        <p>Nome</p>
+        <input type="text" id="Nome${numero}" name="Nome">
+        <p>Formula precedente</p>
+        <input type="text" id="Formula_precedente${numero}" name="Formula precedente">
+        <p>Formula successiva</p>
+        <input type="text" id="Formula_successiva${numero}" name="Formula successiva">
+        <p>Categoria</p>
+        <select name="Categoria" id="Categoria${numero}">
+            <option></option>
+            <option value="Opera firmata">Opera firmata</option>
+            <option value="Opera attribuita">Opera attribuita</option>
+            <option value="Opera documentata">Opera documentata</option>
+        </select>
+        <p>Seleziona preesistente</p>
+        <select name="autoriSelect${numero}" id="autoriSelect${numero}" onchange="handleSelectChange(this)">
+            ${document.getElementById("autoriSelect1").innerHTML}
+        </select>
+    </div>
+`;
     var contenitore = document.getElementById('textboxContainerAutori');
     var bottoneRimuovi = document.getElementById('rimuoviAutori');
 
@@ -1284,8 +1368,8 @@ async function gatherData() {
 }
 
 
-function uploadData(){
-    $("#uploadData").click(async function(e) {
+function uploadData() {
+    $("#uploadData").click(async function (e) {
         try {
             const data = await gatherData();
             await sendData(data);
@@ -1366,10 +1450,10 @@ function regret() {
 
     const annullaBtn = document.getElementById("regret");
 
-    annullaBtn.addEventListener("click", function() {
-      const modal = document.createElement("div");
-      modal.classList.add("modal");
-      modal.innerHTML = `
+    annullaBtn.addEventListener("click", function () {
+        const modal = document.createElement("div");
+        modal.classList.add("modal");
+        modal.innerHTML = `
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -1385,19 +1469,20 @@ function regret() {
           </div>
         </div>
       `;
-    
-      document.body.appendChild(modal);
-      $(modal).modal("show");
 
-      // Logica per chiudere la modale
-      $(".btn-secondary, .btn-close").click(function() {
-        $(modal).modal("hide");
-      });
-    });   
+        document.body.appendChild(modal);
+        $(modal).modal("show");
+
+        // Logica per chiudere la modale
+        $(".btn-secondary, .btn-close").click(function () {
+            $(modal).modal("hide");
+        });
+    });
 }
 
 
 $(document).ready(function () {
+    getSuggestions();
     initInputValidation();
     setupImageUpload();
     regret();

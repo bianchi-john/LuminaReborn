@@ -323,11 +323,11 @@ function showModal(testo) {
     });
     // Gestisci l'evento hidden.bs.modal per reindirizzare l'utente
     modal.on('hidden.bs.modal', function () {
-        window.location.href = 'http://172.22.0.6:3000/bozze';
+        window.location.href = 'http://172.22.0.6:3000/amministratore';
     });
 }
 
-// INVIA
+// APPROVA
 function sendPostRequest() {
     const urlParams = new URLSearchParams(window.location.search);
     const schedaId = urlParams.get('id');
@@ -351,9 +351,7 @@ function sendPostRequest() {
         });
 }
 
-
-
-// ELIMINA
+// RIFIUTA
 function deleteScheda() {
     const urlParams = new URLSearchParams(window.location.search);
     const schedaId = urlParams.get('id');

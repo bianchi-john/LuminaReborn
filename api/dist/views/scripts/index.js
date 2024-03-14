@@ -201,12 +201,10 @@ function handleSearch() {
     if (!document.getElementById('giorno_a_mostra').value) {
       document.getElementById('giorno_a_mostra').value = '01';
       giorno_a_mostra = '01'
-
     }
     if (!document.getElementById('mese_a_mostra').value) {
       document.getElementById('mese_a_mostra').value = '01';
       mese_a_mostra = '01'
-
     }
   }
   if (anno_da) {
@@ -319,9 +317,9 @@ function handleSearch() {
   xhr.onload = function () {
     if (xhr.status === 200) {
       var response = JSON.parse(xhr.responseText);
-      if (response.data.length == 0) {
-        document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>'
-      }
+      if (Array.isArray(response.data) && response.data.length == 0 || response.data[0].length == 0) {
+        document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>';
+      }      
       else {
         for (var j = 0; j < response.data.length; j = j + 2) {
           document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));

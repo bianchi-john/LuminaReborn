@@ -8,6 +8,7 @@ import schedaRoutes from './routes/scheda.routes';
 import searchRoutes from './routes/search.routes';
 import schedatoreRoutes from './routes/schedatore.routes';
 import adminRoutes from './routes/admin.routes';
+import suggestionRoutes from './routes/suggestions.routes';
 import { handleIndexPage } from './pages/index';
 import { handleSchedaPage } from './pages/scheda';
 import { handleLoginPage, handleLoginPost } from './pages/login';
@@ -73,6 +74,9 @@ export class App {
     this.app.use('/search', searchRoutes);
     this.app.use('/manageBozze', schedatoreRoutes);
     this.app.use('/admin', adminRoutes);
+    this.app.use('/suggestions', suggestionRoutes);
+
+
 
     // 404 Not Found
     this.app.all('*', (_: Request, res: Response) => res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));

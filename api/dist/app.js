@@ -14,6 +14,7 @@ const scheda_routes_1 = __importDefault(require("./routes/scheda.routes"));
 const search_routes_1 = __importDefault(require("./routes/search.routes"));
 const schedatore_routes_1 = __importDefault(require("./routes/schedatore.routes"));
 const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
+const suggestions_routes_1 = __importDefault(require("./routes/suggestions.routes"));
 const index_1 = require("./pages/index");
 const scheda_1 = require("./pages/scheda");
 const login_1 = require("./pages/login");
@@ -70,6 +71,7 @@ class App {
         this.app.use('/search', search_routes_1.default);
         this.app.use('/manageBozze', schedatore_routes_1.default);
         this.app.use('/admin', admin_routes_1.default);
+        this.app.use('/suggestions', suggestions_routes_1.default);
         // 404 Not Found
         this.app.all('*', (_, res) => res.status(code_enum_1.Code.NOT_FOUND).send(new response_1.HttpResponse(code_enum_1.Code.NOT_FOUND, status_enum_1.Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
     }

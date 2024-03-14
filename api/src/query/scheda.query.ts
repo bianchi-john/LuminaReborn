@@ -50,4 +50,8 @@ export const QUERY = {
   INSERT_TDS_SCHEDE_STATOSCHEDA:'INSERT INTO tds_schede_statoScheda (id_scheda, id_stato) VALUES (?, ?)',
   INSERT_TDS_STATO_SCHEDAUSER:'INSERT INTO tds_stato_schedeUser (id_stato, id_user) VALUES (?, ?)',
   INSERT_TDS_USER_SCHEDA:'INSERT INTO tds_users_schede (id_user, id_scheda, data_modifica) VALUES (?, ?, ?)',
+  SELECT_ALL_AUTORI:'SELECT * FROM autori',
+  SELECT_ALL_MATERIALI:'SELECT * FROM materiali',
+  SELECT_ALL_TECNICHE:'SELECT * FROM tecniche',
+  SELECT_ALL_MISURE:'SELECT * FROM misure',
 };

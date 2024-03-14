@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteScheda = exports.updateScheda = exports.createScheda = exports.getScheda = exports.getSchede = void 0;
+exports.getSuggestions = exports.deleteScheda = exports.updateScheda = exports.createScheda = exports.getScheda = exports.getSchede = void 0;
 const mysql_config_1 = require("../config/mysql.config");
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
@@ -193,3 +193,38 @@ const deleteScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.deleteScheda = deleteScheda;
+const getSuggestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
+    try {
+        const pool = yield (0, mysql_config_1.connection)();
+        const querySelectAutori = scheda_query_1.QUERY.SELECT_ALL_AUTORI;
+        const querySelectMateriali = scheda_query_1.QUERY.SELECT_ALL_MATERIALI;
+        const querySelectTecniche = scheda_query_1.QUERY.SELECT_ALL_TECNICHE;
+        const querySelectMisure = scheda_query_1.QUERY.SELECT_ALL_MISURE;
+        const combinedResults = [];
+        const resultAutori = yield pool.query(querySelectAutori);
+        const resultMateriali = yield pool.query(querySelectMateriali);
+        const resultTecniche = yield pool.query(querySelectTecniche);
+        const resultMisure = yield pool.query(querySelectMisure);
+        combinedResults.push({
+            autori: resultAutori[0],
+            materiali: resultMateriali[0],
+            tecniche: resultTecniche[0],
+            misure: resultMisure[0],
+        });
+        pool.end();
+        if (combinedResults.length > 0) {
+            return res.status(code_enum_1.Code.OK).send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Suggestions retrieved', combinedResults));
+        }
+        else {
+            return res.status(code_enum_1.Code.NOT_FOUND)
+                .send(new response_1.HttpResponse(code_enum_1.Code.NOT_FOUND, status_enum_1.Status.NOT_FOUND, 'Suggestions not found'));
+        }
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(code_enum_1.Code.INTERNAL_SERVER_ERROR)
+            .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred during suggestions retrieving'));
+    }
+});
+exports.getSuggestions = getSuggestions;
