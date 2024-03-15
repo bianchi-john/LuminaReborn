@@ -373,19 +373,13 @@ function insertDocFotografica(pool, schedaId, scheda) {
         try {
             const promises = [];
             let atLeastOneKeyPresent = false;
-            for (let i = 1;; i++) {
-                if (scheda[`documentazioneFotograficaInput${i}`]) {
-                    atLeastOneKeyPresent = true; // almeno una chiave è presente
-                    const result = yield pool.query(scheda_query_1.QUERY.INSERT_FOTOGRAFICA, [
-                        scheda[`documentazioneFotograficaInput${i}`] || ''
-                    ]);
-                    const thisId = result[0].insertId;
-                    promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_FOTOGRAFICA, [schedaId, thisId]));
-                }
-                else {
-                    // Se nessuna delle chiavi è presente, esce dal ciclo
-                    break;
-                }
+            if (scheda[`documentazioneFotografica`]) {
+                atLeastOneKeyPresent = true; // almeno una chiave è presente
+                const result = yield pool.query(scheda_query_1.QUERY.INSERT_FOTOGRAFICA, [
+                    scheda[`documentazioneFotografica`] || ''
+                ]);
+                const thisId = result[0].insertId;
+                promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_FOTOGRAFICA, [schedaId, thisId]));
             }
             if (atLeastOneKeyPresent) {
                 yield Promise.all(promises);
@@ -480,12 +474,12 @@ function insertImmagini(pool, schedaId, scheda) {
         try {
             const promises = [];
             let atLeastOneKeyPresent = false;
-            for (let i = 1;; i++) {
+            for (let i = 0;; i++) {
                 if (scheda[`immagine${i}`] ||
                     scheda[`didascalia_immagine${i}`]) {
                     atLeastOneKeyPresent = true; // almeno una chiave è presente
                     const result = yield pool.query(scheda_query_1.QUERY.INSERT_IMMAGINI, [
-                        scheda[`immagine${i}`] || '', scheda[`didascalia_immagine`] || '',
+                        scheda[`immagine${i}`] || '', scheda[`didascalia_immagine${i}`] || '',
                     ]);
                     const thisId = result[0].insertId;
                     promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_IMMAGINI, [schedaId, thisId]));

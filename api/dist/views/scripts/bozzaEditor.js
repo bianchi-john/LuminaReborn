@@ -1,76 +1,3 @@
-///////////////////////
-///////////////////////
-
-// LOGICA PER LA GESTIONE DELLA DROPBOX DI CARICAMENTO DELL'IMMAGINE DI COPERTINA
-
-///////////////////////
-///////////////////////
-
-
-var base64Image = '';
-
-function setupImageUpload() {
-
-    function readFile(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                var htmlPreview =
-                    '<img width="200" src="' + e.target.result + '" />' +
-                    '<p>' + input.files[0].name + '</p>';
-                var wrapperZone = $(input).parent();
-                var previewZone = $(input).parent().parent().find('.preview-zone');
-                var boxZone = $(input).parent().parent().find('.preview-zone').find('.box').find('.box-body');
-
-                wrapperZone.removeClass('dragover');
-                previewZone.removeClass('hidden');
-                boxZone.empty();
-                boxZone.append(htmlPreview);
-                $('.dropzone-wrapper').hide()
-                $('.reset-button').css('display', 'list-item');
-
-                // Memorizza la base64 dell'immagine
-                base64Image = e.target.result;
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    $(".dropzone").change(function () {
-        readFile(this);
-    });
-
-
-    $('.dropzone-wrapper').on('dragover', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).addClass('dragover');
-    });
-
-    $('.dropzone-wrapper').on('dragleave', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).removeClass('dragover');
-    });
-
-    $('.reset-button').on('click', function () {
-        var boxZone = $(this).parents('.preview-zone').find('.box-body');
-        var previewZone = $(this).parents('.preview-zone');
-        var dropzone = $(this).parents('.form-group').find('.dropzone');
-        $('.dropzone-wrapper').show()
-
-        boxZone.empty();
-        previewZone.addClass('hidden');
-        $('.reset-button').css('display', 'none');
-
-
-    });
-
-}
-
-
 
 ///////////////////////
 ///////////////////////
@@ -1011,7 +938,7 @@ function rimuoviGruppoAltreBibliografie() {
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-// LOGICA PER DOCUMENTAZIONI FOTOGRAFICHE
+// LOGICA PER LE IMMAGINI
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -1019,8 +946,8 @@ function rimuoviGruppoAltreBibliografie() {
 /////////////////////////////////////////////////////////////////////
 
 
-function aggiungiGruppoDocFotografiche() {
-    var numero = document.getElementById('documentazioneFotografica').getElementsByClassName('form-group').length;
+function aggiungiGruppoImmagini() {
+    var numero = document.getElementById('immagini').getElementsByClassName('form-group').length;
     numero = numero + 1;
 
 
@@ -1028,16 +955,16 @@ function aggiungiGruppoDocFotografiche() {
     
         <div class="form-group">
         <p>Didascalia</p>
-        <input type="text" id="documentazioneFotograficaInput${numero}" name="documentazioneFotografica">
+        <input type="text" id="immaginiInput${numero}" name="immagini">
         <br><br>
         <p>Immagine</p>
-        <form id='documentazioneFotograficaFoto${numero}'>
+        <form id='immaginiFoto${numero}'>
             <input type="file" id="img" name="img" accept="image/*">
         </form>
         </div>
         `;
-    var contenitore = document.getElementById('documentazioneFotografica');
-    var bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
+    var contenitore = document.getElementById('immagini');
+    var bottoneRimuovi = document.getElementById('rimuoviImmagini');
 
     // Aggiungo il nuovo codice HTML dopo l'ultimo elemento
     contenitore.insertAdjacentHTML('beforeend', codice);
@@ -1050,8 +977,8 @@ function aggiungiGruppoDocFotografiche() {
 
 
 
-function rimuoviGruppoDocFotografiche() {
-    var contenitore = document.getElementById('documentazioneFotografica');
+function rimuoviGruppoImmagini() {
+    var contenitore = document.getElementById('immagini');
     var formGroups = contenitore.getElementsByClassName('form-group');
     // Verifica se ci sono elementi con la classe 'form-group'
     if (formGroups.length > 0) {
@@ -1061,7 +988,7 @@ function rimuoviGruppoDocFotografiche() {
         ultimoFormGroup.parentNode.removeChild(ultimoFormGroup);
         if (formGroups.length == 1) {
             // Ottieni l'ultimo elemento e rimuovilo
-            bottoneRimuovi = document.getElementById('rimuoviDocFotografiche');
+            bottoneRimuovi = document.getElementById('rimuoviImmagini');
             bottoneRimuovi.style.display = 'none';
         }
     }
@@ -1360,13 +1287,14 @@ async function gatherData() {
         formData['classificazione'] = classificazione.selectedIndex !== 0 ? classificazione.value : '';
 
         formData["commento"] = document.getElementById("commentoInput").value ? document.getElementById("commentoInput").value : "";
+        formData["documentazioneFotografica"] = document.getElementById("documentazioneFotografica").innerHTML ? document.getElementById("documentazioneFotografica").innerHTML : "";
+
+
+
 
         // Logica pre prendere le fotoo
-        const formGroupsFoto = document.querySelectorAll('#documentazioneFotografica .form-group');
+        const formGroupsFoto = document.querySelectorAll('#immagini .form-group');
 
-        // Aggiungo per prima l'immagine di copertina
-        formData["immagine1"] = base64Image
-        formData["didascalia_immagine1"] = '';
         // Per ogni elemento con classe "form-group"
         for (let i = 0; i < formGroupsFoto.length; i++) {
             const formGroup = formGroupsFoto[i];
@@ -1383,8 +1311,6 @@ async function gatherData() {
                     reader.onerror = reject;
                     reader.readAsDataURL(imageFile);
                 });
-
-                i = i + 2;
                 formData["immagine" + i] = base64data;
                 formData["didascalia_immagine" + i] = description;
             }
@@ -1522,7 +1448,6 @@ function regret() {
 $(document).ready(function () {
     getSuggestions();
     initInputValidation();
-    setupImageUpload();
     regret();
     uploadData();
 })

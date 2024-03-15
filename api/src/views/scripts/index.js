@@ -276,8 +276,8 @@ function handleSearch() {
       dataInizioMostradataFineMostra = data_da_mostra + ' ' + data_a_mostra;
     }
     const luogoMostra = document.getElementById('luogo_mostra').value;
-    const riferimentoBibliografico = document.getElementById('riferimento_bibliografico').value;
-    const altroRiferimentoBibliografico = document.getElementById('altro_riferimento_bibliografico').value;
+    const riferimentoBibliografico = '';
+    const altroRiferimentoBibliografico = '';
     const documentazioniFotografiche = document.getElementById('documentazioniFotografiche').value;
 
     queries.push('titoloOpera=' + encodeURIComponent(titoloOpera));
