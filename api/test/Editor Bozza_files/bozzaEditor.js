@@ -94,6 +94,7 @@ function getSuggestions() {
                 var autori = response.data[0].autori;
                 var materiali = response.data[0].materiali;
                 var tecniche = response.data[0].tecniche;
+                var misure = response.data[0].misure;
 
                 // Popolare select per autori
                 populateSelect(autori, 'autoriSelect1');
@@ -158,6 +159,30 @@ function populateSelect(data, selectId) {
     });
 }
 
+function addInputSuggestions(misure) {
+    // Itera su ogni elemento misura
+    misure.forEach(function (misura) {
+        // Ottieni gli elementi del DOM relativi alla misura
+        var direzioneInput = document.getElementById('Direzione11');
+        var tipoInput = document.getElementById('Tipo11');
+        var valoreInput = document.getElementById('Valore11');
+        var unitaInput = document.getElementById('Unita11');
+
+        // Aggiungi event listener per mostrare i suggerimenti
+        direzioneInput.addEventListener('focus', function () {
+            showSuggestionsTooltip(direzioneInput, 'Suggerimento per direzione');
+        });
+        tipoInput.addEventListener('focus', function () {
+            showSuggestionsTooltip(tipoInput, 'Suggerimento per tipo');
+        });
+        valoreInput.addEventListener('focus', function () {
+            showSuggestionsTooltip(valoreInput, 'Suggerimento per valore');
+        });
+        unitaInput.addEventListener('focus', function () {
+            showSuggestionsTooltip(unitaInput, 'Suggerimento per unità');
+        });
+    });
+}
 
 
 function showSuggestionsTooltip(inputElement, suggestionText) {
@@ -1164,6 +1189,23 @@ async function gatherData() {
             formData["Formula_successiva" + i] = formulaSuccessiva;
             formData["Categoria" + i] = categoria;
             formData["AutorePreesistente" + i] = autoriSelect
+            // Controlla se autoriSelect è un oggetto JSON valido
+            if (autoriSelect.length > 0) {
+                try {
+                    var autoriData = JSON.parse(autoriSelect);
+    
+                    // Sovrascrivi i campi del formData se autoriData contiene valori validi
+                    if (autoriData && typeof autoriData === 'object') {
+                        formData["NomeAutore" + i] = autoriData.nome ? autoriData.nome : '';
+                        formData["Formula_precedente" + i] = autoriData.formula_precedente ? autoriData.formula_precedente : '';
+                        formData["Formula_successiva" + i] = autoriData.formula_successiva ? autoriData.formula_successiva : '';
+                        formData["Categoria" + i] = autoriData.categoria ? autoriData.categoria : '';
+                    }
+                } catch (error) {
+                    // Gestisci l'errore se l'analisi JSON fallisce
+                    console.error("Errore nell'analisi JSON di autori: " + error);
+                }
+            }
         }
 
         // Itera attraverso i form dei materiali

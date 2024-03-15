@@ -26,20 +26,20 @@
         <% if (userType==='admin' || userType==='schedatore' ) { %>
             <a href="#" class="logout">Logout</a>
             <% } else { %>
-                <a href="login" class="login">Login</a>
+        <a href="login" class="login">Login</a>
+        <% } %>
+            <% if (userType==='admin' || userType==='schedatore' ) { %>
+        <button class="schedatore-and-admin-only dropdown-btn">Schedatore
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-container">
+            <a href="bozze">Bozze</a>
+            <a href="schedeInApprovazione">Schede in approvazione</a>
+        </div>
+        <% } %>
+            <% if (userType==='admin' ) { %>
+                <a href="amministratore" class="admin-only">Amministratore</a>
                 <% } %>
-                    <% if (userType==='admin' || userType==='schedatore' ) { %>
-                        <button class="schedatore-and-admin-only dropdown-btn">Schedatore
-                            <i class="fa fa-caret-down"></i>
-                        </button>
-                        <div class="dropdown-container">
-                            <a href="bozze">Bozze</a>
-                            <a href="schedeInApprovazione">Schede in approvazione</a>
-                        </div>
-                        <% } %>
-                            <% if (userType==='admin' ) { %>
-                                <a href="amministratore" class="admin-only">Amministratore</a>
-                                <% } %>
     </div>
     <a class="openSidebar openButton">
         <span style="font-size:30px;cursor:pointer openSidebar">&#9776; </span>
@@ -379,13 +379,13 @@
                                 <div class="field">
                                     <div class="form-group misure" id="misureGroup11">
                                         <p>Direzione</p>
-                                        <input type="text" id="Direzione1" name="Direzione">
+                                        <input type="text" id="Direzione11" name="Direzione">
                                         <p>Tipo</p>
-                                        <input type="text" id="Tipo1" name="Tipo">
+                                        <input type="text" id="Tipo11" name="Tipo">
                                         <p>Valore</p>
                                         <input type="text" id="Valore11" name="Valore">
                                         <p>Unità</p>
-                                        <input type="text" id="Unita1" name="Unita">
+                                        <input type="text" id="Unita11" name="Unita">
                                         <br>
                                     </div>
                                 </div>
