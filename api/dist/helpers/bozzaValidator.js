@@ -64,7 +64,8 @@ const allowedKeys = [
     "classificazione",
     "commento",
     "immagine",
-    "didascalia_immagine"
+    "didascalia_immagine",
+    "documentazioneFotografica"
 ];
 const validateSchedaData = (schedaData) => __awaiter(void 0, void 0, void 0, function* () {
     // Controllo che le chiavi siano tra quelle consentite

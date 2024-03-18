@@ -22,7 +22,6 @@ docker-compose up  -d
 Restart
 ```sh
 docker-compose down && npm run start:build && docker-compose up -d --build
- 
  ```
 
 Delete all and recreate

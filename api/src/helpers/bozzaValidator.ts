@@ -60,7 +60,8 @@ const allowedKeys = [
   "classificazione",
   "commento",
   "immagine",
-  "didascalia_immagine"
+  "didascalia_immagine",
+  "documentazioneFotografica"
 ];
 
 

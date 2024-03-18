@@ -6,7 +6,7 @@ import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
 import { YourValidationResult, validateSchedaData } from '../helpers/bozzaValidator';
-import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure , insertUser, insertImmagini} from '../helpers/schedaService';
+import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure, insertUser, insertImmagini } from '../helpers/schedaService';
 import { getUseData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
 import { Request, Response } from 'express';
 
@@ -32,7 +32,6 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
   try {
     const pool = await connection();
     const schedaId = req.params.schedaId;
-
     const querySelectScheda = QUERY.SELECT_SCHEDA;
     const querySelectAutori = QUERY.SELECT_AUTORI;
     const querySelectCronologie = QUERY.SELECT_CRONOLOGIE;
@@ -45,11 +44,9 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
     const querySelectBibliografie = QUERY.SELECT_BIBLIOGRAFIE;
     const querySelectAltreBibliografie = QUERY.SELECT_ALTREBIBLIOGRAFIE;
     const querySelectSchedatori = QUERY.SELECT_SCHEDATORI;
-
     const querySelectImmagini = QUERY.SELECT_IMMAGINI;
     const querySelectDocumentazioniFotografiche = QUERY.SELECT_DOCUMENTAZIONIFOTOGRAFICHE;
     const querySelectMisure = QUERY.SELECT_MISURE;
-
     const resultScheda: ResultSet = await pool.query(querySelectScheda, [schedaId]);
     const resultAutori: ResultSet = await pool.query(querySelectAutori, [schedaId]);
     const resultCronologie: ResultSet = await pool.query(querySelectCronologie, [schedaId]);
@@ -98,12 +95,9 @@ export const getScheda = async (req: Request, res: Response): Promise<Response<S
 };
 
 
-
-
-
 export const createScheda = async (req: Request, res: Response): Promise<Response<Scheda>> => {
   console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
-  
+
   let scheda: Scheda = { ...req.body };
 
   try {
@@ -141,7 +135,7 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     await insertMisure(pool, schedaId, scheda);
     await insertImmagini(pool, schedaId, scheda);
 
-    
+
     if (userData !== false) {
       await insertUser(pool, schedaId, scheda, userData);
 
@@ -151,7 +145,7 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
       return res.status(Code.INTERNAL_SERVER_ERROR)
         .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Problema di verifica dell utente'));
     }
-    } catch (error: unknown) {
+  } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
       .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
@@ -198,5 +192,42 @@ export const deleteScheda = async (req: Request, res: Response): Promise<Respons
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)
       .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
+  }
+};
+
+export const getSuggestions = async (req: Request, res: Response): Promise<Response<Scheda>> => {
+  console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
+  try {
+    const pool = await connection();
+    const querySelectAutori = QUERY.SELECT_ALL_AUTORI;
+    const querySelectMateriali = QUERY.SELECT_ALL_MATERIALI;
+    const querySelectTecniche = QUERY.SELECT_ALL_TECNICHE;
+    const querySelectMisure = QUERY.SELECT_ALL_MISURE;
+    const combinedResults: any[] = [];
+
+    const resultAutori: ResultSet = await pool.query(querySelectAutori);
+    const resultMateriali: ResultSet = await pool.query(querySelectMateriali);
+    const resultTecniche: ResultSet = await pool.query(querySelectTecniche);
+    const resultMisure: ResultSet = await pool.query(querySelectMisure);
+
+    combinedResults.push({
+      autori: resultAutori[0],
+      materiali: resultMateriali[0],
+      tecniche: resultTecniche[0],
+      misure: resultMisure[0],
+    });
+
+    pool.end();
+
+    if (combinedResults.length > 0) {
+      return res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Suggestions retrieved', combinedResults));
+    } else {
+      return res.status(Code.NOT_FOUND)
+        .send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, 'Suggestions not found'));
+    }
+  } catch (error: unknown) {
+    console.error(error);
+    return res.status(Code.INTERNAL_SERVER_ERROR)
+      .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred during suggestions retrieving'));
   }
 };

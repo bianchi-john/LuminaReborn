@@ -3,3 +3,5 @@ api/data
 temp
 note
 Schede
+api/.env
+api/test

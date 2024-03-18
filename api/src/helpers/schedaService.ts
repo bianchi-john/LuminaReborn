@@ -418,26 +418,20 @@ export async function insertDocFotografica(pool: any, schedaId: number, scheda: 
     const promises = [];
     let atLeastOneKeyPresent = false;
 
-    for (let i = 1; ; i++) {
-      if (
+    if (
 
-        scheda[`documentazioneFotograficaInput${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
+      scheda[`documentazioneFotografica`]
+    ) {
+      atLeastOneKeyPresent = true; // almeno una chiave è presente
 
-        const result: ResultSet = await pool.query(QUERY.INSERT_FOTOGRAFICA, [
-          scheda[`documentazioneFotograficaInput${i}`] || ''
-        ]);
+      const result: ResultSet = await pool.query(QUERY.INSERT_FOTOGRAFICA, [
+        scheda[`documentazioneFotografica`] || ''
+      ]);
 
-        const thisId = (result[0] as ResultSetHeader).insertId;
+      const thisId = (result[0] as ResultSetHeader).insertId;
 
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_FOTOGRAFICA, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
+      promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_FOTOGRAFICA, [schedaId, thisId]));
     }
-
     if (atLeastOneKeyPresent) {
       await Promise.all(promises);
     }
@@ -509,7 +503,7 @@ export async function insertUser(pool: any, schedaId: number, scheda: Scheda, us
       // Lo user esiste già, prendi l'id
       const userExistsQuery = `SELECT id FROM users WHERE username = ?;`;
       const [userExistsResult] = await pool.query(userExistsQuery, [userData.username]);
-  
+
       userId = userExistsResult[0].id;
       console.log(`Lo user l'id ${userData.username} esiste già. ID: ${userExistsResult[0].id}`);
     } else {
@@ -540,7 +534,7 @@ export async function insertImmagini(pool: any, schedaId: number, scheda: Scheda
     const promises = [];
     let atLeastOneKeyPresent = false;
 
-    for (let i = 1; ; i++) {
+    for (let i = 0; ; i++) {
       if (
         scheda[`immagine${i}`] ||
         scheda[`didascalia_immagine${i}`]
@@ -548,7 +542,7 @@ export async function insertImmagini(pool: any, schedaId: number, scheda: Scheda
         atLeastOneKeyPresent = true; // almeno una chiave è presente
 
         const result: ResultSet = await pool.query(QUERY.INSERT_IMMAGINI, [
-          scheda[`immagine${i}`] || '', scheda[`didascalia_immagine`] || '',
+          scheda[`immagine${i}`] || '', scheda[`didascalia_immagine${i}`] || '',
         ]);
 
         const thisId = (result[0] as ResultSetHeader).insertId;
