@@ -5,4 +5,8 @@ td {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+li {
+    margin-left: 25px;
+}
   

@@ -49,7 +49,6 @@ function loadImages() {
         showSlides((slideIndex += +1));
     });
 
-
     $(".image").on("click", function () {
         var modal = document.getElementById("myModal");
         var modalImg = document.getElementById("img01");
@@ -103,70 +102,76 @@ function populateWebPage(data) {
 
 
     for (i = 0; i < data.data.autori.length; i++) {
-        if (data.data.autori[i].formula_precedente) { document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", "; }
-        if (data.data.autori[i].formula_successiva) { document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", "; }
-        if (data.data.autori[i].nome) { document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", "; }
-        if (data.data.autori[i].categoria) { document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>"; }
+        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", ";}
+        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", ";}
+        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", ";}
+        if(data.data.autori[i].categoria) {document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>";}
         $('.autori').removeClass('autori');
     }
 
     for (i = 0; i < data.data.schedatori.length; i++) {
-        if (data.data.schedatori[i].first_name) { document.getElementById('schedatore').innerHTML += data.data.schedatori[i].first_name + " "; }
-        if (data.data.schedatori[i].last_name) { document.getElementById('schedatore').innerHTML += data.data.schedatori[i].last_name; }
+        if(data.data.schedatori[i].username) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].username}
         $('.schedatore').removeClass('schedatore');
     }
 
 
 
     for (i = 0; i < data.data.cronologie.length; i++) {
-        if (data.data.cronologie[i].etichetta_data) { document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data }
-        $('.cronologie').removeClass('cronologie');
+        if(data.data.cronologie[i].etichetta_data) {document.getElementById('cronologie').innerHTML += data.data.cronologie[i].etichetta_data}
+        $('.cronologie').removeClass('cronologie'); 
     }
 
     for (i = 0; i < data.data.cronologie.length; i++) {
-        if (data.data.cronologie[i].ambito_storico) {
-            document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico
-            $('.ambito').removeClass('ambito');
-        }
+        if(data.data.cronologie[i].ambito_storico) {document.getElementById('ambito').innerHTML += data.data.cronologie[i].ambito_storico
+    $('.ambito').removeClass('ambito'); }
     }
 
 
     for (i = 0; i < data.data.ubicazioni.length; i++) {
-        document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].ubicazione + ", ";
+        document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].ubicazione;
+        if (data.data.ubicazioni[i].descrizione !== "") {
+            document.getElementById('ubicazioni').innerHTML += ", ";
+        }
         document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].descrizione + " <br>";
         $('.ubicazioni').removeClass('ubicazioni');
-
     }
+    
 
     for (i = 0; i < data.data.inventari.length; i++) {
-        var nomeInventario = data.data.inventari[i].nome_inventario;
         var numeroInventario = data.data.inventari[i].numero_inventario;
         var descrizione = data.data.inventari[i].descrizione;
-
+        var nomeInventario = data.data.inventari[i].nome_inventario;
+    
         // Verifica se le stringhe sono vuote e, se non lo sono, le stampa
-        document.getElementById('inventari').innerHTML += (nomeInventario !== "" ? nomeInventario : "");
         document.getElementById('inventari').innerHTML += (numeroInventario !== "" ? numeroInventario : "");
-        document.getElementById('giuridica').innerHTML += (descrizione !== "" ? descrizione : "");
-
-        if (nomeInventario || numeroInventario) {
+        if (data.data.ubicazioni[i].descrizione !== "") {
+            document.getElementById('inventari').innerHTML += ", ";
+        }
+        if (descrizione !== null) {
+            document.getElementById('inventari').innerHTML += (descrizione !== "" ? descrizione : "");
+        }
+        
+        document.getElementById('giuridica').innerHTML += (nomeInventario !== "" ? nomeInventario : "");
+    
+        if (numeroInventario || numeroInventario) {
             $('.inventari').removeClass('inventari');
         }
-        if (descrizione) {
+        if (nomeInventario) {
             $('.giuridica').removeClass('giuridica');
         }
     }
-
-
+    
+    
 
     for (i = 0; i < data.data.materiali.length; i++) {
         document.getElementById('materiali').innerHTML += data.data.materiali[i].nome_materiale;
-        if (data.data.materiali[i].descrizione) { document.getElementById('materiali').innerHTML += + ", " + data.data.materiali[i].descrizione + " <br>"; }
+        if (data.data.materiali[i].descrizione) {document.getElementById('materiali').innerHTML +=+ ", " + data.data.materiali[i].descrizione + " <br>";}
         $('.materiali').removeClass('materiali');
     }
 
     for (i = 0; i < data.data.tecniche.length; i++) {
         document.getElementById('tecniche').innerHTML += data.data.tecniche[i].nome_tecnica
-        if (data.data.tecniche[i].descrizione) { document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>"; }
+        if (data.data.tecniche[i].descrizione) {document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>";}
         $('.tecniche').removeClass('tecniche');
     }
 
@@ -174,51 +179,31 @@ function populateWebPage(data) {
         var provenienza = data.data.provenienze[i].provenienza;
         var note = data.data.provenienze[i].note;
         var descrizione = data.data.provenienze[i].descrizione;
-
+    
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (provenienza && provenienza.trim() !== "") {
             document.getElementById('provenienze').innerHTML += provenienza + " ";
         }
-
+    
         if (note && note.trim() !== "") {
             document.getElementById('provenienze').innerHTML += note + " ";
         }
-
+    
         if (descrizione && descrizione.trim() !== "") {
             document.getElementById('provenienze').innerHTML += descrizione + " <br>";
         }
-
+    
         $('.provenienze').removeClass('provenienze');
     }
-
+        
     for (i = 0; i < data.data.mostre.length; i++) {
         var titoloMostra = data.data.mostre[i].titolo_mostra;
-        var curatore = data.data.mostre[i].curatore;
-        var dataMostra = data.data.mostre[i].data_mostra;
-        var luogoMostra = data.data.mostre[i].luogo_mostra;
-        var descrizione = data.data.mostre[i].descrizione;
-
+    
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (titoloMostra && titoloMostra.trim() !== "") {
             document.getElementById('mostre').innerHTML += titoloMostra + ", ";
         }
-
-        if (curatore && curatore.trim() !== "") {
-            document.getElementById('mostre').innerHTML += curatore + ", ";
-        }
-
-        if (dataMostra && dataMostra.trim() !== "") {
-            document.getElementById('mostre').innerHTML += dataMostra + ", ";
-        }
-
-        if (luogoMostra && luogoMostra.trim() !== "") {
-            document.getElementById('mostre').innerHTML += luogoMostra + ", ";
-        }
-
-        if (descrizione && descrizione.trim() !== "") {
-            document.getElementById('mostre').innerHTML += descrizione + "<br>";
-        }
-
+    
         $('.mostre').removeClass('mostre');
     }
 
@@ -255,12 +240,12 @@ function populateWebPage(data) {
             $('.misure').removeClass('misure');
 
         }
-    });
+    }); 
 
     Object.keys(raggruppamenti).forEach(function (gruppo) {
         $('.misureContent').append('<ol id="lista' + gruppo + '"></ol>');
         var lista = document.getElementById("lista" + gruppo);
-        lista.append(raggruppamenti[gruppo][0].intero_parziale + ' ' + raggruppamenti[gruppo][0].titolo_gruppo_misure)
+        lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure + ' ' + raggruppamenti[gruppo][0].intero_parziale)
         raggruppamenti[gruppo].forEach(function (elemento) {
             var li = creaElementoLista(elemento);
             lista.appendChild(li);
@@ -289,7 +274,6 @@ function populateWebPage(data) {
         loadImages();
     }
 }
-
 // Funzione per mostrare la finestra modale
 function showModal(testo) {
     // Crea il markup per la finestra modale
