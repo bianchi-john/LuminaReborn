@@ -1,7 +1,6 @@
 version: '3'
 services:
   mysqldb:
-    env_file: .env
     image: mysql:8.0
     container_name: mysqlcontainer
     command: --default-authentication-plugin=mysql_native_password
@@ -11,45 +10,45 @@ services:
       - ./dbinit:/docker-entrypoint-initdb.d
       - ./attach:/usr/lumina/attach
     ports:
-      - "${DB_PORT}:3306"
+      - 3306:3306
     expose:
-      - "${DB_PORT}"
+      - 3306
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: letmein
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: letmein
+      MYSQL_DATABASE: luminadb
       SERVICE_TAGS: prod
       SERVICE_NAME: mysqldb
     networks:
       internalnet: 
-        ipv4_address: ${MYSQLDB_IP}
+        ipv4_address: 172.22.0.7
 
   nodeapp:
     container_name: nodeappcontainer
     build: .
     image: nodeapp:v1
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_PORT: ${DB_PORT}
-      DB_CONNECTION_LIMIT: ${DB_CONNECTION_LIMIT}
-      SERVER_PORT: ${SERVER_PORT}
+      DB_HOST: mysqldb 
+      DB_USER: admin
+      DB_PASSWORD: letmein
+      DB_NAME: luminadb
+      DB_PORT: 3306
+      DB_CONNECTION_LIMIT: 100
+      SERVER_PORT: 3000
       SERVICE_TAGS: prod
       SERVICE_NAME: nodeappservice
-      VUE_APP_USER_MANAGER_API_URL: ${VUE_APP_USER_MANAGER_API_URL}
+      VUE_APP_USER_MANAGER_API_URL: user-manager-api:7071
     ports:
-      - "${SERVER_PORT}:3000"
+      - 3000:3000
     expose:
-      - "${SERVER_PORT}"
+      - 3000
     depends_on:
       - mysqldb
       - user-manager-api
     networks:
       internalnet: 
-        ipv4_address: ${NODEAPP_CONTAINER_IP}
+        ipv4_address: 172.22.0.6
       extern:
 
   mongo:
@@ -58,30 +57,30 @@ services:
       driver: none
     networks:
       internalnet: 
-        ipv4_address: ${MONGO_IP}
+        ipv4_address: 172.22.0.8
 
   user-manager-api:
     image: moreillon/user-manager-mongoose
     environment:
-      MONGODB_URL: ${MONGODB_URL}
-      JWT_SECRET: ${JWT_SECRET}
+      MONGODB_URL: mongodb://172.22.0.8
+      JWT_SECRET: sonoVVNÀAFINVASDVNNSJljnval
     ports:
       - "7071:80"
     depends_on:
       - mongo
     networks:
       internalnet: 
-        ipv4_address: ${USER_MANAGER_API_IP}
+        ipv4_address: 172.22.0.4
 
   user-manager-front:
     image: moreillon/user-manager-mongoose-front
     logging:
       driver: none
     environment:
-      VUE_APP_USER_MANAGER_API_URL: ${VUE_APP_USER_MANAGER_API_URL}
+      VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
     networks:
       internalnet: 
-        ipv4_address: ${USER_MANAGER_FRONT_IP}
+        ipv4_address: 172.22.0.3
 
 networks:
   extern:
@@ -91,5 +90,19 @@ networks:
     ipam:
       driver: default
       config: 
-        - subnet: ${NETWORKS_SUBNET_IP}
-          gateway: ${NETWORKS_GATEWAY_IP}
+        - subnet: 172.22.0.0/24
+          gateway: 172.22.0.1
+
+  # user-manager-front-proxy:
+  #   image: moreillon/api-proxy
+  #   logging:
+  #     driver: none
+  #   environment:
+  #     VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
+  #     PROXY_API: http://user-manager-api:7071
+  #     PROXY_ROOT: http://nodeapp:3000
+  #   ports:
+  #     - "8081:80"
+  #   networks:
+  #     internalnet:
+  #       ipv4_address: 172.22.0.2

@@ -120,7 +120,6 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     // Mi prendo l'user
     const userData = await getUseData(req, res);
 
-
     await insertAutori(pool, schedaId, scheda);
     await insertCronologie(pool, schedaId, scheda);
     await insertUbicazioni(pool, schedaId, scheda);
@@ -134,7 +133,6 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     await insertDocFotografica(pool, schedaId, scheda);
     await insertMisure(pool, schedaId, scheda);
     await insertImmagini(pool, schedaId, scheda);
-
 
     if (userData !== false) {
       await insertUser(pool, schedaId, scheda, userData);

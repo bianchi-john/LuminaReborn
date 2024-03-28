@@ -311,19 +311,13 @@ function insertBibliografia(pool, schedaId, scheda) {
         try {
             const promises = [];
             let atLeastOneKeyPresent = false;
-            for (let i = 1;; i++) {
-                if (scheda[`riferimento_bibliografico${i}`]) {
-                    atLeastOneKeyPresent = true; // almeno una chiave è presente
-                    const result = yield pool.query(scheda_query_1.QUERY.INSERT_BIBILIOGRAFIA, [
-                        scheda[`riferimento_bibliografico${i}`] || ''
-                    ]);
-                    const thisId = result[0].insertId;
-                    promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_BIBILIOGRAFIA, [schedaId, thisId]));
-                }
-                else {
-                    // Se nessuna delle chiavi è presente, esce dal ciclo
-                    break;
-                }
+            if (scheda[`bibliografia`]) {
+                atLeastOneKeyPresent = true; // almeno una chiave è presente
+                const result = yield pool.query(scheda_query_1.QUERY.INSERT_BIBILIOGRAFIA, [
+                    scheda[`bibliografia`] || ''
+                ]);
+                const thisId = result[0].insertId;
+                promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_BIBILIOGRAFIA, [schedaId, thisId]));
             }
             if (atLeastOneKeyPresent) {
                 yield Promise.all(promises);
@@ -342,19 +336,13 @@ function insertAltraBibliografia(pool, schedaId, scheda) {
         try {
             const promises = [];
             let atLeastOneKeyPresent = false;
-            for (let i = 1;; i++) {
-                if (scheda[`riferimento_bibliografico${i}`]) {
-                    atLeastOneKeyPresent = true; // almeno una chiave è presente
-                    const result = yield pool.query(scheda_query_1.QUERY.INSERT_ALTRABIBILIOGRAFIA, [
-                        scheda[`riferimento_bibliografico${i}`] || ''
-                    ]);
-                    const thisId = result[0].insertId;
-                    promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_ALTRABIBILIOGRAFIA, [schedaId, thisId]));
-                }
-                else {
-                    // Se nessuna delle chiavi è presente, esce dal ciclo
-                    break;
-                }
+            if (scheda[`altraBibliografia`]) {
+                atLeastOneKeyPresent = true; // almeno una chiave è presente
+                const result = yield pool.query(scheda_query_1.QUERY.INSERT_ALTRABIBILIOGRAFIA, [
+                    scheda[`altraBibliografia`] || ''
+                ]);
+                const thisId = result[0].insertId;
+                promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_ALTRABIBILIOGRAFIA, [schedaId, thisId]));
             }
             if (atLeastOneKeyPresent) {
                 yield Promise.all(promises);

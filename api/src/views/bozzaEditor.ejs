@@ -140,13 +140,13 @@
                                 <input type="text" id="Formula_successiva1" name="Formula successiva">
                                 <p>Categoria</p>
                                 <select name="Categoria" id="Categoria1">
-                                    <option></option>
+                                    <option value=''>---</option>
                                     <option value="Opera firmata">Opera firmata</option>
                                     <option value="Opera attribuita">Opera attribuita</option>
                                     <option value="Opera documentata">Opera documentata</option>
                                 </select>
                                 <p>Seleziona preesistente</p>
-                                <select name="autoriSelect1" id="autoriSelect1" onchange="handleSelectChange(this)"><option value="">---</option><option value="{&quot;id&quot;:1,&quot;formula_precedente&quot;:&quot;ciao&quot;,&quot;formula_successiva&quot;:&quot;ciao&quot;,&quot;categoria&quot;:&quot;&quot;,&quot;nome&quot;:&quot;ciao&quot;}">ciao ciao ciao</option><option value="{&quot;id&quot;:2,&quot;formula_precedente&quot;:&quot;kjb&quot;,&quot;formula_successiva&quot;:&quot;ldjn&quot;,&quot;categoria&quot;:&quot;&quot;,&quot;nome&quot;:&quot;autore2&quot;}">kjb ldjn autore2</option><option value="{&quot;id&quot;:3,&quot;formula_precedente&quot;:&quot;AADFJDSA&quot;,&quot;formula_successiva&quot;:&quot;SMVN&quot;,&quot;categoria&quot;:&quot;Opera attribuita&quot;,&quot;nome&quot;:&quot;adk.jSD&quot;}">AADFJDSA SMVN Opera attribuita adk.jSD</option><option value="{&quot;id&quot;:4,&quot;formula_precedente&quot;:&quot;sdkjskdj&quot;,&quot;formula_successiva&quot;:&quot;&quot;,&quot;categoria&quot;:&quot;&quot;,&quot;nome&quot;:&quot;&quot;}">sdkjskdj</option><option value="{&quot;id&quot;:5,&quot;formula_precedente&quot;:&quot;sdkjskdj&quot;,&quot;formula_successiva&quot;:&quot;&quot;,&quot;categoria&quot;:&quot;&quot;,&quot;nome&quot;:&quot;&quot;}">sdkjskdj</option></select>
+                                <select name="autoriSelect1" id="autoriSelect1" onchange="handleSelectChange(this)"><option value="">---</option><option value="{&quot;id&quot;:1,&quot;formula_precedente&quot;:&quot;&quot;,&quot;formula_successiva&quot;:&quot;&quot;,&quot;categoria&quot;:&quot;&quot;,&quot;nome&quot;:&quot;Filippo Latini&quot;}">Filippo Latini</option><option value="{&quot;id&quot;:2,&quot;formula_precedente&quot;:&quot;copia da&quot;,&quot;formula_successiva&quot;:&quot;&quot;,&quot;categoria&quot;:&quot;&quot;,&quot;nome&quot;:&quot;Giusto Suttermans&quot;}">copia da Giusto Suttermans</option></select>
                             </div>
                         </div>
                         <button onclick="aggiungiGruppoAutori()">Aggiungi</button>
@@ -256,7 +256,7 @@
                 </div>
                 <div class="card-body classificazione">
                     <select name="classificazione" id="classificazione">
-                        <option></option>
+                        <option value=''>---</option>
                         <option value="Dipinti">Dipinto</option>
                         <option value="Mosaici">Mosaico</option>
                         <option value="Sculture e frammenti lapidei">Scultura e frammento lapideo</option>
@@ -303,7 +303,7 @@
                                 <p>Materiale</p>
                                 <input type="text" id="materiale1" name="Materiale">
                                 <p>Seleziona preesistente</p>
-                                <select name="materialiSelect" id="materialiSelect1" onchange="handleSelectChange(this)"><option value="">---</option><option value="{&quot;id&quot;:1,&quot;nome_materiale&quot;:&quot;a.djsak.djv.avdsa&quot;,&quot;descrizione&quot;:null}">a.djsak.djv.avdsa </option></select>
+                                <select name="materialiSelect" id="materialiSelect1" onchange="handleSelectChange(this)"><option value="">---</option></select>
                             </div>
                         </div>
                         <button onclick="aggiungiGruppo('textboxContainerMateriali', 'materiali-group1', 'materiale')">Aggiungi</button>
@@ -324,7 +324,7 @@
                                 <p>Tecnica</p>
                                 <input type="text" id="Tecnica1" name="Tecnica">
                                 <p>Seleziona preesistente</p>
-                                <select name="tecnicheSelect1" id="tecnicheSelect1" onchange="handleSelectChange(this)"><option value="">---</option><option value="{&quot;id&quot;:1,&quot;nome_tecnica&quot;:&quot;.skjdasdv&quot;,&quot;descrizione&quot;:null}">.skjdasdv </option><option value="{&quot;id&quot;:2,&quot;nome_tecnica&quot;:&quot;s.kdjbasjd&quot;,&quot;descrizione&quot;:null}">s.kdjbasjd </option></select>
+                                <select name="tecnicheSelect1" id="tecnicheSelect1" onchange="handleSelectChange(this)"><option value="">---</option><option value="{&quot;id&quot;:1,&quot;nome_tecnica&quot;:&quot;Fusione&quot;,&quot;descrizione&quot;:null}">Fusione </option><option value="{&quot;id&quot;:2,&quot;nome_tecnica&quot;:&quot;Pittura a olio&quot;,&quot;descrizione&quot;:null}">Pittura a olio </option></select>
                             </div>
                         </div>
                         <button onclick="aggiungiGruppo('textboxContainerTecniche', 'tecniche-group1', 'Tecnica')">Aggiungi</button>
@@ -343,32 +343,65 @@
                         <div id="textboxContainerMisure">
                             <div class="form-group gruppoMisure" id="gruppoMisure1">
                                 <p>Titolo Gruppo Misure</p>
-                                <input type="text" id="Titolo1" name="Titolo">
+                                    <input type="text" id="Titolo1" name="Titolo">
                                 <p>Intero/Parziale</p>
-                                <input type="text" id="Intero-Parziale1" name="Intero-Parziale">
+                                <select name="Intero-Parziale1" id="Intero-Parziale1">
+                                    <option value="" selected="">---</option>
+                                    <option value="(intero)">Intero</option>
+                                    <option value="(parziale)">Parziale</option>
+                                </select>
                                 <br>
                                 <br>
                                 <p>Misure</p>
                                 <div class="field">
                                     <div class="form-group misure" id="misureGroup11">
                                         <p>Direzione</p>
-                                        <input type="text" id="Direzione11" name="Direzione">
+                                        <select name="Direzione" id="Direzione11">
+                                            <option value="" selected="">---</option>
+                                            <option value="Altezza">Altezza</option>
+                                            <option value="Larghezza">Larghezza</option>
+                                            <option value="Profondita">Profondita</option>
+                                            <option value="Spessore">Spessore</option>
+                                            <option value="Diametro">Diametro</option>
+                                            <option value="Peso">Peso</option>
+                                        </select>
                                         <p>Tipo</p>
-                                        <input type="text" id="Tipo11" name="Tipo">
+                                        <select name="Tipo" id="Tipo11">
+                                            <option value="" selected="">---</option>
+                                            <option value="Assoluta">Assoluta</option>
+                                            <option value="Assoluto">Assoluto</option>
+                                            <option value="Minima">Minima</option>
+                                            <option value="Minimo">Minimo</option>
+                                            <option value="Massima">Massima</option>
+                                            <option value="Massimo">Massimo</option>
+                                            <option value="Media">Media</option>
+                                            <option value="Medio">Medio</option>
+                                            <option value="Ricostruita">Ricostruita</option>
+                                            <option value="Ricostruito">Ricostruito</option>
+                                            <option value="Conservata">Conservata</option>
+                                            <option value="Conservato">Conservato</option>
+                                        </select>
                                         <p>Valore</p>
-                                        <input type="text" id="Valore11" name="Valore">
+                                                <input type="text" id="Valore11" name="Valore" pattern="[0-9]*" title="Inserisci solo numeri">
                                         <p>Unità</p>
-                                        <input type="text" id="Unita11" name="Unita">
+                                        <select name="Unita" id="Unita11">
+                                            <option value="" selected="">---</option>
+                                            <option value="m">m (metri)</option>
+                                            <option value="cm">cm (centimetri)</option>
+                                            <option value="mm">mm (millimetri)</option>
+                                            <option value="μm">μm (micron)</option>
+                                            <option value="g">g (grammi)</option>
+                                            <option value="hg">hg (ettogrammi)</option>
+                                            <option value="kg">kg (kilogrammi)</option>
+                                        </select>
                                         <br>
+                                        </div>
                                     </div>
-                                </div>
                                 <button onclick="aggiungiMisura('gruppoMisure1')">Aggiungi misura</button>
                                 <button onclick="rimuoviMisura('gruppoMisure1')" class="removeButtonMisure">Rimuovi</button>
                             </div>
                         </div>
-
-                        <button onclick="aggiungiGruppoMisure('textboxContainerMisure')">Aggiungi gruppo
-                            misure</button>
+                        <button onclick="aggiungiGruppoMisure('textboxContainerMisure1')">Aggiungi gruppo misure</button>
                         <button onclick="rimuoviGruppoMisure('textboxContainerMisure')" id="removeButtonGruppiMisure">Rimuovi gruppo misure</button>
                     </div>
                 </div>
@@ -894,7 +927,7 @@
                                         <img class="intLink" title="Copy" onclick="formatDoc('copy');" src="data:image/gif;base64,R0lGODlhFgAWAIQcAB1ChBFNsTRLYyJYwjljwl9vj1iE31iGzF6MnHWX9HOdz5GjuYCl2YKl8ZOt4qezxqK63aK/9KPD+7DI3b/I17LM/MrL1MLY9NHa7OPs++bx/Pv8/f///////////////yH5BAEAAB8ALAAAAAAWABYAAAWG4CeOZGmeaKqubOum1SQ/kPVOW749BeVSus2CgrCxHptLBbOQxCSNCCaF1GUqwQbBd0JGJAyGJJiobE+LnCaDcXAaEoxhQACgNw0FQx9kP+wmaRgYFBQNeAoGihCAJQsCkJAKOhgXEw8BLQYciooHf5o7EA+kC40qBKkAAAGrpy+wsbKzIiEAOw==">
                                         <img class="intLink" title="Paste" onclick="formatDoc('paste');" src="data:image/gif;base64,R0lGODlhFgAWAIQUAD04KTRLY2tXQF9vj414WZWIbXmOrpqbmpGjudClFaezxsa0cb/I1+3YitHa7PrkIPHvbuPs+/fvrvv8/f///////////////////////////////////////////////yH5BAEAAB8ALAAAAAAWABYAAAWN4CeOZGmeaKqubGsusPvBSyFJjVDs6nJLB0khR4AkBCmfsCGBQAoCwjF5gwquVykSFbwZE+AwIBV0GhFog2EwIDchjwRiQo9E2Fx4XD5R+B0DDAEnBXBhBhN2DgwDAQFjJYVhCQYRfgoIDGiQJAWTCQMRiwwMfgicnVcAAAMOaK+bLAOrtLUyt7i5uiUhADs=">
                                     </div>
-                                    <div class="textBox" id="bibliografia1" contenteditable="true"></div>
+                                    <div class="textBox" id="bibliografia" contenteditable="true"></div>
                                     <p class="editMode"><input type="checkbox" name="switchMode" class="switchBox" onchange="setDocMode(this.checked);"> <label for="switchBox">Show
                                             HTML</label>
                                     </p>
@@ -978,7 +1011,7 @@
                                         <img class="intLink" title="Copy" onclick="formatDoc('copy');" src="data:image/gif;base64,R0lGODlhFgAWAIQcAB1ChBFNsTRLYyJYwjljwl9vj1iE31iGzF6MnHWX9HOdz5GjuYCl2YKl8ZOt4qezxqK63aK/9KPD+7DI3b/I17LM/MrL1MLY9NHa7OPs++bx/Pv8/f///////////////yH5BAEAAB8ALAAAAAAWABYAAAWG4CeOZGmeaKqubOum1SQ/kPVOW749BeVSus2CgrCxHptLBbOQxCSNCCaF1GUqwQbBd0JGJAyGJJiobE+LnCaDcXAaEoxhQACgNw0FQx9kP+wmaRgYFBQNeAoGihCAJQsCkJAKOhgXEw8BLQYciooHf5o7EA+kC40qBKkAAAGrpy+wsbKzIiEAOw==">
                                         <img class="intLink" title="Paste" onclick="formatDoc('paste');" src="data:image/gif;base64,R0lGODlhFgAWAIQUAD04KTRLY2tXQF9vj414WZWIbXmOrpqbmpGjudClFaezxsa0cb/I1+3YitHa7PrkIPHvbuPs+/fvrvv8/f///////////////////////////////////////////////yH5BAEAAB8ALAAAAAAWABYAAAWN4CeOZGmeaKqubGsusPvBSyFJjVDs6nJLB0khR4AkBCmfsCGBQAoCwjF5gwquVykSFbwZE+AwIBV0GhFog2EwIDchjwRiQo9E2Fx4XD5R+B0DDAEnBXBhBhN2DgwDAQFjJYVhCQYRfgoIDGiQJAWTCQMRiwwMfgicnVcAAAMOaK+bLAOrtLUyt7i5uiUhADs=">
                                     </div>
-                                    <div class="textBox" id="altrabibliografia1" contenteditable="true"></div>
+                                    <div class="textBox" id="altrabibliografia" contenteditable="true"></div>
                                     <p class="editMode"><input type="checkbox" name="switchMode" class="switchBox" onchange="setDocMode(this.checked);"> <label for="switchBox">Show
                                             HTML</label>
                                     </p>
@@ -1115,6 +1148,7 @@
     </div>
     <div class="footer-space"></div>
 </div>
+
 
 </body>
 

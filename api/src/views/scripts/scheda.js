@@ -111,8 +111,7 @@ function populateWebPage(data) {
     }
 
     for (i = 0; i < data.data.schedatori.length; i++) {
-        if(data.data.schedatori[i].first_name) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].first_name + " ";}
-        if(data.data.schedatori[i].last_name){document.getElementById('schedatore').innerHTML += data.data.schedatori[i].last_name ;}
+        if(data.data.schedatori[i].username) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].username}
         $('.schedatore').removeClass('schedatore');
     }
 
@@ -130,26 +129,33 @@ function populateWebPage(data) {
 
 
     for (i = 0; i < data.data.ubicazioni.length; i++) {
-        document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].ubicazione + ", ";
+        document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].ubicazione;
+        if (data.data.ubicazioni[i].descrizione !== "") {
+            document.getElementById('ubicazioni').innerHTML += ", ";
+        }
         document.getElementById('ubicazioni').innerHTML += data.data.ubicazioni[i].descrizione + " <br>";
         $('.ubicazioni').removeClass('ubicazioni');
-
     }
+    
 
     for (i = 0; i < data.data.inventari.length; i++) {
-        var nomeInventario = data.data.inventari[i].nome_inventario;
         var numeroInventario = data.data.inventari[i].numero_inventario;
         var descrizione = data.data.inventari[i].descrizione;
+        var nomeInventario = data.data.inventari[i].nome_inventario;
     
         // Verifica se le stringhe sono vuote e, se non lo sono, le stampa
-        document.getElementById('inventari').innerHTML += (nomeInventario !== "" ? nomeInventario : "");
         document.getElementById('inventari').innerHTML += (numeroInventario !== "" ? numeroInventario : "");
-        document.getElementById('giuridica').innerHTML += (descrizione !== "" ? descrizione : "");
+        if (data.data.ubicazioni[i].descrizione !== "") {
+            document.getElementById('inventari').innerHTML += ", ";
+        }
+        document.getElementById('inventari').innerHTML += (descrizione !== "" ? descrizione : "");
+
+        document.getElementById('giuridica').innerHTML += (nomeInventario !== "" ? nomeInventario : "");
     
-        if (nomeInventario || numeroInventario) {
+        if (numeroInventario || numeroInventario) {
             $('.inventari').removeClass('inventari');
         }
-        if (descrizione) {
+        if (nomeInventario) {
             $('.giuridica').removeClass('giuridica');
         }
     }
@@ -191,30 +197,10 @@ function populateWebPage(data) {
         
     for (i = 0; i < data.data.mostre.length; i++) {
         var titoloMostra = data.data.mostre[i].titolo_mostra;
-        var curatore = data.data.mostre[i].curatore;
-        var dataMostra = data.data.mostre[i].data_mostra;
-        var luogoMostra = data.data.mostre[i].luogo_mostra;
-        var descrizione = data.data.mostre[i].descrizione;
     
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (titoloMostra && titoloMostra.trim() !== "") {
             document.getElementById('mostre').innerHTML += titoloMostra + ", ";
-        }
-    
-        if (curatore && curatore.trim() !== "") {
-            document.getElementById('mostre').innerHTML += curatore + ", ";
-        }
-    
-        if (dataMostra && dataMostra.trim() !== "") {
-            document.getElementById('mostre').innerHTML += dataMostra + ", ";
-        }
-    
-        if (luogoMostra && luogoMostra.trim() !== "") {
-            document.getElementById('mostre').innerHTML += luogoMostra + ", ";
-        }
-    
-        if (descrizione && descrizione.trim() !== "") {
-            document.getElementById('mostre').innerHTML += descrizione + "<br>";
         }
     
         $('.mostre').removeClass('mostre');
@@ -258,7 +244,7 @@ function populateWebPage(data) {
     Object.keys(raggruppamenti).forEach(function (gruppo) {
         $('.misureContent').append('<ol id="lista' + gruppo + '"></ol>');
         var lista = document.getElementById("lista" + gruppo);
-        lista.append(raggruppamenti[gruppo][0].intero_parziale + ' ' + raggruppamenti[gruppo][0].titolo_gruppo_misure)
+        lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure + ' (' + raggruppamenti[gruppo][0].intero_parziale + ')')
         raggruppamenti[gruppo].forEach(function (elemento) {
             var li = creaElementoLista(elemento);
             lista.appendChild(li);

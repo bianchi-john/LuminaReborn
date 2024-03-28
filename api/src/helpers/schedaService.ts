@@ -344,27 +344,19 @@ export async function insertBibliografia(pool: any, schedaId: number, scheda: Sc
   try {
     const promises = [];
     let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
       if (
-
-        scheda[`riferimento_bibliografico${i}`]
+        scheda[`bibliografia`]
       ) {
         atLeastOneKeyPresent = true; // almeno una chiave è presente
 
         const result: ResultSet = await pool.query(QUERY.INSERT_BIBILIOGRAFIA, [
-          scheda[`riferimento_bibliografico${i}`] || ''
+          scheda[`bibliografia`] || ''
         ]);
 
         const thisId = (result[0] as ResultSetHeader).insertId;
 
         promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_BIBILIOGRAFIA, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
       }
-    }
-
     if (atLeastOneKeyPresent) {
       await Promise.all(promises);
     }
@@ -380,27 +372,20 @@ export async function insertAltraBibliografia(pool: any, schedaId: number, sched
   try {
     const promises = [];
     let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
       if (
-
-        scheda[`riferimento_bibliografico${i}`]
+        scheda[`altraBibliografia`]
       ) {
         atLeastOneKeyPresent = true; // almeno una chiave è presente
 
         const result: ResultSet = await pool.query(QUERY.INSERT_ALTRABIBILIOGRAFIA, [
-          scheda[`riferimento_bibliografico${i}`] || ''
+          scheda[`altraBibliografia`] || ''
         ]);
 
         const thisId = (result[0] as ResultSetHeader).insertId;
 
         promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_ALTRABIBILIOGRAFIA, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
+      } 
+    
     if (atLeastOneKeyPresent) {
       await Promise.all(promises);
     }
