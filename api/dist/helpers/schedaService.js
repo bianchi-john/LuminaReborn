@@ -287,7 +287,7 @@ function insertMostre(pool, schedaId, scheda) {
                         scheda[`DescrizioneMostra${i}`] || ''
                     ]);
                     const thisId = result[0].insertId;
-                    promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_PROVENIENZA, [schedaId, thisId]));
+                    promises.push(pool.query(scheda_query_1.QUERY.INSERT_TDS_SCHEDA_MOSTRA, [schedaId, thisId]));
                 }
                 else {
                     // Se nessuna delle chiavi è presente, esce dal ciclo

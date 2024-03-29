@@ -321,7 +321,7 @@ export async function insertMostre(pool: any, schedaId: number, scheda: Scheda):
 
         const thisId = (result[0] as ResultSetHeader).insertId;
 
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_PROVENIENZA, [schedaId, thisId]));
+        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_MOSTRA, [schedaId, thisId]));
       } else {
         // Se nessuna delle chiavi è presente, esce dal ciclo
         break;
