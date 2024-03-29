@@ -355,8 +355,8 @@ function generaCodiceGruppoMisure(id) {
                 <p>Intero/Parziale</p>
                 <select name="Intero-Parziale" id="Intero-Parziale${id}">
                     <option value="">---</option>
-                    <option value="(intero)">Intero</option>
-                    <option value="(parziale)">Parziale</option>
+                    <option value="intero">Intero</option>
+                    <option value="parziale">Parziale</option>
                 </select>
                 </br>
                 </br>

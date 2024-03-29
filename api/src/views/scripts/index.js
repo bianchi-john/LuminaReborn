@@ -56,6 +56,9 @@ function scrollToResults() {
 
 // Funzione per creare la card di Bootstrap
 function createCard(data, index) {
+  
+
+
   var cardDiv = document.createElement("div");
   cardDiv.classList.add("card");
 
@@ -322,7 +325,10 @@ function handleSearch() {
       }      
       else {
         for (var j = 0; j < response.data.length; j = j + 2) {
-          document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
+          if (response.data[j][0] != undefined){
+
+            document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
+          } 
         }
         scrollToResults();
       }

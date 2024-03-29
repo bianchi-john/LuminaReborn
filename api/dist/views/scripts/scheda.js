@@ -246,7 +246,7 @@ function populateWebPage(data) {
     Object.keys(raggruppamenti).forEach(function (gruppo) {
         $('.misureContent').append('<ol id="lista' + gruppo + '"></ol>');
         var lista = document.getElementById("lista" + gruppo);
-        lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure + ' ' + raggruppamenti[gruppo][0].intero_parziale + ')')
+        lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure + ' ' + raggruppamenti[gruppo][0].intero_parziale)
         raggruppamenti[gruppo].forEach(function (elemento) {
             var li = creaElementoLista(elemento);
             lista.appendChild(li);

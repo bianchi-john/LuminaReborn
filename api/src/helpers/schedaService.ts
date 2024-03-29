@@ -306,7 +306,7 @@ export async function insertMostre(pool: any, schedaId: number, scheda: Scheda):
       ) {
         atLeastOneKeyPresent = true; // almeno una chiave è presente
 
-        const result: ResultSet = await pool.query(QUERY.INSERT_PROVENIENZA, [
+        const result: ResultSet = await pool.query(QUERY.INSERT_MOSTRA, [
           scheda[`Curatore${i}`] || '',
           scheda[`TitoloMostra${i}`] || '',
           scheda[`GiornoInizioMostra${i}`] || '',

@@ -274,7 +274,7 @@ function insertMostre(pool, schedaId, scheda) {
                     scheda[`LuogoMostra${i}`] ||
                     scheda[`DescrizioneMostra${i}`]) {
                     atLeastOneKeyPresent = true; // almeno una chiave è presente
-                    const result = yield pool.query(scheda_query_1.QUERY.INSERT_PROVENIENZA, [
+                    const result = yield pool.query(scheda_query_1.QUERY.INSERT_MOSTRA, [
                         scheda[`Curatore${i}`] || '',
                         scheda[`TitoloMostra${i}`] || '',
                         scheda[`GiornoInizioMostra${i}`] || '',
