@@ -103,9 +103,9 @@ function populateWebPage(data) {
 
 
     for (i = 0; i < data.data.autori.length; i++) {
-        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", ";}
-        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", ";}
-        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", ";}
+        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + " ";}
+        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + " ";}
+        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += data.data.autori[i].nome + " ";}
         if(data.data.autori[i].categoria) {document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>";}
         $('.autori').removeClass('autori');
     }
@@ -172,7 +172,12 @@ function populateWebPage(data) {
 
     for (i = 0; i < data.data.tecniche.length; i++) {
         document.getElementById('tecniche').innerHTML += data.data.tecniche[i].nome_tecnica
-        if (data.data.tecniche[i].descrizione) {document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>";}
+        if (data.data.tecniche[i].descrizione) {
+            document.getElementById('tecniche').innerHTML += ", " + data.data.tecniche[i].descrizione + " <br>";
+        }
+        else {
+            document.getElementById('tecniche').innerHTML += "<br>";
+        }
         $('.tecniche').removeClass('tecniche');
     }
 
@@ -246,7 +251,12 @@ function populateWebPage(data) {
     Object.keys(raggruppamenti).forEach(function (gruppo) {
         $('.misureContent').append('<ol id="lista' + gruppo + '"></ol>');
         var lista = document.getElementById("lista" + gruppo);
-        lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure + ' ' + raggruppamenti[gruppo][0].intero_parziale)
+        if (raggruppamenti[gruppo][0].intero_parziale != ""){
+            lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure + ' (' + raggruppamenti[gruppo][0].intero_parziale + ')')
+        }
+        else {
+            lista.append(raggruppamenti[gruppo][0].titolo_gruppo_misure)
+        }
         raggruppamenti[gruppo].forEach(function (elemento) {
             var li = creaElementoLista(elemento);
             lista.appendChild(li);

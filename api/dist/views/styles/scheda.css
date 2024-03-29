@@ -267,3 +267,7 @@ li {
 li {
   margin-left: 25px; /* o qualsiasi altra misura desiderata */
 }
+
+.misureContent{
+  margin-left: -40px;
+}
