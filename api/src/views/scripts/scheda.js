@@ -202,7 +202,7 @@ function populateWebPage(data) {
     
         // Verifica se le proprietà esistono e non sono vuote prima di stamparle
         if (titoloMostra && titoloMostra.trim() !== "") {
-            document.getElementById('mostre').innerHTML += titoloMostra + ", ";
+            document.getElementById('mostre').innerHTML += titoloMostra + "<br>";
         }
     
         $('.mostre').removeClass('mostre');
