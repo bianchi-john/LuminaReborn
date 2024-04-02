@@ -376,18 +376,18 @@ function generaCodiceGruppoMisure(id) {
                         <p>Tipo</p>
                         <select name="Tipo" id="Tipo${id}1">
                             <option value="" selected>---</option>
-                            <option value="Assoluta">Assoluta</option>
-                            <option value="Assoluto">Assoluto</option>
-                            <option value="Minima">Minima</option>
-                            <option value="Minimo">Minimo</option>
-                            <option value="Massima">Massima</option>
-                            <option value="Massimo">Massimo</option>
-                            <option value="Media">Media</option>
-                            <option value="Medio">Medio</option>
-                            <option value="Ricostruita">Ricostruita</option>
-                            <option value="Ricostruito">Ricostruito</option>
-                            <option value="Conservata">Conservata</option>
-                            <option value="Conservato">Conservato</option>
+                            <option value="assoluta">Assoluta</option>
+                            <option value="assoluto">Assoluto</option>
+                            <option value="minima">Minima</option>
+                            <option value="minimo">Minimo</option>
+                            <option value="massima">Massima</option>
+                            <option value="massimo">Massimo</option>
+                            <option value="media">Media</option>
+                            <option value="medio">Medio</option>
+                            <option value="ricostruita">Ricostruita</option>
+                            <option value="ricostruito">Ricostruito</option>
+                            <option value="conservata">Conservata</option>
+                            <option value="conservato">Conservato</option>
                         </select>
                         <p>Valore</p>
                         <input type="text" id="Valore${id}1" name="Valore">
@@ -838,6 +838,9 @@ async function gatherData() {
             var materialiSelect = document.getElementById("materialiSelect" + i).value;;
             if (materialiSelect.length > 0) {
                 formData["Materiale" + i] = materialiSelect
+            }
+            else {
+                formData["Materiale" + i] = materiale
             }
         }
 

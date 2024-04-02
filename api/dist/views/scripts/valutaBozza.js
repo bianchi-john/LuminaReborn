@@ -101,13 +101,18 @@ function populateWebPage(data) {
     }
 
 
+
     for (i = 0; i < data.data.autori.length; i++) {
-        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente + ", ";}
-        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += data.data.autori[i].formula_successiva + ", ";}
-        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += data.data.autori[i].nome + ", ";}
-        if(data.data.autori[i].categoria) {document.getElementById('autori').innerHTML += data.data.autori[i].categoria + " <br>";}
+        if (i > 0) {
+            document.getElementById('autori').innerHTML += ', '
+        }
+        if(data.data.autori[i].formula_precedente) {document.getElementById('autori').innerHTML += data.data.autori[i].formula_precedente}
+        if(data.data.autori[i].formula_successiva){document.getElementById('autori').innerHTML += " " + data.data.autori[i].formula_successiva}
+        if(data.data.autori[i].nome){document.getElementById('autori').innerHTML += " " + data.data.autori[i].nome}
+        if(data.data.autori[i].categoria) {document.getElementById('autori').innerHTML += " " + data.data.autori[i].categoria + "<br>";}
         $('.autori').removeClass('autori');
     }
+
 
     for (i = 0; i < data.data.schedatori.length; i++) {
         if(data.data.schedatori[i].username) {document.getElementById('schedatore').innerHTML += data.data.schedatori[i].username}
