@@ -22,7 +22,7 @@ services:
       SERVICE_NAME: mysqldb
     networks:
       internalnet: 
-        ipv4_address: 172.22.0.7
+        ipv4_address: ${MYSQL_CONTAINER_IP}
 
   nodeapp:
     container_name: nodeappcontainer
@@ -48,7 +48,7 @@ services:
       - user-manager-api
     networks:
       internalnet: 
-        ipv4_address: 172.22.0.6
+        ipv4_address: ${NODEAPP_CONTAINER_IP}
       extern:
 
   mongo:
@@ -57,12 +57,12 @@ services:
       driver: none
     networks:
       internalnet: 
-        ipv4_address: 172.22.0.8
+        ipv4_address: ${MONGO_CONTAINER_IP}
 
   user-manager-api:
     image: moreillon/user-manager-mongoose
     environment:
-      MONGODB_URL: mongodb://172.22.0.8
+      MONGODB_URL: mongodb://${MONGO_CONTAINER_IP}
       JWT_SECRET: sonoVVNÀAFINVASDVNNSJljnval
     ports:
       - "7071:80"
@@ -70,17 +70,17 @@ services:
       - mongo
     networks:
       internalnet: 
-        ipv4_address: 172.22.0.4
+        ipv4_address: ${USER_MANAGER_API_CONTAINER_IP}
 
   user-manager-front:
     image: moreillon/user-manager-mongoose-front
     logging:
       driver: none
     environment:
-      VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
+      VUE_APP_USER_MANAGER_API_URL: http://${USER_MANAGER_API_CONTAINER_IP}
     networks:
       internalnet: 
-        ipv4_address: 172.22.0.3
+        ipv4_address: ${USER_MANAGER_FRONT_CONTAINER_IP}
 
 networks:
   extern:
@@ -90,19 +90,5 @@ networks:
     ipam:
       driver: default
       config: 
-        - subnet: 172.22.0.0/24
-          gateway: 172.22.0.1
-
-  # user-manager-front-proxy:
-  #   image: moreillon/api-proxy
-  #   logging:
-  #     driver: none
-  #   environment:
-  #     VUE_APP_USER_MANAGER_API_URL: http://172.22.0.4
-  #     PROXY_API: http://user-manager-api:7071
-  #     PROXY_ROOT: http://nodeapp:3000
-  #   ports:
-  #     - "8081:80"
-  #   networks:
-  #     internalnet:
-  #       ipv4_address: 172.22.0.2
+        - subnet: ${NETWORKS_SUBNET_IP}
+          gateway: ${NETWORKS_GATEWAY_IP}
