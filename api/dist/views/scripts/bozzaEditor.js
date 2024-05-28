@@ -70,7 +70,7 @@ function getSuggestions() {
     };
 
     // Apertura della richiesta GET verso l'URL specificato
-    xhr.open('GET', 'http://172.22.0.6:3000/suggestions', true);
+    xhr.open('GET', window.location.origin + '/suggestions', true);
 
     // Invio della richiesta
     xhr.send();
@@ -1038,7 +1038,7 @@ function uploadData() {
 async function sendData(data) {
     try {
         // Esegui la richiesta POST
-        const response = await fetch('http://172.22.0.6:3000/schede', {
+        const response = await fetch(window.location.origin + '/schede', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1096,7 +1096,7 @@ function mostraModale(testo) {
     });
     // Gestisci l'evento hidden.bs.modal per reindirizzare l'utente
     modal.on('hidden.bs.modal', function () {
-        window.location.href = 'http://172.22.0.6:3000/bozze';
+        window.location.href = window.location.origin + '/bozze';
     });
 
 }
@@ -1117,7 +1117,7 @@ function regret() {
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continua l'inserimento</button>
-              <button type="button" class="btn btn-danger" onclick="window.location.href = 'http://172.22.0.6:3000/bozze'">Conferma</button>
+              <button type="button" class="btn btn-danger" onclick="window.location.href = `+ window.location.origin +`/bozze'">Conferma</button>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 // OTTIENI LISTA
 function getBozzeOnPageLoad() {
-  fetch("http://172.22.0.6:3000/manageBozze?inApprovazione=ok")
+  fetch(window.location.origin + "/manageBozze?inApprovazione=ok")
     .then(response => response.json())
     .then(data => {
       console.log("Chiamata GET riuscita:", data);
@@ -18,7 +18,7 @@ function getBozzeOnPageLoad() {
 
 // RITIRA LA SCHEDA
 function sendPostRequest(schedaId) {
-  fetch("http://172.22.0.6:3000/manageBozze?schedaId=" + schedaId, {
+  fetch(window.location.origin + "/manageBozze?schedaId=" + schedaId, {
     method: "PUT",
     body: JSON.stringify({ schedaId: schedaId })
   })

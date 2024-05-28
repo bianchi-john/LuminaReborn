@@ -15,23 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleAmministratorePage = void 0;
 const cookies_1 = __importDefault(require("cookies"));
 const authHelpers_1 = require("../helpers/authHelpers");
+// Load environment variables from .env file
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 function handleAmministratorePage(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const cookies = new cookies_1.default(req, res);
         const jwt = cookies.get("jwt");
         if (!jwt) {
             // Handle if JWT cookie is not present
-            return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
+            return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null, address: process.env });
         }
         try {
             const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
             if (userType === 'admin') {
                 // User is an admin
-                res.render('amministratore', { cssFilePath: '/styles/amministratore.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/amministratore.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+                res.render('amministratore', { cssFilePath: '/styles/amministratore.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/amministratore.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType, address: process.env });
             }
             else {
                 // User is not an admin
-                res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
+                res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null, address: process.env });
             }
         }
         catch (error) {

@@ -1,5 +1,5 @@
 function getBozzeOnPageLoad() {
-  fetch("http://172.22.0.6:3000/admin")
+  fetch(window.location.origin + "/admin")
     .then(response => response.json())
     .then(data => {
       console.log("Chiamata GET riuscita:", data);
@@ -45,7 +45,7 @@ function createTable(data) {
       
     // Aggiungi un evento di click al bottone "Visualizza"
     visualizzaButton[0].addEventListener('click', function() {
-      window.location.href = "http://172.22.0.6:3000/valutaBozza?id=" + scheda.id;
+      window.location.href = window.location.origin + "/valutaBozza?id=" + scheda.id;
     });
   });
 

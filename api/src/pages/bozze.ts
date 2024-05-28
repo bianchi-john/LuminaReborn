@@ -2,6 +2,10 @@
 import { Request, Response } from 'express';
 import Cookies from 'cookies';
 import { cookieChecker } from '../helpers/authHelpers';
+// Load environment variables from .env file
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 export async function handleBozzePage(req: Request, res: Response): Promise<void> {
   const cookies = new Cookies(req, res);
@@ -9,7 +13,7 @@ export async function handleBozzePage(req: Request, res: Response): Promise<void
 
   if (!jwt) {
     // Handle if JWT cookie is not present
-    return res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
+    return res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null, address: process.env});
   }
 
   try {
@@ -17,10 +21,10 @@ export async function handleBozzePage(req: Request, res: Response): Promise<void
 
     if (userType === 'admin' || userType === 'schedatore') {
       // User is either admin or schedatore
-      res.render('bozze', { cssFilePath: '/styles/bozze.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozze.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+      res.render('bozze', { cssFilePath: '/styles/bozze.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozze.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType, address: process.env});
     } else {
       // User is neither admin nor schedatore
-      res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+      res.render('index', { cssFilePath: '/styles/index.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType, address: process.env});
     }
   } catch (error) {
     console.error("Error during cookieChecker check:", error);

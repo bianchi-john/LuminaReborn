@@ -1,9 +1,12 @@
 // pages/login.ts
 import { Request, Response } from 'express';
 import axios from 'axios';
+// Load environment variables from .env file
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function handleLoginPage(req: Request, res: Response): void {
-  res.render('login', { cssFilePath: '/styles/login.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/login.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img' });
+  res.render('login', { cssFilePath: '/styles/login.css',  sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/login.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', address: process.env});
 }
 
 export async function handleLoginPost(req: Request, res: Response): Promise<void> {

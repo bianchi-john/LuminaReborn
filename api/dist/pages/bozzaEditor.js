@@ -15,23 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleBozzaEditorPage = void 0;
 const cookies_1 = __importDefault(require("cookies"));
 const authHelpers_1 = require("../helpers/authHelpers");
+// Load environment variables from .env file
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 function handleBozzaEditorPage(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const cookies = new cookies_1.default(req, res);
         const jwt = cookies.get("jwt");
         if (!jwt) {
             // Handle if JWT cookie is not present
-            return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null });
+            return res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: null, address: process.env });
         }
         try {
             const userType = yield (0, authHelpers_1.cookieChecker)(jwt);
             if (userType === 'admin' || userType === 'schedatore') {
                 // User is either admin or schedatore
-                res.render('bozzaEditor', { richTextScript: '/scripts/richText.js', richTextStyle: '/styles/richText.css', cssFilePath: '/styles/bozzaEditor.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozzaEditor.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+                res.render('bozzaEditor', { richTextScript: '/scripts/richText.js', richTextStyle: '/styles/richText.css', cssFilePath: '/styles/bozzaEditor.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/bozzaEditor.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType, address: process.env });
             }
             else {
                 // User is not admin or schedatore
-                res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType });
+                res.render('index', { cssFilePath: '/styles/index.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/index.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', userType: userType, address: process.env });
             }
         }
         catch (error) {

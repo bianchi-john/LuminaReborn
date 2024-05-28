@@ -323,7 +323,7 @@ function showModal(testo) {
     });
     // Gestisci l'evento hidden.bs.modal per reindirizzare l'utente
     modal.on('hidden.bs.modal', function () {
-        window.location.href = 'http://172.22.0.6:3000/amministratore';
+        window.location.href = window.location.origin + '/amministratore';
     });
 }
 
@@ -332,7 +332,7 @@ function sendPostRequest() {
     const urlParams = new URLSearchParams(window.location.search);
     const schedaId = urlParams.get('id');
 
-    fetch("http://172.22.0.6:3000/admin?schedaId=" + schedaId, {
+    fetch(window.location.origin + "/admin?schedaId=" + schedaId, {
         method: "POST",
         body: JSON.stringify({ schedaId: schedaId })
     })
@@ -356,7 +356,7 @@ function deleteScheda() {
     const urlParams = new URLSearchParams(window.location.search);
     const schedaId = urlParams.get('id');
 
-    fetch("http://172.22.0.6:3000/admin?schedaId=" + schedaId, {
+    fetch(window.location.origin + "/admin?schedaId=" + schedaId, {
         method: "DELETE",
         body: JSON.stringify({ schedaId: schedaId })
     })
@@ -381,7 +381,7 @@ $(document).ready(function () {
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get('id'); // Estrae il valore del parametro 'id' dalla query string
     if (id) {
-        const apiUrl = `http://172.22.0.6:3000/admin/${id}`;
+        const apiUrl = window.location.origin + `/admin/${id}`;
         callAPI(apiUrl, populateWebPage);
     } else {
         console.log("Parametro 'id' non presente nella query string dell'URL.");

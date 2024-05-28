@@ -242,7 +242,7 @@ function handleSearch() {
 
   document.getElementById('result').innerHTML = '';
 
-  var url = 'http://172.22.0.6:3000/search/?';
+  var url = window.location.origin + '/search/?';
   var queries = [];
 
   if (advancedSearchFields.style.display === "none") {

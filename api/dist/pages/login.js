@@ -14,8 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleLoginPost = exports.handleLoginPage = void 0;
 const axios_1 = __importDefault(require("axios"));
+// Load environment variables from .env file
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 function handleLoginPage(req, res) {
-    res.render('login', { cssFilePath: '/styles/login.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/login.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img' });
+    res.render('login', { cssFilePath: '/styles/login.css', sidebarStyle: '/styles/sidebar.css', jsFilePath: '/scripts/login.js', sidebarScript: '/scripts/sidebar.js', imgFilePath: '/img', address: process.env });
 }
 exports.handleLoginPage = handleLoginPage;
 function handleLoginPost(req, res) {
