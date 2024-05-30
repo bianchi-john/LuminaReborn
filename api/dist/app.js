@@ -23,6 +23,7 @@ const schedeInApprovazione_1 = require("./pages/schedeInApprovazione");
 const amministratore_1 = require("./pages/amministratore");
 const bozzaEditor_1 = require("./pages/bozzaEditor");
 const valutaBozza_1 = require("./pages/valutaBozza");
+const authHelpers_1 = require("./helpers/authHelpers");
 const process_1 = __importDefault(require("process"));
 const path_1 = __importDefault(require("path")); // Aggiunto il modulo 'path' per gestire i percorsi dei file
 const viewsPath = path_1.default.join(__dirname, './views'); // Cartella contenente i file HTML
@@ -69,9 +70,9 @@ class App {
         const authOptions = { url: process_1.default.env.AUTH_URL };
         this.app.use('/schede', scheda_routes_1.default);
         this.app.use('/search', search_routes_1.default);
-        this.app.use('/manageBozze', schedatore_routes_1.default);
-        this.app.use('/admin', admin_routes_1.default);
-        this.app.use('/suggestions', suggestions_routes_1.default);
+        this.app.use('/manageBozze', authHelpers_1.onlySchedatore, schedatore_routes_1.default);
+        this.app.use('/admin', authHelpers_1.onlyAdmin, admin_routes_1.default);
+        this.app.use('/suggestions', authHelpers_1.onlySchedatore, suggestions_routes_1.default);
         // 404 Not Found
         this.app.all('*', (_, res) => res.status(code_enum_1.Code.NOT_FOUND).send(new response_1.HttpResponse(code_enum_1.Code.NOT_FOUND, status_enum_1.Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));
     }

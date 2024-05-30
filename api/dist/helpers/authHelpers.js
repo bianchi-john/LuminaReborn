@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUseData = exports.onlyAdmin = exports.cookieChecker = void 0;
+exports.getUseData = exports.onlyAdmin = exports.onlySchedatore = exports.cookieChecker = void 0;
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const cookies_1 = __importDefault(require("cookies"));
 const axios_1 = __importDefault(require("axios"));
+// Funzione di controllo del cookie
 const cookieChecker = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios_1.default.get('http://172.22.0.4/users/self', {
@@ -50,32 +51,49 @@ const cookieChecker = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.cookieChecker = cookieChecker;
-const onlyAdmin = (req, res, next, route) => __awaiter(void 0, void 0, void 0, function* () {
+// Controllo dei privilegi a livello di route e non di pagina
+const onlySchedatore = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const cookies = new cookies_1.default(req, res);
     const jwt = cookies.get('jwt');
     if (!jwt) {
-        res
-            .status(403)
-            .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
-        return res.redirect('/');
+        return res.status(401).send('Accesso negato. JWT mancante.');
     }
     try {
-        const isAdminUser = yield (0, exports.cookieChecker)(jwt);
-        if (isAdminUser) {
-            route(req, res, next);
+        const result = yield (0, exports.cookieChecker)(jwt);
+        if (result === 'schedatore') {
+            next(); // Se il risultato è 'schedatore', procedi alla route successiva
         }
         else {
-            res
-                .status(403)
-                .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'User is not an admin. Access forbidden'));
+            res.status(403).send('Accesso negato. Non autorizzato.');
         }
     }
     catch (error) {
-        console.error('Error during cookieChecker check:', error);
-        res.status(500).send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+        res.status(500).send('Errore del server.');
+    }
+});
+exports.onlySchedatore = onlySchedatore;
+// Controllo dei privilegi a livello di route e non di pagina
+const onlyAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const cookies = new cookies_1.default(req, res);
+    const jwt = cookies.get('jwt');
+    if (!jwt) {
+        return res.status(401).send('Accesso negato. JWT mancante.');
+    }
+    try {
+        const result = yield (0, exports.cookieChecker)(jwt);
+        if (result === 'admin') {
+            next(); // Se il risultato è 'schedatore', procedi alla route successiva
+        }
+        else {
+            res.status(403).send('Accesso negato. Non autorizzato.');
+        }
+    }
+    catch (error) {
+        res.status(500).send('Errore del server.');
     }
 });
 exports.onlyAdmin = onlyAdmin;
+// Ottengo il cooke di autenticazione dal client
 const getJwtFromRequest = (req, res) => {
     try {
         const cookies = new cookies_1.default(req, res);
@@ -93,6 +111,7 @@ const getJwtFromRequest = (req, res) => {
         return undefined;
     }
 };
+// Capisco che tipo di user è il client dal suo token di autenticazione
 const getUseData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let jwt = getJwtFromRequest(req, res);
     if (jwt) {

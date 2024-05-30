@@ -1,12 +1,10 @@
 
 import { Router } from 'express';
-import { createScheda, deleteScheda, getScheda, getSchede, updateScheda } from '../controller/scheda.controller';
+import {deleteScheda, getScheda, updateScheda } from '../controller/scheda.controller';
 
 const schedaRoutes = Router();
 
-schedaRoutes.route('/')
-  .get(getSchede)
-  .post(createScheda);
+
 
   schedaRoutes.route('/:schedaId')
   .get(getScheda)

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QUERY = void 0;
 exports.QUERY = {
-    SELECT_SCHEDE: 'SELECT * FROM schede',
+    CHECK_IF_IS_PUBLISHED: 'SELECT schede.* FROM schede JOIN tds_schede_statoScheda ON schede.id = tds_schede_statoScheda.id_scheda JOIN statoScheda ON tds_schede_statoScheda.id_stato = statoScheda.id WHERE statoScheda.stato = 2 AND schede.id = ?',
     SELECT_SCHEDA: 'SELECT * FROM schede WHERE id = ?',
     SELECT_AUTORI: 'SELECT * FROM autori JOIN tds_schede_autori ON autori.id = tds_schede_autori.id_autore  WHERE tds_schede_autori.id_scheda = ?',
     SELECT_CRONOLOGIE: 'SELECT * FROM cronologie JOIN tds_schede_cronologie ON cronologie.id = tds_schede_cronologie.id_cronologia WHERE tds_schede_cronologie.id_scheda = ?',

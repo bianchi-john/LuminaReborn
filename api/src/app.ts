@@ -17,6 +17,8 @@ import { handleSchedeInApprovazionePage } from './pages/schedeInApprovazione';
 import { handleAmministratorePage } from './pages/amministratore';
 import { handleBozzaEditorPage } from './pages/bozzaEditor';
 import { handleValutaBozzaPage } from './pages/valutaBozza';
+import { onlyAdmin, onlySchedatore } from './helpers/authHelpers';
+
 
 import process from 'process';
 import path from 'path'; // Aggiunto il modulo 'path' per gestire i percorsi dei file
@@ -72,11 +74,9 @@ export class App {
     const authOptions = { url: process.env.AUTH_URL};
     this.app.use('/schede', schedaRoutes);
     this.app.use('/search', searchRoutes);
-    this.app.use('/manageBozze', schedatoreRoutes);
-    this.app.use('/admin', adminRoutes);
-    this.app.use('/suggestions', suggestionRoutes);
-
-
+    this.app.use('/manageBozze', onlySchedatore, schedatoreRoutes);
+    this.app.use('/admin', onlyAdmin, adminRoutes);
+    this.app.use('/suggestions',onlySchedatore, suggestionRoutes);
 
     // 404 Not Found
     this.app.all('*', (_: Request, res: Response) => res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, this.ROUTE_NOT_FOUND)));

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSuggestions = exports.deleteScheda = exports.updateScheda = exports.createScheda = exports.getScheda = exports.getSchede = void 0;
+exports.getSuggestions = exports.deleteScheda = exports.updateScheda = exports.createScheda = exports.getScheda = void 0;
 const mysql_config_1 = require("../config/mysql.config");
 const response_1 = require("../domain/response");
 const code_enum_1 = require("../enum/code.enum");
@@ -18,27 +18,12 @@ const scheda_query_1 = require("../query/scheda.query");
 const bozzaValidator_1 = require("../helpers/bozzaValidator");
 const schedaService_1 = require("../helpers/schedaService");
 const authHelpers_1 = require("../helpers/authHelpers"); // Importa le funzioni dal modulo
-const getSchede = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
-    try {
-        const pool = yield (0, mysql_config_1.connection)();
-        const result = yield pool.query(scheda_query_1.QUERY.SELECT_SCHEDE);
-        pool.end();
-        return res.status(code_enum_1.Code.OK)
-            .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', result[0]));
-    }
-    catch (error) {
-        console.error(error);
-        return res.status(code_enum_1.Code.INTERNAL_SERVER_ERROR)
-            .send(new response_1.HttpResponse(code_enum_1.Code.INTERNAL_SERVER_ERROR, status_enum_1.Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
-    }
-});
-exports.getSchede = getSchede;
 const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const pool = yield (0, mysql_config_1.connection)();
         const schedaId = req.params.schedaId;
+        const isPublished = scheda_query_1.QUERY.CHECK_IF_IS_PUBLISHED;
         const querySelectScheda = scheda_query_1.QUERY.SELECT_SCHEDA;
         const querySelectAutori = scheda_query_1.QUERY.SELECT_AUTORI;
         const querySelectCronologie = scheda_query_1.QUERY.SELECT_CRONOLOGIE;
@@ -54,6 +39,7 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const querySelectImmagini = scheda_query_1.QUERY.SELECT_IMMAGINI;
         const querySelectDocumentazioniFotografiche = scheda_query_1.QUERY.SELECT_DOCUMENTAZIONIFOTOGRAFICHE;
         const querySelectMisure = scheda_query_1.QUERY.SELECT_MISURE;
+        const resultIsPublished = yield pool.query(isPublished, [schedaId]);
         const resultScheda = yield pool.query(querySelectScheda, [schedaId]);
         const resultAutori = yield pool.query(querySelectAutori, [schedaId]);
         const resultCronologie = yield pool.query(querySelectCronologie, [schedaId]);
@@ -69,7 +55,7 @@ const getScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const resultImmagini = yield pool.query(querySelectImmagini, [schedaId]);
         const resultDocumentazioniFotografiche = yield pool.query(querySelectDocumentazioniFotografiche, [schedaId]);
         const resultMisure = yield pool.query(querySelectMisure, [schedaId]);
-        if (resultScheda.length > 0) {
+        if (resultIsPublished[0].length > 0) {
             pool.end();
             return res.status(code_enum_1.Code.OK).send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Scheda retrieved', {
                 scheda: resultScheda[0],
