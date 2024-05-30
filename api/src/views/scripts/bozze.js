@@ -38,7 +38,7 @@ function sendPostRequest(schedaId) {
 
 // ELIMINA
 function deleteScheda(schedaId) {
-  fetch(window.location.origin + "/manageBozze?id=" + schedaId, {
+  fetch(window.location.origin + "/manageBozze?schedaId=" + schedaId, {
     method: "DELETE",
     body: JSON.stringify({ schedaId: schedaId })
   })

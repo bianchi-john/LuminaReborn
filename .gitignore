@@ -1,5 +1,6 @@
 api/node_modules
-api/data
+api/database-data
+api/user-data
 temp
 note
 Schede

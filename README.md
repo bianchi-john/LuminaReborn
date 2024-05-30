@@ -37,6 +37,12 @@ sudo docker system prune
 sudo docker system prune --all --volumes
 ```
 
+Remove data:
+```sh
+sudo rm -r database-data
+sudo rm -r user-data
+```
+
 Issues:
 ```sh
 # Recreate extern network
@@ -66,26 +72,6 @@ npm run start:build
 npm run start:dev
 ```
 
-
-Delete a scheda:
-```sh
-DELETE FROM tds_schede_altreBibliografie WHERE id_scheda = 5;
-DELETE FROM tds_schede_autori WHERE id_scheda = 5;
-DELETE FROM tds_schede_bibliografie WHERE id_scheda = 5;
-DELETE FROM tds_schede_cronologie WHERE id_scheda = 5;
-DELETE FROM tds_schede_documentazioniFotografiche WHERE id_scheda = 5;
-DELETE FROM tds_schede_immagini WHERE id_scheda = 5;
-DELETE FROM tds_schede_inventari WHERE id_scheda = 5;
-DELETE FROM tds_schede_materiali WHERE id_scheda = 5;
-DELETE FROM tds_schede_misure WHERE id_scheda = 5;
-DELETE FROM tds_schede_mostre WHERE id_scheda = 5;
-DELETE FROM tds_schede_provenienze WHERE id_scheda = 5;
-DELETE FROM tds_schede_statoScheda WHERE id_scheda = 5;
-DELETE FROM tds_schede_tecniche WHERE id_scheda = 5;
-DELETE FROM tds_schede_ubicazioni WHERE id_scheda = 5;
-DELETE FROM tds_users_schede WHERE id_scheda = 5;
-DELETE FROM schede WHERE id = 5;
-```
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 

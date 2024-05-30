@@ -1,12 +1,10 @@
-version: '3'
 services:
   mysqldb:
     image: mysql:8.0
     container_name: mysqlcontainer
-    command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     volumes:
-      - ./data:/var/lib/mysql
+      - ./database-data:/var/lib/mysql
       - ./dbinit:/docker-entrypoint-initdb.d
       - ./attach:/usr/lumina/attach
     ports:
@@ -53,6 +51,9 @@ services:
 
   mongo:
     image: mongo
+    container_name: mongocontainer
+    volumes:
+      - ./user-data/mongo-data:/data/db
     logging:
       driver: none
     networks:
