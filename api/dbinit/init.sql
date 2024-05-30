@@ -293,66 +293,66 @@ CREATE TABLE `tds_schede_documentazioniFotografiche` (
   `id_documentazioneFotografica` int
 );
 
-ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
+ALTER TABLE `tds_users_schede` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_materiali` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_materiali` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_materiali` ADD FOREIGN KEY (`id_materiale`) REFERENCES `materiali` (`id`);
+ALTER TABLE `tds_schede_materiali` ADD FOREIGN KEY (`id_materiale`) REFERENCES `materiali` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_tecniche` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_tecniche` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_tecniche` ADD FOREIGN KEY (`id_tecnica`) REFERENCES `tecniche` (`id`);
+ALTER TABLE `tds_schede_tecniche` ADD FOREIGN KEY (`id_tecnica`) REFERENCES `tecniche` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_ubicazioni` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_ubicazioni` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_ubicazioni` ADD FOREIGN KEY (`id_ubicazione`) REFERENCES `ubicazioni` (`id`);
+ALTER TABLE `tds_schede_ubicazioni` ADD FOREIGN KEY (`id_ubicazione`) REFERENCES `ubicazioni` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_inventari` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_inventari` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_inventari` ADD FOREIGN KEY (`id_inventario`) REFERENCES `inventari` (`id`);
+ALTER TABLE `tds_schede_inventari` ADD FOREIGN KEY (`id_inventario`) REFERENCES `inventari` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_provenienze` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_provenienze` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_provenienze` ADD FOREIGN KEY (`id_provenienza`) REFERENCES `provenienze` (`id`);
+ALTER TABLE `tds_schede_provenienze` ADD FOREIGN KEY (`id_provenienza`) REFERENCES `provenienze` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_mostre` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_mostre` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_mostre` ADD FOREIGN KEY (`id_mostra`) REFERENCES `mostre` (`id`);
+ALTER TABLE `tds_schede_mostre` ADD FOREIGN KEY (`id_mostra`) REFERENCES `mostre` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_bibliografia`) REFERENCES `bibliografie` (`id`);
+ALTER TABLE `tds_schede_bibliografie` ADD FOREIGN KEY (`id_bibliografia`) REFERENCES `bibliografie` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_altreBibliografie`) REFERENCES `altreBibliografie` (`id`);
+ALTER TABLE `tds_schede_altreBibliografie` ADD FOREIGN KEY (`id_altreBibliografie`) REFERENCES `altreBibliografie` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_autore`) REFERENCES `autori` (`id`);
+ALTER TABLE `tds_schede_autori` ADD FOREIGN KEY (`id_autore`) REFERENCES `autori` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_immagini` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_immagini` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_immagini` ADD FOREIGN KEY (`id_immagine`) REFERENCES `immagini` (`id`);
+ALTER TABLE `tds_schede_immagini` ADD FOREIGN KEY (`id_immagine`) REFERENCES `immagini` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_cronologie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_cronologie` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_cronologie` ADD FOREIGN KEY (`id_cronologia`) REFERENCES `cronologie` (`id`);
+ALTER TABLE `tds_schede_cronologie` ADD FOREIGN KEY (`id_cronologia`) REFERENCES `cronologie` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_documentazioneFotografica`) REFERENCES `documentazioniFotografiche` (`id`);
+ALTER TABLE `tds_schede_documentazioniFotografiche` ADD FOREIGN KEY (`id_documentazioneFotografica`) REFERENCES `documentazioniFotografiche` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`);
+ALTER TABLE `tds_schede_misure` ADD FOREIGN KEY (`id_gruppo_misure`) REFERENCES `tds_schede_gruppo_misure` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_statoScheda` ADD FOREIGN KEY (`id_stato`) REFERENCES `statoScheda` (`id`);
+ALTER TABLE `tds_schede_statoScheda` ADD FOREIGN KEY (`id_stato`) REFERENCES `statoScheda` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_schede_statoScheda` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`);
+ALTER TABLE `tds_schede_statoScheda` ADD FOREIGN KEY (`id_scheda`) REFERENCES `schede` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_stato_schedeUser` ADD FOREIGN KEY (`id_stato`) REFERENCES `statoScheda` (`id`);
+ALTER TABLE `tds_stato_schedeUser` ADD FOREIGN KEY (`id_stato`) REFERENCES `statoScheda` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `tds_stato_schedeUser` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
+ALTER TABLE `tds_stato_schedeUser` ADD FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE;
