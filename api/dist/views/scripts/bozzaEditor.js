@@ -1038,7 +1038,7 @@ function uploadData() {
 async function sendData(data) {
     try {
         // Esegui la richiesta POST
-        const response = await fetch(window.location.origin + '/schede', {
+        const response = await fetch(window.location.origin + '/createBozza', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

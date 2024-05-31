@@ -13,6 +13,7 @@ const cors_1 = __importDefault(require("cors"));
 const scheda_routes_1 = __importDefault(require("./routes/scheda.routes"));
 const search_routes_1 = __importDefault(require("./routes/search.routes"));
 const schedatore_routes_1 = __importDefault(require("./routes/schedatore.routes"));
+const createBozza_routes_1 = __importDefault(require("./routes/createBozza.routes"));
 const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const suggestions_routes_1 = __importDefault(require("./routes/suggestions.routes"));
 const index_1 = require("./pages/index");
@@ -71,6 +72,7 @@ class App {
         this.app.use('/schede', scheda_routes_1.default);
         this.app.use('/search', search_routes_1.default);
         this.app.use('/manageBozze', authHelpers_1.onlySchedatore, schedatore_routes_1.default);
+        this.app.use('/createBozza', authHelpers_1.onlySchedatore, createBozza_routes_1.default);
         this.app.use('/admin', authHelpers_1.onlyAdmin, admin_routes_1.default);
         this.app.use('/suggestions', authHelpers_1.onlySchedatore, suggestions_routes_1.default);
         // 404 Not Found

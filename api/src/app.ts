@@ -7,6 +7,8 @@ import cors from 'cors';
 import schedaRoutes from './routes/scheda.routes';
 import searchRoutes from './routes/search.routes';
 import schedatoreRoutes from './routes/schedatore.routes';
+import createBozzaRoutes from './routes/createBozza.routes';
+
 import adminRoutes from './routes/admin.routes';
 import suggestionRoutes from './routes/suggestions.routes';
 import { handleIndexPage } from './pages/index';
@@ -75,6 +77,7 @@ export class App {
     this.app.use('/schede', schedaRoutes);
     this.app.use('/search', searchRoutes);
     this.app.use('/manageBozze', onlySchedatore, schedatoreRoutes);
+    this.app.use('/createBozza', onlySchedatore, createBozzaRoutes);
     this.app.use('/admin', onlyAdmin, adminRoutes);
     this.app.use('/suggestions',onlySchedatore, suggestionRoutes);
 

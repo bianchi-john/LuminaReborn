@@ -50,8 +50,12 @@ export const QUERY = {
   INSERT_TDS_SCHEDE_STATOSCHEDA:'INSERT INTO tds_schede_statoScheda (id_scheda, id_stato) VALUES (?, ?)',
   INSERT_TDS_STATO_SCHEDAUSER:'INSERT INTO tds_stato_schedeUser (id_stato, id_user) VALUES (?, ?)',
   INSERT_TDS_USER_SCHEDA:'INSERT INTO tds_users_schede (id_user, id_scheda, data_modifica) VALUES (?, ?, ?)',
-  SELECT_ALL_AUTORI:'SELECT * FROM autori',
-  SELECT_ALL_MATERIALI:'SELECT * FROM materiali',
-  SELECT_ALL_TECNICHE:'SELECT * FROM tecniche',
-  SELECT_ALL_MISURE:'SELECT * FROM misure',
+  SELECT_ALL_AUTORI:'SELECT * FROM autori JOIN tds_schede_autori ON tds_schede_autori.id_autore = autori.id JOIN tds_schede_statoScheda ON tds_schede_autori.id_scheda = tds_schede_statoScheda.id_scheda JOIN statoScheda ON  tds_schede_statoScheda.id_stato = statoScheda.id WHERE statoScheda.stato = 2',
+  SELECT_ALL_MATERIALI:'SELECT * FROM materiali JOIN tds_schede_materiali ON tds_schede_materiali.id_materiale = materiali.id JOIN tds_schede_statoScheda ON tds_schede_materiali.id_scheda = tds_schede_statoScheda.id_scheda JOIN statoScheda ON  tds_schede_statoScheda.id_stato = statoScheda.id WHERE statoScheda.stato = 2',
+  SELECT_ALL_TECNICHE:'SELECT * FROM tecniche JOIN tds_schede_tecniche ON tds_schede_tecniche.id_tecnica = tecniche.id JOIN tds_schede_statoScheda ON tds_schede_tecniche.id_scheda = tds_schede_statoScheda.id_scheda JOIN statoScheda ON  tds_schede_statoScheda.id_stato = statoScheda.id WHERE statoScheda.stato = 2',
+  SELECT_ALL_MISURE:'SELECT * FROM misure JOIN tds_schede_gruppo_misure ON tds_schede_gruppo_misure.id = misure.id_gruppo_misure JOIN tds_schede_misure ON tds_schede_misure.id_gruppo_misure = tds_schede_gruppo_misure.id JOIN tds_schede_statoScheda ON tds_schede_misure.id_scheda = tds_schede_statoScheda.id_scheda JOIN statoScheda ON  tds_schede_statoScheda.id_stato = statoScheda.id WHERE statoScheda.stato = 2',
+  SELECT_SCHEDE: 'SELECT schede.* FROM schede JOIN tds_schede_statoScheda ON schede.id = tds_schede_statoScheda.id_scheda JOIN statoScheda ON tds_schede_statoScheda.id_stato = statoScheda.id WHERE statoScheda.stato = 2 AND schede.id = ?',
 };
+
+
+
