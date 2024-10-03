@@ -1,8 +1,8 @@
-api/node_modules
-api/database-data
-api/user-data
+node_modules
+database-data
+user-data
 temp
 note
 Schede
-api/.env
-api/test
+.env
+test
