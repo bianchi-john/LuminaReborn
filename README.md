@@ -11,7 +11,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 source ~/.bashrc
 nvm install 21.6.2
 node -v
-# This should display: v21.6.2
+# This should display the version v21.6.2
 
 # Install all node modules
 npm i
@@ -25,10 +25,9 @@ npm run start:build && docker compose up -d --build
 docker compose down && npm run start:build &&  docker compose up -d --build
 
 # Delete all and recreate
-docker stop $( docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force && docker network prune --force && npm run start:build  && docker compose up -d --build
+docker stop $( docker ps -aq) && docker rm $(docker ps -aq) && docker rmi -f $(docker images -aq) --force && docker network prune --force && npm run start:build && docker system prune --all --volumes && docker network create extern && docker compose up -d --build
 
 # Delete all:
-docker system prune
 docker system prune --all --volumes
 ```
 

@@ -21,7 +21,7 @@ const axios_1 = __importDefault(require("axios"));
 // Funzione di controllo del cookie
 const cookieChecker = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = yield axios_1.default.get('http://172.22.0.4/users/self', {
+        const response = yield axios_1.default.get('http://192.168.0.4/users/self', {
             params: { jwt }
         });
         if (response.status === 200) {
@@ -116,7 +116,7 @@ const getUseData = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     let jwt = getJwtFromRequest(req, res);
     if (jwt) {
         try {
-            const response = yield axios_1.default.get('http://172.22.0.4/users/self', {
+            const response = yield axios_1.default.get('http://192.168.0.4/users/self', {
                 params: { jwt }
             });
             if (response.status === 200) {

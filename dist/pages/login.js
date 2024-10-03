@@ -29,7 +29,7 @@ function handleLoginPost(req, res) {
             password: password
         };
         try {
-            const response = yield axios_1.default.post('http://172.22.0.4/auth/login', JSON.stringify(data), {
+            const response = yield axios_1.default.post('http://192.168.0.4/auth/login', JSON.stringify(data), {
                 headers: {
                     'Content-Type': 'application/json'
                 }

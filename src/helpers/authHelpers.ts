@@ -11,7 +11,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 // Funzione di controllo del cookie
 export const cookieChecker = async (jwt: string): Promise<boolean | string> => {
   try {
-    const response = await axios.get('http://172.22.0.4/users/self', {
+    const response = await axios.get('http://192.168.0.4/users/self', {
       params: { jwt }
     });
 
@@ -109,7 +109,7 @@ export const getUseData = async (req: Request, res: Response): Promise<UserData 
   let jwt = getJwtFromRequest(req, res);
   if (jwt) {
     try {
-      const response = await axios.get('http://172.22.0.4/users/self', {
+      const response = await axios.get('http://192.168.0.4/users/self', {
         params: { jwt }
       });
       if (response.status === 200) {
