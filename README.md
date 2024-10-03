@@ -3,14 +3,12 @@
 
 Requirements:
 
-   -Install node version v21.6.2 possibly via nvm. Here's a tutorial to follow:
-   https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-22-04
-
+[Node version v21.6.2](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-22-04)
+   
 
 Setup and run:
 
 ```sh
-cd api
 npm i
 npm run start:build && sudo docker compose up -d --build
 ```
@@ -26,7 +24,7 @@ sudo docker compose down && npm run start:build && sudo docker compose up -d --b
 
 Delete all and recreate
 ```sh
-# Elimino tutto i container e immagini
+# Delete all container and images
 sudo docker stop $(sudo docker ps -aq) && sudo docker rm $(sudo docker ps -aq) && sudo docker rmi -f $(sudo docker images -aq) --force &&  sudo docker network prune --force
 npm run start:build  && sudo docker compose up -d --build
 ```
@@ -49,7 +47,7 @@ Issues:
 sudo docker network create extern
 ```
 
-Altro:
+Other:
 ```sh
 sudo docker ps -aq && sudo docker images
 sudo docker compose up -d --build
@@ -60,7 +58,7 @@ mysql -u root -p
 letmein
 USE luminadb;
 set global max_connections = 9999999;
-cd api && sudo rm -r data && sudo docker compose down && npm run start:build && sudo docker compose up -d --build
+sudo rm -r data && sudo docker compose down && npm run start:build && sudo docker compose up -d --build
 #Restart sudo docker service       
 sudo systemctl restart sudo docker.socket sudo docker.service
 show variables like "max_connections";

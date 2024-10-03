@@ -1,0 +1,17 @@
+.btn {
+    margin-right: 5px;
+    margin-right: 5px;
+}
+
+.btn-success {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+  

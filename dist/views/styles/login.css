@@ -1,0 +1,14 @@
+#errorMessage {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-top: 33px;
+    color: red;
+}
+
+/* .gradient-custom {
+    background: #6a11cb;
+    background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+    background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+} */
