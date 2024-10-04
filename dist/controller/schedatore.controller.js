@@ -21,7 +21,7 @@ const getSchedeForSchedatore = (req, res) => __awaiter(void 0, void 0, void 0, f
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
     try {
         const inApprovazione = req.query.inApprovazione;
-        const userData = yield (0, authHelpers_1.getUseData)(req, res);
+        const userData = yield (0, authHelpers_1.getUserData)(req, res);
         if (userData !== false) {
             const pool = yield (0, mysql_config_1.connection)();
             let query;

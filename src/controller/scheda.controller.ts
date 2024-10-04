@@ -7,7 +7,7 @@ import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
 import { YourValidationResult, validateSchedaData } from '../helpers/bozzaValidator';
 import { insertScheda, insertAutori, insertCronologie, insertUbicazioni, insertInventario, insertMateriali, insertTecniche, insertProvenienze, insertMostre, insertBibliografia, insertAltraBibliografia, insertDocFotografica, insertMisure, insertUser, insertImmagini } from '../helpers/schedaService';
-import { getUseData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
+import { getUserData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
 import { Request, Response } from 'express';
 
 type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
@@ -107,7 +107,7 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
     const pool = await connection();
 
     // Mi prendo l'user
-    const userData = await getUseData(req, res);
+    const userData = await getUserData(req, res);
 
     await insertAutori(pool, schedaId, scheda);
     await insertCronologie(pool, schedaId, scheda);

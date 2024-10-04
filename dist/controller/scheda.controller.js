@@ -101,7 +101,7 @@ const createScheda = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const schedaId = yield (0, schedaService_1.insertScheda)(scheda);
         const pool = yield (0, mysql_config_1.connection)();
         // Mi prendo l'user
-        const userData = yield (0, authHelpers_1.getUseData)(req, res);
+        const userData = yield (0, authHelpers_1.getUserData)(req, res);
         yield (0, schedaService_1.insertAutori)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertCronologie)(pool, schedaId, scheda);
         yield (0, schedaService_1.insertUbicazioni)(pool, schedaId, scheda);

@@ -6,7 +6,7 @@ import { HttpResponse } from '../domain/response';
 import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
-import { getUseData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
+import { getUserData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
 
 const validator = require('validator');
 
@@ -18,7 +18,7 @@ export const getSchedeForSchedatore = async (req: Request, res: Response): Promi
   try {
       const inApprovazione = req.query.inApprovazione;
 
-      const userData = await getUseData(req, res);
+      const userData = await getUserData(req, res);
       if (userData !== false) {
           const pool = await connection();
           let query;
