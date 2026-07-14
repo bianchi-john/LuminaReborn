@@ -20,7 +20,7 @@ function executeQuery(query) {
     return __awaiter(this, void 0, void 0, function* () {
         const pool = yield (0, mysql_config_1.connection)();
         const result = yield pool.query(query);
-        pool.end();
+        yield pool.end();
         return result;
     });
 }
@@ -32,24 +32,6 @@ function buildAndExecuteQuery(key, value) {
         }
         return yield executeQuery(dynamicQuery);
     });
-}
-function processUniqueResponses(uniqueResponses) {
-    const responseCount = {};
-    const seenItems = {};
-    const processedResponses = [];
-    for (const response of uniqueResponses) {
-        const responseString = JSON.stringify(response);
-        if (!seenItems[responseString]) {
-            if (responseCount[responseString] > 1) {
-                processedResponses.unshift(response);
-            }
-            else {
-                processedResponses.push(response);
-            }
-            seenItems[responseString] = true;
-        }
-    }
-    return processedResponses;
 }
 const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl} Request from ${req.rawHeaders[0]} ${req.rawHeaders[1]}`);
@@ -103,32 +85,74 @@ const search = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const filteredResponses = responses[0].filter((item) => {
             return responses.every((subItem) => subItem.some((subSubItem) => subSubItem.id === item.id));
         });
-        const uniqueResponses = processUniqueResponses(filteredResponses);
-        let uniqueResponsesWithInformation = [];
-        for (let i = 0; i < uniqueResponses.length; i++) {
-            let pool = yield (0, mysql_config_1.connection)();
-            let finalResult = yield pool.query(`SELECT s.*, a.*, u.*, p.*, c.*, t.*, m.*, i.*, imm.*
-        FROM schede s
-        LEFT JOIN tds_schede_autori tsa ON s.id = tsa.id_scheda
-        LEFT JOIN autori a ON tsa.id_autore = a.id
-        LEFT JOIN tds_schede_ubicazioni tsu ON s.id = tsu.id_scheda
-        LEFT JOIN ubicazioni u ON tsu.id_ubicazione = u.id
-        LEFT JOIN tds_schede_provenienze tsp ON s.id = tsp.id_scheda
-        LEFT JOIN provenienze p ON tsp.id_provenienza = p.id
-        LEFT JOIN tds_schede_cronologie tsc ON s.id = tsc.id_scheda
-        LEFT JOIN cronologie c ON tsc.id_cronologia = c.id
-        LEFT JOIN tds_schede_tecniche tst ON s.id = tst.id_scheda
-        LEFT JOIN tecniche t ON tst.id_tecnica = t.id
-        LEFT JOIN tds_schede_materiali tsn ON s.id = tsn.id_scheda
-        LEFT JOIN materiali m ON tsn.id_materiale = m.id
-        LEFT JOIN tds_schede_inventari tsi ON s.id = tsi.id_scheda
-        LEFT JOIN inventari i ON tsi.id_inventario = i.id
-        LEFT JOIN tds_schede_immagini tsim ON s.id = tsim.id_scheda
-        LEFT JOIN immagini imm ON tsim.id_immagine = imm.id
-        LEFT JOIN tds_schede_statoScheda tss ON s.id = tss.id_scheda
-        LEFT JOIN statoScheda ss ON tss.id_stato = ss.id
-        WHERE s.id = ` + uniqueResponses[i].id + ` AND ss.stato = 2;`);
-            uniqueResponsesWithInformation.push(finalResult[0], uniqueResponses[i].id);
+        const uniqueIds = [...new Set(filteredResponses.map((item) => Number(item.id)))];
+        const uniqueResponsesWithInformation = [];
+        const pool = yield (0, mysql_config_1.connection)();
+        const resultQuery = `
+      SELECT
+        s.*,
+        (SELECT a.nome
+          FROM autori a
+          JOIN tds_schede_autori tsa ON tsa.id_autore = a.id
+          WHERE tsa.id_scheda = s.id
+          ORDER BY a.id LIMIT 1) AS nome,
+        (SELECT a.categoria
+          FROM autori a
+          JOIN tds_schede_autori tsa ON tsa.id_autore = a.id
+          WHERE tsa.id_scheda = s.id
+          ORDER BY a.id LIMIT 1) AS categoria,
+        (SELECT c.ambito_storico
+          FROM cronologie c
+          JOIN tds_schede_cronologie tsc ON tsc.id_cronologia = c.id
+          WHERE tsc.id_scheda = s.id
+          ORDER BY c.id LIMIT 1) AS ambito_storico,
+        (SELECT t.nome_tecnica
+          FROM tecniche t
+          JOIN tds_schede_tecniche tst ON tst.id_tecnica = t.id
+          WHERE tst.id_scheda = s.id
+          ORDER BY t.id LIMIT 1) AS nome_tecnica,
+        (SELECT m.nome_materiale
+          FROM materiali m
+          JOIN tds_schede_materiali tsm ON tsm.id_materiale = m.id
+          WHERE tsm.id_scheda = s.id
+          ORDER BY m.id LIMIT 1) AS nome_materiale,
+        (SELECT u.ubicazione
+          FROM ubicazioni u
+          JOIN tds_schede_ubicazioni tsu ON tsu.id_ubicazione = u.id
+          WHERE tsu.id_scheda = s.id
+          ORDER BY u.id LIMIT 1) AS ubicazione,
+        (SELECT i.nome_inventario
+          FROM inventari i
+          JOIN tds_schede_inventari tsi ON tsi.id_inventario = i.id
+          WHERE tsi.id_scheda = s.id
+          ORDER BY i.id LIMIT 1) AS nome_inventario,
+        (SELECT i.numero_inventario
+          FROM inventari i
+          JOIN tds_schede_inventari tsi ON tsi.id_inventario = i.id
+          WHERE tsi.id_scheda = s.id
+          ORDER BY i.id LIMIT 1) AS numero_inventario,
+        (SELECT imm.data
+          FROM immagini imm
+          JOIN tds_schede_immagini tsim ON tsim.id_immagine = imm.id
+          WHERE tsim.id_scheda = s.id
+            AND imm.data LIKE 'data:image/%'
+          ORDER BY imm.id LIMIT 1) AS data
+      FROM schede s
+      JOIN tds_schede_statoScheda tss ON tss.id_scheda = s.id
+      JOIN statoScheda ss ON ss.id = tss.id_stato
+      WHERE s.id = ? AND ss.stato = 2
+      LIMIT 1;
+    `;
+        try {
+            for (const id of uniqueIds) {
+                const [rows] = yield pool.query(resultQuery, [id]);
+                if (rows.length > 0) {
+                    uniqueResponsesWithInformation.push(rows[0]);
+                }
+            }
+        }
+        finally {
+            pool.end();
         }
         return res.status(code_enum_1.Code.OK)
             .send(new response_1.HttpResponse(code_enum_1.Code.OK, status_enum_1.Status.OK, 'Schede retrieved', uniqueResponsesWithInformation));

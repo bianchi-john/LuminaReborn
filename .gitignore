@@ -6,3 +6,7 @@ note
 Schede
 .env
 test
+
+# Strumenti locali di migrazione
+QUERY*.sh
+CARICA_SCHEDE.sh

@@ -55,7 +55,7 @@ function scrollToResults() {
 }
 
 // Funzione per creare la card di Bootstrap
-function createCard(data, index) {
+function createCard(data) {
   
 
 
@@ -110,7 +110,7 @@ function createCard(data, index) {
   pathElement.classList.add("card-text");
   pathElement.textContent = data.data;
 
-  if (data.data) {
+  if (typeof data.data === "string" && data.data.startsWith("data:image/")) {
     var imgElement = document.createElement("img");
     imgElement.src = data.data;
     var imageContainer = document.createElement("div");
@@ -133,7 +133,7 @@ function createCard(data, index) {
   cardBodyDiv.appendChild(textInformations);
 
   var cardLink = document.createElement("a");
-  cardLink.href = "scheda?id=" + index;
+  cardLink.href = "scheda?id=" + data.id;
   cardLink.appendChild(cardBodyDiv);
   cardDiv.appendChild(cardLink);
   return cardDiv;
@@ -314,26 +314,33 @@ function handleSearch() {
     return;
   }
 
+  if (window.activeSearchRequest) {
+    window.activeSearchRequest.abort();
+  }
+
   var xhr = new XMLHttpRequest();
+  window.activeSearchRequest = xhr;
   xhr.open('GET', url, true);
 
   xhr.onload = function () {
     if (xhr.status === 200) {
       var response = JSON.parse(xhr.responseText);
-      if (Array.isArray(response.data) && response.data.length == 0 || response.data[0].length == 0) {
+      if (!Array.isArray(response.data) || response.data.length === 0) {
         document.getElementById('result').innerHTML = '<p>Nessun risultato trovato</p>';
-      }      
+      }
       else {
-        for (var j = 0; j < response.data.length; j = j + 2) {
-          if (response.data[j][0] != undefined){
-
-            document.getElementById('result').appendChild(createCard(response.data[j][0], response.data[j + 1]));
-          } 
-        }
+        response.data.forEach(function (scheda) {
+          document.getElementById('result').appendChild(createCard(scheda));
+        });
         scrollToResults();
       }
     } else {
       console.error('Errore nella chiamata GET: ' + xhr.status);
+    }
+  };
+  xhr.onloadend = function () {
+    if (window.activeSearchRequest === xhr) {
+      window.activeSearchRequest = null;
     }
   };
   xhr.send();
@@ -398,6 +405,7 @@ $(document).ready(function () {
     $("#searchButton").on("click", handleSearch);
     $(window).on("keydown", function (event) {
       if (event.which === 13) { // 13 è il codice del tasto "Invio"
+        event.preventDefault();
         handleSearch();
       }
     });
@@ -406,4 +414,3 @@ $(document).ready(function () {
   }
 
 });
-
