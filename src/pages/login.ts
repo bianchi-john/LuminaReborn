@@ -17,7 +17,8 @@ export async function handleLoginPost(req: Request, res: Response): Promise<void
   };
 
   try {
-    const response = await axios.post('http://192.168.0.4/auth/login', JSON.stringify(data), {
+    const userManagerUrl = process.env.USER_MANAGER_API_URL || 'http://user-manager-api';
+    const response = await axios.post(`${userManagerUrl}/auth/login`, JSON.stringify(data), {
       headers: {
         'Content-Type': 'application/json'
       }

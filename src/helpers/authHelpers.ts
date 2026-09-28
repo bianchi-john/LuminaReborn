@@ -7,11 +7,15 @@ import axios from 'axios';
 import { UserData } from '../interface/user';
 import { IncomingMessage, ServerResponse } from 'http';
 
+// URL dell'API dello user-manager (login e ruoli). Configurabile via env:
+// in Docker corrisponde al nome del servizio, in locale può puntare a localhost:7071.
+const USER_MANAGER_API_URL = process.env.USER_MANAGER_API_URL || 'http://user-manager-api';
+
 // Funzione di controllo del cookie
 export const cookieChecker = async (jwt: string): Promise<boolean | string> => {
   console.log(`cookieChecker: Checking cookie with JWT: ${jwt}`);
   try {
-    const response = await axios.get('http://192.168.0.4/users/self', {
+    const response = await axios.get(`${USER_MANAGER_API_URL}/users/self`, {
       params: { jwt }
     });
 
@@ -130,7 +134,7 @@ export const getUserData = async (req: Request, res: Response): Promise<UserData
 
   if (jwt) {
     try {
-      const response = await axios.get('http://192.168.0.4/users/self', {
+      const response = await axios.get(`${USER_MANAGER_API_URL}/users/self`, {
         params: { jwt }
       });
       if (response.status === 200) {

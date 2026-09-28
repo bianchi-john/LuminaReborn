@@ -29,7 +29,8 @@ function handleLoginPost(req, res) {
             password: password
         };
         try {
-            const response = yield axios_1.default.post('http://192.168.0.4/auth/login', JSON.stringify(data), {
+            const userManagerUrl = process.env.USER_MANAGER_API_URL || 'http://user-manager-api';
+            const response = yield axios_1.default.post(`${userManagerUrl}/auth/login`, JSON.stringify(data), {
                 headers: {
                     'Content-Type': 'application/json'
                 }

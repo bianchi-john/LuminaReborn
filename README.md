@@ -2,241 +2,131 @@
 
 Prototipo web per la catalogazione e la consultazione delle opere dei [Musei Nazionali di Lucca](http://www.luccamuseinazionali.it/).
 
-L'applicazione è sviluppata con Node.js, TypeScript, Express, EJS, MySQL e MongoDB. L'intero ambiente può essere avviato con Docker Compose.
+Sviluppato con Node.js, TypeScript, Express, EJS, MySQL e MongoDB. L'intero ambiente si avvia con Docker Compose: al primo avvio vengono create le tabelle, importate le opere e creati gli utenti, senza passaggi manuali.
 
-## Contenuti inclusi
+## Avvio rapido
 
-Alla prima inizializzazione MySQL vengono caricati automaticamente:
-
-- lo schema del database, da `dbinit/init.sql`;
-- un dataset dimostrativo con sei schede approvate, da `dbinit/zz-luminadb-data.sql`.
-
-Le schede incluse sono:
-
-1. San Sebastiano;
-2. San Giovanni Battista;
-3. Skyphos a vernice nera;
-4. Bronzetto antropomorfo;
-5. Trittico con Matrimonio mistico di santa Caterina;
-6. Croce dipinta con Cristo vivo.
-
-Il dataset contiene 22 immagini già incorporate nel dump come data URL. Le
-immagini vengono quindi importate insieme alle schede, senza copiare file a
-mano o eseguire script aggiuntivi.
-
-## Requisiti
-
-- Docker Engine;
-- Docker Compose v2 (`docker compose`);
-- Node.js 21.6.2;
-- npm;
-- `rsync`.
-
-Per installare la versione Node prevista dal progetto tramite `nvm`:
-
-```bash
-nvm install 21.6.2
-nvm use 21.6.2
-node --version
-```
-
-## Primo avvio
-
-Clonare il repository e accedere alla sua directory:
+Serve solo **Docker** (Engine + Compose v2); la compilazione dell'app avviene dentro il container.
 
 ```bash
 git clone https://github.com/bianchi-john/LuminaReborn.git
 cd LuminaReborn
-```
-
-Creare la configurazione locale partendo dall'esempio incluso:
-
-```bash
-cp .env.example .env
-chmod 600 .env
-```
-
-Creare la rete Docker esterna richiesta dal progetto, se non esiste già:
-
-```bash
+cp .env.example .env && chmod 600 .env
 docker network inspect extern >/dev/null 2>&1 || docker network create extern
-```
-
-Installare le dipendenze, compilare il progetto e avviare i container:
-
-```bash
-npm ci
-npm run start:build
 docker compose up -d --build
 ```
 
-Controllare lo stato dei servizi:
+Stato e log dei servizi:
 
 ```bash
 docker compose ps
 docker compose logs --tail=100
 ```
 
-Il sito è disponibile all'indirizzo:
+Indirizzi:
 
-```text
-http://localhost:3000
-```
+| Servizio | URL |
+|----------|-----|
+| Sito / consultazione | `http://localhost:3000` |
+| Login | `http://localhost:3000/login` |
+| Gestione utenti (web) | `http://localhost:8080` |
+| API user-manager | `http://localhost:7071` |
 
-L'API dello user manager è esposta su:
+## Accesso, ruoli e utenti
 
-```text
-http://localhost:7071
-```
+Due ruoli, gestiti dallo user-manager (MongoDB). Il ruolo è determinato dal campo `isAdmin` restituito dallo user-manager: `isAdmin: true` = amministratore, campo assente = schedatore.
 
-## Inizializzazione del database
+- **Amministratore** — approva/respinge le bozze e gestisce gli utenti.
+- **Schedatore** — crea, modifica ed elimina le bozze e le invia in approvazione.
 
-Il servizio MySQL monta:
+### Credenziali dimostrative
 
-```text
-./database-data  -> /var/lib/mysql
-./dbinit         -> /docker-entrypoint-initdb.d
-```
+Create automaticamente al primo avvio (l'admin dallo user-manager tramite `ADMIN_USERNAME`/`ADMIN_PASSWORD` in `.env`; gli schedatori dal servizio one-shot `user-seed`, vedi `scripts/seed-users.sh`):
 
-Gli script SQL dentro `dbinit` vengono eseguiti in ordine alfabetico, ma soltanto quando `/var/lib/mysql` è vuota. Nel progetto l'ordine è quindi:
+| Ruolo | Utente | Password |
+|-------|--------|----------|
+| Amministratore | `admin` | `admin` |
+| Schedatore | `pasquale` | `schedatore` |
+| Schedatore | `elena` | `schedatore` |
+| Schedatore | `virginia` | `schedatore` |
 
-1. `dbinit/init.sql`: crea le tabelle e i vincoli;
-2. `dbinit/zz-luminadb-data.sql`: carica il dataset prodotto con `mysqldump`.
+Gli username degli schedatori coincidono con gli autori delle schede incluse. La password è `schedatore` (e non lo username) perché lo user-manager richiede almeno 6 caratteri. Nuovi utenti si creano da `http://localhost:8080` (accedendo come admin) o via API `POST /users`.
 
-Verificare il caricamento delle schede:
+Le credenziali sono solo dimostrative: sostituirle prima di qualsiasi uso reale.
 
-```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer \
-  mysql -u admin -D luminadb -e \
-  "SELECT s.id, LEFT(s.titolo_opera, 80) AS titolo, ss.stato
-   FROM schede s
-   JOIN tds_schede_statoScheda tss ON tss.id_scheda = s.id
-   JOIN statoScheda ss ON ss.id = tss.id_stato
-   ORDER BY s.id;"
-```
+## Contenuti inclusi
 
-Il valore `stato = 2` indica una scheda approvata e pubblicamente consultabile.
+Il dataset dimostrativo (`dbinit/zz-luminadb-data.sql`) contiene **6 schede approvate** con **22 immagini** incorporate come data URL (importate insieme alle schede):
 
-Verificare anche che tutte le immagini siano state importate:
+1. San Sebastiano
+2. San Giovanni Battista
+3. Skyphos a vernice nera
+4. Bronzetto antropomorfo
+5. Trittico con Matrimonio mistico di santa Caterina
+6. Croce dipinta con Cristo vivo
 
-```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer \
-  mysql -u admin -D luminadb --table -e \
-  "SELECT s.id,
-          LEFT(REPLACE(REPLACE(s.titolo_opera, '<i>', ''), '</i>', ''), 55) AS titolo,
-          COUNT(DISTINCT i.id) AS immagini,
-          SUM(i.data LIKE 'data:image/%') AS immagini_funzionanti
-   FROM schede s
-   LEFT JOIN tds_schede_immagini si ON si.id_scheda = s.id
-   LEFT JOIN immagini i ON i.id = si.id_immagine
-   GROUP BY s.id, s.titolo_opera
-   ORDER BY s.id;"
-```
+Lo schema è in `dbinit/init.sql`. Entrambi gli script vengono eseguiti in ordine alfabetico solo quando `/var/lib/mysql` è vuota (primo avvio). Lo stato `2` indica una scheda approvata e pubblicamente consultabile.
 
-Il dataset incluso contiene complessivamente 22 immagini funzionanti.
-
-## Ricreare il database da zero
-
-Questa operazione elimina solamente i dati MySQL locali e provoca una nuova esecuzione degli script presenti in `dbinit`:
+Verifica di schede e immagini:
 
 ```bash
-docker compose down
-sudo rm -rf database-data
-docker compose up -d --build
+docker exec -e MYSQL_PWD=letmein mysqlcontainer mysql -u admin -D luminadb --table -e \
+ "SELECT s.id, LEFT(REPLACE(REPLACE(s.titolo_opera,'<i>',''),'</i>',''),45) AS titolo,
+         ss.stato, COUNT(DISTINCT i.id) AS immagini
+  FROM schede s
+  JOIN tds_schede_statoScheda tss ON tss.id_scheda=s.id
+  JOIN statoScheda ss ON ss.id=tss.id_stato
+  LEFT JOIN tds_schede_immagini si ON si.id_scheda=s.id
+  LEFT JOIN immagini i ON i.id=si.id_immagine
+  GROUP BY s.id, s.titolo_opera, ss.stato ORDER BY s.id;"
 ```
 
-Non è necessario eseguire manualmente `dbinit/init.sql`.
+## Ricreare l'ambiente da zero
 
-Per eliminare anche i dati MongoDB dello user manager:
+Elimina i dati locali e forza una nuova inizializzazione (schema, opere e utenti vengono ricreati):
 
 ```bash
 docker compose down
-sudo rm -rf database-data user-data/mongo-data
+sudo rm -rf database-data user-data/mongo-data   # se serve i permessi di root
 docker compose up -d --build
 ```
 
-## Aggiornare il dump incluso
+## Sviluppo locale (opzionale)
 
-Dopo aver modificato e verificato il database, rigenerare il dataset con:
-
-```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer \
-  mysqldump \
-    -u admin \
-    --no-tablespaces \
-    --single-transaction \
-    --set-gtid-purged=OFF \
-    --no-create-info \
-    --complete-insert \
-    --skip-extended-insert \
-    --skip-dump-date \
-    --default-character-set=utf8mb4 \
-    luminadb > dbinit/zz-luminadb-data.sql
-```
-
-Il dump deve rimanere data-only: lo schema continua a essere gestito da `dbinit/init.sql`.
-
-Verificare che il file non contenga istruzioni di creazione o eliminazione delle tabelle:
+Richiede Node.js 21.6.2, npm e `rsync`.
 
 ```bash
-rg '^(CREATE|DROP) TABLE' dbinit/zz-luminadb-data.sql
+npm ci
+npm run start:dev     # sviluppo con nodemon
+npm run start:build   # compila TypeScript e copia le viste
+npm run start:prod    # build di produzione
 ```
 
-Il comando non deve produrre risultati.
+## Manutenzione del database
 
-## Backup completo manuale
-
-Per creare un backup completo del database corrente:
-
-```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer \
-  mysqldump \
-    -u admin \
-    --no-tablespaces \
-    --single-transaction \
-    --routines \
-    --triggers \
-    luminadb > "$HOME/Downloads/luminadb-$(date +%Y%m%d-%H%M%S).sql"
-```
-
-## Sviluppo locale
-
-Avvio dell'applicazione in modalità sviluppo:
-
-```bash
-npm run start:dev
-```
-
-Compilazione TypeScript e copia delle viste:
-
-```bash
-npm run start:build
-```
-
-Avvio della build di produzione:
-
-```bash
-npm run start:prod
-```
-
-## Accesso a MySQL
+Accesso a MySQL (password dimostrativa: `letmein`):
 
 ```bash
 docker exec -it mysqlcontainer mysql -u admin -p luminadb
 ```
 
-Password prevista dalla configurazione dimostrativa:
+Rigenerare il dump dimostrativo (deve restare data-only; lo schema resta in `init.sql`):
 
-```text
-letmein
+```bash
+docker exec -e MYSQL_PWD=letmein mysqlcontainer mysqldump -u admin \
+  --no-tablespaces --single-transaction --set-gtid-purged=OFF --no-create-info \
+  --complete-insert --skip-extended-insert --skip-dump-date \
+  --default-character-set=utf8mb4 luminadb > dbinit/zz-luminadb-data.sql
+# verifica che non contenga CREATE/DROP TABLE:
+rg '^(CREATE|DROP) TABLE' dbinit/zz-luminadb-data.sql
 ```
 
-Comandi SQL utili:
+Backup completo:
 
-```sql
-SHOW TABLES;
-SELECT COUNT(*) FROM schede;
-SELECT id, titolo_opera FROM schede ORDER BY id;
+```bash
+docker exec -e MYSQL_PWD=letmein mysqlcontainer mysqldump -u admin \
+  --no-tablespaces --single-transaction --routines --triggers \
+  luminadb > "$HOME/Downloads/luminadb-$(date +%Y%m%d-%H%M%S).sql"
 ```
 
 ## Struttura principale
@@ -244,25 +134,23 @@ SELECT id, titolo_opera FROM schede ORDER BY id;
 ```text
 src/                         sorgenti TypeScript, viste e risorse web
 dist/                        output compilato
-dbinit/init.sql              schema MySQL
-dbinit/zz-luminadb-data.sql  dataset dimostrativo
-database-data/               dati MySQL locali, non versionati
-user-data/                   dati MongoDB locali, non versionati
+dbinit/                      schema (init.sql) e dataset dimostrativo
+scripts/seed-users.sh        creazione schedatori dimostrativi (servizio user-seed)
 docker-compose.yml           definizione dei servizi Docker
-Dockerfile                   immagine dell'applicazione Node.js
+database-data/, user-data/   dati locali (MySQL / MongoDB), non versionati
 ```
 
-## Limitazioni note del prototipo
+## Note tecniche
 
-- La configurazione utilizza indirizzi IPv4 statici sulla subnet indicata in `.env.example`. Se la subnet è già occupata, occorre modificare insieme subnet, gateway e indirizzi dei container.
-- Le immagini del dataset dimostrativo sono incorporate nel dump come data URL. Questo rende semplice l'installazione del prototipo, ma aumenta la dimensione del file SQL e non rappresenta necessariamente la soluzione più adatta a un ambiente di produzione.
-- Le credenziali incluse sono esclusivamente dimostrative e devono essere sostituite prima di qualsiasi utilizzo pubblico o di produzione.
-- Il codice di autenticazione contiene configurazioni legate all'ambiente storico del prototipo e può richiedere un adeguamento della URL dello user manager.
+- **Rete**: IP statici sulla subnet in `.env.example`; se è occupata, modificare insieme subnet, gateway e indirizzi dei container.
+- **User-manager**: l'URL con cui l'app lo raggiunge è configurabile con `USER_MANAGER_API_URL` (`.env`).
+- **MongoDB**: fissato a `mongo:7.0`; la `latest` (8.x) non parte sui kernel Linux recenti (incompatibilità nota, SERVER-121912).
+- **Immagini**: incorporate nel dump come data URL — comodo per la demo, non ideale in produzione.
 
-## Arresto dei servizi
+## Arresto
 
 ```bash
 docker compose down
 ```
 
-Questo comando arresta i container senza eliminare i dati persistenti presenti in `database-data` e `user-data`.
+Arresta i container mantenendo i dati in `database-data` e `user-data`.

@@ -18,11 +18,14 @@ const code_enum_1 = require("../enum/code.enum");
 const status_enum_1 = require("../enum/status.enum");
 const cookies_1 = __importDefault(require("cookies"));
 const axios_1 = __importDefault(require("axios"));
+// URL dell'API dello user-manager (login e ruoli). Configurabile via env:
+// in Docker corrisponde al nome del servizio, in locale può puntare a localhost:7071.
+const USER_MANAGER_API_URL = process.env.USER_MANAGER_API_URL || 'http://user-manager-api';
 // Funzione di controllo del cookie
 const cookieChecker = (jwt) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`cookieChecker: Checking cookie with JWT: ${jwt}`);
     try {
-        const response = yield axios_1.default.get('http://192.168.0.4/users/self', {
+        const response = yield axios_1.default.get(`${USER_MANAGER_API_URL}/users/self`, {
             params: { jwt }
         });
         if (response.status === 200) {
@@ -138,7 +141,7 @@ const getUserData = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     console.log(`getUserData: Retrieved JWT for user data: ${jwt}`);
     if (jwt) {
         try {
-            const response = yield axios_1.default.get('http://192.168.0.4/users/self', {
+            const response = yield axios_1.default.get(`${USER_MANAGER_API_URL}/users/self`, {
                 params: { jwt }
             });
             if (response.status === 200) {
