@@ -98,8 +98,9 @@ services:
     logging:
       driver: none
     environment:
-      # Il front gira nel browser dell'host: deve raggiungere l'API su localhost.
-      VUE_APP_USER_MANAGER_API_URL: http://localhost:7071
+      # Il front gira nel BROWSER: deve raggiungere l'API con l'indirizzo con cui
+      # l'utente apre il sito (localhost in locale, indirizzo del server da remoto).
+      VUE_APP_USER_MANAGER_API_URL: ${USER_MANAGER_FRONT_API_URL}
     ports:
       - "${USER_MANAGER_FRONT_PORT}:80"
     networks:

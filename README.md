@@ -143,7 +143,7 @@ database-data/, user-data/   dati locali (MySQL / MongoDB), non versionati
 ## Note tecniche
 
 - **Rete**: IP statici sulla subnet in `.env.example`; se è occupata, modificare insieme subnet, gateway e indirizzi dei container.
-- **User-manager**: l'URL con cui l'app lo raggiunge è configurabile con `USER_MANAGER_API_URL` (`.env`).
+- **User-manager**: l'URL con cui l'app lo raggiunge è configurabile con `USER_MANAGER_API_URL` (`.env`). Per usare l'interfaccia utenti `:8080` da un server remoto, impostare `USER_MANAGER_FRONT_API_URL` all'indirizzo con cui si apre il sito (es. `http://IP_DEL_SERVER:7071`).
 - **MongoDB**: fissato a `mongo:7.0`; la `latest` (8.x) non parte sui kernel Linux recenti (incompatibilità nota, SERVER-121912).
 - **Immagini**: incorporate nel dump come data URL — comodo per la demo, non ideale in produzione.
 
