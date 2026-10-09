@@ -1,13 +1,16 @@
+# LUMiNA - stack completo. Avvio: `make up` (o `docker compose up -d --build`).
+# Sviluppo con ricarica automatica: `make dev` (vedi docs/SVILUPPO.md).
 services:
   mysqldb:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: mysqlcontainer
     restart: unless-stopped
     volumes:
-      - ${MYSQL_DATA_DIR:-./database-data}:/var/lib/mysql
+      # Volume Docker (reset con `make reset-demo`), oppure una cartella dell'host via MYSQL_DATA_DIR
+      - ${MYSQL_DATA_DIR:-mysql-data}:/var/lib/mysql
+      # Eseguiti solo al primo avvio: database media, schema e opere dimostrative
       - ./dbinit:/docker-entrypoint-initdb.d:ro
-      - ./attach:/usr/lumina/attach
-    # Solo dalla macchina locale (per mysqldump/manutenzione): mai esposto in rete
+    # Solo dalla macchina locale (manutenzione, sviluppo): mai esposto in rete
     ports:
       - "127.0.0.1:${MYSQL_HOST_PORT:-3306}:3306"
     environment:
@@ -15,6 +18,7 @@ services:
       MYSQL_USER: ${DB_USER:-admin}
       MYSQL_PASSWORD: ${DB_PASSWORD:-letmein}
       MYSQL_DATABASE: ${DB_NAME:-luminadb}
+      MEDIA_DB_NAME: ${MEDIA_DB_NAME:-luminamedia}
     healthcheck:
       # Durante l'inizializzazione MySQL non accetta connessioni TCP: "healthy" = pronto
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
@@ -38,6 +42,7 @@ services:
       DB_USER: ${DB_USER:-admin}
       DB_PASSWORD: ${DB_PASSWORD:-letmein}
       DB_NAME: ${DB_NAME:-luminadb}
+      MEDIA_DB_NAME: ${MEDIA_DB_NAME:-luminamedia}
       DB_CONNECTION_LIMIT: ${DB_CONNECTION_LIMIT:-10}
       SERVER_PORT: 3000
       USER_MANAGER_API_URL: ${USER_MANAGER_API_URL:-http://user-manager-api}
@@ -45,9 +50,15 @@ services:
       SESSION_MAX_AGE_HOURS: ${SESSION_MAX_AGE_HOURS:-8}
       TRUST_PROXY: ${TRUST_PROXY:-0}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
-      MAX_IMAGE_MB: ${MAX_IMAGE_MB:-15}
+      MAX_IMAGE_MB: ${MAX_IMAGE_MB:-25}
+      MEDIA_PREVIEW_PX: ${MEDIA_PREVIEW_PX:-1280}
+      EXPORT_DIR: /exports
+      EXPORT_HOUR: ${EXPORT_HOUR:-2}
+      EXPORT_KEEP: ${BACKUP_KEEP_DAYS:-14}
     ports:
       - "${APP_BIND:-0.0.0.0}:${APP_PORT:-3000}:3000"
+    volumes:
+      - ${BACKUP_DIR:-./backups}/excel:/exports
     depends_on:
       mysqldb:
         condition: service_healthy
@@ -62,6 +73,30 @@ services:
       internalnet:
         ipv4_address: ${NODEAPP_CONTAINER_IP}
       extern:
+
+  # Backup giornaliero di catalogo e immagini (mysqldump compresso, con rotazione)
+  # in ./backups/db. Backup immediato: `make backup`.
+  backup:
+    image: mysql:8.4
+    restart: unless-stopped
+    entrypoint: ["bash", "/scripts/backup.sh"]
+    command: ["loop"]
+    environment:
+      DB_HOST: mysqldb
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-letmein}
+      DB_NAME: ${DB_NAME:-luminadb}
+      MEDIA_DB_NAME: ${MEDIA_DB_NAME:-luminamedia}
+      BACKUP_HOUR: ${BACKUP_HOUR:-3}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+      TZ: Europe/Rome
+    volumes:
+      - ./scripts:/scripts:ro
+      - ${BACKUP_DIR:-./backups}:/backups
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      internalnet:
 
   # Servizio one-shot: crea gli schedatori dimostrativi al primo avvio.
   # L'amministratore viene invece creato automaticamente dallo user-manager.
@@ -85,7 +120,7 @@ services:
     container_name: mongocontainer
     restart: unless-stopped
     volumes:
-      - ${MONGO_DATA_DIR:-./user-data/mongo-data}:/data/db
+      - ${MONGO_DATA_DIR:-mongo-data}:/data/db
     logging:
       driver: none
     networks:
@@ -95,8 +130,9 @@ services:
   # Autenticazione e utenti. Raggiungibile solo dalla rete interna: l'app ne fa
   # da proxy (login, gestione utenti in /area/utenti). Non va esposto: la sua
   # API restituisce anche gli hash delle password e pubblica /docs e /metrics.
+  # Immagine fissata per digest (l'unico tag pubblicato è "latest").
   user-manager-api:
-    image: moreillon/user-manager-mongoose
+    image: moreillon/user-manager-mongoose@sha256:24d5e49257138b8f824331355373aefa7f48a07c193d4ea1dc54a6a0fd406402
     restart: unless-stopped
     environment:
       MONGODB_URL: mongodb://${MONGO_CONTAINER_IP}
@@ -108,6 +144,10 @@ services:
     networks:
       internalnet:
         ipv4_address: ${USER_MANAGER_API_CONTAINER_IP}
+
+volumes:
+  mysql-data:
+  mongo-data:
 
 networks:
   extern:

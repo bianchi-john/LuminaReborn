@@ -7,3 +7,5 @@ user-data
 attach
 Doc
 *.log
+backups
+.github

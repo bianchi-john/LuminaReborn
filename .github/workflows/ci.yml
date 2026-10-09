@@ -1,0 +1,35 @@
+# Controlli automatici a ogni push e pull request: tipi, test unitari,
+# traduzioni complete, build dell'immagine Docker e audit delle dipendenze.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      # Segnala le vulnerabilità note nelle dipendenze di produzione. Non bloccante
+      # finché è aperto l'avviso su librsvg in sharp (riguarda solo gli SVG, che
+      # l'app rifiuta prima di elaborarli): rimuovere continue-on-error con sharp >= 0.35.5.
+      - run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --target production -t lumina-app:ci .

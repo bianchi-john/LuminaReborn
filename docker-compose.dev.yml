@@ -1,0 +1,25 @@
+# Sviluppo: l'app gira con tsx in modalità watch e legge sorgenti, template e
+# file statici direttamente dalla cartella del progetto. Ogni modifica è visibile
+# subito (TypeScript: riavvio automatico in ~1 s; EJS/CSS/JS: basta ricaricare la pagina).
+#   make dev     (= docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build)
+services:
+  nodeapp:
+    build:
+      context: .
+      target: dev
+    image: lumina-app:dev
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    read_only: false
+    volumes:
+      - ./src:/app/src
+      - ./views:/app/views
+      - ./public:/app/public
+      - ./migrations:/app/migrations
+      - ./test:/app/test
+      - ${BACKUP_DIR:-./backups}/excel:/exports
+
+  # In sviluppo il backup automatico non serve (resta disponibile `make backup`)
+  backup:
+    profiles: ["backup"]
