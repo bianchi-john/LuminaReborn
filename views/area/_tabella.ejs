@@ -1,0 +1,53 @@
+<%# Tabella di schede con azioni. Parametri: elenco, colonnaAutore (bool), vuoto (testo) %>
+<% if (!elenco.length) { %>
+  <p class="text-muted-lu py-4 mb-0"><%= vuoto %></p>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table table-schede align-middle">
+      <thead>
+        <tr>
+          <th scope="col" class="d-none d-md-table-cell"><span class="visually-hidden">Immagine</span></th>
+          <th scope="col">Opera</th>
+          <% if (colonnaAutore) { %><th scope="col">Schedatore</th><% } %>
+          <th scope="col">Stato</th>
+          <th scope="col" class="d-none d-lg-table-cell">Ultimo aggiornamento</th>
+          <th scope="col" class="text-end">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% elenco.forEach(s => { %>
+          <tr>
+            <td class="d-none d-md-table-cell">
+              <% if (s.copertina) { %><img class="mini-thumb" src="/api/immagini/<%= s.copertina %>" alt="" loading="lazy"><% } else { %><span class="mini-thumb d-inline-block"></span><% } %>
+            </td>
+            <td>
+              <a class="fw-semibold" href="/area/schede/<%= s.id %>"><%- h.inline(s.titolo_opera) || '(senza titolo)' %></a>
+              <div class="small text-muted-lu">Scheda n. <%= s.id %></div>
+              <% if (s.stato === 0 && (s.ultima_azione === 'respinta' || s.ultima_azione === 'depubblicata')) { %>
+                <div class="small text-danger mt-1"><strong><%= s.ultima_azione === 'respinta' ? 'Respinta' : 'Ritirata dalla pubblicazione' %>:</strong> <%= s.ultimo_commento || 'nessuna motivazione' %></div>
+              <% } %>
+            </td>
+            <% if (colonnaAutore) { %><td><%= s.autore_scheda || '—' %></td><% } %>
+            <td><span class="badge badge-stato-<%= s.stato %>"><%= s.stato_label %></span></td>
+            <td class="d-none d-lg-table-cell small"><%= h.dateTime(s.updated_at) %></td>
+            <td class="text-end">
+              <div class="d-inline-flex flex-wrap justify-content-end gap-1">
+                <a class="btn btn-sm btn-outline-secondary" href="/area/schede/<%= s.id %>">Apri</a>
+                <% if (s.stato === 0) { %>
+                  <a class="btn btn-sm btn-outline-primary" href="/area/schede/<%= s.id %>/modifica">Modifica</a>
+                  <% if (!colonnaAutore) { %><button class="btn btn-sm btn-primary" data-azione="invia" data-id="<%= s.id %>">Invia</button><% } %>
+                <% } else if (s.stato === 1 && !colonnaAutore) { %>
+                  <button class="btn btn-sm btn-outline-secondary" data-azione="ritira" data-id="<%= s.id %>">Ritira</button>
+                <% } else if (s.stato === 1 && colonnaAutore) { %>
+                  <a class="btn btn-sm btn-primary" href="/area/schede/<%= s.id %>">Valuta</a>
+                <% } else if (s.stato === 2) { %>
+                  <a class="btn btn-sm btn-outline-secondary" href="/scheda/<%= s.id %>">Pubblica</a>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

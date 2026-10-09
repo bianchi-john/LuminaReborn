@@ -1,0 +1,66 @@
+<%- include('../partials/header') %>
+<div class="area-header">
+  <div class="container py-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+      <h1 class="mb-1">Utenti</h1>
+      <p class="text-muted-lu mb-0">Schedatori e amministratori che possono accedere all'area riservata.</p>
+    </div>
+    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modale-utente">Nuovo utente</button>
+  </div>
+</div>
+<div class="container py-4">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th scope="col">Utente</th>
+          <th scope="col">Ruolo</th>
+          <th scope="col">Stato</th>
+          <th scope="col" class="d-none d-md-table-cell">Ultimo accesso</th>
+          <th scope="col" class="text-end">Azioni</th>
+        </tr>
+      </thead>
+      <tbody id="utenti"><tr><td colspan="5" class="text-muted-lu">Caricamento…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modale-utente" tabindex="-1" aria-labelledby="modale-utente-titolo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content" id="form-utente" novalidate>
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="modale-utente-titolo">Nuovo utente</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" id="utente-errore"></div>
+        <div class="mb-3">
+          <label class="form-label" for="u-username">Nome utente</label>
+          <input class="form-control" id="u-username" name="username" required pattern="[a-zA-Z0-9._-]{3,30}" autocomplete="off">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="u-display">Nome e cognome</label>
+          <input class="form-control" id="u-display" name="display_name" maxlength="100">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="u-email">Email (facoltativa)</label>
+          <input class="form-control" type="email" id="u-email" name="email_address">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="u-password">Password iniziale</label>
+          <input class="form-control" type="password" id="u-password" name="password" required autocomplete="new-password" aria-describedby="u-password-help">
+          <div class="form-text" id="u-password-help">8-30 caratteri, solo lettere e numeri. Comunicala all'utente in modo sicuro.</div>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="u-admin" name="isAdmin">
+          <label class="form-check-label" for="u-admin">Amministratore (può approvare schede e gestire utenti)</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="submit" class="btn btn-primary">Crea utente</button>
+      </div>
+    </form>
+  </div>
+</div>
+<%- include('../partials/footer', { scripts: ['utenti.js'] }) %>

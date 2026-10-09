@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<%
+  const etichetta = (item) => h.text(item[v.display]);
+  const iniziale = (item) => {
+    const c = etichetta(item).normalize('NFD').replace(/[̀-ͯ]/g, '').charAt(0).toUpperCase();
+    return /[A-Z]/.test(c) ? c : '#';
+  };
+  const gruppi = new Map();
+  elenco.forEach(item => {
+    const k = iniziale(item);
+    if (!gruppi.has(k)) gruppi.set(k, []);
+    gruppi.get(k).push(item);
+  });
+%>
+<div class="container py-4">
+  <nav aria-label="Percorso"><ol class="breadcrumb small"><li class="breadcrumb-item"><a href="/voci">Indici</a></li><li class="breadcrumb-item active" aria-current="page"><%= v.plurale %></li></ol></nav>
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+    <h1 class="mb-0"><%= v.plurale %></h1>
+    <form method="get" class="d-flex gap-2" role="search">
+      <label class="visually-hidden" for="q-indice">Filtra</label>
+      <input class="form-control" type="search" id="q-indice" name="q" value="<%= q %>" placeholder="Filtra <%= v.plurale.toLowerCase() %>…">
+      <button class="btn btn-outline-primary" type="submit">Filtra</button>
+    </form>
+  </div>
+
+  <% if (!elenco.length) { %>
+    <p class="text-muted-lu py-4">Nessuna voce trovata.</p>
+  <% } else { %>
+    <p class="indice-lettere mb-4" aria-label="Iniziali">
+      <% [...gruppi.keys()].forEach(k => { %><a href="#lettera-<%= k %>"><%= k %></a><% }) %>
+    </p>
+    <% gruppi.forEach((items, k) => { %>
+      <h2 class="h4 border-bottom pb-1 mt-4" id="lettera-<%= k %>"><%= k %></h2>
+      <ul class="list-unstyled indice-lista">
+        <% items.forEach(item => { %>
+          <li>
+            <a href="/voci/<%= v.key %>/<%= item.id %>"><%- v.fields[0].type === 'inline' ? h.inline(item[v.display]) : h.text(item[v.display]) %></a>
+            <% if (item.date_vita) { %><span class="text-muted-lu small">(<%= item.date_vita %>)</span><% } %>
+            <span class="badge text-bg-light border fw-normal"><%= item.schede_pubblicate %></span>
+          </li>
+        <% }) %>
+      </ul>
+    <% }) %>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

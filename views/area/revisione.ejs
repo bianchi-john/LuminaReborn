@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+<%
+  const viste = [
+    { key: 'revisione', stato: 1, titolo: 'Da revisionare', vuoto: 'Nessuna scheda in attesa di revisione.' },
+    { key: 'pubblicate', stato: 2, titolo: 'Pubblicate', vuoto: 'Nessuna scheda pubblicata.' },
+    { key: 'bozze', stato: 0, titolo: 'Bozze di tutti', vuoto: 'Nessuna bozza.' },
+  ];
+  const corrente = viste.find(x => x.key === vista);
+%>
+<div class="area-header">
+  <div class="container py-4">
+    <h1 class="mb-1">Revisione schede</h1>
+    <p class="text-muted-lu mb-0">Approva le schede per pubblicarle nel catalogo, oppure respingile indicando cosa correggere.</p>
+  </div>
+</div>
+<div class="container py-4">
+  <ul class="nav nav-pills mb-3">
+    <% viste.forEach(x => { %>
+      <li class="nav-item">
+        <a class="nav-link <%= x.key === vista ? 'active' : '' %>" href="/area/revisione?vista=<%= x.key %>" <%- x.key === vista ? 'aria-current="page"' : '' %>>
+          <%= x.titolo %> <span class="badge text-bg-light border"><%= conteggi[x.stato] || 0 %></span>
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+  <%- include('_tabella', { elenco, colonnaAutore: true, vuoto: corrente.vuoto }) %>
+</div>
+<%- include('../partials/footer') %>

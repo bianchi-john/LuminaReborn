@@ -1,0 +1,164 @@
+<%- include('../partials/header') %>
+<%
+  const sezioni = [
+    ['sez-identificazione', 'Identificazione'],
+    ['sez-datazione', 'Datazione'],
+    ['sez-materia', 'Materia e tecnica'],
+    ['sez-misure', 'Misure'],
+    ['sez-collocazione', 'Collocazione e inventario'],
+    ['sez-testi', 'Testi'],
+    ['sez-mostre', 'Mostre'],
+    ['sez-bibliografia', 'Bibliografia'],
+    ['sez-immagini', 'Immagini'],
+    ['sez-note', 'Note per la revisione'],
+  ];
+%>
+<div class="area-header">
+  <div class="container py-4">
+    <nav aria-label="Percorso"><ol class="breadcrumb small mb-2"><li class="breadcrumb-item"><a href="/area">Le mie schede</a></li><li class="breadcrumb-item active" aria-current="page"><%= scheda ? `Scheda n. ${scheda.id}` : 'Nuova scheda' %></li></ol></nav>
+    <h1 class="mb-1"><%= scheda ? 'Modifica scheda' : 'Nuova scheda' %></h1>
+    <p class="text-muted-lu mb-0">
+      Per autori, materiali, tecniche, luoghi, provenienze, mostre e bibliografia inizia a scrivere e <strong>scegli una voce esistente</strong>:
+      l'opera verrà collegata alle altre che la condividono. Se la voce non esiste verrà creata.
+    </p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-3 d-none d-lg-block">
+      <nav class="editor-nav nav flex-column" aria-label="Sezioni della scheda">
+        <% sezioni.forEach(([id, label]) => { %><a class="nav-link" href="#<%= id %>"><%= label %></a><% }) %>
+      </nav>
+    </div>
+
+    <div class="col-lg-9">
+      <form id="editor" novalidate data-id="<%= scheda ? scheda.id : '' %>" data-stato="<%= scheda ? scheda.stato : 0 %>">
+        <div class="alert alert-danger d-none" id="editor-errori" role="alert" tabindex="-1"></div>
+
+        <section class="card editor-section mb-4" id="sez-identificazione">
+          <div class="card-header">Identificazione</div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label" id="lbl-titolo">Titolo dell'opera <span class="text-danger">*</span></label>
+              <div data-rte="inline" data-name="titolo_opera" data-labelledby="lbl-titolo" data-placeholder="Es. San Sebastiano"></div>
+              <div class="form-text">Usa il corsivo per i titoli di soggetto, es. Trittico con <em>Matrimonio mistico di santa Caterina</em>.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label" for="classificazione">Classificazione</label>
+              <select class="form-select" id="classificazione" name="classificazione">
+                <option value="">—</option>
+                <% classificazioni.forEach(c => { %><option value="<%= c.value %>"><%= c.label %></option><% }) %>
+              </select>
+            </div>
+            <h3 class="h6">Autori</h3>
+            <div data-vocab="autori"></div>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-datazione">
+          <div class="card-header">Datazione</div>
+          <div class="card-body">
+            <div data-repeat="cronologie"></div>
+            <datalist id="dl-ambiti"></datalist>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-materia">
+          <div class="card-header">Materia e tecnica</div>
+          <div class="card-body">
+            <h3 class="h6">Materiali</h3>
+            <div data-vocab="materiali" class="mb-4"></div>
+            <h3 class="h6">Tecniche</h3>
+            <div data-vocab="tecniche"></div>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-misure">
+          <div class="card-header">Misure</div>
+          <div class="card-body">
+            <div data-repeat="misure"></div>
+            <datalist id="dl-direzioni"></datalist>
+            <datalist id="dl-tipi"></datalist>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-collocazione">
+          <div class="card-header">Collocazione e inventario</div>
+          <div class="card-body">
+            <h3 class="h6">Ubicazione</h3>
+            <div data-vocab="ubicazioni" class="mb-4"></div>
+            <h3 class="h6">Inventario e proprietà</h3>
+            <div data-repeat="inventari" class="mb-4"></div>
+            <h3 class="h6">Provenienza</h3>
+            <div data-vocab="provenienze"></div>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-testi">
+          <div class="card-header">Testi</div>
+          <div class="card-body">
+            <% [['descrizione_sintetica', 'Descrizione sintetica'], ['corpo_scheda', 'Commento storico-critico'], ['iscrizioni', 'Iscrizioni'], ['storia_espositiva', 'Vicende collezionistiche e storia espositiva']].forEach(([name, label]) => { %>
+              <div class="mb-4">
+                <label class="form-label" id="lbl-<%= name %>"><%= label %></label>
+                <div data-rte="block" data-name="<%= name %>" data-labelledby="lbl-<%= name %>"></div>
+              </div>
+            <% }) %>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-mostre">
+          <div class="card-header">Mostre</div>
+          <div class="card-body">
+            <div data-vocab="mostre"></div>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-bibliografia">
+          <div class="card-header">Bibliografia e documentazione</div>
+          <div class="card-body">
+            <h3 class="h6">Bibliografia</h3>
+            <div data-vocab="bibliografie" class="mb-4"></div>
+            <h3 class="h6">Altra bibliografia</h3>
+            <div data-vocab="altre_bibliografie" class="mb-4"></div>
+            <h3 class="h6">Documentazione fotografica</h3>
+            <div data-repeat="documentazioni_fotografiche"></div>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-immagini">
+          <div class="card-header">Immagini</div>
+          <div class="card-body">
+            <p class="small text-muted-lu">JPEG, PNG, WebP o GIF. La prima immagine è la copertina; usa le frecce per cambiare l'ordine.</p>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-3" id="immagini"></div>
+            <label class="btn btn-outline-primary">
+              Aggiungi immagini <input type="file" id="immagini-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
+            </label>
+          </div>
+        </section>
+
+        <section class="card editor-section mb-4" id="sez-note">
+          <div class="card-header">Note per la revisione</div>
+          <div class="card-body">
+            <label class="form-label" for="note_schedatore">Note interne (non pubblicate)</label>
+            <textarea class="form-control" id="note_schedatore" name="note_schedatore" rows="3" maxlength="5000" placeholder="Informazioni utili all'amministratore che revisionerà la scheda"></textarea>
+          </div>
+        </section>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar no-print">
+  <div class="container py-2 d-flex flex-wrap align-items-center gap-2">
+    <span class="small text-muted-lu me-auto" id="editor-stato" aria-live="polite"></span>
+    <a class="btn btn-outline-secondary" href="<%= scheda ? `/area/schede/${scheda.id}` : '/area' %>" id="editor-annulla">Annulla</a>
+    <button class="btn btn-outline-primary" type="button" id="salva">Salva</button>
+    <% if (!scheda || scheda.permessi.invia) { %>
+      <button class="btn btn-primary" type="button" id="salva-invia">Salva e invia in revisione</button>
+    <% } %>
+  </div>
+</div>
+
+<script type="application/json" id="scheda-data"><%- schedaJson %></script>
+<%- include('../partials/footer', { scripts: ['editor.js'] }) %>

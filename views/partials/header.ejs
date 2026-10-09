@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title ? `${title} · LUMiNA` : 'LUMiNA · Musei Nazionali di Lucca' %></title>
+  <meta name="description" content="<%= typeof description !== 'undefined' && description ? description : 'Catalogo delle opere dei Musei Nazionali di Lucca' %>">
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/app.css?v=<%= assetVersion %>">
+</head>
+<body>
+<a class="visually-hidden-focusable position-absolute top-0 start-0 p-2 bg-white" href="#contenuto">Vai al contenuto</a>
+<header class="site-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <span class="brand-mark">LUM<em>i</em>NA</span>
+        <small>Musei Nazionali di Lucca</small>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-principale" aria-controls="nav-principale" aria-expanded="false" aria-label="Apri il menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav-principale">
+        <ul class="navbar-nav me-auto ms-lg-4">
+          <li class="nav-item"><a class="nav-link <%= nav === 'catalogo' ? 'active' : '' %>" href="/" <%- nav === 'catalogo' ? 'aria-current="page"' : '' %>>Catalogo</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle <%= nav === 'indici' ? 'active' : '' %>" href="/voci" role="button" data-bs-toggle="dropdown" aria-expanded="false">Indici</a>
+            <ul class="dropdown-menu">
+              <% Object.values(vocabolari).filter(v => v.indice).forEach(v => { %>
+                <li><a class="dropdown-item" href="/voci/<%= v.key %>"><%= v.plurale %></a></li>
+              <% }) %>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/voci">Tutti gli indici</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <% if (user) { %>
+            <li class="nav-item"><a class="nav-link <%= nav === 'area' ? 'active' : '' %>" href="/area">Le mie schede</a></li>
+            <li class="nav-item"><a class="nav-link <%= nav === 'nuova' ? 'active' : '' %>" href="/area/schede/nuova">Nuova scheda</a></li>
+            <% if (user.isAdmin) { %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle <%= ['revisione', 'vocabolari', 'utenti'].includes(nav) ? 'active' : '' %>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Amministrazione</a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="/area/revisione">Revisione schede</a></li>
+                  <li><a class="dropdown-item" href="/area/vocabolari">Vocabolari</a></li>
+                  <li><a class="dropdown-item" href="/area/utenti">Utenti</a></li>
+                </ul>
+              </li>
+            <% } %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><%= user.displayName %></a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><span class="dropdown-item-text small text-muted"><%= user.isAdmin ? 'Amministratore' : 'Schedatore' %> · <%= user.username %></span></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item" type="button" data-logout>Esci</button></li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li class="nav-item"><a class="nav-link <%= nav === 'login' ? 'active' : '' %>" href="/login">Area riservata</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+<main id="contenuto">
