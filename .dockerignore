@@ -1,7 +1,9 @@
 .git
 .env
 node_modules
+dist
 database-data
 user-data
+attach
 Doc
 *.log

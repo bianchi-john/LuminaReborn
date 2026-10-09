@@ -1,11 +1,13 @@
 node_modules
+dist
 database-data
 user-data
 temp
 note
 Schede
 .env
-test
+test-results
+*.log
 
 # Strumenti locali di migrazione
 QUERY*.sh
