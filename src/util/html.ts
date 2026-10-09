@@ -1,0 +1,50 @@
+import sanitizeHtml from 'sanitize-html';
+
+const linkTransform: sanitizeHtml.Transformer = (tagName, attribs) => ({
+  tagName,
+  attribs: { href: attribs.href ?? '', rel: 'noopener noreferrer nofollow', target: '_blank' },
+});
+
+/** Testo ricco dei campi lunghi (commento, descrizione, iscrizioni...). */
+const BLOCK_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: ['p', 'br', 'b', 'strong', 'i', 'em', 'u', 's', 'sup', 'sub', 'ul', 'ol', 'li', 'blockquote', 'a', 'h3', 'h4'],
+  allowedAttributes: { a: ['href', 'rel', 'target'] },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  transformTags: { a: linkTransform, div: 'p', h1: 'h3', h2: 'h3', h5: 'h4', h6: 'h4' },
+  exclusiveFilter: (frame) => frame.tag === 'p' && !frame.text.trim() && !frame.mediaChildren.length,
+};
+
+/** Testo ricco "in linea" (titoli, riferimenti bibliografici, titoli di mostre). */
+const INLINE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: ['b', 'strong', 'i', 'em', 'u', 'sup', 'sub', 'a'],
+  allowedAttributes: { a: ['href', 'rel', 'target'] },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  transformTags: { a: linkTransform },
+};
+
+const TEXT_OPTIONS: sanitizeHtml.IOptions = { allowedTags: [], allowedAttributes: {} };
+
+export type HtmlKind = 'block' | 'inline';
+
+export function cleanHtml(value: string | null | undefined, kind: HtmlKind): string | null {
+  if (value === null || value === undefined) return null;
+  const cleaned = sanitizeHtml(value, kind === 'block' ? BLOCK_OPTIONS : INLINE_OPTIONS)
+    .replace(/&nbsp;/g, ' ')
+    .replace(/(<br \/>\s*)+$/g, '')
+    .trim();
+  return cleaned === '' ? null : cleaned;
+}
+
+/** Testo semplice da HTML (per ordinamento, <title>, alt delle immagini). */
+export function htmlToText(value: string | null | undefined): string {
+  if (!value) return '';
+  return sanitizeHtml(value, TEXT_OPTIONS)
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
