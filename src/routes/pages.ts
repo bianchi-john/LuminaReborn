@@ -1,10 +1,11 @@
 import { Request, Router } from 'express';
 import { requireAdminPage, requireUserPage } from '../auth/session';
 import { STATI } from '../domain/classificazioni';
+import { confrontoDimensionale } from '../domain/dimensioni';
 import { isVocabKey, VOCAB_KEYS, VOCABOLARI } from '../domain/vocabolari';
 import { ah, forbidden, notFound } from '../http/errors';
 import * as schede from '../services/schede.service';
-import { search, searchQuerySchema } from '../services/search.service';
+import { opzioniRicerca, search, searchQuerySchema } from '../services/search.service';
 import * as voci from '../services/vocabolari.service';
 
 const pages = Router();
@@ -37,12 +38,13 @@ pages.get(
   '/',
   ah(async (req, res) => {
     const filtri = searchQuerySchema.parse(req.query);
-    const risultati = await search(filtri);
+    const [risultati, opzioni] = await Promise.all([search(filtri), opzioniRicerca()]);
     const avanzata = ADVANCED_FIELDS.some((f) => {
       const v = (filtri as Record<string, unknown>)[f];
       return v !== null && v !== undefined && f !== 'classificazione';
     });
-    res.render('home', { title: 'Catalogo', nav: 'catalogo', filtri, risultati, avanzata, query: req.query });
+    const avanzataId = ['ubicazioni', 'materiali', 'tecniche'].some((k) => (filtri as Record<string, unknown>)[k]);
+    res.render('home', { title: req.t('Catalogo'), nav: 'catalogo', filtri, risultati, opzioni, avanzata: avanzata || avanzataId });
   }),
 );
 
@@ -57,17 +59,17 @@ pages.get(
   ah(async (req, res) => {
     const s = await schede.getScheda(idParam(req), req.user);
     if (s.stato !== STATI.PUBBLICATA) return res.redirect(`/area/schede/${s.id}`);
-    res.render('scheda', { title: s.titolo_testo, nav: 'catalogo', s, area: false });
+    res.render('scheda', { title: s.titolo_testo, nav: 'catalogo', s, area: false, confronto: confrontoDimensionale(s.misure) });
   }),
 );
 
 pages.get(
   '/voci',
-  ah(async (_req, res) => {
+  ah(async (req, res) => {
     const indici = await Promise.all(
       VOCAB_KEYS.filter((k) => VOCABOLARI[k].indice).map(async (k) => ({ v: VOCABOLARI[k], n: await voci.countVoci(VOCABOLARI[k], true) })),
     );
-    res.render('voci', { title: 'Indici', nav: 'indici', indici });
+    res.render('voci', { title: req.t('Indici'), nav: 'indici', indici });
   }),
 );
 
@@ -79,7 +81,7 @@ pages.get(
     const v = VOCABOLARI[tipo];
     const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 100) : '';
     const elenco = await voci.listVoci(v, { q: q || undefined, limit: 500, soloPubblicate: true });
-    res.render('indice', { title: v.plurale, nav: 'indici', v, elenco, q });
+    res.render('indice', { title: req.t(v.plurale), nav: 'indici', v, elenco, q });
   }),
 );
 
@@ -94,7 +96,7 @@ pages.get(
     const risultati = await search(filtri);
     // Una voce usata solo in bozze non è pubblica
     if (risultati.total === 0 && !req.user) throw notFound();
-    res.render('voce', { title: `${v.singolare}: ${voce[v.display]}`, nav: 'indici', v, voce, risultati, query: req.query });
+    res.render('voce', { title: `${req.t(v.singolare)}: ${voce[v.display]}`, nav: 'indici', v, voce, risultati });
   }),
 );
 
@@ -105,7 +107,7 @@ pages.get(
 pages.get('/login', (req, res) => {
   const next = safeNext(req.query.next);
   if (req.user) return res.redirect(next);
-  res.render('login', { title: 'Accesso', nav: 'login', next });
+  res.render('login', { title: req.t('Accesso'), nav: 'login', next });
 });
 
 // ---------------------------------------------------------------------------
@@ -117,7 +119,7 @@ pages.get(
   requireUserPage,
   ah(async (req, res) => {
     const [mie, conteggi] = await Promise.all([schede.listMie(req.user!), req.user!.isAdmin ? schede.contaPerStato() : undefined]);
-    res.render('area/dashboard', { title: 'Le mie schede', nav: 'area', mie, conteggi });
+    res.render('area/dashboard', { title: req.t('Le mie schede'), nav: 'area', mie, conteggi });
   }),
 );
 
@@ -128,12 +130,12 @@ pages.get(
     const viste: Record<string, number> = { revisione: STATI.IN_REVISIONE, pubblicate: STATI.PUBBLICATA, bozze: STATI.BOZZA };
     const vista = typeof req.query.vista === 'string' && req.query.vista in viste ? req.query.vista : 'revisione';
     const [elenco, conteggi] = await Promise.all([schede.listPerStato(viste[vista]), schede.contaPerStato()]);
-    res.render('area/revisione', { title: 'Revisione schede', nav: 'revisione', elenco, vista, conteggi });
+    res.render('area/revisione', { title: req.t('Revisione schede'), nav: 'revisione', elenco, vista, conteggi });
   }),
 );
 
-pages.get('/area/schede/nuova', requireUserPage, (_req, res) => {
-  res.render('area/editor', { title: 'Nuova scheda', nav: 'nuova', scheda: null, schedaJson: 'null' });
+pages.get('/area/schede/nuova', requireUserPage, (req, res) => {
+  res.render('area/editor', { title: req.t('Nuova scheda'), nav: 'nuova', scheda: null, schedaJson: 'null' });
 });
 
 pages.get(
@@ -142,7 +144,7 @@ pages.get(
   ah(async (req, res) => {
     const s = await schede.getScheda(idParam(req), req.user);
     if (!s.permessi.modifica) throw forbidden('Questa scheda non è modificabile nel suo stato attuale');
-    res.render('area/editor', { title: `Modifica: ${s.titolo_testo}`, nav: 'area', scheda: s, schedaJson: embedJson(s) });
+    res.render('area/editor', { title: `${req.t('Modifica')}: ${s.titolo_testo}`, nav: 'area', scheda: s, schedaJson: embedJson(s) });
   }),
 );
 
@@ -151,7 +153,7 @@ pages.get(
   requireUserPage,
   ah(async (req, res) => {
     const s = await schede.getScheda(idParam(req), req.user);
-    res.render('scheda', { title: s.titolo_testo, nav: 'area', s, area: true });
+    res.render('scheda', { title: s.titolo_testo, nav: 'area', s, area: true, confronto: confrontoDimensionale(s.misure) });
   }),
 );
 
@@ -163,12 +165,12 @@ pages.get(
     const v = VOCABOLARI[tipo];
     const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 100) : '';
     const elenco = await voci.listVoci(v, { q: q || undefined, limit: 500 });
-    res.render('area/vocabolari', { title: 'Vocabolari', nav: 'vocabolari', v, elenco, q, vocabolari: VOCAB_KEYS.map((k) => VOCABOLARI[k]) });
+    res.render('area/vocabolari', { title: req.t('Vocabolari'), nav: 'vocabolari', v, elenco, q, vocabolari: VOCAB_KEYS.map((k) => VOCABOLARI[k]) });
   }),
 );
 
-pages.get('/area/utenti', requireAdminPage, (_req, res) => {
-  res.render('area/utenti', { title: 'Utenti', nav: 'utenti' });
+pages.get('/area/utenti', requireAdminPage, (req, res) => {
+  res.render('area/utenti', { title: req.t('Utenti'), nav: 'utenti' });
 });
 
 // Indirizzi della versione precedente

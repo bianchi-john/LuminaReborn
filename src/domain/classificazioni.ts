@@ -39,6 +39,35 @@ export const STATO_LABEL: Record<number, string> = {
   2: 'Pubblicata',
 };
 
+// Valori proposti nei menu delle misure (i dati importati possono contenerne altri, che restano validi)
 export const UNITA_MISURA = ['m', 'cm', 'mm', 'μm', 'g', 'hg', 'kg'];
-export const DIREZIONI_MISURA = ['altezza', 'larghezza', 'profondità', 'spessore', 'diametro', 'lunghezza', 'peso'];
+export const DIREZIONI_MISURA = [
+  'altezza',
+  'larghezza',
+  'profondità',
+  'lunghezza',
+  'spessore',
+  'diametro',
+  'diametro superiore',
+  'diametro inferiore',
+  'diametro massimo',
+  'circonferenza',
+  'peso',
+];
 export const TIPI_MISURA = ['assoluta', 'minima', 'massima', 'media', 'ricostruita', 'conservata'];
+export const INTERO_PARZIALE = ['intero', 'parziale'];
+export const MAX_GRUPPI_MISURE = 10;
+export const MAX_MISURE_PER_GRUPPO = 12;
+
+/** Condizione giuridica (sul modello delle voci ICCD "CDGG"). */
+export const PROPRIETA_GIURIDICA = [
+  'Proprietà dello Stato',
+  'Proprietà Ente pubblico territoriale',
+  'Proprietà Ente pubblico non territoriale',
+  'Proprietà Ente religioso cattolico',
+  'Proprietà Ente religioso non cattolico',
+  'Proprietà privata',
+  'Proprietà mista',
+  'Detenzione / deposito',
+  'Condizione giuridica non accertata',
+];

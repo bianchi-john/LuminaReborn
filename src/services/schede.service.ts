@@ -84,7 +84,7 @@ export interface SchedaCompleta extends Omit<SchedaRow, 'note_schedatore'> {
   inventari: Record<string, unknown>[];
   misure: (Record<string, unknown> & { misure: Record<string, unknown>[] })[];
   documentazioni_fotografiche: { id: number; riferimento: string }[];
-  immagini: { id: number; didascalia: string | null; mime: string }[];
+  immagini: { id: number; didascalia: string | null; mime: string; larghezza: number | null; altezza: number | null }[];
   revisioni?: { azione: string; commento: string | null; created_at: Date; username: string | null }[];
   permessi: Permessi;
   voci: Record<VocabKey, VocabItem[]>;
@@ -133,9 +133,9 @@ export async function getScheda(id: number, user?: SessionUser): Promise<SchedaC
       'SELECT id, riferimento_bibliografico AS riferimento FROM documentazioniFotografiche WHERE id_scheda = ? ORDER BY ordine, id',
       [id],
     ),
-    select<{ id: number; didascalia: string | null; mime: string }>(
+    select<{ id: number; didascalia: string | null; mime: string; larghezza: number | null; altezza: number | null }>(
       pool,
-      'SELECT id, didascalia, mime FROM immagini WHERE id_scheda = ? ORDER BY ordine, id',
+      'SELECT id, didascalia, mime, larghezza, altezza FROM immagini WHERE id_scheda = ? ORDER BY ordine, id',
       [id],
     ),
     riservato

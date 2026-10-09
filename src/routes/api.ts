@@ -4,7 +4,16 @@ import { clearSessionCookie, cookieOptions, forgetToken, requireAdmin, requireUs
 import * as userManager from '../auth/userManager';
 import { config } from '../config';
 import { pool, select } from '../db/pool';
-import { CLASSIFICAZIONI, DIREZIONI_MISURA, TIPI_MISURA, UNITA_MISURA } from '../domain/classificazioni';
+import {
+  CLASSIFICAZIONI,
+  DIREZIONI_MISURA,
+  INTERO_PARZIALE,
+  MAX_GRUPPI_MISURE,
+  MAX_MISURE_PER_GRUPPO,
+  PROPRIETA_GIURIDICA,
+  TIPI_MISURA,
+  UNITA_MISURA,
+} from '../domain/classificazioni';
 import { optText, parseSchedaInput, vocabFieldsSchema } from '../domain/scheda.schema';
 import { isVocabKey, VOCABOLARI, vocabolariPublicSchema, VocabDef } from '../domain/vocabolari';
 import { ah, badRequest, forbidden, notFound, unauthorized } from '../http/errors';
@@ -12,7 +21,8 @@ import { loginLimiter, uploadLimiter } from '../http/security';
 import { escapeLike } from '../util/sql';
 import * as immagini from '../services/immagini.service';
 import * as schede from '../services/schede.service';
-import { search, searchQuerySchema } from '../services/search.service';
+import { creaWorkbook } from '../services/export.service';
+import { search, searchQuerySchema, suggerimenti } from '../services/search.service';
 import * as voci from '../services/vocabolari.service';
 
 const api = Router();
@@ -81,26 +91,34 @@ api.get(
   }),
 );
 
+api.get(
+  '/suggerimenti',
+  ah(async (req, res) => {
+    res.json(await suggerimenti(typeof req.query.q === 'string' ? req.query.q : ''));
+  }),
+);
+
 api.get('/config', (_req, res) => {
   res.json({
     vocabolari: vocabolariPublicSchema(),
     classificazioni: CLASSIFICAZIONI,
-    misure: { direzioni: DIREZIONI_MISURA, tipi: TIPI_MISURA, unita: UNITA_MISURA },
+    misure: {
+      direzioni: DIREZIONI_MISURA,
+      tipi: TIPI_MISURA,
+      unita: UNITA_MISURA,
+      interoParziale: INTERO_PARZIALE,
+      maxGruppi: MAX_GRUPPI_MISURE,
+      maxMisure: MAX_MISURE_PER_GRUPPO,
+    },
+    proprieta: PROPRIETA_GIURIDICA,
     maxImageBytes: config.upload.maxImageBytes,
   });
 });
 
-api.get(
-  '/immagini/:id',
-  ah(async (req, res) => {
-    const img = await immagini.getImmagine(idParam(req), req.user);
-    res.setHeader('Content-Type', img.mime);
-    res.setHeader('Content-Length', img.dati.length);
-    res.setHeader('Content-Disposition', 'inline');
-    res.setHeader('Cache-Control', img.pubblica ? 'public, max-age=86400' : 'private, no-store');
-    res.end(img.dati);
-  }),
-);
+/** Indirizzo della versione precedente: ora le immagini sono servite da /media. */
+api.get('/immagini/:id', (req, res) => {
+  res.redirect(301, `/media/${Number(req.params.id) || 0}/anteprima`);
+});
 
 // ---------------------------------------------------------------------------
 // Schede
@@ -197,6 +215,23 @@ api.get(
 );
 
 api.get(
+  '/vocabolari/:tipo/simili',
+  requireUser,
+  ah(async (req, res) => {
+    const testo = typeof req.query.testo === 'string' ? req.query.testo.trim().slice(0, 300) : '';
+    res.json(testo.length >= 3 ? await voci.vociSimili(vocabParam(req), testo) : []);
+  }),
+);
+
+api.get(
+  '/vocabolari/:tipo/duplicati',
+  requireAdmin,
+  ah(async (req, res) => {
+    res.json(await voci.possibiliDuplicati(vocabParam(req)));
+  }),
+);
+
+api.get(
   '/vocabolari/:tipo/:id',
   ah(async (req, res) => {
     res.json(await voci.getVoce(vocabParam(req), idParam(req)));
@@ -243,6 +278,24 @@ api.get(
       [`%${escapeLike(q)}%`],
     );
     res.json(rows.map((r) => r.v));
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// Esportazione Excel del catalogo (tutte le schede, per gli amministratori)
+// ---------------------------------------------------------------------------
+
+api.get(
+  '/esportazioni/catalogo.xlsx',
+  requireAdmin,
+  ah(async (req, res) => {
+    const wb = await creaWorkbook(`${req.protocol}://${req.get('host')}`);
+    const stamp = new Date().toISOString().slice(0, 10);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="lumina-catalogo-${stamp}.xlsx"`);
+    res.setHeader('Cache-Control', 'private, no-store');
+    await wb.xlsx.write(res);
+    res.end();
   }),
 );
 

@@ -2,6 +2,8 @@ import { badRequest, conflict, notFound } from '../http/errors';
 import { Db, execute, pool, select, selectOne, withTransaction } from '../db/pool';
 import { VocabDef, VocabKey, VOCABOLARI } from '../domain/vocabolari';
 import { VocabRef } from '../domain/scheda.schema';
+import { htmlToText } from '../util/html';
+import { findDuplicatePairs, findSimilar } from '../util/similarity';
 import { escapeLike } from '../util/sql';
 
 // I nomi di tabelle e colonne provengono solo dalla configurazione statica in
@@ -168,4 +170,18 @@ export async function deleteVoce(v: VocabDef, id: number): Promise<void> {
 
 export function vocab(key: VocabKey): VocabDef {
   return VOCABOLARI[key];
+}
+
+/** Voci simili al testo indicato (probabili doppioni da proporre prima di crearne una nuova). */
+export async function vociSimili(v: VocabDef, testo: string) {
+  const tutte = await listVoci(v, { limit: 5000 });
+  const candidati = tutte.map((item) => ({ ...item, id: item.id, label: htmlToText(String(item[v.display])) }));
+  return findSimilar(testo, candidati, 0.72, 6).map(({ label: _label, ...item }) => item);
+}
+
+/** Coppie di voci con nomi molto simili, da verificare ed eventualmente unire. */
+export async function possibiliDuplicati(v: VocabDef) {
+  const tutte = await listVoci(v, { limit: 5000 });
+  const candidati = tutte.map((item) => ({ id: item.id, label: htmlToText(String(item[v.display])), schede: item.schede_totali }));
+  return findDuplicatePairs(candidati, 0.85, 30);
 }

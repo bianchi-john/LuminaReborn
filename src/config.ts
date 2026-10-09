@@ -46,6 +46,8 @@ export const config = {
     user: str('DB_USER'),
     password: str('DB_PASSWORD'),
     database: str('DB_NAME', 'luminadb'),
+    /** Database separato che contiene i file delle immagini (originali e versioni ridotte). */
+    mediaDatabase: str('MEDIA_DB_NAME', 'luminamedia'),
     connectionLimit: int('DB_CONNECTION_LIMIT', 10),
   },
   migrateOnStart: bool('MIGRATE_ON_START', true),
@@ -63,8 +65,27 @@ export const config = {
   allowedOrigins: list('ALLOWED_ORIGINS'),
 
   upload: {
-    maxImageBytes: int('MAX_IMAGE_MB', 15) * 1024 * 1024,
+    maxImageBytes: int('MAX_IMAGE_MB', 25) * 1024 * 1024,
+  },
+
+  media: {
+    /** Lato lungo (px) della versione pubblica: l'originale resta riservato allo staff. */
+    previewSize: int('MEDIA_PREVIEW_PX', 1280),
+    thumbSize: int('MEDIA_THUMB_PX', 480),
+  },
+
+  export: {
+    /** Cartella in cui salvare ogni notte l'esportazione Excel del catalogo (vuoto = disattivato). */
+    dir: process.env.EXPORT_DIR ?? '',
+    /** Ora (0-23, fuso Europe/Rome) dell'esportazione automatica. */
+    hour: int('EXPORT_HOUR', 2),
+    keep: int('EXPORT_KEEP', 14),
   },
 } as const;
+
+// Il nome del database media viene usato nelle query: solo caratteri sicuri
+for (const name of [config.db.database, config.db.mediaDatabase]) {
+  if (!/^[A-Za-z0-9_]+$/.test(name)) throw new Error(`Nome di database non valido: ${name}`);
+}
 
 export type Config = typeof config;

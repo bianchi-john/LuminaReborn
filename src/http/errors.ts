@@ -44,9 +44,15 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
   if (httpError.status >= 500) logger.error(`${req.method} ${req.originalUrl}`, error);
 
   if (res.headersSent) return;
-  if (req.originalUrl.startsWith('/api/')) {
-    res.status(httpError.status).json({ error: httpError.message, details: httpError.details });
+  // Messaggi tradotti nella lingua dell'interfaccia (se disponibile)
+  const t = req.t ?? ((s: string) => s);
+  const message = t(httpError.message);
+  const details = Array.isArray(httpError.details)
+    ? httpError.details.map((d: { campo?: string; messaggio?: string }) => ({ ...d, messaggio: d.messaggio ? t(d.messaggio) : d.messaggio }))
+    : httpError.details;
+  if (req.originalUrl.startsWith('/api/') || req.originalUrl.startsWith('/media/')) {
+    res.status(httpError.status).json({ error: message, details });
     return;
   }
-  res.status(httpError.status).render('errore', { title: 'Errore', status: httpError.status, message: httpError.message });
+  res.status(httpError.status).render('errore', { title: t('Errore'), status: httpError.status, message });
 }

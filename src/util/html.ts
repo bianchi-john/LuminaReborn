@@ -5,13 +5,20 @@ const linkTransform: sanitizeHtml.Transformer = (tagName, attribs) => ({
   attribs: { href: attribs.href ?? '', rel: 'noopener noreferrer nofollow', target: '_blank' },
 });
 
+/** Solo immagini dell'archivio stesso (versioni ridotte), mai indirizzi esterni o data URL. */
+const INTERNAL_IMAGE = /^\/media\/\d+\/(anteprima|miniatura)$/;
+
 /** Testo ricco dei campi lunghi (commento, descrizione, iscrizioni...). */
 const BLOCK_OPTIONS: sanitizeHtml.IOptions = {
-  allowedTags: ['p', 'br', 'b', 'strong', 'i', 'em', 'u', 's', 'sup', 'sub', 'ul', 'ol', 'li', 'blockquote', 'a', 'h3', 'h4'],
-  allowedAttributes: { a: ['href', 'rel', 'target'] },
+  allowedTags: ['p', 'br', 'b', 'strong', 'i', 'em', 'u', 's', 'sup', 'sub', 'ul', 'ol', 'li', 'blockquote', 'a', 'h3', 'h4', 'img'],
+  allowedAttributes: { a: ['href', 'rel', 'target'], img: ['src', 'alt'] },
   allowedSchemes: ['http', 'https', 'mailto'],
+  allowedSchemesByTag: { img: [] },
+  allowProtocolRelative: false,
   transformTags: { a: linkTransform, div: 'p', h1: 'h3', h2: 'h3', h5: 'h4', h6: 'h4' },
-  exclusiveFilter: (frame) => frame.tag === 'p' && !frame.text.trim() && !frame.mediaChildren.length,
+  exclusiveFilter: (frame) =>
+    (frame.tag === 'img' && !INTERNAL_IMAGE.test(frame.attribs.src ?? '')) ||
+    (frame.tag === 'p' && !frame.text.trim() && !frame.mediaChildren.length),
 };
 
 /** Testo ricco "in linea" (titoli, riferimenti bibliografici, titoli di mostre). */
@@ -19,6 +26,7 @@ const INLINE_OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'strong', 'i', 'em', 'u', 'sup', 'sub', 'a'],
   allowedAttributes: { a: ['href', 'rel', 'target'] },
   allowedSchemes: ['http', 'https', 'mailto'],
+  allowProtocolRelative: false,
   transformTags: { a: linkTransform },
 };
 

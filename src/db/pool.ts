@@ -1,4 +1,4 @@
-import mysql, { Pool, PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import mysql, { Connection, Pool, PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { config } from '../config';
 import { logger } from '../logger';
 
@@ -18,7 +18,7 @@ export const pool: Pool = mysql.createPool({
 });
 
 /** Esecutore di query: il pool oppure una connessione dentro una transazione. */
-export type Db = Pool | PoolConnection;
+export type Db = Pool | Connection;
 
 export async function select<T>(db: Db, sql: string, params: unknown[] = []): Promise<T[]> {
   const [rows] = await db.query<RowDataPacket[]>(sql, params);

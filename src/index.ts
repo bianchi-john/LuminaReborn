@@ -3,6 +3,7 @@ import { config } from './config';
 import { runMigrations } from './db/migrate';
 import { pool, waitForDatabase } from './db/pool';
 import { logger } from './logger';
+import { avviaEsportazioneProgrammata } from './services/export.service';
 import { pulisciImmaginiOrfane } from './services/immagini.service';
 
 async function main(): Promise<void> {
@@ -12,6 +13,7 @@ async function main(): Promise<void> {
   await pulisciImmaginiOrfane();
   const cleanup = setInterval(pulisciImmaginiOrfane, 60 * 60 * 1000);
   cleanup.unref();
+  avviaEsportazioneProgrammata();
 
   const server = createApp().listen(config.port, () => {
     logger.info(`LUMiNA in ascolto sulla porta ${config.port} (${config.isProduction ? 'produzione' : 'sviluppo'})`);

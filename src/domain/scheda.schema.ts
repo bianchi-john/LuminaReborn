@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { cleanHtml, HtmlKind } from '../util/html';
-import { CLASSIFICAZIONI } from './classificazioni';
+import { CLASSIFICAZIONI, MAX_GRUPPI_MISURE, MAX_MISURE_PER_GRUPPO } from './classificazioni';
 import { FieldDef, VOCAB_KEYS, VOCABOLARI, VocabDef, VocabKey } from './vocabolari';
 
 // ---------------------------------------------------------------------------
@@ -138,7 +138,7 @@ const gruppoMisureSchema = z.object({
   titolo_gruppo_misure: optText(255),
   intero_parziale: optText(64),
   note: optText(1000),
-  misure: rows(misuraSchema, 30),
+  misure: rows(misuraSchema, MAX_MISURE_PER_GRUPPO),
 });
 
 const documentazioneSchema = z.object({ riferimento: optHtml(5000, 'inline') }).refine((d) => !!d.riferimento, {
@@ -162,7 +162,7 @@ const baseShape = {
   note_schedatore: optText(5000),
   cronologie: rows(cronologiaSchema, 10),
   inventari: rows(inventarioSchema, 20),
-  misure: rows(gruppoMisureSchema, 20),
+  misure: rows(gruppoMisureSchema, MAX_GRUPPI_MISURE),
   documentazioni_fotografiche: rows(documentazioneSchema, 100),
   immagini: rows(immagineSchema, 60),
 };
