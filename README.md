@@ -1,156 +1,148 @@
 # LUMiNA Reborn
 
-Prototipo web per la catalogazione e la consultazione delle opere dei [Musei Nazionali di Lucca](http://www.luccamuseinazionali.it/).
+Catalogo web delle opere dei [Musei Nazionali di Lucca](http://www.luccamuseinazionali.it/): consultazione pubblica, schedatura e revisione redazionale.
 
-Sviluppato con Node.js, TypeScript, Express, EJS, MySQL e MongoDB. L'intero ambiente si avvia con Docker Compose: al primo avvio vengono create le tabelle, importate le opere e creati gli utenti, senza passaggi manuali.
+Node.js 22 + TypeScript, Express, EJS (pagine renderizzate dal server), MySQL 8 per il catalogo, MongoDB + [user-manager](https://github.com/maximemoreillon/user_manager) per gli account. Tutto si avvia con Docker Compose.
 
 ## Avvio rapido
 
-Serve solo **Docker** (Engine + Compose v2); la compilazione dell'app avviene dentro il container.
+Serve solo **Docker** (Engine + Compose v2).
 
 ```bash
 git clone https://github.com/bianchi-john/LuminaReborn.git
 cd LuminaReborn
-cp .env.example .env && chmod 600 .env
+cp .env.example .env && chmod 600 .env      # poi cambiare password e JWT_SECRET
 docker network inspect extern >/dev/null 2>&1 || docker network create extern
 docker compose up -d --build
 ```
 
-Stato e log dei servizi:
+Al primo avvio MySQL importa schema e opere dimostrative (`dbinit/`), poi l'applicazione applica le migrazioni (`migrations/`) e lo user-manager crea l'amministratore; il servizio `user-seed` crea gli schedatori dimostrativi.
+
+| Indirizzo | |
+|---|---|
+| `http://localhost:3000` | Catalogo pubblico |
+| `http://localhost:3000/login` | Area riservata |
+| `http://localhost:3000/area/utenti` | Gestione utenti (amministratori) |
 
 ```bash
 docker compose ps
-docker compose logs --tail=100
+docker compose logs -f nodeapp
 ```
-
-Indirizzi:
-
-| Servizio | URL |
-|----------|-----|
-| Sito / consultazione | `http://localhost:3000` |
-| Login | `http://localhost:3000/login` |
-| Gestione utenti (web) | `http://localhost:8080` |
-| API user-manager | `http://localhost:7071` |
-
-## Accesso, ruoli e utenti
-
-Due ruoli, gestiti dallo user-manager (MongoDB). Il ruolo è determinato dal campo `isAdmin` restituito dallo user-manager: `isAdmin: true` = amministratore, campo assente = schedatore.
-
-- **Amministratore** — approva/respinge le bozze e gestisce gli utenti.
-- **Schedatore** — crea, modifica ed elimina le bozze e le invia in approvazione.
 
 ### Credenziali dimostrative
 
-Create automaticamente al primo avvio (l'admin dallo user-manager tramite `ADMIN_USERNAME`/`ADMIN_PASSWORD` in `.env`; gli schedatori dal servizio one-shot `user-seed`, vedi `scripts/seed-users.sh`):
-
 | Ruolo | Utente | Password |
-|-------|--------|----------|
-| Amministratore | `admin` | `admin` |
-| Schedatore | `pasquale` | `schedatore` |
-| Schedatore | `elena` | `schedatore` |
-| Schedatore | `virginia` | `schedatore` |
+|---|---|---|
+| Amministratore | `admin` | `admin` (da `ADMIN_PASSWORD`) |
+| Schedatore | `pasquale`, `elena`, `virginia` | `schedatore` |
 
-Gli username degli schedatori coincidono con gli autori delle schede incluse. La password è `schedatore` (e non lo username) perché lo user-manager richiede almeno 6 caratteri. Nuovi utenti si creano da `http://localhost:8080` (accedendo come admin) o via API `POST /users`.
+Sono solo per la demo: cambiarle prima di qualsiasi uso reale (da `/area/utenti`).
 
-Le credenziali sono solo dimostrative: sostituirle prima di qualsiasi uso reale.
+## Ruoli e flusso di lavoro
 
-## Contenuti inclusi
+1. Lo **schedatore** crea una scheda (bozza), la salva quante volte vuole e la **invia in revisione**. Finché è in revisione può solo ritirarla.
+2. L'**amministratore** la trova in *Amministrazione › Revisione schede*: può correggerla, **approvarla** (diventa pubblica) o **respingerla** con una motivazione, che lo schedatore vede nella propria area.
+3. Una scheda pubblicata può essere ritirata dalla pubblicazione dall'amministratore (torna in bozza).
 
-Il dataset dimostrativo (`dbinit/zz-luminadb-data.sql`) contiene **6 schede approvate** con **22 immagini** incorporate come data URL (importate insieme alle schede):
+Ogni passaggio è registrato nello storico della scheda.
 
-1. San Sebastiano
-2. San Giovanni Battista
-3. Skyphos a vernice nera
-4. Bronzetto antropomorfo
-5. Trittico con Matrimonio mistico di santa Caterina
-6. Croce dipinta con Cristo vivo
+## Modello dei dati: voci collegate
 
-Lo schema è in `dbinit/init.sql`. Entrambi gli script vengono eseguiti in ordine alfabetico solo quando `/var/lib/mysql` è vuota (primo avvio). Lo stato `2` indica una scheda approvata e pubblicamente consultabile.
+Autori, materiali, tecniche, ubicazioni, provenienze, mostre e riferimenti bibliografici sono **voci condivise**: esistono una sola volta e sono collegate alle schede tramite le tabelle `tds_schede_*`. Nell'editor, iniziando a scrivere compaiono le voci esistenti; se si sceglie una voce l'opera viene collegata alle altre che la condividono, altrimenti la voce viene creata (e se ne esiste già una identica viene riusata quella).
 
-Verifica di schede e immagini:
+Ciò che dipende dalla singola opera sta sul collegamento, non sulla voce:
+
+| Voce | Sul collegamento |
+|---|---|
+| Autore (`nome`, `date_vita`, `note`) | formula precedente/successiva (es. "copia da"), categoria (firmata, attribuita, documentata) |
+| Ubicazione (museo/sede) | collocazione (sala, vetrina) |
+| Provenienza | note |
+
+Ogni voce ha una pagina pubblica con tutte le opere collegate (es. `/voci/autori/1`) e gli **Indici** del menu permettono di sfogliare il catalogo per voce. Gli amministratori possono correggere le voci e **unire i duplicati** da *Amministrazione › Vocabolari*.
+
+Cronologie, inventari, misure, immagini e documentazione fotografica appartengono invece alla singola scheda (FK con `ON DELETE CASCADE`). Lo stato della scheda è la colonna `schede.stato` (0 bozza, 1 in revisione, 2 pubblicata); lo storico è in `schede_revisioni`. Le immagini sono salvate come binario e servite da `/api/immagini/:id`.
+
+## Aggiornare un'installazione esistente
+
+La prima volta che questa versione parte su un database esistente applica `migrations/001_normalizza_schema.sql`, che ristruttura le tabelle e **fonde i duplicati** (es. due righe "Pittura a olio" diventano una). Le modifiche allo schema di MySQL non sono transazionali: **fare prima un backup**.
 
 ```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer mysql -u admin -D luminadb --table -e \
- "SELECT s.id, LEFT(REPLACE(REPLACE(s.titolo_opera,'<i>',''),'</i>',''),45) AS titolo,
-         ss.stato, COUNT(DISTINCT i.id) AS immagini
-  FROM schede s
-  JOIN tds_schede_statoScheda tss ON tss.id_scheda=s.id
-  JOIN statoScheda ss ON ss.id=tss.id_stato
-  LEFT JOIN tds_schede_immagini si ON si.id_scheda=s.id
-  LEFT JOIN immagini i ON i.id=si.id_immagine
-  GROUP BY s.id, s.titolo_opera, ss.stato ORDER BY s.id;"
+docker exec -e MYSQL_PWD=letmein mysqlcontainer mysqldump -u admin \
+  --no-tablespaces --single-transaction --routines --triggers \
+  luminadb > "$HOME/luminadb-prima-della-migrazione.sql"
+git checkout experimentsJohn
+docker compose up -d --build
+docker compose logs nodeapp | grep -i migrazione
 ```
+
+Le migrazioni applicate sono registrate in `schema_migrations`. Per disattivarle all'avvio: `MIGRATE_ON_START=false`.
+
+Il vecchio `.env` continua a funzionare; le nuove variabili facoltative sono documentate in `.env.example`.
 
 ## Ricreare l'ambiente da zero
 
-Elimina i dati locali e forza una nuova inizializzazione (schema, opere e utenti vengono ricreati):
-
 ```bash
 docker compose down
-sudo rm -rf database-data user-data/mongo-data   # se serve i permessi di root
+sudo rm -rf database-data user-data/mongo-data
 docker compose up -d --build
 ```
 
-## Sviluppo locale (opzionale)
+## Sviluppo
 
-Richiede Node.js 21.6.2, npm e `rsync`.
+Richiede Node.js 22 (oppure usare Docker anche per i comandi qui sotto).
 
 ```bash
 npm ci
-npm run start:dev     # sviluppo con nodemon
-npm run start:build   # compila TypeScript e copia le viste
-npm run start:prod    # build di produzione
+npm run dev        # tsx in watch (servono MySQL e user-manager raggiungibili, vedi .env)
+npm run typecheck
+npm test           # test unitari (node:test)
+npm run build && npm start
+```
+
+Con lo stack Docker avviato, per lo sviluppo locale si può puntare a MySQL su `127.0.0.1:3306` (`DB_HOST=127.0.0.1`).
+
+## Sicurezza
+
+- Query SQL sempre parametrizzate; l'HTML dei campi formattati è ripulito con una lista di tag ammessi sia in scrittura sia in lettura.
+- Sessione in cookie `HttpOnly`, `SameSite=Lax` (e `Secure` con `COOKIE_SECURE=true`), durata massima `SESSION_MAX_AGE_HOURS`; il logout revoca il token sullo user-manager.
+- Protezione CSRF: le richieste che modificano dati devono arrivare dallo stesso sito (`Origin`) in JSON.
+- Content-Security-Policy senza script o stili esterni o inline; Bootstrap è servito localmente.
+- Limiti di frequenza su login, API e caricamenti; immagini accettate solo se JPEG/PNG/WebP/GIF verificati dai primi byte.
+- Lo user-manager e MongoDB non sono esposti fuori dalla rete Docker; MySQL solo su `127.0.0.1`. L'app gira come utente non root su filesystem in sola lettura.
+
+In produzione: HTTPS tramite reverse proxy, `COOKIE_SECURE=true`, `TRUST_PROXY=1`, nuove password e `JWT_SECRET`.
+
+L'interfaccia web originale dello user-manager non serve più (la gestione utenti è in `/area/utenti`); se necessaria si avvia solo in locale con `docker compose -f docker-compose.yml -f docker-compose.user-front.yml up -d`.
+
+## Struttura
+
+```text
+src/
+  app.ts, index.ts        applicazione Express e avvio (attesa DB, migrazioni)
+  auth/                   sessione e client dello user-manager
+  domain/                 vocabolari (voci condivise), validazione delle schede
+  services/               schede, ricerca, voci, immagini
+  routes/                 API JSON (/api) e pagine
+  http/                   errori, header di sicurezza, CSRF, rate limit
+views/                    template EJS
+public/                   CSS e JavaScript del browser (moduli ES, senza build)
+migrations/               migrazioni SQL applicate all'avvio
+dbinit/                   schema originale e dataset dimostrativo (primo avvio di MySQL)
+test/                     test unitari
+docs/MIGLIORAMENTI.md     proposte per i prossimi sviluppi
 ```
 
 ## Manutenzione del database
-
-Accesso a MySQL (password dimostrativa: `letmein`):
 
 ```bash
 docker exec -it mysqlcontainer mysql -u admin -p luminadb
 ```
 
-Rigenerare il dump dimostrativo (deve restare data-only; lo schema resta in `init.sql`):
+Schede e immagini:
 
 ```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer mysqldump -u admin \
-  --no-tablespaces --single-transaction --set-gtid-purged=OFF --no-create-info \
-  --complete-insert --skip-extended-insert --skip-dump-date \
-  --default-character-set=utf8mb4 luminadb > dbinit/zz-luminadb-data.sql
-# verifica che non contenga CREATE/DROP TABLE:
-rg '^(CREATE|DROP) TABLE' dbinit/zz-luminadb-data.sql
+docker exec -e MYSQL_PWD=letmein mysqlcontainer mysql -u admin -D luminadb --table -e \
+ "SELECT s.id, LEFT(s.titolo_testo, 45) AS titolo, s.stato, COUNT(i.id) AS immagini
+    FROM schede s LEFT JOIN immagini i ON i.id_scheda = s.id
+   GROUP BY s.id ORDER BY s.id;"
 ```
-
-Backup completo:
-
-```bash
-docker exec -e MYSQL_PWD=letmein mysqlcontainer mysqldump -u admin \
-  --no-tablespaces --single-transaction --routines --triggers \
-  luminadb > "$HOME/Downloads/luminadb-$(date +%Y%m%d-%H%M%S).sql"
-```
-
-## Struttura principale
-
-```text
-src/                         sorgenti TypeScript, viste e risorse web
-dist/                        output compilato
-dbinit/                      schema (init.sql) e dataset dimostrativo
-scripts/seed-users.sh        creazione schedatori dimostrativi (servizio user-seed)
-docker-compose.yml           definizione dei servizi Docker
-database-data/, user-data/   dati locali (MySQL / MongoDB), non versionati
-```
-
-## Note tecniche
-
-- **Rete**: IP statici sulla subnet in `.env.example`; se è occupata, modificare insieme subnet, gateway e indirizzi dei container.
-- **User-manager**: l'URL con cui l'app lo raggiunge è configurabile con `USER_MANAGER_API_URL` (`.env`). Per usare l'interfaccia utenti `:8080` da un server remoto, impostare `USER_MANAGER_FRONT_API_URL` all'indirizzo con cui si apre il sito (es. `http://IP_DEL_SERVER:7071`).
-- **MongoDB**: fissato a `mongo:7.0`; la `latest` (8.x) non parte sui kernel Linux recenti (incompatibilità nota, SERVER-121912).
-- **Immagini**: incorporate nel dump come data URL — comodo per la demo, non ideale in produzione.
-
-## Arresto
-
-```bash
-docker compose down
-```
-
-Arresta i container mantenendo i dati in `database-data` e `user-data`.
