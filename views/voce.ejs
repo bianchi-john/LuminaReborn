@@ -3,28 +3,30 @@
   const altri = v.fields.slice(1).filter(f => voce[f.name] !== null && voce[f.name] !== undefined && voce[f.name] !== '');
 %>
 <div class="container py-4">
-  <nav aria-label="Percorso">
+  <nav aria-label="<%= t('Percorso') %>">
     <ol class="breadcrumb small">
-      <li class="breadcrumb-item"><a href="/voci">Indici</a></li>
-      <li class="breadcrumb-item"><a href="/voci/<%= v.key %>"><%= v.plurale %></a></li>
+      <li class="breadcrumb-item"><a href="/voci"><%= t('Indici') %></a></li>
+      <li class="breadcrumb-item"><a href="/voci/<%= v.key %>"><%= t(v.plurale) %></a></li>
       <li class="breadcrumb-item active" aria-current="page"><%= h.text(voce[v.display]).slice(0, 60) %></li>
     </ol>
   </nav>
-  <p class="text-uppercase small text-muted-lu mb-1"><%= v.singolare %></p>
-  <h1 class="mb-3"><%- v.fields[0].type === 'inline' ? h.inline(voce[v.display]) : h.text(voce[v.display]) %></h1>
-  <% if (altri.length) { %>
-    <dl class="row dati-tecnici mb-4">
-      <% altri.forEach(f => { %>
-        <dt class="col-sm-3"><%= f.label %></dt>
-        <dd class="col-sm-9"><%= voce[f.name] %></dd>
-      <% }) %>
-    </dl>
-  <% } %>
-  <% if (user && user.isAdmin) { %>
-    <p class="no-print"><a class="btn btn-sm btn-outline-secondary" href="/area/vocabolari?tipo=<%= v.key %>&q=<%= encodeURIComponent(h.text(voce[v.display]).slice(0, 50)) %>">Gestisci la voce</a></p>
-  <% } %>
+  <div class="voce-header mb-4">
+    <p class="eyebrow mb-1"><%= t(v.singolare) %></p>
+    <h1 class="mb-3"><%- v.fields[0].type === 'inline' ? h.inline(voce[v.display]) : h.text(voce[v.display]) %></h1>
+    <% if (altri.length) { %>
+      <dl class="row dati-tecnici mb-0">
+        <% altri.forEach(f => { %>
+          <dt class="col-sm-3"><%= t(f.label) %></dt>
+          <dd class="col-sm-9"><%= voce[f.name] %></dd>
+        <% }) %>
+      </dl>
+    <% } %>
+    <% if (user && user.isAdmin) { %>
+      <p class="no-print mt-3 mb-0"><a class="btn btn-sm btn-outline-secondary" href="/area/vocabolari?tipo=<%= v.key %>&q=<%= encodeURIComponent(h.text(voce[v.display]).slice(0, 50)) %>"><%= t('Gestisci la voce') %></a></p>
+    <% } %>
+  </div>
 
-  <h2 class="h5 mt-4 mb-3"><%= risultati.total %> <%= risultati.total === 1 ? 'opera collegata' : 'opere collegate' %></h2>
-  <%- include('partials/risultati', { baseUrl: `/voci/${v.key}/${voce.id}`, query }) %>
+  <h2 class="h5 mb-3"><%= h.plural(risultati.total, '{n} opera collegata', '{n} opere collegate') %></h2>
+  <%- include('partials/risultati', { baseUrl: `/voci/${v.key}/${voce.id}` }) %>
 </div>
 <%- include('partials/footer') %>

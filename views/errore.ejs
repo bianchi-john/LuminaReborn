@@ -3,9 +3,9 @@
   <p class="display-4 serif text-muted-lu mb-2"><%= status %></p>
   <h1 class="h3 mb-3"><%= message %></h1>
   <p class="mb-4">
-    <% if (status === 401) { %>Effettua l'accesso per continuare.<% } else if (status === 404) { %>La pagina richiesta non esiste o non è più disponibile.<% } else if (status === 403) { %>Non hai i permessi per questa operazione.<% } else { %>Si è verificato un problema. Riprova tra qualche istante.<% } %>
+    <% if (status === 401) { %><%= t('Effettua l\'accesso per continuare.') %><% } else if (status === 404) { %><%= t('La pagina richiesta non esiste o non è più disponibile.') %><% } else if (status === 403) { %><%= t('Non hai i permessi per questa operazione.') %><% } else { %><%= t('Si è verificato un problema. Riprova tra qualche istante.') %><% } %>
   </p>
-  <a class="btn btn-primary" href="/">Torna al catalogo</a>
-  <% if (status === 401) { %><a class="btn btn-outline-primary ms-2" href="/login">Accedi</a><% } %>
+  <a class="btn btn-primary" href="/"><%= t('Torna al catalogo') %></a>
+  <% if (status === 401) { %><a class="btn btn-outline-primary ms-2" href="/login"><%= t('Accedi') %></a><% } %>
 </div>
 <%- include('partials/footer') %>

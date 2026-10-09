@@ -2,25 +2,26 @@
 <div class="area-header">
   <div class="container py-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
     <div>
-      <h1 class="mb-1">Utenti</h1>
-      <p class="text-muted-lu mb-0">Schedatori e amministratori che possono accedere all'area riservata.</p>
+      <p class="eyebrow mb-1"><%= t('Amministrazione') %></p>
+      <h1 class="mb-1"><%= t('Utenti') %></h1>
+      <p class="text-muted-lu mb-0"><%= t('Schedatori e amministratori che possono accedere all\'area riservata.') %></p>
     </div>
-    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modale-utente">Nuovo utente</button>
+    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modale-utente">+ <%= t('Nuovo utente') %></button>
   </div>
 </div>
 <div class="container py-4">
-  <div class="table-responsive">
-    <table class="table align-middle">
+  <div class="table-responsive card shadow-sm">
+    <table class="table align-middle mb-0">
       <thead>
         <tr>
-          <th scope="col">Utente</th>
-          <th scope="col">Ruolo</th>
-          <th scope="col">Stato</th>
-          <th scope="col" class="d-none d-md-table-cell">Ultimo accesso</th>
-          <th scope="col" class="text-end">Azioni</th>
+          <th scope="col"><%= t('Utente') %></th>
+          <th scope="col"><%= t('Ruolo') %></th>
+          <th scope="col"><%= t('Stato') %></th>
+          <th scope="col" class="d-none d-md-table-cell"><%= t('Ultimo accesso') %></th>
+          <th scope="col" class="text-end"><%= t('Azioni') %></th>
         </tr>
       </thead>
-      <tbody id="utenti"><tr><td colspan="5" class="text-muted-lu">Caricamento…</td></tr></tbody>
+      <tbody id="utenti"><tr><td colspan="5" class="text-muted-lu"><%= t('Caricamento…') %></td></tr></tbody>
     </table>
   </div>
 </div>
@@ -29,36 +30,36 @@
   <div class="modal-dialog modal-dialog-centered">
     <form class="modal-content" id="form-utente" novalidate>
       <div class="modal-header">
-        <h2 class="modal-title h5" id="modale-utente-titolo">Nuovo utente</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        <h2 class="modal-title h5" id="modale-utente-titolo"><%= t('Nuovo utente') %></h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('Chiudi') %>"></button>
       </div>
       <div class="modal-body">
         <div class="alert alert-danger d-none" id="utente-errore"></div>
         <div class="mb-3">
-          <label class="form-label" for="u-username">Nome utente</label>
+          <label class="form-label" for="u-username"><%= t('Nome utente') %></label>
           <input class="form-control" id="u-username" name="username" required pattern="[a-zA-Z0-9._-]{3,30}" autocomplete="off">
         </div>
         <div class="mb-3">
-          <label class="form-label" for="u-display">Nome e cognome</label>
+          <label class="form-label" for="u-display"><%= t('Nome e cognome') %></label>
           <input class="form-control" id="u-display" name="display_name" maxlength="100">
         </div>
         <div class="mb-3">
-          <label class="form-label" for="u-email">Email (facoltativa)</label>
+          <label class="form-label" for="u-email"><%= t('Email (facoltativa)') %></label>
           <input class="form-control" type="email" id="u-email" name="email_address">
         </div>
         <div class="mb-3">
-          <label class="form-label" for="u-password">Password iniziale</label>
+          <label class="form-label" for="u-password"><%= t('Password iniziale') %></label>
           <input class="form-control" type="password" id="u-password" name="password" required autocomplete="new-password" aria-describedby="u-password-help">
-          <div class="form-text" id="u-password-help">8-30 caratteri, solo lettere e numeri. Comunicala all'utente in modo sicuro.</div>
+          <div class="form-text" id="u-password-help"><%= t('8-30 caratteri, solo lettere e numeri. Comunicala all\'utente in modo sicuro.') %></div>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="u-admin" name="isAdmin">
-          <label class="form-check-label" for="u-admin">Amministratore (può approvare schede e gestire utenti)</label>
+          <label class="form-check-label" for="u-admin"><%= t('Amministratore (può approvare schede e gestire utenti)') %></label>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
-        <button type="submit" class="btn btn-primary">Crea utente</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><%= t('Annulla') %></button>
+        <button type="submit" class="btn btn-primary"><%= t('Crea utente') %></button>
       </div>
     </form>
   </div>

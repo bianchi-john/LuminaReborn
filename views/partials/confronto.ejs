@@ -1,0 +1,49 @@
+<%#
+  Confronto dimensionale: sagoma di riferimento (persona o mano) e sagome dell'opera
+  nella stessa scala. Calcolato a ogni visualizzazione da domain/dimensioni.ts.
+  Parametro: confronto
+%>
+<%
+  const c = confronto;
+  const hRef = c.altezzaRiferimento;
+  const H = Math.max(hRef, ...c.pezzi.map(p => p.altezza));
+  const wRef = c.riferimento === 'persona' ? hRef * 0.4 : hRef * 0.5;
+  const gap = H * 0.14;
+  const gapPezzi = c.pezzi.length > 1 ? H * 0.04 : 0;
+  const fs = H * 0.06;
+  let x = wRef + gap;
+  const pezzi = c.pezzi.map(p => { const r = { ...p, x }; x += p.larghezza + gapPezzi; return r; });
+  const W = x - gapPezzi;
+  const pad = H * 0.05;
+  const cm = (n) => n >= 100 ? `${h.num(Math.round(n) / 100)} m` : `${h.num(Math.round(n * 10) / 10)} cm`;
+  const sRef = hRef / 100;
+  const descr = c.riferimento === 'persona'
+    ? t('Confronto con una persona alta {h}', { h: cm(hRef) })
+    : t('Confronto con una mano lunga {h}', { h: cm(hRef) });
+%>
+<figure class="confronto mb-0">
+  <svg viewBox="<%= -pad %> <%= -pad %> <%= W + 2 * pad %> <%= H + 2 * pad + fs * (pezzi.length > 1 ? 3.8 : 2.6) %>" role="img" aria-label="<%= descr %>" preserveAspectRatio="xMidYMax meet">
+    <line class="confronto-suolo" x1="<%= -pad %>" x2="<%= W + pad %>" y1="<%= H %>" y2="<%= H %>" stroke-width="<%= H * 0.004 %>"/>
+    <g class="confronto-riferimento" transform="translate(0 <%= H - hRef %>) scale(<%= sRef %>)">
+      <% if (c.riferimento === 'persona') { %>
+        <circle cx="20" cy="8" r="7"/>
+        <path d="M12.5 17.5C12.5 16.3 13.4 15.5 14.6 15.5H25.4C26.6 15.5 27.5 16.3 27.5 17.5L31.8 44C32 45.3 31.1 46.4 29.8 46.5C28.6 46.6 27.7 45.8 27.5 44.7L25 26.5L25.8 95.5C25.9 97.4 24.7 100 23 100C21.4 100 20.3 97.6 20.2 96L20 58L19.8 96C19.7 97.6 18.6 100 17 100C15.3 100 14.1 97.4 14.2 95.5L15 26.5L12.5 44.7C12.3 45.8 11.4 46.6 10.2 46.5C8.9 46.4 8 45.3 8.2 44Z"/>
+      <% } else { %>
+        <rect x="6" y="46" width="38" height="54" rx="10"/>
+        <rect x="6" y="14" width="9" height="44" rx="4.5"/>
+        <rect x="16.5" y="4" width="9" height="54" rx="4.5"/>
+        <rect x="27" y="9" width="9" height="49" rx="4.5"/>
+        <rect x="37.5" y="22" width="8" height="36" rx="4"/>
+        <rect x="-2" y="54" width="9" height="30" rx="4.5" transform="rotate(28 3 80)"/>
+      <% } %>
+    </g>
+    <text class="confronto-testo" x="<%= wRef / 2 %>" y="<%= H + fs * 1.4 %>" font-size="<%= fs %>" text-anchor="middle"><%= cm(hRef) %></text>
+    <% pezzi.forEach((p, i) => { %>
+      <rect class="confronto-opera<%= p.larghezzaStimata ? ' stimata' : '' %>" x="<%= p.x %>" y="<%= H - p.altezza %>" width="<%= p.larghezza %>" height="<%= p.altezza %>" rx="<%= Math.min(p.larghezza, p.altezza) * 0.04 %>"/>
+      <text class="confronto-testo" x="<%= p.x + p.larghezza / 2 %>" y="<%= H + fs * (1.4 + (pezzi.length > 1 ? (i % 2) * 1.2 : 0)) %>" font-size="<%= fs %>" text-anchor="middle"><%= cm(p.altezza) %> × <%= cm(p.larghezza) %></text>
+    <% }) %>
+  </svg>
+  <figcaption class="small text-muted-lu mt-1">
+    <%= descr %><%= c.pezzi.length > 1 ? ` · ${t('{n} parti affiancate', { n: c.pezzi.length })}` : '' %><%= c.pezzi.some(p => p.larghezzaStimata) ? ` · ${t('proporzioni indicative')}` : '' %>
+  </figcaption>
+</figure>

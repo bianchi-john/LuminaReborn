@@ -1,4 +1,5 @@
 import { el } from './api.js';
+import { t } from './i18n.js';
 
 /**
  * Editor di testo formattato minimale. Il server ripulisce comunque l'HTML
@@ -7,9 +8,9 @@ import { el } from './api.js';
  *       'block'  (paragrafi, elenchi, citazioni)
  */
 const INLINE_TOOLS = [
-  { cmd: 'italic', label: 'Corsivo', html: '<em>C</em>', key: 'i' },
-  { cmd: 'bold', label: 'Grassetto', html: '<strong>G</strong>', key: 'b' },
-  { cmd: 'underline', label: 'Sottolineato', html: '<u>S</u>', key: 'u' },
+  { cmd: 'italic', label: 'Corsivo', html: '<em>I</em>', key: 'i' },
+  { cmd: 'bold', label: 'Grassetto', html: '<strong>B</strong>', key: 'b' },
+  { cmd: 'underline', label: 'Sottolineato', html: '<u>U</u>', key: 'u' },
   { cmd: 'superscript', label: 'Apice', html: 'x²' },
   { cmd: 'subscript', label: 'Pedice', html: 'x₂' },
   { cmd: 'link', label: 'Collegamento', html: '🔗' },
@@ -40,7 +41,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   const exec = (cmd) => {
     content.focus();
     if (cmd === 'link') {
-      const url = window.prompt('Indirizzo del collegamento (https://…)', 'https://');
+      const url = window.prompt(t('Indirizzo del collegamento (https://…)'), 'https://');
       if (url && /^(https?:\/\/|mailto:)/i.test(url)) document.execCommand('createLink', false, url);
     } else if (cmd === 'blockquote') {
       document.execCommand('formatBlock', false, 'blockquote');
@@ -53,10 +54,10 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   const tools = kind === 'block' ? BLOCK_TOOLS : INLINE_TOOLS;
   const toolbar = el(
     'div',
-    { class: 'rte-toolbar', role: 'toolbar', 'aria-label': 'Formattazione' },
-    tools.map((t) => {
-      const b = el('button', { type: 'button', title: t.label, 'aria-label': t.label, onmousedown: (e) => e.preventDefault(), onclick: () => exec(t.cmd) });
-      b.innerHTML = t.html; // contenuto statico definito sopra
+    { class: 'rte-toolbar', role: 'toolbar', 'aria-label': t('Formattazione') },
+    tools.map((tool) => {
+      const b = el('button', { type: 'button', title: t(tool.label), 'aria-label': t(tool.label), onmousedown: (e) => e.preventDefault(), onclick: () => exec(tool.cmd) });
+      b.innerHTML = tool.html; // contenuto statico definito sopra
       return b;
     }),
   );
@@ -66,7 +67,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   content.addEventListener('keydown', (event) => {
     if (kind === 'inline' && event.key === 'Enter') event.preventDefault();
     if ((event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey) {
-      const tool = INLINE_TOOLS.find((t) => t.key === event.key.toLowerCase());
+      const tool = INLINE_TOOLS.find((x) => x.key === event.key.toLowerCase());
       if (tool) {
         event.preventDefault();
         exec(tool.cmd);

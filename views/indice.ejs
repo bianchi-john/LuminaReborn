@@ -13,20 +13,20 @@
   });
 %>
 <div class="container py-4">
-  <nav aria-label="Percorso"><ol class="breadcrumb small"><li class="breadcrumb-item"><a href="/voci">Indici</a></li><li class="breadcrumb-item active" aria-current="page"><%= v.plurale %></li></ol></nav>
+  <nav aria-label="<%= t('Percorso') %>"><ol class="breadcrumb small"><li class="breadcrumb-item"><a href="/voci"><%= t('Indici') %></a></li><li class="breadcrumb-item active" aria-current="page"><%= t(v.plurale) %></li></ol></nav>
   <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
-    <h1 class="mb-0"><%= v.plurale %></h1>
+    <h1 class="mb-0"><%= t(v.plurale) %></h1>
     <form method="get" class="d-flex gap-2" role="search">
-      <label class="visually-hidden" for="q-indice">Filtra</label>
-      <input class="form-control" type="search" id="q-indice" name="q" value="<%= q %>" placeholder="Filtra <%= v.plurale.toLowerCase() %>…">
-      <button class="btn btn-outline-primary" type="submit">Filtra</button>
+      <label class="visually-hidden" for="q-indice"><%= t('Filtra') %></label>
+      <input class="form-control" type="search" id="q-indice" name="q" value="<%= q %>" placeholder="<%= t('Filtra…') %>">
+      <button class="btn btn-outline-primary" type="submit"><%= t('Filtra') %></button>
     </form>
   </div>
 
   <% if (!elenco.length) { %>
-    <p class="text-muted-lu py-4">Nessuna voce trovata.</p>
+    <p class="text-muted-lu py-4"><%= t('Nessuna voce trovata.') %></p>
   <% } else { %>
-    <p class="indice-lettere mb-4" aria-label="Iniziali">
+    <p class="indice-lettere mb-4" aria-label="<%= t('Iniziali') %>">
       <% [...gruppi.keys()].forEach(k => { %><a href="#lettera-<%= k %>"><%= k %></a><% }) %>
     </p>
     <% gruppi.forEach((items, k) => { %>
@@ -36,7 +36,7 @@
           <li>
             <a href="/voci/<%= v.key %>/<%= item.id %>"><%- v.fields[0].type === 'inline' ? h.inline(item[v.display]) : h.text(item[v.display]) %></a>
             <% if (item.date_vita) { %><span class="text-muted-lu small">(<%= item.date_vita %>)</span><% } %>
-            <span class="badge text-bg-light border fw-normal"><%= item.schede_pubblicate %></span>
+            <span class="badge badge-soft" title="<%= t('Opere collegate') %>"><%= item.schede_pubblicate %></span>
           </li>
         <% }) %>
       </ul>

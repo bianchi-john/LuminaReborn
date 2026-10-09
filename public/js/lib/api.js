@@ -1,5 +1,6 @@
 // Utilità condivise: chiamate API, notifiche, finestre di conferma.
 // Nessun HTML costruito con dati non fidati: si usa textContent.
+import { t } from './i18n.js';
 
 export class ApiError extends Error {
   constructor(status, message, details) {
@@ -22,15 +23,15 @@ export async function api(method, url, body) {
   try {
     res = await fetch(url, init);
   } catch {
-    throw new ApiError(0, 'Connessione non riuscita: verifica la rete e riprova');
+    throw new ApiError(0, t('Connessione non riuscita: verifica la rete e riprova'));
   }
   if (res.status === 204) return null;
   const data = await res.json().catch(() => null);
   if (!res.ok) {
     if (res.status === 401) {
-      throw new ApiError(401, 'Sessione scaduta: effettua di nuovo l\'accesso (salva prima una copia del lavoro se necessario)');
+      throw new ApiError(401, t('Sessione scaduta: effettua di nuovo l\'accesso in un\'altra scheda del browser, poi salva di nuovo'));
     }
-    throw new ApiError(res.status, data?.error || `Errore ${res.status}`, data?.details);
+    throw new ApiError(res.status, data?.error || t('Errore {n}', { n: res.status }), data?.details);
   }
   return data;
 }
@@ -65,7 +66,7 @@ export function toast(message, variant = 'success') {
   const node = el(
     'div',
     { class: `toast align-items-center text-bg-${variant} border-0`, role: variant === 'danger' ? 'alert' : 'status' },
-    el('div', { class: 'd-flex' }, el('div', { class: 'toast-body', text: message }), el('button', { type: 'button', class: 'btn-close btn-close-white me-2 m-auto', 'data-bs-dismiss': 'toast', 'aria-label': 'Chiudi' })),
+    el('div', { class: 'd-flex' }, el('div', { class: 'toast-body', text: message }), el('button', { type: 'button', class: 'btn-close btn-close-white me-2 m-auto', 'data-bs-dismiss': 'toast', 'aria-label': t('Chiudi') })),
   );
   container.append(node);
   const t = new window.bootstrap.Toast(node, { delay: variant === 'danger' ? 8000 : 4000 });
@@ -77,7 +78,7 @@ export function toast(message, variant = 'success') {
  * Finestra di conferma. Con `input` chiede anche un testo (es. motivazione del rifiuto).
  * Restituisce false se annullata, altrimenti true o il testo inserito.
  */
-export function confirmDialog({ title, body, confirmText = 'Conferma', variant = 'primary', input }) {
+export function confirmDialog({ title, body, confirmText = t('Conferma'), variant = 'primary', input }) {
   return new Promise((resolve) => {
     const textarea = input
       ? el('textarea', { class: 'form-control', rows: 4, id: 'dlg-input', maxlength: 5000, required: input.required })
@@ -92,16 +93,16 @@ export function confirmDialog({ title, body, confirmText = 'Conferma', variant =
         el(
           'div',
           { class: 'modal-content' },
-          el('div', { class: 'modal-header' }, el('h2', { class: 'modal-title h5', text: title }), el('button', { type: 'button', class: 'btn-close', 'data-bs-dismiss': 'modal', 'aria-label': 'Chiudi' })),
+          el('div', { class: 'modal-header' }, el('h2', { class: 'modal-title h5', text: title }), el('button', { type: 'button', class: 'btn-close', 'data-bs-dismiss': 'modal', 'aria-label': t('Chiudi') })),
           el(
             'div',
             { class: 'modal-body' },
             body ? el('p', { text: body }) : null,
             input ? el('label', { class: 'form-label', for: 'dlg-input', text: input.label }) : null,
             textarea,
-            input ? el('div', { class: 'invalid-feedback', text: 'Campo obbligatorio' }) : null,
+            input ? el('div', { class: 'invalid-feedback', text: t('Campo obbligatorio') }) : null,
           ),
-          el('div', { class: 'modal-footer' }, el('button', { type: 'button', class: 'btn btn-outline-secondary', 'data-bs-dismiss': 'modal', text: 'Annulla' }), confirmBtn),
+          el('div', { class: 'modal-footer' }, el('button', { type: 'button', class: 'btn btn-outline-secondary', 'data-bs-dismiss': 'modal', text: t('Annulla') }), confirmBtn),
         ),
       ),
     );

@@ -2,135 +2,201 @@
 <%
   const f = filtri;
   const v = (name) => f[name] === null || f[name] === undefined ? '' : f[name];
+  const sel = (a, b) => String(a) === String(b) ? 'selected' : '';
+  // Filtri attivi, con il link per rimuoverli singolarmente
+  const etichette = {
+    q: t('Ricerca'), titolo: t('Titolo'), autore: t('Autore'), categoria: t('Categoria di attribuzione'),
+    classificazione: t('Classificazione'), ambito: t('Ambito storico-culturale'), anno_da: t('Dal'), anno_a: t('Al'),
+    materiale: t('Materiale'), tecnica: t('Tecnica'), ubicazione: t('Ubicazione'), provenienza: t('Provenienza'),
+    inventario: t('Inventario'), proprieta: t('Proprietà giuridica'), iscrizioni: t('Iscrizioni'), descrizione: t('Descrizione'),
+    storia: t('Vicende collezionistiche'), commento: t('Commento storico-critico'), mostra: t('Mostra'), curatore: t('Curatore'),
+    luogo_mostra: t('Luogo della mostra'), mostra_anno_da: t('Mostra dal'), mostra_anno_a: t('Mostra al'),
+    bibliografia: t('Bibliografia'), documentazione: t('Documentazione fotografica'),
+    ubicazioni: t('Ubicazione'), materiali: t('Materiale'), tecniche: t('Tecnica'),
+  };
+  const nomeOpzione = { ubicazioni: opzioni.ubicazioni, materiali: opzioni.materiali, tecniche: opzioni.tecniche };
+  const attivi = Object.keys(etichette).filter(k => f[k] !== null && f[k] !== undefined && f[k] !== '').map(k => {
+    let valore = f[k];
+    if (nomeOpzione[k]) valore = (nomeOpzione[k].find(o => o.id === f[k]) || {}).label || f[k];
+    if (k === 'classificazione') valore = h.classLabel(f[k]);
+    if ((k === 'anno_da' && f.era_da === 'ac') || (k === 'anno_a' && f.era_a === 'ac')) valore = h.anno(-Math.abs(f[k]));
+    return { k, label: etichette[k], valore };
+  });
 %>
 <section class="hero">
   <div class="container py-4 py-lg-5">
-    <h1 class="mb-2">Catalogo delle opere</h1>
-    <p class="text-muted-lu mb-4">Dipinti, sculture, reperti e oggetti d'arte dei Musei Nazionali di Lucca.</p>
+    <p class="eyebrow mb-2"><%= t('Musei Nazionali di Lucca') %></p>
+    <h1 class="mb-2"><%= t('Catalogo delle opere') %></h1>
+    <p class="lead-muted mb-4"><%= t('Dipinti, sculture, reperti e oggetti d\'arte: cerca per titolo, autore, luogo o sfoglia gli indici.') %></p>
 
-    <form method="get" action="/" class="search-main" role="search">
-      <div class="input-group input-group-lg mb-3">
-        <label class="visually-hidden" for="q">Cerca nel catalogo</label>
-        <input type="search" class="form-control" id="q" name="q" value="<%= v('q') %>" placeholder="Titolo, autore, luogo, numero di inventario…" autocomplete="off">
-        <button class="btn btn-primary px-4" type="submit">Cerca</button>
+    <form method="get" action="/" class="search-main" role="search" id="form-ricerca">
+      <div class="search-box shadow-sm">
+        <label class="visually-hidden" for="q"><%= t('Cerca nel catalogo') %></label>
+        <input type="search" class="form-control form-control-lg" id="q" name="q" value="<%= v('q') %>"
+               placeholder="<%= t('Titolo, autore, luogo, classificazione…') %>" autocomplete="off" aria-describedby="q-help">
+        <button class="btn btn-primary btn-lg px-4" type="submit"><%= t('Cerca') %></button>
       </div>
+      <p class="form-text mt-2 mb-3" id="q-help">
+        <%= t('La ricerca semplice cerca in: titolo, autore, classificazione, descrizione, commento storico-critico, ubicazione, provenienza, vicende collezionistiche.') %>
+      </p>
 
-      <details class="advanced-search" <%= avanzata ? 'open' : '' %>>
-        <summary>Ricerca avanzata</summary>
-        <div class="row g-3">
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-titolo">Titolo</label>
-            <input class="form-control" id="s-titolo" name="titolo" value="<%= v('titolo') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-autore">Autore</label>
-            <input class="form-control" id="s-autore" name="autore" value="<%= v('autore') %>" data-suggest="autori">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-categoria">Categoria di attribuzione</label>
-            <select class="form-select" id="s-categoria" name="categoria">
-              <option value="">Qualsiasi</option>
-              <% vocabolari.autori.linkFields.find(x => x.name === 'categoria').options.forEach(o => { %>
-                <option value="<%= o %>" <%= f.categoria === o ? 'selected' : '' %>><%= o %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-classificazione">Classificazione</label>
-            <select class="form-select" id="s-classificazione" name="classificazione">
-              <option value="">Qualsiasi</option>
-              <% classificazioni.forEach(c => { %>
-                <option value="<%= c.value %>" <%= f.classificazione === c.value ? 'selected' : '' %>><%= c.label %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-ambito">Ambito storico-culturale</label>
-            <input class="form-control" id="s-ambito" name="ambito" value="<%= v('ambito') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <span class="form-label d-block">Datazione (intervallo)</span>
-            <div class="input-group">
-              <input class="form-control" type="number" min="0" max="9999" name="anno_da" value="<%= v('anno_da') %>" placeholder="dal" aria-label="Anno iniziale">
-              <select class="form-select flex-grow-0 w-auto" name="era_da" aria-label="Era anno iniziale">
-                <option value="dc">d.C.</option><option value="ac" <%= f.era_da === 'ac' ? 'selected' : '' %>>a.C.</option>
-              </select>
-              <input class="form-control" type="number" min="0" max="9999" name="anno_a" value="<%= v('anno_a') %>" placeholder="al" aria-label="Anno finale">
-              <select class="form-select flex-grow-0 w-auto" name="era_a" aria-label="Era anno finale">
-                <option value="dc">d.C.</option><option value="ac" <%= f.era_a === 'ac' ? 'selected' : '' %>>a.C.</option>
-              </select>
+      <details class="advanced-search card shadow-sm" <%= avanzata ? 'open' : '' %>>
+        <summary class="card-header"><%= t('Ricerca avanzata') %> <span class="text-muted-lu small fw-normal">· <%= t('un criterio per ogni campo della scheda') %></span></summary>
+        <div class="card-body">
+          <fieldset class="adv-group">
+            <legend><%= t('Opera') %></legend>
+            <div class="row g-3">
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-titolo"><%= t('Titolo') %></label>
+                <input class="form-control" id="s-titolo" name="titolo" value="<%= v('titolo') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-classificazione"><%= t('Classificazione') %></label>
+                <select class="form-select" id="s-classificazione" name="classificazione">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% classificazioni.forEach(c => { %><option value="<%= c.value %>" <%= sel(f.classificazione, c.value) %>><%= t(c.label) %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-descrizione"><%= t('Descrizione') %></label>
+                <input class="form-control" id="s-descrizione" name="descrizione" value="<%= v('descrizione') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-commento"><%= t('Commento storico-critico') %></label>
+                <input class="form-control" id="s-commento" name="commento" value="<%= v('commento') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-iscrizioni"><%= t('Iscrizioni') %></label>
+                <input class="form-control" id="s-iscrizioni" name="iscrizioni" value="<%= v('iscrizioni') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-storia"><%= t('Vicende collezionistiche') %></label>
+                <input class="form-control" id="s-storia" name="storia" value="<%= v('storia') %>">
+              </div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-materiale">Materiale</label>
-            <input class="form-control" id="s-materiale" name="materiale" value="<%= v('materiale') %>" data-suggest="materiali">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-tecnica">Tecnica</label>
-            <input class="form-control" id="s-tecnica" name="tecnica" value="<%= v('tecnica') %>" data-suggest="tecniche">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-ubicazione">Ubicazione</label>
-            <input class="form-control" id="s-ubicazione" name="ubicazione" value="<%= v('ubicazione') %>" data-suggest="ubicazioni">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-provenienza">Provenienza</label>
-            <input class="form-control" id="s-provenienza" name="provenienza" value="<%= v('provenienza') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-inventario">Numero di inventario</label>
-            <input class="form-control" id="s-inventario" name="inventario" value="<%= v('inventario') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-proprieta">Proprietà giuridica</label>
-            <input class="form-control" id="s-proprieta" name="proprieta" value="<%= v('proprieta') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-mostra">Mostra</label>
-            <input class="form-control" id="s-mostra" name="mostra" value="<%= v('mostra') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-curatore">Curatore della mostra</label>
-            <input class="form-control" id="s-curatore" name="curatore" value="<%= v('curatore') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-luogo-mostra">Luogo della mostra</label>
-            <input class="form-control" id="s-luogo-mostra" name="luogo_mostra" value="<%= v('luogo_mostra') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <span class="form-label d-block">Anno della mostra</span>
-            <div class="input-group">
-              <input class="form-control" type="number" name="mostra_anno_da" value="<%= v('mostra_anno_da') %>" placeholder="dal" aria-label="Mostra: anno iniziale">
-              <input class="form-control" type="number" name="mostra_anno_a" value="<%= v('mostra_anno_a') %>" placeholder="al" aria-label="Mostra: anno finale">
+          </fieldset>
+
+          <fieldset class="adv-group">
+            <legend><%= t('Autore e datazione') %></legend>
+            <div class="row g-3">
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-autore"><%= t('Autore') %></label>
+                <input class="form-control" id="s-autore" name="autore" value="<%= v('autore') %>" data-suggest="autori" autocomplete="off">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-categoria"><%= t('Categoria di attribuzione') %></label>
+                <select class="form-select" id="s-categoria" name="categoria">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% vocabolari.autori.linkFields.find(x => x.name === 'categoria').options.forEach(o => { %>
+                    <option value="<%= o %>" <%= sel(f.categoria, o) %>><%= t(o) %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-ambito"><%= t('Ambito storico-culturale') %></label>
+                <input class="form-control" id="s-ambito" name="ambito" value="<%= v('ambito') %>">
+              </div>
+              <div class="col-lg-8">
+                <span class="form-label d-block" id="lbl-periodo"><%= t('Periodo (anni)') %></span>
+                <div class="input-group" role="group" aria-labelledby="lbl-periodo">
+                  <span class="input-group-text"><%= t('dal') %></span>
+                  <input class="form-control" type="number" min="0" max="9999" name="anno_da" value="<%= f.anno_da === null ? '' : Math.abs(f.anno_da) %>" aria-label="<%= t('Anno iniziale') %>">
+                  <select class="form-select flex-grow-0 w-auto" name="era_da" aria-label="<%= t('Era anno iniziale') %>">
+                    <option value="dc"><%= t('d.C.') %></option><option value="ac" <%= sel(f.era_da, 'ac') %>><%= t('a.C.') %></option>
+                  </select>
+                  <span class="input-group-text"><%= t('al') %></span>
+                  <input class="form-control" type="number" min="0" max="9999" name="anno_a" value="<%= f.anno_a === null ? '' : Math.abs(f.anno_a) %>" aria-label="<%= t('Anno finale') %>">
+                  <select class="form-select flex-grow-0 w-auto" name="era_a" aria-label="<%= t('Era anno finale') %>">
+                    <option value="dc"><%= t('d.C.') %></option><option value="ac" <%= sel(f.era_a, 'ac') %>><%= t('a.C.') %></option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-bibliografia">Bibliografia</label>
-            <input class="form-control" id="s-bibliografia" name="bibliografia" value="<%= v('bibliografia') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-iscrizioni">Iscrizioni</label>
-            <input class="form-control" id="s-iscrizioni" name="iscrizioni" value="<%= v('iscrizioni') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-descrizione">Descrizione</label>
-            <input class="form-control" id="s-descrizione" name="descrizione" value="<%= v('descrizione') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-storia">Vicende collezionistiche</label>
-            <input class="form-control" id="s-storia" name="storia" value="<%= v('storia') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-commento">Commento storico-critico</label>
-            <input class="form-control" id="s-commento" name="commento" value="<%= v('commento') %>">
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <label class="form-label" for="s-documentazione">Documentazione fotografica</label>
-            <input class="form-control" id="s-documentazione" name="documentazione" value="<%= v('documentazione') %>">
-          </div>
-          <div class="col-12 d-flex gap-2">
-            <button class="btn btn-primary" type="submit">Cerca</button>
-            <a class="btn btn-outline-secondary" href="/">Azzera filtri</a>
+          </fieldset>
+
+          <fieldset class="adv-group">
+            <legend><%= t('Materia, collocazione e proprietà') %></legend>
+            <div class="row g-3">
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-materiali"><%= t('Materiale') %></label>
+                <select class="form-select" id="s-materiali" name="materiali">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% opzioni.materiali.forEach(o => { %><option value="<%= o.id %>" <%= sel(f.materiali, o.id) %>><%= o.label %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-tecniche"><%= t('Tecnica') %></label>
+                <select class="form-select" id="s-tecniche" name="tecniche">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% opzioni.tecniche.forEach(o => { %><option value="<%= o.id %>" <%= sel(f.tecniche, o.id) %>><%= o.label %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-ubicazioni"><%= t('Ubicazione') %></label>
+                <select class="form-select" id="s-ubicazioni" name="ubicazioni">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% opzioni.ubicazioni.forEach(o => { %><option value="<%= o.id %>" <%= sel(f.ubicazioni, o.id) %>><%= o.label %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-inventario"><%= t('Numero di inventario') %></label>
+                <input class="form-control" id="s-inventario" name="inventario" value="<%= v('inventario') %>" placeholder="<%= t('es. 97349') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-proprieta"><%= t('Proprietà giuridica') %></label>
+                <select class="form-select" id="s-proprieta" name="proprieta">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% opzioni.proprieta.forEach(o => { %><option value="<%= o %>" <%= sel(f.proprieta, o) %>><%= t(o) %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-provenienza"><%= t('Provenienza') %></label>
+                <input class="form-control" id="s-provenienza" name="provenienza" value="<%= v('provenienza') %>">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="adv-group">
+            <legend><%= t('Mostre, bibliografia e documentazione') %></legend>
+            <div class="row g-3">
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-mostra"><%= t('Mostra') %></label>
+                <input class="form-control" id="s-mostra" name="mostra" value="<%= v('mostra') %>" data-suggest="mostre" autocomplete="off">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-curatore"><%= t('Curatore della mostra') %></label>
+                <input class="form-control" id="s-curatore" name="curatore" value="<%= v('curatore') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-luogo-mostra"><%= t('Luogo della mostra') %></label>
+                <select class="form-select" id="s-luogo-mostra" name="luogo_mostra">
+                  <option value=""><%= t('Qualsiasi') %></option>
+                  <% opzioni.luoghiMostre.forEach(o => { %><option value="<%= o %>" <%= sel(f.luogo_mostra, o) %>><%= o %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <span class="form-label d-block" id="lbl-mostra-anni"><%= t('Anno della mostra') %></span>
+                <div class="input-group" role="group" aria-labelledby="lbl-mostra-anni">
+                  <span class="input-group-text"><%= t('dal') %></span>
+                  <input class="form-control" type="number" name="mostra_anno_da" value="<%= v('mostra_anno_da') %>" aria-label="<%= t('Mostra: anno iniziale') %>">
+                  <span class="input-group-text"><%= t('al') %></span>
+                  <input class="form-control" type="number" name="mostra_anno_a" value="<%= v('mostra_anno_a') %>" aria-label="<%= t('Mostra: anno finale') %>">
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-bibliografia"><%= t('Bibliografia') %></label>
+                <input class="form-control" id="s-bibliografia" name="bibliografia" value="<%= v('bibliografia') %>" placeholder="<%= t('autore, titolo, anno…') %>">
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label" for="s-documentazione"><%= t('Documentazione fotografica') %></label>
+                <input class="form-control" id="s-documentazione" name="documentazione" value="<%= v('documentazione') %>">
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="d-flex flex-wrap gap-2 pt-2">
+            <button class="btn btn-primary" type="submit"><%= t('Cerca') %></button>
+            <a class="btn btn-outline-secondary" href="/"><%= t('Azzera filtri') %></a>
           </div>
         </div>
       </details>
@@ -138,36 +204,46 @@
   </div>
 </section>
 
-<section class="container py-4">
+<section class="container py-4" aria-labelledby="risultati">
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-    <h2 class="h5 mb-0" id="risultati">
-      <%= risultati.total %> <%= risultati.total === 1 ? 'opera' : 'opere' %>
-    </h2>
+    <h2 class="h5 mb-0" id="risultati"><%= h.plural(risultati.total, '{n} opera', '{n} opere') %></h2>
     <form method="get" action="/" class="d-flex align-items-center gap-2" data-autosubmit>
       <% Object.entries(query).filter(([k, val]) => !['ordina', 'pagina'].includes(k) && typeof val === 'string' && val !== '').forEach(([k, val]) => { %>
         <input type="hidden" name="<%= k %>" value="<%= val %>">
       <% }) %>
-      <label class="small text-muted-lu" for="ordina">Ordina per</label>
+      <label class="small text-muted-lu" for="ordina"><%= t('Ordina per') %></label>
       <select class="form-select form-select-sm w-auto" id="ordina" name="ordina">
-        <option value="titolo" <%= f.ordina === 'titolo' ? 'selected' : '' %>>Titolo</option>
-        <option value="data" <%= f.ordina === 'data' ? 'selected' : '' %>>Datazione</option>
-        <option value="recenti" <%= f.ordina === 'recenti' ? 'selected' : '' %>>Pubblicate di recente</option>
+        <% if (f.q) { %><option value="rilevanza" <%= sel(risultati.ordina, 'rilevanza') %>><%= t('Rilevanza') %></option><% } %>
+        <option value="titolo" <%= sel(risultati.ordina, 'titolo') %>><%= t('Titolo') %></option>
+        <option value="data" <%= sel(risultati.ordina, 'data') %>><%= t('Datazione') %></option>
+        <option value="recenti" <%= sel(risultati.ordina, 'recenti') %>><%= t('Pubblicate di recente') %></option>
       </select>
-      <noscript><button class="btn btn-sm btn-outline-secondary" type="submit">Applica</button></noscript>
+      <noscript><button class="btn btn-sm btn-outline-secondary" type="submit"><%= t('Applica') %></button></noscript>
     </form>
   </div>
 
+  <% if (attivi.length) { %>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3" aria-label="<%= t('Filtri attivi') %>">
+      <% attivi.forEach(a => { %>
+        <a class="chip chip-filter" href="/<%= h.qs(query, { [a.k]: '', ...(a.k === 'anno_da' ? { era_da: '' } : {}), ...(a.k === 'anno_a' ? { era_a: '' } : {}), pagina: '' }) %>" title="<%= t('Rimuovi filtro') %>">
+          <span class="text-muted-lu"><%= a.label %>:</span> <%= a.valore %> <span aria-hidden="true">×</span><span class="visually-hidden"><%= t('Rimuovi filtro') %></span>
+        </a>
+      <% }) %>
+      <a class="small ms-1" href="/"><%= t('Azzera tutto') %></a>
+    </div>
+  <% } %>
+
   <% if (risultati.classificazioni.length > 1 || f.classificazione) { %>
-    <div class="d-flex flex-wrap gap-2 mb-4" aria-label="Filtra per classificazione">
-      <a class="chip <%= !f.classificazione ? 'active' : '' %>" href="/<%= h.qs(query, { classificazione: '', pagina: '' }) %>">Tutte</a>
+    <div class="d-flex flex-wrap gap-2 mb-4" aria-label="<%= t('Filtra per classificazione') %>">
+      <a class="chip <%= !f.classificazione ? 'active' : '' %>" href="/<%= h.qs(query, { classificazione: '', pagina: '' }) %>"><%= t('Tutte') %></a>
       <% risultati.classificazioni.forEach(c => { %>
         <a class="chip <%= f.classificazione === c.value ? 'active' : '' %>" href="/<%= h.qs(query, { classificazione: c.value, pagina: '' }) %>">
-          <%= h.classLabel(c.value) %> <span class="text-muted-lu"><%= c.n %></span>
+          <%= h.classLabel(c.value) %> <span class="chip-count"><%= c.n %></span>
         </a>
       <% }) %>
     </div>
   <% } %>
 
-  <%- include('partials/risultati', { baseUrl: '/', query }) %>
+  <%- include('partials/risultati', { baseUrl: '/' }) %>
 </section>
 <%- include('partials/footer', { scripts: ['home.js'] }) %>

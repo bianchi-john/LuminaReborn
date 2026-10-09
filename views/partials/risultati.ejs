@@ -1,25 +1,30 @@
-<%# Griglia dei risultati + paginazione. Parametri: risultati, query, baseUrl %>
+<%# Griglia dei risultati + paginazione. Parametri: risultati, baseUrl %>
 <% if (!risultati.items.length) { %>
-  <div class="text-center py-5 text-muted-lu">
-    <p class="serif fs-4 mb-2">Nessuna opera trovata</p>
-    <p class="mb-0">Prova a semplificare la ricerca o a usare termini diversi.</p>
+  <div class="empty-state text-center py-5">
+    <p class="serif fs-4 mb-2"><%= t('Nessuna opera trovata') %></p>
+    <% if (risultati.forseCercavi && risultati.forseCercavi.length) { %>
+      <p class="mb-2"><%= t('Forse cercavi:') %>
+        <% risultati.forseCercavi.forEach((s, i) => { %><%= i ? ', ' : ' ' %><a href="/?q=<%= encodeURIComponent(s) %>"><%= s %></a><% }) %>
+      </p>
+    <% } %>
+    <p class="mb-0 text-muted-lu"><%= t('Prova a semplificare la ricerca o a usare termini diversi.') %></p>
   </div>
 <% } else { %>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
     <% risultati.items.forEach(o => { %>
       <div class="col">
         <article class="opera-card">
-          <a href="/scheda/<%= o.id %>">
+          <a href="/scheda/<%= o.id %>" class="stretched-link-wrapper">
             <div class="thumb">
               <% if (o.copertina) { %>
-                <img src="/api/immagini/<%= o.copertina %>" alt="" loading="lazy">
+                <img src="/media/<%= o.copertina %>/miniatura" alt="" loading="lazy" decoding="async">
               <% } else { %>
                 <span class="placeholder-icon" aria-hidden="true">L</span>
               <% } %>
             </div>
             <div class="p-3">
               <h3 class="card-title mb-2"><%- h.inline(o.titolo_opera) %></h3>
-              <% if (o.autori) { %><div class="mb-1"><%= o.autori %></div><% } %>
+              <% if (o.autori) { %><div class="card-author mb-1"><%= o.autori %></div><% } %>
               <div class="meta">
                 <% if (o.datazione) { %><div><%= o.datazione %></div><% } %>
                 <% if (o.classificazione) { %><div><%= h.classLabel(o.classificazione) %></div><% } %>
@@ -33,10 +38,10 @@
   </div>
 
   <% if (risultati.pagine > 1) { %>
-    <nav class="mt-4" aria-label="Pagine dei risultati">
+    <nav class="mt-5" aria-label="<%= t('Pagine dei risultati') %>">
       <ul class="pagination justify-content-center flex-wrap">
         <li class="page-item <%= risultati.pagina <= 1 ? 'disabled' : '' %>">
-          <a class="page-link" href="<%= baseUrl %><%= h.qs(query, { pagina: risultati.pagina - 1 }) %>">Precedente</a>
+          <a class="page-link" href="<%= baseUrl %><%= h.qs(query, { pagina: risultati.pagina - 1 }) %>"><%= t('Precedente') %></a>
         </li>
         <% for (let p = 1; p <= risultati.pagine; p++) { %>
           <% if (p === 1 || p === risultati.pagine || Math.abs(p - risultati.pagina) <= 2) { %>
@@ -48,7 +53,7 @@
           <% } %>
         <% } %>
         <li class="page-item <%= risultati.pagina >= risultati.pagine ? 'disabled' : '' %>">
-          <a class="page-link" href="<%= baseUrl %><%= h.qs(query, { pagina: risultati.pagina + 1 }) %>">Successiva</a>
+          <a class="page-link" href="<%= baseUrl %><%= h.qs(query, { pagina: risultati.pagina + 1 }) %>"><%= t('Successiva') %></a>
         </li>
       </ul>
     </nav>

@@ -1,4 +1,5 @@
 import { api, confirmDialog, toast } from './lib/api.js';
+import { t } from './lib/i18n.js';
 
 // Logout: il cookie di sessione è httpOnly, quindi va chiuso lato server
 document.addEventListener('click', async (event) => {
@@ -24,6 +25,7 @@ const AZIONI = {
     title: 'Inviare in revisione?',
     body: "La scheda sarà valutata da un amministratore e non potrai modificarla finché non verrà approvata, respinta o ritirata.",
     confirmText: 'Invia',
+    input: { label: "Messaggio per l'amministratore (facoltativo)", required: false },
     ok: 'Scheda inviata in revisione',
   },
   ritira: { title: 'Ritirare dalla revisione?', body: 'La scheda tornerà tra le tue bozze.', confirmText: 'Ritira', ok: 'Scheda ritirata' },
@@ -32,6 +34,7 @@ const AZIONI = {
     body: 'La scheda sarà visibile a tutti nel catalogo pubblico.',
     confirmText: 'Approva e pubblica',
     variant: 'success',
+    input: { label: 'Nota per lo schedatore (facoltativa)', required: false },
     ok: 'Scheda pubblicata',
   },
   respingi: {
@@ -58,20 +61,29 @@ const AZIONI = {
   },
 };
 
+/** Testi della finestra di conferma nella lingua dell'interfaccia. */
+const tradotta = (cfg) => ({
+  ...cfg,
+  title: t(cfg.title),
+  body: cfg.body ? t(cfg.body) : undefined,
+  confirmText: t(cfg.confirmText),
+  input: cfg.input ? { ...cfg.input, label: t(cfg.input.label) } : undefined,
+});
+
 document.addEventListener('click', async (event) => {
   const btn = event.target.closest('[data-azione]');
   if (!btn) return;
   const azione = btn.dataset.azione;
   const cfg = AZIONI[azione];
   if (!cfg) return;
-  const answer = await confirmDialog(cfg);
+  const answer = await confirmDialog(tradotta(cfg));
   if (answer === false) return;
   btn.disabled = true;
   try {
     const id = btn.dataset.id;
     if (azione === 'elimina') await api('DELETE', `/api/schede/${id}`);
-    else await api('POST', `/api/schede/${id}/${azione}`, { commento: typeof answer === 'string' ? answer : null });
-    toast(cfg.ok);
+    else await api('POST', `/api/schede/${id}/${azione}`, { commento: typeof answer === 'string' && answer ? answer : null });
+    toast(t(cfg.ok));
     setTimeout(() => {
       if (btn.dataset.dopo) window.location.href = btn.dataset.dopo;
       else window.location.reload();

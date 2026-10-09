@@ -1,25 +1,43 @@
 <%- include('../partials/header') %>
 <%
   const gruppi = [
-    { stato: 0, titolo: 'Bozze', vuoto: 'Nessuna bozza. Crea una nuova scheda per iniziare.' },
-    { stato: 1, titolo: 'In revisione', vuoto: "Nessuna scheda in attesa di approvazione." },
-    { stato: 2, titolo: 'Pubblicate', vuoto: 'Nessuna scheda pubblicata.' },
+    { stato: 0, titolo: t('Bozze'), vuoto: t('Nessuna bozza. Crea una nuova scheda per iniziare.') },
+    { stato: 1, titolo: t('In revisione'), vuoto: t('Nessuna scheda in attesa di approvazione.') },
+    { stato: 2, titolo: t('Pubblicate'), vuoto: t('Nessuna scheda pubblicata.') },
   ];
+  const respinte = mie.filter(s => s.stato === 0 && s.ultima_azione === 'respinta').length;
 %>
 <div class="area-header">
   <div class="container py-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
     <div>
-      <h1 class="mb-1">Le mie schede</h1>
-      <p class="text-muted-lu mb-0">Bentornato, <%= user.displayName %>.</p>
+      <p class="eyebrow mb-1"><%= t('Area riservata') %></p>
+      <h1 class="mb-1"><%= t('Le mie schede') %></h1>
+      <p class="text-muted-lu mb-0"><%= t('Bentornato, {nome}.', { nome: user.displayName }) %></p>
     </div>
-    <a class="btn btn-primary" href="/area/schede/nuova">Nuova scheda</a>
+    <a class="btn btn-primary" href="/area/schede/nuova">+ <%= t('Nuova scheda') %></a>
   </div>
 </div>
 <div class="container py-4">
+  <div class="row g-3 mb-4">
+    <% gruppi.forEach(g => { %>
+      <div class="col-sm-4">
+        <div class="stat-card card shadow-sm h-100">
+          <div class="card-body">
+            <div class="stat-value"><%= mie.filter(s => s.stato === g.stato).length %></div>
+            <div class="text-muted-lu small"><%= g.titolo %></div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <% if (respinte) { %>
+    <div class="alert alert-warning"><%= respinte === 1 ? t('Una scheda è stata respinta: leggi la motivazione e correggila.') : t('{n} schede sono state respinte: leggi le motivazioni e correggile.', { n: respinte }) %></div>
+  <% } %>
   <% if (conteggi && (conteggi[1] || 0) > 0) { %>
     <div class="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <span><strong><%= conteggi[1] %></strong> <%= conteggi[1] === 1 ? 'scheda attende' : 'schede attendono' %> la tua revisione.</span>
-      <a class="btn btn-sm btn-primary" href="/area/revisione">Vai alla revisione</a>
+      <span><%= conteggi[1] === 1 ? t('Una scheda attende la tua revisione.') : t('{n} schede attendono la tua revisione.', { n: conteggi[1] }) %></span>
+      <a class="btn btn-sm btn-primary" href="/area/revisione"><%= t('Vai alla revisione') %></a>
     </div>
   <% } %>
 
@@ -27,7 +45,7 @@
     <% gruppi.forEach((g, i) => { %>
       <li class="nav-item" role="presentation">
         <button class="nav-link <%= i === 0 ? 'active' : '' %>" id="tab-<%= g.stato %>" data-bs-toggle="tab" data-bs-target="#pane-<%= g.stato %>" type="button" role="tab" aria-controls="pane-<%= g.stato %>" aria-selected="<%= i === 0 %>">
-          <%= g.titolo %> <span class="badge text-bg-light border"><%= mie.filter(s => s.stato === g.stato).length %></span>
+          <%= g.titolo %> <span class="badge badge-soft"><%= mie.filter(s => s.stato === g.stato).length %></span>
         </button>
       </li>
     <% }) %>

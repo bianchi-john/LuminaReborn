@@ -1,5 +1,6 @@
 import { api, confirmDialog, el, htmlToText, toast } from './lib/api.js';
 import { attachAutocomplete } from './lib/autocomplete.js';
+import { t } from './lib/i18n.js';
 
 const table = document.getElementById('tabella-voci');
 const tipo = table.dataset.tipo;
@@ -19,11 +20,11 @@ table.addEventListener('click', async (event) => {
   if (azione === 'modifica') apriModifica();
   if (azione === 'unisci') apriUnisci();
   if (azione === 'elimina') {
-    const ok = await confirmDialog({ title: 'Eliminare la voce?', body: htmlToText(corrente[display]), confirmText: 'Elimina', variant: 'danger' });
+    const ok = await confirmDialog({ title: t('Eliminare la voce?'), body: htmlToText(corrente[display]), confirmText: t('Elimina'), variant: 'danger' });
     if (!ok) return;
     try {
       await api('DELETE', `/api/vocabolari/${tipo}/${corrente.id}`);
-      toast('Voce eliminata');
+      toast(t('Voce eliminata'));
       btn.closest('tr').remove();
     } catch (error) {
       toast(error.message, 'danger');
@@ -51,9 +52,9 @@ function apriModifica() {
       return el(
         'div',
         { class: col },
-        el('label', { class: 'form-label', for: id, text: f.label }),
+        el('label', { class: 'form-label', for: id, text: t(f.label) }),
         control,
-        f.type === 'inline' ? el('div', { class: 'form-text', text: 'Corsivo con <i>…</i>' }) : null,
+        f.type === 'inline' ? el('div', { class: 'form-text', text: t('Corsivo con <i>…</i>') }) : null,
       );
     }),
   );
@@ -65,7 +66,7 @@ document.getElementById('form-voce').addEventListener('submit', async (event) =>
   const body = Object.fromEntries(fields.map((f) => [f.name, event.target.elements[f.name].value]));
   try {
     await api('PUT', `/api/vocabolari/${tipo}/${corrente.id}`, body);
-    toast('Voce aggiornata');
+    toast(t('Voce aggiornata'));
     window.location.reload();
   } catch (error) {
     voceErrore.textContent = error.details?.map((d) => d.messaggio).join('; ') || error.message;
@@ -83,7 +84,7 @@ const unisciErrore = document.getElementById('unisci-errore');
 attachAutocomplete(cerca, {
   fetchItems: async (q) => (await api('GET', `/api/vocabolari/${tipo}?q=${encodeURIComponent(q)}&limit=15`)).filter((i) => i.id !== corrente?.id),
   label: (item) => htmlToText(item[display]),
-  detail: (item) => `#${item.id} · ${item.schede_totali} schede`,
+  detail: (item) => `#${item.id} · ${t(item.schede_totali === 1 ? '{n} scheda' : '{n} schede', { n: item.schede_totali })}`,
   onSelect: (item, label) => {
     destinazione = item;
     scelta.replaceChildren(el('span', { class: 'voce-label', text: `${label} (#${item.id})` }));
@@ -108,10 +109,60 @@ document.getElementById('form-unisci').addEventListener('submit', async (event) 
   if (!destinazione) return;
   try {
     await api('POST', `/api/vocabolari/${tipo}/${corrente.id}/unisci`, { in: destinazione.id });
-    toast('Voci unite');
+    toast(t('Voci unite'));
     window.location.reload();
   } catch (error) {
     unisciErrore.textContent = error.message;
     unisciErrore.classList.remove('d-none');
   }
 });
+
+// --- Possibili duplicati: coppie con nomi molto simili, unibili con un clic ----
+
+async function caricaDuplicati() {
+  let coppie = [];
+  try {
+    coppie = await api('GET', `/api/vocabolari/${tipo}/duplicati`);
+  } catch {
+    return;
+  }
+  if (!coppie.length) return;
+  const box = document.getElementById('duplicati');
+  document.getElementById('duplicati-elenco').replaceChildren(
+    ...coppie.map(({ a, b, score }) => {
+      // Si conserva la voce più usata
+      const [da, verso] = a.schede > b.schede ? [b, a] : [a, b];
+      const unisci = el('button', {
+        type: 'button',
+        class: 'btn btn-sm btn-outline-primary',
+        text: t('Unisci in «{nome}»', { nome: verso.label }),
+        onclick: async () => {
+          const ok = await confirmDialog({
+            title: t('Unire le due voci?'),
+            body: t('«{da}» verrà eliminata e le sue schede collegate a «{verso}».', { da: da.label, verso: verso.label }),
+            confirmText: t('Unisci'),
+          });
+          if (!ok) return;
+          try {
+            await api('POST', `/api/vocabolari/${tipo}/${da.id}/unisci`, { in: verso.id });
+            toast(t('Voci unite'));
+            window.location.reload();
+          } catch (error) {
+            toast(error.message, 'danger');
+          }
+        },
+      });
+      return el(
+        'li',
+        { class: 'd-flex flex-wrap align-items-center gap-2 py-1 border-bottom' },
+        el('span', { text: `${a.label} (#${a.id}, ${a.schede})` }),
+        el('span', { class: 'text-muted-lu', text: '≈' }),
+        el('span', { text: `${b.label} (#${b.id}, ${b.schede})` }),
+        el('span', { class: 'badge badge-soft', text: `${Math.round(score * 100)}%` }),
+        el('span', { class: 'ms-auto' }, unisci),
+      );
+    }),
+  );
+  box.classList.remove('d-none');
+}
+caricaDuplicati();

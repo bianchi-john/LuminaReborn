@@ -1,14 +1,14 @@
 <%- include('partials/header') %>
 <div class="container py-4">
-  <h1 class="mb-2">Indici</h1>
-  <p class="text-muted-lu mb-4">Sfoglia il catalogo per autore, materiale, tecnica, luogo, provenienza o mostra: ogni voce raccoglie tutte le opere a cui è collegata.</p>
+  <h1 class="mb-2"><%= t('Indici') %></h1>
+  <p class="lead-muted mb-4"><%= t('Sfoglia il catalogo per autore, materiale, tecnica, luogo, provenienza o mostra: ogni voce raccoglie tutte le opere a cui è collegata.') %></p>
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
     <% indici.forEach(({ v, n }) => { %>
       <div class="col">
-        <a class="card h-100 text-decoration-none" href="/voci/<%= v.key %>">
+        <a class="card card-link h-100 text-decoration-none shadow-sm" href="/voci/<%= v.key %>">
           <div class="card-body">
-            <h2 class="h5 mb-1"><%= v.plurale %></h2>
-            <p class="text-muted-lu mb-0"><%= n %> <%= n === 1 ? 'voce' : 'voci' %></p>
+            <h2 class="h5 mb-1"><%= t(v.plurale) %></h2>
+            <p class="text-muted-lu mb-0"><%= h.plural(n, '{n} voce', '{n} voci') %></p>
           </div>
         </a>
       </div>

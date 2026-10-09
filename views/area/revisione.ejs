@@ -1,16 +1,20 @@
 <%- include('../partials/header') %>
 <%
   const viste = [
-    { key: 'revisione', stato: 1, titolo: 'Da revisionare', vuoto: 'Nessuna scheda in attesa di revisione.' },
-    { key: 'pubblicate', stato: 2, titolo: 'Pubblicate', vuoto: 'Nessuna scheda pubblicata.' },
-    { key: 'bozze', stato: 0, titolo: 'Bozze di tutti', vuoto: 'Nessuna bozza.' },
+    { key: 'revisione', stato: 1, titolo: t('Da revisionare'), vuoto: t('Nessuna scheda in attesa di revisione.') },
+    { key: 'pubblicate', stato: 2, titolo: t('Pubblicate'), vuoto: t('Nessuna scheda pubblicata.') },
+    { key: 'bozze', stato: 0, titolo: t('Bozze di tutti'), vuoto: t('Nessuna bozza.') },
   ];
   const corrente = viste.find(x => x.key === vista);
 %>
 <div class="area-header">
-  <div class="container py-4">
-    <h1 class="mb-1">Revisione schede</h1>
-    <p class="text-muted-lu mb-0">Approva le schede per pubblicarle nel catalogo, oppure respingile indicando cosa correggere.</p>
+  <div class="container py-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+      <p class="eyebrow mb-1"><%= t('Amministrazione') %></p>
+      <h1 class="mb-1"><%= t('Revisione schede') %></h1>
+      <p class="text-muted-lu mb-0"><%= t('Approva le schede per pubblicarle nel catalogo, oppure respingile indicando cosa correggere.') %></p>
+    </div>
+    <a class="btn btn-outline-secondary" href="/api/esportazioni/catalogo.xlsx"><%= t('Esporta catalogo (Excel)') %></a>
   </div>
 </div>
 <div class="container py-4">
@@ -18,7 +22,7 @@
     <% viste.forEach(x => { %>
       <li class="nav-item">
         <a class="nav-link <%= x.key === vista ? 'active' : '' %>" href="/area/revisione?vista=<%= x.key %>" <%- x.key === vista ? 'aria-current="page"' : '' %>>
-          <%= x.titolo %> <span class="badge text-bg-light border"><%= conteggi[x.stato] || 0 %></span>
+          <%= x.titolo %> <span class="badge badge-soft"><%= conteggi[x.stato] || 0 %></span>
         </a>
       </li>
     <% }) %>

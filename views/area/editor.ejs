@@ -1,149 +1,184 @@
 <%- include('../partials/header') %>
 <%
-  const sezioni = [
-    ['sez-identificazione', 'Identificazione'],
-    ['sez-datazione', 'Datazione'],
-    ['sez-materia', 'Materia e tecnica'],
-    ['sez-misure', 'Misure'],
-    ['sez-collocazione', 'Collocazione e inventario'],
-    ['sez-testi', 'Testi'],
-    ['sez-mostre', 'Mostre'],
-    ['sez-bibliografia', 'Bibliografia'],
-    ['sez-immagini', 'Immagini'],
-    ['sez-note', 'Note per la revisione'],
+  const pannelli = [
+    ['identificazione', t('Identificazione')],
+    ['autori', t('Autori')],
+    ['datazione', t('Datazione')],
+    ['materia', t('Materia e tecnica')],
+    ['misure', t('Misure')],
+    ['collocazione', t('Collocazione e inventario')],
+    ['testi', t('Testi')],
+    ['mostre', t('Mostre')],
+    ['bibliografia', t('Bibliografia e documentazione')],
+    ['immagini', t('Immagini')],
+    ['invio', t('Riepilogo e invio')],
   ];
 %>
 <div class="area-header">
   <div class="container py-4">
-    <nav aria-label="Percorso"><ol class="breadcrumb small mb-2"><li class="breadcrumb-item"><a href="/area">Le mie schede</a></li><li class="breadcrumb-item active" aria-current="page"><%= scheda ? `Scheda n. ${scheda.id}` : 'Nuova scheda' %></li></ol></nav>
-    <h1 class="mb-1"><%= scheda ? 'Modifica scheda' : 'Nuova scheda' %></h1>
-    <p class="text-muted-lu mb-0">
-      Per autori, materiali, tecniche, luoghi, provenienze, mostre e bibliografia inizia a scrivere e <strong>scegli una voce esistente</strong>:
-      l'opera verrà collegata alle altre che la condividono. Se la voce non esiste verrà creata.
-    </p>
+    <nav aria-label="<%= t('Percorso') %>"><ol class="breadcrumb small mb-2"><li class="breadcrumb-item"><a href="/area"><%= t('Le mie schede') %></a></li><li class="breadcrumb-item active" aria-current="page"><%= scheda ? t('Scheda n. {id}', { id: scheda.id }) : t('Nuova scheda') %></li></ol></nav>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <h1 class="mb-0 me-auto"><%= scheda ? t('Modifica scheda') : t('Nuova scheda') %></h1>
+      <% if (scheda) { %><span class="badge badge-stato-<%= scheda.stato %>"><%= h.statoLabel(scheda.stato) %></span><% } %>
+    </div>
   </div>
 </div>
 
 <div class="container py-4">
+  <div class="alert alert-danger d-none" id="editor-errori" role="alert" tabindex="-1"></div>
   <div class="row g-4">
-    <div class="col-lg-3 d-none d-lg-block">
-      <nav class="editor-nav nav flex-column" aria-label="Sezioni della scheda">
-        <% sezioni.forEach(([id, label]) => { %><a class="nav-link" href="#<%= id %>"><%= label %></a><% }) %>
+    <div class="col-lg-3">
+      <nav class="editor-tabs nav nav-pills flex-lg-column" id="editor-tabs" role="tablist" aria-label="<%= t('Sezioni della scheda') %>">
+        <% pannelli.forEach(([id, label], i) => { %>
+          <button class="nav-link text-start <%= i === 0 ? 'active' : '' %>" id="tab-<%= id %>" data-bs-toggle="pill" data-bs-target="#pane-<%= id %>" type="button" role="tab" aria-controls="pane-<%= id %>" aria-selected="<%= i === 0 %>" data-pannello="<%= id %>">
+            <span class="tab-label"><%= label %></span>
+            <span class="tab-badge badge rounded-pill" data-badge="<%= id %>"></span>
+          </button>
+        <% }) %>
       </nav>
     </div>
 
     <div class="col-lg-9">
       <form id="editor" novalidate data-id="<%= scheda ? scheda.id : '' %>" data-stato="<%= scheda ? scheda.stato : 0 %>">
-        <div class="alert alert-danger d-none" id="editor-errori" role="alert" tabindex="-1"></div>
+        <div class="tab-content">
 
-        <section class="card editor-section mb-4" id="sez-identificazione">
-          <div class="card-header">Identificazione</div>
-          <div class="card-body">
-            <div class="mb-3">
-              <label class="form-label" id="lbl-titolo">Titolo dell'opera <span class="text-danger">*</span></label>
-              <div data-rte="inline" data-name="titolo_opera" data-labelledby="lbl-titolo" data-placeholder="Es. San Sebastiano"></div>
-              <div class="form-text">Usa il corsivo per i titoli di soggetto, es. Trittico con <em>Matrimonio mistico di santa Caterina</em>.</div>
-            </div>
-            <div class="mb-4">
-              <label class="form-label" for="classificazione">Classificazione</label>
-              <select class="form-select" id="classificazione" name="classificazione">
-                <option value="">—</option>
-                <% classificazioni.forEach(c => { %><option value="<%= c.value %>"><%= c.label %></option><% }) %>
-              </select>
-            </div>
-            <h3 class="h6">Autori</h3>
-            <div data-vocab="autori"></div>
-          </div>
-        </section>
-
-        <section class="card editor-section mb-4" id="sez-datazione">
-          <div class="card-header">Datazione</div>
-          <div class="card-body">
-            <div data-repeat="cronologie"></div>
-            <datalist id="dl-ambiti"></datalist>
-          </div>
-        </section>
-
-        <section class="card editor-section mb-4" id="sez-materia">
-          <div class="card-header">Materia e tecnica</div>
-          <div class="card-body">
-            <h3 class="h6">Materiali</h3>
-            <div data-vocab="materiali" class="mb-4"></div>
-            <h3 class="h6">Tecniche</h3>
-            <div data-vocab="tecniche"></div>
-          </div>
-        </section>
-
-        <section class="card editor-section mb-4" id="sez-misure">
-          <div class="card-header">Misure</div>
-          <div class="card-body">
-            <div data-repeat="misure"></div>
-            <datalist id="dl-direzioni"></datalist>
-            <datalist id="dl-tipi"></datalist>
-          </div>
-        </section>
-
-        <section class="card editor-section mb-4" id="sez-collocazione">
-          <div class="card-header">Collocazione e inventario</div>
-          <div class="card-body">
-            <h3 class="h6">Ubicazione</h3>
-            <div data-vocab="ubicazioni" class="mb-4"></div>
-            <h3 class="h6">Inventario e proprietà</h3>
-            <div data-repeat="inventari" class="mb-4"></div>
-            <h3 class="h6">Provenienza</h3>
-            <div data-vocab="provenienze"></div>
-          </div>
-        </section>
-
-        <section class="card editor-section mb-4" id="sez-testi">
-          <div class="card-header">Testi</div>
-          <div class="card-body">
-            <% [['descrizione_sintetica', 'Descrizione sintetica'], ['corpo_scheda', 'Commento storico-critico'], ['iscrizioni', 'Iscrizioni'], ['storia_espositiva', 'Vicende collezionistiche e storia espositiva']].forEach(([name, label]) => { %>
+          <section class="tab-pane fade show active editor-pane card shadow-sm" id="pane-identificazione" role="tabpanel" aria-labelledby="tab-identificazione">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Identificazione') %></h2>
               <div class="mb-4">
-                <label class="form-label" id="lbl-<%= name %>"><%= label %></label>
-                <div data-rte="block" data-name="<%= name %>" data-labelledby="lbl-<%= name %>"></div>
+                <label class="form-label" id="lbl-titolo"><%= t('Titolo dell\'opera') %> <span class="text-danger">*</span></label>
+                <div data-rte="inline" data-name="titolo_opera" data-labelledby="lbl-titolo" data-placeholder="<%= t('Es. San Sebastiano') %>"></div>
+                <div class="form-text"><%= t('Usa il corsivo per i soggetti, es. Trittico con') %> <em><%= t('Matrimonio mistico di santa Caterina') %></em>.</div>
               </div>
-            <% }) %>
-          </div>
-        </section>
+              <div class="mb-2">
+                <label class="form-label" for="classificazione"><%= t('Classificazione') %></label>
+                <select class="form-select" id="classificazione" name="classificazione">
+                  <option value="">—</option>
+                  <% classificazioni.forEach(c => { %><option value="<%= c.value %>"><%= t(c.label) %></option><% }) %>
+                </select>
+              </div>
+            </div>
+          </section>
 
-        <section class="card editor-section mb-4" id="sez-mostre">
-          <div class="card-header">Mostre</div>
-          <div class="card-body">
-            <div data-vocab="mostre"></div>
-          </div>
-        </section>
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-autori" role="tabpanel" aria-labelledby="tab-autori">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Autori') %></h2>
+              <div class="hint mb-3">
+                <strong><%= t('Cerca sempre prima tra gli autori esistenti.') %></strong>
+                <%= t('Così l\'opera viene collegata alle altre dello stesso autore. Crea un nuovo autore solo se non compare nell\'elenco: ti avviseremo se esistono nomi simili.') %>
+              </div>
+              <div data-vocab="autori"></div>
+            </div>
+          </section>
 
-        <section class="card editor-section mb-4" id="sez-bibliografia">
-          <div class="card-header">Bibliografia e documentazione</div>
-          <div class="card-body">
-            <h3 class="h6">Bibliografia</h3>
-            <div data-vocab="bibliografie" class="mb-4"></div>
-            <h3 class="h6">Altra bibliografia</h3>
-            <div data-vocab="altre_bibliografie" class="mb-4"></div>
-            <h3 class="h6">Documentazione fotografica</h3>
-            <div data-repeat="documentazioni_fotografiche"></div>
-          </div>
-        </section>
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-datazione" role="tabpanel" aria-labelledby="tab-datazione">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Datazione') %></h2>
+              <div data-repeat="cronologie"></div>
+              <datalist id="dl-ambiti"></datalist>
+            </div>
+          </section>
 
-        <section class="card editor-section mb-4" id="sez-immagini">
-          <div class="card-header">Immagini</div>
-          <div class="card-body">
-            <p class="small text-muted-lu">JPEG, PNG, WebP o GIF. La prima immagine è la copertina; usa le frecce per cambiare l'ordine.</p>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-3" id="immagini"></div>
-            <label class="btn btn-outline-primary">
-              Aggiungi immagini <input type="file" id="immagini-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
-            </label>
-          </div>
-        </section>
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-materia" role="tabpanel" aria-labelledby="tab-materia">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Materia e tecnica') %></h2>
+              <h3 class="h6"><%= t('Materiali') %></h3>
+              <div data-vocab="materiali" class="mb-4"></div>
+              <h3 class="h6"><%= t('Tecniche') %></h3>
+              <div data-vocab="tecniche"></div>
+            </div>
+          </section>
 
-        <section class="card editor-section mb-4" id="sez-note">
-          <div class="card-header">Note per la revisione</div>
-          <div class="card-body">
-            <label class="form-label" for="note_schedatore">Note interne (non pubblicate)</label>
-            <textarea class="form-control" id="note_schedatore" name="note_schedatore" rows="3" maxlength="5000" placeholder="Informazioni utili all'amministratore che revisionerà la scheda"></textarea>
-          </div>
-        </section>
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-misure" role="tabpanel" aria-labelledby="tab-misure">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Misure') %></h2>
+              <p class="hint mb-3"><%= t('Raggruppa le misure: ad esempio "senza cornice" e "con cornice", oppure una per ogni scomparto. Il confronto con la sagoma umana nella scheda pubblica viene calcolato da queste misure.') %></p>
+              <div id="misure"></div>
+            </div>
+          </section>
+
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-collocazione" role="tabpanel" aria-labelledby="tab-collocazione">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Collocazione e inventario') %></h2>
+              <h3 class="h6"><%= t('Ubicazione') %></h3>
+              <div data-vocab="ubicazioni" class="mb-4"></div>
+              <h3 class="h6"><%= t('Inventario e proprietà') %></h3>
+              <div data-repeat="inventari" class="mb-4"></div>
+              <h3 class="h6"><%= t('Provenienza') %></h3>
+              <div data-vocab="provenienze"></div>
+            </div>
+          </section>
+
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-testi" role="tabpanel" aria-labelledby="tab-testi">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Testi') %></h2>
+              <% [['descrizione_sintetica', 'Descrizione sintetica'], ['corpo_scheda', 'Commento storico-critico'], ['iscrizioni', 'Iscrizioni'], ['storia_espositiva', 'Vicende collezionistiche e storia espositiva']].forEach(([name, label]) => { %>
+                <div class="mb-4">
+                  <label class="form-label" id="lbl-<%= name %>"><%= t(label) %></label>
+                  <div data-rte="block" data-name="<%= name %>" data-labelledby="lbl-<%= name %>"></div>
+                </div>
+              <% }) %>
+            </div>
+          </section>
+
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-mostre" role="tabpanel" aria-labelledby="tab-mostre">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Mostre') %></h2>
+              <p class="hint mb-3"><%= t('Cerca la mostra tra quelle già registrate: molte opere hanno partecipato alle stesse esposizioni.') %></p>
+              <div data-vocab="mostre"></div>
+            </div>
+          </section>
+
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-bibliografia" role="tabpanel" aria-labelledby="tab-bibliografia">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Bibliografia e documentazione') %></h2>
+              <h3 class="h6"><%= t('Bibliografia') %></h3>
+              <div data-vocab="bibliografie" class="mb-4"></div>
+              <h3 class="h6"><%= t('Altra bibliografia') %></h3>
+              <div data-vocab="altre_bibliografie" class="mb-4"></div>
+              <h3 class="h6"><%= t('Documentazione fotografica') %></h3>
+              <div data-repeat="documentazioni_fotografiche"></div>
+            </div>
+          </section>
+
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-immagini" role="tabpanel" aria-labelledby="tab-immagini">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Immagini') %></h2>
+              <p class="hint mb-3"><%= t('JPEG, PNG, WebP, GIF o TIFF. L\'originale resta riservato allo staff; il pubblico vede una versione ridotta. La prima immagine è la copertina.') %></p>
+              <div class="dropzone mb-3" id="dropzone">
+                <p class="mb-2"><%= t('Trascina qui le immagini oppure') %></p>
+                <label class="btn btn-outline-primary mb-0">
+                  <%= t('Scegli i file') %> <input type="file" id="immagini-input" accept="image/jpeg,image/png,image/webp,image/gif,image/tiff" multiple hidden>
+                </label>
+              </div>
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="immagini"></div>
+            </div>
+          </section>
+
+          <section class="tab-pane fade editor-pane card shadow-sm" id="pane-invio" role="tabpanel" aria-labelledby="tab-invio">
+            <div class="card-body">
+              <h2 class="pane-title"><%= t('Riepilogo e invio') %></h2>
+              <h3 class="h6"><%= t('Completezza della scheda') %></h3>
+              <ul class="checklist list-unstyled mb-4" id="checklist"></ul>
+              <div class="mb-4">
+                <label class="form-label" for="note_schedatore"><%= t('Note interne (non pubblicate)') %></label>
+                <textarea class="form-control" id="note_schedatore" name="note_schedatore" rows="3" maxlength="5000" placeholder="<%= t('Appunti di lavoro, fonti da verificare…') %>"></textarea>
+              </div>
+              <% if (!scheda || scheda.permessi.invia) { %>
+                <div class="invio-box">
+                  <label class="form-label" for="messaggio_invio"><%= t('Messaggio per l\'amministratore (facoltativo)') %></label>
+                  <textarea class="form-control mb-3" id="messaggio_invio" rows="3" maxlength="5000" placeholder="<%= t('Es. ho aggiornato la bibliografia come richiesto') %>"></textarea>
+                  <button class="btn btn-primary" type="button" id="salva-invia"><%= t('Salva e invia in revisione') %></button>
+                </div>
+              <% } %>
+            </div>
+          </section>
+        </div>
+
+        <div class="d-flex justify-content-between mt-3 no-print">
+          <button class="btn btn-outline-secondary" type="button" id="pannello-prec">← <%= t('Indietro') %></button>
+          <button class="btn btn-outline-secondary" type="button" id="pannello-succ"><%= t('Avanti') %> →</button>
+        </div>
       </form>
     </div>
   </div>
@@ -152,11 +187,8 @@
 <div class="save-bar no-print">
   <div class="container py-2 d-flex flex-wrap align-items-center gap-2">
     <span class="small text-muted-lu me-auto" id="editor-stato" aria-live="polite"></span>
-    <a class="btn btn-outline-secondary" href="<%= scheda ? `/area/schede/${scheda.id}` : '/area' %>" id="editor-annulla">Annulla</a>
-    <button class="btn btn-outline-primary" type="button" id="salva">Salva</button>
-    <% if (!scheda || scheda.permessi.invia) { %>
-      <button class="btn btn-primary" type="button" id="salva-invia">Salva e invia in revisione</button>
-    <% } %>
+    <a class="btn btn-outline-secondary" href="<%= scheda ? `/area/schede/${scheda.id}` : '/area' %>" id="editor-annulla"><%= t('Chiudi') %></a>
+    <button class="btn btn-primary" type="button" id="salva"><%= t('Salva') %></button>
   </div>
 </div>
 

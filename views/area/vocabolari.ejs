@@ -1,37 +1,45 @@
 <%- include('../partials/header') %>
 <div class="area-header">
   <div class="container py-4">
-    <h1 class="mb-1">Vocabolari</h1>
+    <p class="eyebrow mb-1"><%= t('Amministrazione') %></p>
+    <h1 class="mb-1"><%= t('Vocabolari') %></h1>
     <p class="text-muted-lu mb-0">
-      Le voci condivise collegano le schede tra loro. Correggi i nomi e <strong>unisci i duplicati</strong>
-      (es. due grafie dello stesso autore): tutte le schede verranno collegate alla voce che resta.
+      <%= t('Le voci condivise collegano le schede tra loro. Correggi i nomi e unisci i duplicati (es. due grafie dello stesso autore): tutte le schede verranno collegate alla voce che resta.') %>
     </p>
   </div>
 </div>
 <div class="container py-4">
   <ul class="nav nav-pills mb-3 flex-wrap">
     <% vocabolari.forEach(x => { %>
-      <li class="nav-item"><a class="nav-link <%= x.key === v.key ? 'active' : '' %>" href="?tipo=<%= x.key %>"><%= x.plurale %></a></li>
+      <li class="nav-item"><a class="nav-link <%= x.key === v.key ? 'active' : '' %>" href="?tipo=<%= x.key %>"><%= t(x.plurale) %></a></li>
     <% }) %>
   </ul>
 
   <form method="get" class="d-flex gap-2 mb-3" role="search">
     <input type="hidden" name="tipo" value="<%= v.key %>">
-    <label class="visually-hidden" for="q-voc">Cerca</label>
-    <input class="form-control" type="search" id="q-voc" name="q" value="<%= q %>" placeholder="Cerca tra <%= v.plurale.toLowerCase() %>…">
-    <button class="btn btn-outline-primary" type="submit">Cerca</button>
+    <label class="visually-hidden" for="q-voc"><%= t('Cerca') %></label>
+    <input class="form-control" type="search" id="q-voc" name="q" value="<%= q %>" placeholder="<%= t('Cerca…') %>">
+    <button class="btn btn-outline-primary" type="submit"><%= t('Cerca') %></button>
   </form>
 
-  <p class="small text-muted-lu"><%= elenco.length %> <%= elenco.length === 1 ? 'voce' : 'voci' %><%= elenco.length >= 500 ? ' (mostrate le prime 500: usa la ricerca)' : '' %></p>
+  <div class="card duplicati-card shadow-sm mb-4 d-none" id="duplicati">
+    <div class="card-body">
+      <h2 class="h6 mb-2"><%= t('Possibili duplicati') %></h2>
+      <p class="small text-muted-lu mb-2"><%= t('Voci con nomi molto simili: verifica e, se indicano la stessa cosa, uniscile.') %></p>
+      <ul class="list-unstyled mb-0" id="duplicati-elenco"></ul>
+    </div>
+  </div>
 
-  <div class="table-responsive">
-    <table class="table align-middle" id="tabella-voci" data-tipo="<%= v.key %>">
+  <p class="small text-muted-lu"><%= h.plural(elenco.length, '{n} voce', '{n} voci') %><%= elenco.length >= 500 ? ` (${t('mostrate le prime 500: usa la ricerca')})` : '' %></p>
+
+  <div class="table-responsive card shadow-sm">
+    <table class="table align-middle mb-0" id="tabella-voci" data-tipo="<%= v.key %>">
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col"><%= v.fields[0].label %></th>
-          <th scope="col" class="text-center">Schede</th>
-          <th scope="col" class="text-end">Azioni</th>
+          <th scope="col"><%= t(v.fields[0].label) %></th>
+          <th scope="col" class="text-center"><%= t('Schede') %></th>
+          <th scope="col" class="text-end"><%= t('Azioni') %></th>
         </tr>
       </thead>
       <tbody>
@@ -43,13 +51,13 @@
               <% if (item.date_vita) { %><span class="small text-muted-lu">(<%= item.date_vita %>)</span><% } %>
             </td>
             <td class="text-center">
-              <span title="pubblicate / totali"><%= item.schede_pubblicate %> / <%= item.schede_totali %></span>
+              <span title="<%= t('pubblicate / totali') %>"><%= item.schede_pubblicate %> / <%= item.schede_totali %></span>
             </td>
             <td class="text-end">
               <div class="d-inline-flex gap-1">
-                <button class="btn btn-sm btn-outline-primary" data-voce-azione="modifica">Modifica</button>
-                <button class="btn btn-sm btn-outline-secondary" data-voce-azione="unisci">Unisci in…</button>
-                <% if (!item.schede_totali) { %><button class="btn btn-sm btn-outline-danger" data-voce-azione="elimina">Elimina</button><% } %>
+                <button class="btn btn-sm btn-outline-primary" data-voce-azione="modifica"><%= t('Modifica') %></button>
+                <button class="btn btn-sm btn-outline-secondary" data-voce-azione="unisci"><%= t('Unisci in…') %></button>
+                <% if (!item.schede_totali) { %><button class="btn btn-sm btn-outline-danger" data-voce-azione="elimina"><%= t('Elimina') %></button><% } %>
               </div>
             </td>
           </tr>
@@ -63,16 +71,16 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <form class="modal-content" id="form-voce" novalidate>
       <div class="modal-header">
-        <h2 class="modal-title h5" id="modale-voce-titolo">Modifica voce</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        <h2 class="modal-title h5" id="modale-voce-titolo"><%= t('Modifica voce') %></h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('Chiudi') %>"></button>
       </div>
       <div class="modal-body">
         <div class="alert alert-danger d-none" id="voce-errore"></div>
         <div class="row g-3" id="voce-campi"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
-        <button type="submit" class="btn btn-primary">Salva</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><%= t('Annulla') %></button>
+        <button type="submit" class="btn btn-primary"><%= t('Salva') %></button>
       </div>
     </form>
   </div>
@@ -82,19 +90,19 @@
   <div class="modal-dialog modal-dialog-centered">
     <form class="modal-content" id="form-unisci" novalidate>
       <div class="modal-header">
-        <h2 class="modal-title h5" id="modale-unisci-titolo">Unisci voce</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        <h2 class="modal-title h5" id="modale-unisci-titolo"><%= t('Unisci voce') %></h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('Chiudi') %>"></button>
       </div>
       <div class="modal-body">
-        <p>La voce <strong id="unisci-origine"></strong> verrà eliminata e le sue schede saranno collegate alla voce scelta qui sotto.</p>
-        <label class="form-label" for="unisci-cerca">Voce da mantenere</label>
-        <div><input class="form-control" id="unisci-cerca" placeholder="Cerca…" autocomplete="off"></div>
+        <p><%= t('La voce') %> <strong id="unisci-origine"></strong> <%= t('verrà eliminata e le sue schede saranno collegate alla voce scelta qui sotto.') %></p>
+        <label class="form-label" for="unisci-cerca"><%= t('Voce da mantenere') %></label>
+        <div><input class="form-control" id="unisci-cerca" placeholder="<%= t('Cerca…') %>" autocomplete="off"></div>
         <div class="voce-collegata mt-2 d-none" id="unisci-scelta"></div>
         <div class="alert alert-danger d-none mt-3" id="unisci-errore"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
-        <button type="submit" class="btn btn-primary" disabled id="unisci-conferma">Unisci</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><%= t('Annulla') %></button>
+        <button type="submit" class="btn btn-primary" disabled id="unisci-conferma"><%= t('Unisci') %></button>
       </div>
     </form>
   </div>
