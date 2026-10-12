@@ -104,6 +104,8 @@ export const config = {
     /** Hour (0-23, Europe/Rome time zone) of the automatic export. */
     hour: int('EXPORT_HOUR', 2),
     keep: int('EXPORT_KEEP', 14),
+    /** Folder for the photo catalogue ZIP created by `make export-foto`. */
+    fotoDir: process.env.EXPORT_FOTO_DIR ?? '',
   },
 } as const;
 

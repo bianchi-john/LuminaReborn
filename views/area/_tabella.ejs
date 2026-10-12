@@ -24,7 +24,7 @@
               <a class="fw-semibold" href="/area/schede/<%= s.id %>"><%- h.inline(s.titolo_opera) || t('(senza titolo)') %></a>
               <div class="small text-muted-lu"><%= t('Scheda n. {id}', { id: s.id }) %></div>
               <% if (s.stato === 0 && (s.ultima_azione === 'respinta' || s.ultima_azione === 'depubblicata')) { %>
-                <div class="small text-danger mt-1"><strong><%= s.ultima_azione === 'respinta' ? t('Respinta') : t('Ritirata dalla pubblicazione') %>:</strong> <%= s.ultimo_commento || t('nessuna motivazione') %></div>
+                <div class="small text-danger mt-1"><strong><%= s.ultima_azione === 'respinta' ? t('Respinta') : t('Rimandata indietro') %>:</strong> <%= s.ultimo_commento || t('nessuna motivazione') %></div>
               <% } %>
             </td>
             <% if (colonnaAutore) { %><td><%= s.autore_scheda || '—' %></td><% } %>
@@ -33,15 +33,16 @@
             <td class="text-end">
               <div class="d-inline-flex flex-wrap justify-content-end gap-1">
                 <a class="btn btn-sm btn-outline-secondary" href="/area/schede/<%= s.id %>"><%= t('Apri') %></a>
-                <% if (s.stato === 0) { %>
+                <% if (s.stato === 0 && !colonnaAutore) { %>
                   <a class="btn btn-sm btn-outline-primary" href="/area/schede/<%= s.id %>/modifica"><%= t('Modifica') %></a>
-                  <% if (!colonnaAutore) { %><button class="btn btn-sm btn-primary" data-azione="invia" data-id="<%= s.id %>"><%= t('Invia') %></button><% } %>
+                  <button class="btn btn-sm btn-primary" data-azione="invia" data-id="<%= s.id %>"><%= t('Invia') %></button>
                 <% } else if (s.stato === 1 && !colonnaAutore) { %>
                   <button class="btn btn-sm btn-outline-secondary" data-azione="ritira" data-id="<%= s.id %>"><%= t('Ritira') %></button>
                 <% } else if (s.stato === 1 && colonnaAutore) { %>
                   <a class="btn btn-sm btn-primary" href="/area/schede/<%= s.id %>"><%= t('Valuta') %></a>
                 <% } else if (s.stato === 2) { %>
                   <a class="btn btn-sm btn-outline-secondary" href="<%= s.percorso %>"><%= t('Pagina pubblica') %></a>
+                  <% if (colonnaAutore) { %><button class="btn btn-sm btn-outline-danger" data-azione="depubblica" data-id="<%= s.id %>"><%= t('Rimanda allo schedatore') %></button><% } %>
                 <% } %>
               </div>
             </td>

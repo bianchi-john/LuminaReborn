@@ -155,8 +155,9 @@ describe('flusso di lavoro', () => {
 
   after(async () => {
     if (!schedaId) return;
-    await admin.json('POST', `/api/schede/${schedaId}/depubblica`, {});
-    await admin.json('DELETE', `/api/schede/${schedaId}`);
+    // Only the cataloguer deletes, and only drafts: the admin sends it back first if needed
+    await admin.json('POST', `/api/schede/${schedaId}/depubblica`, { commento: 'pulizia dopo i test' });
+    await schedatore.json('DELETE', `/api/schede/${schedaId}`);
   });
 
   it('crea una bozza collegando voci esistenti e nuove', async () => {
@@ -215,6 +216,20 @@ describe('flusso di lavoro', () => {
     assert.equal(new URL(altroTitolo.headers.get('location') ?? '', BASE).pathname, percorso);
   });
 
+  it('ruoli separati: l\'amministratore non scrive né elimina, rimanda indietro con un messaggio', async () => {
+    assert.equal((await admin.json('POST', '/api/schede', { titolo_opera: 'Scheda dell\'amministratore' })).status, 403);
+    assert.equal((await admin.json('DELETE', `/api/schede/${schedaId}`)).status, 403);
+    assert.equal((await admin.req('POST', '/api/immagini', PNG_1PX, { 'Content-Type': 'image/png' })).status, 403);
+    assert.equal((await admin.req('GET', '/area/schede/nuova')).status, 403);
+    assert.equal((await admin.json('POST', `/api/schede/${schedaId}/depubblica`, {})).status, 400, 'serve un messaggio per lo schedatore');
+    assert.equal((await admin.json('POST', `/api/schede/${schedaId}/depubblica`, { commento: 'rivedere le misure' })).status, 200);
+    const s = await schedatore.json('GET', `/api/schede/${schedaId}`);
+    assert.equal(s.data.stato, 0, 'torna tra le bozze dello schedatore');
+    assert.equal(s.data.permessi.modifica, true);
+    assert.equal(s.data.permessi.elimina, true);
+    assert.equal(s.data.revisioni[0].commento, 'rivedere le misure', 'il messaggio arriva allo schedatore');
+  });
+
   it('cambio password: richiede quella attuale e chiude le altre sessioni', async () => {
     const altra = new Client();
     await altra.login(SCHEDATORE);
@@ -231,5 +246,22 @@ describe('flusso di lavoro', () => {
     const res = await admin.req('GET', '/api/esportazioni/catalogo.xlsx');
     assert.equal(res.status, 200);
     assert.equal(Buffer.from(await res.arrayBuffer()).subarray(0, 2).toString(), 'PK');
+  });
+
+  it('esportazione delle foto in ZIP solo per gli amministratori', async () => {
+    assert.equal((await schedatore.req('GET', '/api/esportazioni/foto.zip')).status, 403);
+    const res = await admin.req('GET', '/api/esportazioni/foto.zip?variante=anteprima&ambito=pubblicate');
+    assert.equal(res.status, 200);
+    const zip = Buffer.from(await res.arrayBuffer());
+    assert.equal(zip.subarray(0, 2).toString(), 'PK');
+    assert.ok(zip.includes('catalogo-foto.xlsx'), 'contiene l\'elenco delle foto');
+    assert.ok(zip.includes('.webp'), 'contiene le immagini');
+  });
+
+  it('panoramica del database solo per gli amministratori', async () => {
+    assert.equal((await schedatore.req('GET', '/area/panoramica')).status, 403);
+    const res = await admin.req('GET', '/area/panoramica');
+    assert.equal(res.status, 200);
+    assert.match(await res.text(), /data-mappa/);
   });
 });

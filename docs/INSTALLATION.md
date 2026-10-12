@@ -68,6 +68,7 @@ flowchart LR
 | Back up now | `make backup` (catalogue **and** images; verified with `gzip -t`) |
 | Restore | `make restore FILE=backups/db/lumina-....sql.gz` (asks first, replaces current data) |
 | Export Excel now | `make export` or *Administration › Export catalogue* |
+| Export photos | *Administration › Export photos* (ZIP: one folder per work + `catalogo-foto.xlsx`), or `make export-foto` for large archives (`VARIANTE=anteprima` for the reduced versions), saved in `backups/foto/` |
 
 The Excel file has one sheet with every record (one row per work, plain text) plus one sheet per vocabulary.
 

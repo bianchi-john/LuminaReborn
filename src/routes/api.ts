@@ -1,6 +1,6 @@
 import express, { Request, Router } from 'express';
 import { z } from 'zod';
-import { clearSessionCookie, cookieOptions, forgetToken, requireAdmin, requireUser } from '../auth/session';
+import { clearSessionCookie, cookieOptions, forgetToken, requireAdmin, requireSchedatore, requireUser } from '../auth/session';
 import { eseguiLogin } from '../auth/login';
 import * as userManager from '../auth/userManager';
 import { config } from '../config';
@@ -17,10 +17,11 @@ import {
 } from '../domain/classificazioni';
 import { optText, parseSchedaInput, vocabFieldsSchema } from '../domain/scheda.schema';
 import { isVocabKey, VOCABOLARI, vocabolariPublicSchema, VocabDef } from '../domain/vocabolari';
-import { ah, badRequest, forbidden, notFound, unauthorized } from '../http/errors';
+import { ah, badRequest, forbidden, HttpError, notFound, unauthorized } from '../http/errors';
 import { audit } from '../http/audit';
 import { loginLimiter, loginUserLimiter, uploadLimiter } from '../http/security';
 import { escapeLike } from '../util/sql';
+import * as foto from '../services/foto.service';
 import * as immagini from '../services/immagini.service';
 import * as schede from '../services/schede.service';
 import { creaWorkbook } from '../services/export.service';
@@ -179,7 +180,7 @@ api.get(
 
 api.post(
   '/schede',
-  requireUser,
+  requireSchedatore,
   ah(async (req, res) => {
     const id = await schede.createScheda(parseSchedaInput(req.body), req.user!);
     res.status(201).json({ id });
@@ -188,7 +189,7 @@ api.post(
 
 api.put(
   '/schede/:id',
-  requireUser,
+  requireSchedatore,
   ah(async (req, res) => {
     const id = idParam(req);
     await schede.updateScheda(id, parseSchedaInput(req.body), req.user!);
@@ -198,7 +199,7 @@ api.put(
 
 api.delete(
   '/schede/:id',
-  requireUser,
+  requireSchedatore,
   ah(async (req, res) => {
     await schede.deleteScheda(idParam(req), req.user!);
     audit('scheda.eliminata', req, { scheda: idParam(req) });
@@ -225,7 +226,7 @@ api.post(
 
 api.post(
   '/immagini',
-  requireUser,
+  requireSchedatore,
   uploadLimiter,
   express.raw({ type: 'image/*', limit: config.upload.maxImageBytes }),
   ah(async (req, res) => {
@@ -340,6 +341,34 @@ api.get(
     res.setHeader('Cache-Control', 'private, no-store');
     await wb.xlsx.write(res);
     res.end();
+  }),
+);
+
+// Photo catalogue: ZIP with one folder per work and a spreadsheet of the photos.
+// One export at a time: it reads every image from the database.
+export const opzioniFotoSchema = z.object({
+  variante: z.enum(['originale', 'anteprima']).default('originale'),
+  ambito: z.enum(['pubblicate', 'tutte']).default('pubblicate'),
+});
+let esportazioneFotoInCorso = false;
+
+api.get(
+  '/esportazioni/foto.zip',
+  requireAdmin,
+  ah(async (req, res) => {
+    const opzioni = opzioniFotoSchema.parse(req.query);
+    if (esportazioneFotoInCorso) throw new HttpError(429, 'È già in corso un\'esportazione delle foto: riprova tra qualche minuto');
+    esportazioneFotoInCorso = true;
+    try {
+      audit('esportazione.foto', req, opzioni);
+      const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename="lumina-foto-${opzioni.variante}-${stamp}.zip"`);
+      res.setHeader('Cache-Control', 'private, no-store');
+      await foto.scriviZipFoto(res, { ...opzioni, baseUrl: config.allowedOrigins[0] ?? `${req.protocol}://${req.get('host')}` });
+    } finally {
+      esportazioneFotoInCorso = false;
+    }
   }),
 );
 

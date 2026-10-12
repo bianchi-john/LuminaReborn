@@ -1,0 +1,260 @@
+<%- include('../partials/header') %>
+<%
+  const p = panoramica;
+  const LIVELLI = [t('vuoto'), t('iniziato'), t('buono'), t('ricco')];
+  const unDecimale = (x) => h.num(Math.round(x * 10) / 10);
+  const dimensione = (byte) => byte >= 1024 ** 3 ? `${unDecimale(byte / 1024 ** 3)} GB` : `${unDecimale(byte / 1024 ** 2)} MB`;
+  const conteggio = (v, uno, molti) => t(v === 1 ? uno : molti, { n: h.num(v) });
+  const valoreCampo = (c, v) => c.unita === 'caratteri' ? conteggio(v, '{n} carattere', '{n} caratteri') : c.unita === 'voci' ? conteggio(v, '{n} voce', '{n} voci') : (v ? t('compilato') : t('vuoto'));
+  const romano = (n) => { const m = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']]; let s = ''; for (const [v, r] of m) while (n >= v) { s += r; n -= v; } return s; };
+  const nomeSecolo = (s) => s > 0 ? romano(s) : t('{n} a.C.', { n: romano(-s) });
+  const gruppi = [];
+  p.campi.forEach(c => { const g = gruppi[gruppi.length - 1]; if (g && g.nome === c.gruppo) g.n++; else gruppi.push({ nome: c.gruppo, n: 1 }); });
+
+  // Database map: records in the middle, their own data on the left, shared entries on the right
+  const NOMI = { schede: t('Schede'), cronologie: t('Datazioni'), inventari: t('Inventari'), gruppi_misure: t('Gruppi di misure'), misure: t('Misure'), immagini: t('Immagini'), documentazioniFotografiche: t('Documentazione fotografica'), schede_revisioni: t('Storico'), tds_users_schede: t('Schedatori accreditati'), users: t('Utenti') };
+  for (const v of p.vocabolari) NOMI[v.key === 'altre_bibliografie' ? 'altreBibliografie' : v.key] = t(v.plurale);
+  const W = 980, H = 560, CX = W / 2, CY = H / 2, R = 215;
+  const maxRighe = Math.max(1, ...p.tabelle.map(x => x.righe));
+  const raggio = (n) => 9 + 30 * Math.sqrt(n / maxRighe);
+  const nodi = [];
+  const centro = { nome: 'schede', righe: p.totali.schede, x: CX, y: CY, r: raggio(p.totali.schede), gruppo: 'scheda' };
+  const sinistra = p.tabelle.filter(x => x.gruppo === 'dati' || x.gruppo === 'sistema').filter(x => !['misure', 'users'].includes(x.nome));
+  sinistra.forEach((x, i) => {
+    const a = Math.PI * (0.62 + 0.76 * (i / Math.max(1, sinistra.length - 1)));
+    nodi.push({ ...x, x: CX + R * Math.cos(a), y: CY + R * Math.sin(a) * 0.95, r: raggio(x.righe), a, padre: centro });
+  });
+  // Measurements hang off their groups, users off the accredited cataloguers
+  [['misure', 'gruppi_misure'], ['users', 'tds_users_schede']].forEach(([figlio, padreNome]) => {
+    const padre = nodi.find(x => x.nome === padreNome), x = p.tabelle.find(t2 => t2.nome === figlio);
+    if (padre && x) nodi.push({ ...x, x: padre.x + 95 * Math.cos(padre.a), y: padre.y + 95 * Math.sin(padre.a) * 0.95, r: raggio(x.righe), a: padre.a, padre });
+  });
+  const destra = p.tabelle.filter(x => x.gruppo === 'voci');
+  const maxColl = Math.max(1, ...destra.map(x => x.collegamenti || 0));
+  destra.forEach((x, i) => {
+    const a = Math.PI * (-0.38 + 0.76 * (i / Math.max(1, destra.length - 1)));
+    nodi.push({ ...x, x: CX + (R + 40) * Math.cos(a), y: CY + R * Math.sin(a) * 0.95, r: raggio(x.righe), a, padre: centro });
+  });
+  // The drawing's frame follows the nodes, so nothing is cut off whatever the data
+  const tutti = [centro, ...nodi];
+  const Y0 = Math.min(...tutti.map(n => n.y - n.r)) - 16, Y1 = Math.max(...tutti.map(n => n.y + n.r)) + 30;
+  const spessore = (x) => x.gruppo === 'voci' ? 1 + 7 * Math.sqrt((x.collegamenti || 0) / maxColl) : 1.5;
+  const maxClass = Math.max(1, ...p.classificazioni.map(c => c.n));
+  const maxSecolo = Math.max(1, ...p.secoli.map(c => c.n));
+%>
+<div class="area-header">
+  <div class="container py-4">
+    <p class="eyebrow mb-1"><%= t('Amministrazione') %></p>
+    <h1 class="mb-1"><%= t('Panoramica del database') %></h1>
+    <p class="text-muted-lu mb-0"><%= t('Com\'è popolato il catalogo, campo per campo: dove le schede sono ricche, dove mancano dati, quali voci condivise non vengono usate.') %></p>
+  </div>
+</div>
+
+<div class="container py-4 panoramica">
+  <%# Headline figures %>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card card h-100"><div class="card-body">
+        <div class="stat-label"><%= t('Schede') %></div>
+        <div class="stat-value"><%= h.num(p.totali.schede) %></div>
+        <div class="stat-nota"><%= t('{a} pubblicate · {b} in revisione · {c} bozze', { a: p.totali.perStato[2], b: p.totali.perStato[1], c: p.totali.perStato[0] }) %></div>
+      </div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card card h-100"><div class="card-body">
+        <div class="stat-label"><%= t('Completezza media') %></div>
+        <div class="stat-value"><%= p.completezzaMedia %>%</div>
+        <svg class="viz-meter" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect class="viz-traccia" width="100" height="6"/><rect class="viz-serie" width="<%= p.completezzaMedia %>" height="6"/></svg>
+        <div class="stat-nota"><%= t('campi compilati sul totale dei {n} campi della scheda', { n: p.campi.length }) %></div>
+      </div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card card h-100"><div class="card-body">
+        <div class="stat-label"><%= t('Immagini') %></div>
+        <div class="stat-value"><%= h.num(p.totali.immagini) %></div>
+        <div class="stat-nota"><%= t('{a} di originali, {b} in tutto con le versioni ridotte', { a: dimensione(p.totali.byteOriginali), b: dimensione(p.totali.byteTotali) }) %></div>
+      </div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card card h-100"><div class="card-body">
+        <div class="stat-label"><%= t('Voci condivise') %></div>
+        <div class="stat-value"><%= h.num(p.totali.voci) %></div>
+        <div class="stat-nota"><%= t('in {n} vocabolari · {u} utenti', { n: p.vocabolari.length, u: p.totali.utenti }) %></div>
+      </div></div>
+    </div>
+  </div>
+
+  <%# Records × fields %>
+  <section class="viz-sezione" aria-labelledby="titolo-mappa">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+      <div>
+        <h2 class="h4 mb-1" id="titolo-mappa"><%= t('Mappa di completezza') %></h2>
+        <p class="text-muted-lu mb-0 small"><%= t('Una riga per scheda, una colonna per campo. Più il colore è scuro, più il campo è ricco; le caselle chiare sono i dati mancanti.') %></p>
+      </div>
+      <div class="viz-legenda" aria-label="<%= t('Legenda') %>">
+        <% LIVELLI.forEach((l, i) => { %><span><i class="viz-cella lv<%= i %>" aria-hidden="true"></i><%= l %></span><% }) %>
+      </div>
+    </div>
+    <div class="viz-filtri" data-mappa-filtri>
+      <label><%= t('Stato') %>
+        <select class="form-select form-select-sm" data-filtro-stato>
+          <option value=""><%= t('Tutte') %></option>
+          <option value="2"><%= t('Pubblicate') %></option>
+          <option value="1"><%= t('In revisione') %></option>
+          <option value="0"><%= t('Bozze') %></option>
+        </select>
+      </label>
+      <label><%= t('Ordina per') %>
+        <select class="form-select form-select-sm" data-ordina>
+          <option value="completezza"><%= t('Completezza (le meno complete prima)') %></option>
+          <option value="titolo"><%= t('Titolo') %></option>
+        </select>
+      </label>
+      <span class="small text-muted-lu" data-conteggio-righe><%= h.plural(p.righe.length, '{n} scheda', '{n} schede') %></span>
+    </div>
+    <div class="viz-mappa-scroll">
+      <table class="viz-mappa" data-mappa>
+        <caption class="visually-hidden"><%= t('Completezza di ogni campo per ogni scheda') %></caption>
+        <thead>
+          <tr class="viz-gruppi">
+            <th scope="col"></th>
+            <% gruppi.forEach(g => { %><th scope="colgroup" colspan="<%= g.n %>" title="<%= t(g.nome) %>"><span><%= t(g.nome) %></span></th><% }) %>
+            <th scope="col"></th>
+          </tr>
+          <tr class="viz-campi">
+            <th scope="col" class="viz-col-titolo"><%= t('Scheda') %></th>
+            <% p.campi.forEach(c => { %><th scope="col"><span><%= t(c.etichetta) %></span></th><% }) %>
+            <th scope="col" class="viz-col-completezza"><span><%= t('Completezza') %></span></th>
+          </tr>
+          <tr class="viz-copertura">
+            <th scope="row" class="viz-col-titolo"><%= t('Schede con il campo compilato') %></th>
+            <% p.campi.forEach(c => { %>
+              <td data-tip="<%= t(c.etichetta) %>" data-tip-valore="<%= c.percentuale %>%" data-tip-nota="<%= t('{n} schede su {tot}', { n: c.compilati, tot: p.righe.length }) %>">
+                <svg viewBox="0 0 10 30" preserveAspectRatio="none" aria-hidden="true"><rect class="viz-traccia" width="10" height="30"/><rect class="viz-serie" y="<%= 30 - c.percentuale * 0.3 %>" width="10" height="<%= c.percentuale * 0.3 %>"/></svg>
+                <span class="viz-percento"><%= c.percentuale %></span>
+              </td>
+            <% }) %>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody>
+          <% p.righe.forEach(r => { %>
+            <tr data-stato="<%= r.stato %>" data-completezza="<%= r.completezza %>" data-titolo="<%= r.titolo.toLowerCase() %>">
+              <th scope="row" class="viz-col-titolo">
+                <span class="viz-stato stato-<%= r.stato %>" title="<%= h.statoLabel(r.stato) %>"></span>
+                <a href="/area/schede/<%= r.id %>" title="<%= r.titolo %>"><%= r.titolo || t('(senza titolo)') %></a>
+              </th>
+              <% p.campi.forEach((c, i) => { %>
+                <td class="viz-cella lv<%= r.livelli[i] %>" data-tip="<%= t(c.etichetta) %>" data-tip-valore="<%= valoreCampo(c, r.valori[i]) %>" data-tip-nota="<%= r.titolo %>"><span class="visually-hidden"><%= LIVELLI[r.livelli[i]] %></span></td>
+              <% }) %>
+              <td class="viz-col-completezza"><%= r.completezza %>%</td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <%# Tables and links %>
+  <section class="viz-sezione" aria-labelledby="titolo-struttura">
+    <h2 class="h4 mb-1" id="titolo-struttura"><%= t('Struttura del database') %></h2>
+    <p class="text-muted-lu small mb-3"><%= t('Ogni cerchio è una tabella (l\'area è proporzionale alle righe); a sinistra i dati propri delle schede, a destra le voci condivise, collegate da linee tanto più spesse quanti più collegamenti hanno.') %></p>
+    <div class="viz-card">
+      <svg class="viz-struttura" viewBox="0 <%= Y0.toFixed(0) %> <%= W %> <%= (Y1 - Y0).toFixed(0) %>" role="img" aria-labelledby="titolo-struttura">
+        <% nodi.forEach(n => { %>
+          <line class="viz-arco <%= n.gruppo === 'voci' ? 'arco-voci' : '' %>" x1="<%= n.padre.x.toFixed(1) %>" y1="<%= n.padre.y.toFixed(1) %>" x2="<%= n.x.toFixed(1) %>" y2="<%= n.y.toFixed(1) %>" stroke-width="<%= spessore(n).toFixed(1) %>"/>
+        <% }) %>
+        <% [centro, ...nodi].forEach(n => {
+             const destraLato = n === centro ? null : Math.cos(n.a) >= 0;
+             const lx = n === centro ? n.x : n.x + (n.r + 8) * (destraLato ? 1 : -1);
+             const ly = n === centro ? n.y + n.r + 18 : n.y + 4;
+             const voce = p.vocabolari.find(v => (v.key === 'altre_bibliografie' ? 'altreBibliografie' : v.key) === n.nome);
+             const nota = voce ? t('{u} usate, {m} mai usate · {c} collegamenti', { u: voce.usate, m: voce.maiUsate, c: voce.collegamenti }) : (n.nome === 'schede' ? t('{a} pubblicate · {b} in revisione · {c} bozze', { a: p.totali.perStato[2], b: p.totali.perStato[1], c: p.totali.perStato[0] }) : '');
+        %>
+          <g class="viz-nodo nodo-<%= n.gruppo %>" tabindex="0" data-tip="<%= NOMI[n.nome] || n.nome %>" data-tip-valore="<%= h.plural(n.righe, '{n} riga', '{n} righe') %>" data-tip-nota="<%= nota %>">
+            <circle cx="<%= n.x.toFixed(1) %>" cy="<%= n.y.toFixed(1) %>" r="<%= n.r.toFixed(1) %>"/>
+            <% if (n === centro) { %><text class="viz-num-centro" x="<%= n.x %>" y="<%= n.y + 6 %>" text-anchor="middle"><%= h.num(n.righe) %></text><% } %>
+            <text x="<%= lx.toFixed(1) %>" y="<%= ly.toFixed(1) %>" text-anchor="<%= n === centro ? 'middle' : (destraLato ? 'start' : 'end') %>"><%= NOMI[n.nome] || n.nome %><% if (n !== centro) { %> <tspan class="viz-num"><%= h.num(n.righe) %></tspan><% } %></text>
+          </g>
+        <% }) %>
+      </svg>
+      <details class="mt-2">
+        <summary class="small"><%= t('Vedi come tabella') %></summary>
+        <table class="table table-sm mt-2 mb-0">
+          <thead><tr><th scope="col"><%= t('Tabella') %></th><th scope="col" class="text-end"><%= t('Righe') %></th><th scope="col" class="text-end"><%= t('Collegamenti alle schede') %></th></tr></thead>
+          <tbody>
+            <% p.tabelle.forEach(x => { %><tr><td><%= NOMI[x.nome] || x.nome %> <code class="small"><%= x.nome %></code></td><td class="text-end"><%= h.num(x.righe) %></td><td class="text-end"><%= x.collegamenti === undefined ? '—' : h.num(x.collegamenti) %></td></tr><% }) %>
+          </tbody>
+        </table>
+      </details>
+    </div>
+  </section>
+
+  <div class="row g-4">
+    <%# Shared entries: published use, drafts only, never used %>
+    <section class="col-lg-7 viz-sezione" aria-labelledby="titolo-voci">
+      <h2 class="h4 mb-1" id="titolo-voci"><%= t('Uso delle voci condivise') %></h2>
+      <div class="viz-legenda mb-3">
+        <span><i class="viz-cella lv3" aria-hidden="true"></i><%= t('in schede pubblicate') %></span>
+        <span><i class="viz-cella lv1" aria-hidden="true"></i><%= t('solo in bozze o revisione') %></span>
+        <span><i class="viz-cella lv0" aria-hidden="true"></i><%= t('mai usate') %></span>
+      </div>
+      <div class="viz-card">
+        <table class="table table-sm align-middle mb-0 viz-voci">
+          <thead><tr><th scope="col"><%= t('Vocabolario') %></th><th scope="col" class="w-50"><span class="visually-hidden"><%= t('Composizione') %></span></th><th scope="col" class="text-end"><%= t('Voci') %></th><th scope="col" class="text-end"><%= t('Mai usate') %></th></tr></thead>
+          <tbody>
+            <% p.vocabolari.forEach(v => {
+                 const tot = Math.max(1, v.totale);
+                 const a = v.inPubblicate / tot * 100, b = (v.usate - v.inPubblicate) / tot * 100;
+            %>
+              <tr>
+                <th scope="row" class="fw-normal"><a href="/area/vocabolari?tipo=<%= v.key %>"><%= t(v.plurale) %></a></th>
+                <td data-tip="<%= t(v.plurale) %>" data-tip-valore="<%= h.plural(v.totale, '{n} voce', '{n} voci') %>" data-tip-nota="<%= t('{a} in schede pubblicate, {b} solo in bozze, {c} mai usate', { a: v.inPubblicate, b: v.usate - v.inPubblicate, c: v.maiUsate }) %>">
+                  <svg class="viz-barra" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+                    <rect class="viz-cella-svg lv0" width="100" height="10"/>
+                    <rect class="viz-cella-svg lv1" x="<%= a.toFixed(2) %>" width="<%= Math.max(0, b - 0.6).toFixed(2) %>" height="10"/>
+                    <rect class="viz-cella-svg lv3" width="<%= Math.max(0, a - (b > 0 || v.maiUsate ? 0.6 : 0)).toFixed(2) %>" height="10"/>
+                  </svg>
+                </td>
+                <td class="text-end"><%= h.num(v.totale) %></td>
+                <td class="text-end"><%= v.maiUsate ? h.num(v.maiUsate) : '—' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# Distributions of values %>
+    <section class="col-lg-5 viz-sezione" aria-labelledby="titolo-distribuzione">
+      <h2 class="h4 mb-3" id="titolo-distribuzione"><%= t('Le opere per classificazione e per secolo') %></h2>
+      <div class="viz-card mb-3">
+        <ul class="viz-barre list-unstyled mb-0">
+          <% p.classificazioni.forEach(c => { %>
+            <li data-tip="<%= c.etichetta ? t(c.etichetta) : t('Senza classificazione') %>" data-tip-valore="<%= h.plural(c.n, '{n} scheda', '{n} schede') %>">
+              <span class="viz-barre-etichetta"><%= c.etichetta ? t(c.etichetta) : t('Senza classificazione') %></span>
+              <svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><rect class="viz-serie" width="<%= (c.n / maxClass * 100).toFixed(2) %>" height="10"/></svg>
+              <span class="viz-barre-valore"><%= h.num(c.n) %></span>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+      <div class="viz-card">
+        <% if (p.secoli.length) { %>
+          <div class="viz-colonne">
+            <% p.secoli.forEach(s => { %>
+              <div class="viz-colonna" data-tip="<%= t('{s} secolo', { s: nomeSecolo(s.secolo) }) %>" data-tip-valore="<%= h.plural(s.n, '{n} scheda', '{n} schede') %>">
+                <span class="viz-barre-valore"><%= s.n %></span>
+                <svg viewBox="0 0 10 100" preserveAspectRatio="none" aria-hidden="true"><rect class="viz-serie" y="<%= (100 - s.n / maxSecolo * 100).toFixed(2) %>" width="10" height="<%= (s.n / maxSecolo * 100).toFixed(2) %>"/></svg>
+                <span class="viz-colonna-etichetta"><%= nomeSecolo(s.secolo) %></span>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+        <p class="small text-muted-lu mb-0 mt-2"><%= t('Secolo della datazione più antica di ogni scheda.') %><% if (p.senzaData) { %> <%= h.plural(p.senzaData, 'Una scheda è senza anno.', '{n} schede sono senza anno.') %><% } %></p>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="viz-tooltip" role="tooltip" hidden data-viz-tooltip><strong></strong><span></span><small></small></div>
+<%- include('../partials/footer', { scripts: ['panoramica.js'] }) %>

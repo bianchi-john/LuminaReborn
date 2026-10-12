@@ -33,7 +33,7 @@
     </a>
     <div class="ms-auto d-flex align-items-center gap-2 gap-sm-3">
       <% if (user) { %>
-        <a class="header-user d-none d-md-inline" href="/area" title="<%= t('Le mie schede') %>"><%= user.displayName %></a>
+        <a class="header-user d-none d-md-inline" href="<%= user.isAdmin ? '/area/revisione' : '/area' %>" title="<%= user.isAdmin ? t('Revisione schede') : t('Le mie schede') %>"><%= user.displayName %></a>
       <% } else { %>
         <a class="header-user d-none d-md-inline" href="/login"><%= t('Area riservata') %></a>
       <% } %>
@@ -78,16 +78,21 @@
     <% if (user) { %>
       <div class="menu-section">
         <p class="menu-heading"><%= t('Area riservata') %></p>
-        <%- navLink(voce('/area', esc(t('Le mie schede')), nav === 'area')) %>
-        <%- navLink(voce('/area/schede/nuova', esc(t('Nuova scheda')), nav === 'nuova')) %>
+        <% if (user.isAdmin) { %>
+          <%- navLink(voce('/area/revisione', esc(t('Revisione schede')), nav === 'revisione')) %>
+          <%- navLink(voce('/area/panoramica', esc(t('Panoramica del database')), nav === 'panoramica')) %>
+        <% } else { %>
+          <%- navLink(voce('/area', esc(t('Le mie schede')), nav === 'area')) %>
+          <%- navLink(voce('/area/schede/nuova', esc(t('Nuova scheda')), nav === 'nuova')) %>
+        <% } %>
       </div>
       <% if (user.isAdmin) { %>
         <div class="menu-section">
           <p class="menu-heading"><%= t('Amministrazione') %></p>
-          <%- navLink(voce('/area/revisione', esc(t('Revisione schede')), nav === 'revisione')) %>
           <%- navLink(voce('/area/vocabolari', esc(t('Vocabolari')), nav === 'vocabolari')) %>
           <%- navLink(voce('/area/utenti', esc(t('Utenti')), nav === 'utenti')) %>
           <%- navLink(voce('/api/esportazioni/catalogo.xlsx', esc(t('Esporta catalogo (Excel)')), false)) %>
+          <%- navLink(voce('/area/esportazioni/foto', esc(t('Esporta foto (ZIP)')), nav === 'foto')) %>
         </div>
       <% } %>
       <div class="menu-section menu-account">

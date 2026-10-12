@@ -1,5 +1,5 @@
 import { PoolConnection } from 'mysql2/promise';
-import { SessionUser } from '../auth/session';
+import { MESSAGGIO_SOLO_SCHEDATORI, SessionUser } from '../auth/session';
 import { Db, execute, pool, select, selectOne, withTransaction } from '../db/pool';
 import { STATI, STATO_LABEL } from '../domain/classificazioni';
 import { SchedaInput } from '../domain/scheda.schema';
@@ -47,13 +47,20 @@ export interface Permessi {
  * - the administrator sees everything, can correct records in any state,
  *   approve them, reject them (with a reason) or withdraw them from publication.
  */
+/**
+ * Separation of duties: no account can do everything.
+ * - Cataloguers write records: they create, edit, submit and delete their own drafts.
+ * - Administrators review: they approve or reject submitted records and can send a
+ *   published one back to its cataloguer at any time, always with a message.
+ *   They never create, edit or delete record content.
+ */
 export function computePermessi(s: { stato: number; created_by: number | null }, user: SessionUser | undefined, accreditato = false): Permessi {
-  const owner = !!user && (s.created_by === user.id || accreditato);
   const admin = !!user?.isAdmin;
+  const owner = !!user && !admin && (s.created_by === user.id || accreditato);
   return {
     visualizza: s.stato === STATI.PUBBLICATA || owner || admin,
-    modifica: admin || (owner && s.stato === STATI.BOZZA),
-    elimina: (owner && s.stato === STATI.BOZZA) || (admin && s.stato !== STATI.PUBBLICATA),
+    modifica: owner && s.stato === STATI.BOZZA,
+    elimina: owner && s.stato === STATI.BOZZA,
     invia: owner && s.stato === STATI.BOZZA,
     ritira: owner && s.stato === STATI.IN_REVISIONE,
     approva: admin && s.stato === STATI.IN_REVISIONE,
@@ -306,6 +313,7 @@ function schedaColumns(input: SchedaInput) {
 }
 
 export async function createScheda(dati: SchedaInput, user: SessionUser): Promise<number> {
+  if (user.isAdmin) throw forbidden(MESSAGGIO_SOLO_SCHEDATORI);
   return withTransaction(async (conn) => {
     const input = await conImmaginiDellaScheda(conn, dati);
     const res = await execute(
@@ -367,8 +375,22 @@ const TRANSIZIONI: Record<Azione, { stato: number; registro: string }> = {
   depubblica: { stato: STATI.BOZZA, registro: 'depubblicata' },
 };
 
+/** A record sent back must reach someone who can work on it. */
+async function haSchedatore(db: Db, id: number): Promise<boolean> {
+  const row = await selectOne(
+    db,
+    `SELECT 1 AS ok FROM users u
+      WHERE u.id IN (SELECT created_by FROM schede WHERE id = ? UNION SELECT id_user FROM tds_users_schede WHERE id_scheda = ?)
+        AND COALESCE(u.isAdmin, '0') NOT IN ('1', 'true')
+      LIMIT 1`,
+    [id, id],
+  );
+  return !!row;
+}
+
 export async function cambiaStato(id: number, azione: Azione, user: SessionUser, commento: string | null): Promise<number> {
   if (azione === 'respingi' && !commento) throw badRequest('Indicare il motivo del rifiuto: lo schedatore lo vedrà nella sua area');
+  if (azione === 'depubblica' && !commento) throw badRequest('Scrivi un messaggio per lo schedatore: spiega perché la scheda torna indietro');
   return withTransaction(async (conn) => {
     const row = await loadRow(conn, id, true);
     const permessi = computePermessi(row, user, await isAccreditato(conn, id, user));
@@ -379,6 +401,9 @@ export async function cambiaStato(id: number, azione: Azione, user: SessionUser,
       throw user.isAdmin || row.created_by === user.id
         ? conflict(`Operazione non possibile: la scheda è "${STATO_LABEL[row.stato]}"`)
         : forbidden();
+    }
+    if ((azione === 'respingi' || azione === 'depubblica') && !(await haSchedatore(conn, id))) {
+      throw conflict('Nessuno schedatore può riprendere questa scheda: chiedi a uno schedatore di farsene carico prima di rimandarla indietro');
     }
     const { stato, registro } = TRANSIZIONI[azione];
     // "Published" is reached only through approval; any other transition revokes it

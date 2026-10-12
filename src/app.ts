@@ -1,3 +1,4 @@
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express, { Application } from 'express';
 import fs from 'fs';
@@ -93,6 +94,9 @@ export function createApp(): Application {
 
   app.use(securityHeaders);
   app.use(permissionsPolicy);
+  // gzip for HTML, CSS, JS and JSON (images are already compressed and are skipped).
+  // Not on login: a page carrying a secret token must not be compressed (BREACH).
+  app.use(compression({ filter: (req, res) => !/^\/(login|api\/auth)(\/|$)/.test(req.path) && compression.filter(req, res) }));
 
   const staticOptions = { maxAge: config.isProduction ? '7d' : 0, index: false as const };
   app.use('/static', express.static(path.join(ROOT_DIR, 'public'), staticOptions));

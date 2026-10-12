@@ -50,15 +50,58 @@ document.querySelectorAll('input[data-suggest]').forEach((input) => {
 });
 
 
+// Header background: the CSS filter blur(12px) saturate(1.25) would be recomputed
+// on every frame of the slow zoom. The same effect is applied once, in a canvas,
+// at the image's own resolution (radius scaled to the displayed size): a blurred
+// image has no fine detail, so enlarging it afterwards looks the same.
+const SFOCATURA_PX = 12;
+function presfoca(img) {
+  if (img.dataset.presfocata || !img.naturalWidth) return;
+  img.dataset.presfocata = '1';
+  const scala = Math.max(img.clientWidth / img.naturalWidth, img.clientHeight / img.naturalHeight) || 1;
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx || !('filter' in ctx)) return; // older browsers: the CSS filter stays
+  ctx.filter = `blur(${(SFOCATURA_PX / scala).toFixed(2)}px) saturate(1.25)`;
+  ctx.drawImage(img, 0, 0);
+  canvas.toBlob(
+    (blob) => {
+      if (!blob) return;
+      // Decoded beforehand, so the swap happens without a blank frame
+      const url = URL.createObjectURL(blob);
+      const pronta = new Image();
+      pronta.src = url;
+      pronta
+        .decode()
+        .then(() => {
+          img.src = url;
+          img.classList.add('presfocata');
+        })
+        .catch(() => URL.revokeObjectURL(url));
+    },
+    'image/jpeg',
+    0.92,
+  );
+}
+
 // Header background: the blurred covers alternate with a cross-fade
-// (random order chosen by the server on each visit). No animation if the user
+// (random order chosen by the server on each visit). No animation if the visitor
 // has asked the system to reduce motion.
 const sfondo = document.querySelector('[data-hero-sfondo]');
 const immagini = sfondo ? [...sfondo.querySelectorAll('img')] : [];
+immagini.forEach((img) => {
+  if (img.complete) presfoca(img);
+  else img.addEventListener('load', () => presfoca(img), { once: true });
+});
 if (immagini.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   let corrente = 0;
+  // No new cross-fade (and no new slow zoom) while the header is off screen
+  let visibile = true;
+  new IntersectionObserver(([voce]) => (visibile = voce.isIntersecting)).observe(sfondo.closest('section') ?? sfondo);
   setInterval(() => {
-    if (document.hidden) return;
+    if (document.hidden || !visibile) return;
     const prossima = (corrente + 1) % immagini.length;
     // Move to the next one only once it has loaded, to avoid blank flashes
     if (!immagini[prossima].complete) {

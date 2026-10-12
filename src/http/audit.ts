@@ -21,6 +21,7 @@ export type EventoAudit =
   | 'utente.eliminato'
   | 'scheda.eliminata'
   | 'scheda.stato'
+  | 'esportazione.foto'
   | 'voce.modificata'
   | 'voce.unita'
   | 'voce.eliminata'

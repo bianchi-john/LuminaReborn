@@ -30,7 +30,7 @@ flowchart TD
 
 | Risk | Measures |
 |---|---|
-| **A01 Access control** | Server-side permissions for every action (`computePermessi`, unit-tested) · other users' drafts return 404 · original images for authorised staff only · public URLs use random codes, so records and images can't be enumerated · no open redirects |
+| **A01 Access control** | **Separation of duties:** administrators review but never create, edit or delete records; cataloguers write but can't publish. No account has every privilege · server-side permissions for every action (`computePermessi`, unit- and e2e-tested) · other users' drafts return 404 · original images for authorised staff only · public URLs use random codes, so records and images can't be enumerated · no open redirects |
 | **A02 Cryptography** | HTTPS + HSTS · cookies `Secure`, `HttpOnly`, `SameSite=Strict`, `__Host-` prefix · bcrypt password hashes (user-manager) · login always via POST · secrets only in `.env` (mode 600) |
 | **A03 Injection / XSS** | Parameterised queries only; dynamic table names come from static config · zod schemas on all input · `sanitize-html` allow-list on rich text, both on write and on read · escaped output · CSP with no inline or external scripts/styles · uploads checked by magic bytes (no SVG) |
 | **A04 Design** | Draft → review → publish with per-state permissions · least privilege (DB users, `cap_drop: ALL`) · rate and size limits · anti-scraping |
@@ -38,6 +38,7 @@ flowchart TD
 | **A06 Components** | Pinned versions (lockfile, image tags/digests) · `npm audit` in CI · Dependabot |
 | **A07 Authentication** | Generic errors · attempt limits per IP and per username · 8 h absolute and 60 min idle session timeout · logout and password change revoke tokens server-side · password change needs the current one · login form CSRF token · blocked users rejected even with a valid token |
 | **A08 Integrity** | `npm ci`, CI build · versioned migrations · backups verified with `gzip -t` |
+| **Compression** | gzip for public pages and assets, but **not** for the login page and auth API, which carry a secret token (BREACH) |
 | **A09 Logging** | `AUDIT` log lines: logins, failures, logouts, password changes, denials, user admin, deletions, state changes, merges, exports (no IPs, passwords or tokens) · per-record history · `/healthz` |
 | **A10 SSRF** | The server only calls the configured user-manager URL; it never fetches a user-supplied URL |
 

@@ -4,11 +4,13 @@ import { config } from '../config';
 import { eseguiLogin } from '../auth/login';
 import { loginLimiter, loginUserLimiter, verificaOrigine } from '../http/security';
 import { loginSchema } from './api';
-import { requireAdminPage, requireUserPage } from '../auth/session';
+import { requireAdminPage, requireSchedatorePage, requireUserPage } from '../auth/session';
 import { STATI } from '../domain/classificazioni';
 import { confrontoDimensionale } from '../domain/dimensioni';
 import { isVocabKey, VOCAB_KEYS, VOCABOLARI } from '../domain/vocabolari';
 import { ah, forbidden, notFound } from '../http/errors';
+import * as foto from '../services/foto.service';
+import { getPanoramica } from '../services/panoramica.service';
 import * as schede from '../services/schede.service';
 import { codiceDaPercorso } from '../util/codici';
 import { copertineCasuali } from '../services/immagini.service';
@@ -223,8 +225,9 @@ pages.get(
   '/area',
   requireUserPage,
   ah(async (req, res) => {
-    const [mie, conteggi] = await Promise.all([schede.listMie(req.user!), req.user!.isAdmin ? schede.contaPerStato() : undefined]);
-    res.render('area/dashboard', { title: req.t('Le mie schede'), nav: 'area', mie, conteggi });
+    // Administrators have no records of their own: their home is the review queue
+    if (req.user!.isAdmin) return res.redirect('/area/revisione');
+    res.render('area/dashboard', { title: req.t('Le mie schede'), nav: 'area', mie: await schede.listMie(req.user!) });
   }),
 );
 
@@ -239,13 +242,13 @@ pages.get(
   }),
 );
 
-pages.get('/area/schede/nuova', requireUserPage, (req, res) => {
+pages.get('/area/schede/nuova', requireSchedatorePage, (req, res) => {
   res.render('area/editor', { title: req.t('Nuova scheda'), nav: 'nuova', scheda: null, schedaJson: 'null' });
 });
 
 pages.get(
   '/area/schede/:id/modifica',
-  requireUserPage,
+  requireSchedatorePage,
   ah(async (req, res) => {
     const s = await schede.getScheda(idParam(req), req.user);
     if (!s.permessi.modifica) throw forbidden('Questa scheda non è modificabile nel suo stato attuale');
@@ -271,6 +274,24 @@ pages.get(
     const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 100) : '';
     const elenco = await voci.listVoci(v, { q: q || undefined, limit: 500 });
     res.render('area/vocabolari', { title: req.t('Vocabolari'), nav: 'vocabolari', v, elenco, q, vocabolari: VOCAB_KEYS.map((k) => VOCABOLARI[k]) });
+  }),
+);
+
+pages.get(
+  '/area/panoramica',
+  requireAdminPage,
+  ah(async (req, res) => {
+    res.render('area/panoramica', { title: req.t('Panoramica del database'), nav: 'panoramica', panoramica: await getPanoramica() });
+  }),
+);
+
+pages.get(
+  '/area/esportazioni/foto',
+  requireAdminPage,
+  ah(async (req, res) => {
+    const combinazioni = (['pubblicate', 'tutte'] as const).flatMap((ambito) => (['originale', 'anteprima'] as const).map((variante) => ({ ambito, variante })));
+    const stime = await Promise.all(combinazioni.map(async (c) => ({ ...c, ...(await foto.stimaFoto(c)) })));
+    res.render('area/foto', { title: req.t('Esporta foto'), nav: 'foto', stime });
   }),
 );
 

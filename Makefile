@@ -6,7 +6,7 @@ COMPOSE_DEV := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 NODE        := docker run --rm -v "$(CURDIR)":/app -v lumina-node-modules:/app/node_modules -w /app node:22-alpine
 
 .DEFAULT_GOAL := help
-.PHONY: help setup up down restart logs ps dev reset-demo backup restore export test typecheck test-e2e grant-media mongo-auth db verifica-produzione scansione-sicurezza
+.PHONY: help setup up down restart logs ps dev reset-demo backup restore export export-foto test typecheck test-e2e grant-media mongo-auth db verifica-produzione scansione-sicurezza
 
 help: ## Show the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -14,7 +14,7 @@ help: ## Show the available commands
 setup: ## Prepare .env, the Docker network and the backup folders (first install)
 	@test -f .env || (cp .env.example .env && chmod 600 .env && echo "Created .env from .env.example: change the passwords and JWT_SECRET")
 	@docker network inspect extern >/dev/null 2>&1 || docker network create extern >/dev/null
-	@mkdir -p backups/db backups/excel
+	@mkdir -p backups/db backups/excel backups/foto
 
 up: setup ## Start the site (loads the demo works on first start)
 	$(COMPOSE) up -d --build
@@ -46,6 +46,9 @@ restore: ## Restore a backup: make restore FILE=backups/db/lumina-....sql.gz
 
 export: ## Export the catalogue to Excel now, in backups/excel
 	$(COMPOSE) exec nodeapp node dist/cli/esporta.js
+
+export-foto: ## Export the photo catalogue (ZIP of the originals) to backups/foto. VARIANTE=anteprima for the reduced versions
+	$(COMPOSE) exec nodeapp node dist/cli/esporta-foto.js $${VARIANTE:-originale} $${AMBITO:-tutte}
 
 grant-media: ## Create the image database on older installations
 	./scripts/grant-media.sh

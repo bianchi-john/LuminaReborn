@@ -104,13 +104,29 @@ erDiagram
 ```mermaid
 stateDiagram-v2
   [*] --> Draft: cataloguer creates
-  Draft --> UnderReview: submit (+ message)
-  UnderReview --> Draft: admin rejects (reason required)
+  Draft --> UnderReview: cataloguer submits (+ message)
+  UnderReview --> Draft: cataloguer withdraws
+  UnderReview --> Draft: admin rejects (message required)
   UnderReview --> Published: admin approves
-  Published --> Draft: admin unpublishes
+  Published --> Draft: admin sends back (message required)
+  Draft --> [*]: cataloguer deletes
 ```
 
-`schede.stato`: 0 draft, 1 under review, 2 published. Every step and its message goes to `schede_revisioni`.
+**Separation of duties** (`computePermessi`): no account can do everything. Cataloguers write records: they create them, edit and delete their own drafts, and submit them. Administrators review: they approve or reject submitted records, and can send a published one back at any time. They never create, edit or delete record content (API and pages answer 403). A record can only be sent back if a cataloguer can take it over.
+
+`schede.stato`: 0 draft, 1 under review, 2 published. Every step and its message goes to `schede_revisioni`, and the cataloguer's dashboard flags records sent back.
+
+### Database overview and exports
+
+*Administration › Database overview* (`services/panoramica.service.ts`, `views/area/panoramica.ejs`):
+- **completeness map:** one row per record, one column per field (`CAMPI`), in four levels from empty to rich;
+- **table structure:** row counts and links;
+- **use of shared entries:** published, drafts only, never used;
+- **distributions:** by classification and by century.
+
+It runs one grouped query per table, never one per record. To add a field to the map, add it to `CAMPI`.
+
+*Administration › Export photos* (`services/foto.service.ts`) streams a ZIP: one folder per work, images stored as they are, and `catalogo-foto.xlsx` listing every photo. Images are read one at a time, so memory stays flat whatever the archive size. For very large archives use `make export-foto` (writes to `backups/foto`).
 
 ### Images
 

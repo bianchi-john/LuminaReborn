@@ -564,9 +564,8 @@ h1, h2, h3, h4, .serif {
   position: sticky;
   bottom: 0;
   z-index: 1020;
-  background: rgba(255, 255, 255, 0.96);
+  background: #fff;
   border-top: 1px solid var(--lu-line);
-  backdrop-filter: blur(4px);
 }
 
 /* --- Miscellaneous ------------------------------------------------------- */
@@ -641,8 +640,7 @@ a {
   top: 0;
   z-index: 1030;
   box-shadow: var(--lu-shadow-sm);
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: saturate(1.4) blur(6px);
+  background: #fff;
 }
 
 .eyebrow {
@@ -1416,8 +1414,7 @@ textarea.form-control {
   min-height: 4rem;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: saturate(1.4) blur(8px);
+  background: #fff;
   box-shadow: var(--lu-elev-2);
   border-bottom: 0;
 }
@@ -2153,8 +2150,7 @@ textarea.form-control,
   overflow-x: auto;
   scrollbar-width: none;
   border-bottom: 1px solid var(--lu-line);
-  background: rgba(251, 250, 247, 0.94);
-  backdrop-filter: blur(8px);
+  background: var(--lu-paper);
 }
 
 .sezioni-nav::-webkit-scrollbar {
@@ -2359,4 +2355,448 @@ ol.elenco-bibliografia > li::marker {
     position: static;
     box-shadow: none;
   }
+}
+
+/* =========================================================================
+   v6: index tiles with their own soft tint; lighter rendering
+   ========================================================================= */
+
+/* Each index keeps the same tint on the home page and on the Indexes page */
+.indice-autori { --tinta: #f7eeec; --filo: #c99a96; }
+.indice-materiali { --tinta: #f5f0e6; --filo: #c9b48a; }
+.indice-tecniche { --tinta: #eef2ea; --filo: #9fb293; }
+.indice-ubicazioni { --tinta: #edf1f4; --filo: #93a8b9; }
+.indice-provenienze { --tinta: #f1edf4; --filo: #ab9cbc; }
+.indice-mostre { --tinta: #f6f1e4; --filo: #c8ac72; }
+
+[class*="indice-"].card-link {
+  background: var(--tinta, #fff);
+  box-shadow: inset 0 3px 0 var(--filo, transparent), var(--lu-elev-1);
+}
+
+[class*="indice-"].card-link:hover {
+  box-shadow: inset 0 3px 0 var(--filo, transparent), var(--lu-elev-2);
+}
+
+/* Home background: when the browser can pre-blur the image once (home.js),
+   the live CSS filter, recalculated on every animation frame, is no longer needed */
+.hero-sfondo img.presfocata {
+  filter: none;
+}
+
+/* =========================================================================
+   Database overview (administrators): completeness map and charts.
+   Ordinal ramp in the accent hue (validated: monotone lightness, light end
+   2.2:1 on white); "empty" is a neutral grey outside the ramp.
+   ========================================================================= */
+
+.panoramica {
+  --viz-vuoto: #ebe6de;
+  --viz-lv1: #d9a0a4;
+  --viz-lv2: #b25a61;
+  --viz-lv3: #7a1f24;
+  --viz-serie: #7a1f24;
+  --viz-traccia: #f0ece5;
+  --viz-griglia: #e4e0d8;
+}
+
+.stat-card .stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lu-muted);
+}
+
+.stat-card .stat-nota {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--lu-muted);
+}
+
+.viz-meter {
+  display: block;
+  width: 100%;
+  height: 6px;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.viz-traccia { fill: var(--viz-traccia); }
+.viz-serie { fill: var(--viz-serie); }
+
+.viz-sezione {
+  margin-bottom: 2.5rem;
+}
+
+.viz-card {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  box-shadow: var(--lu-elev-1);
+}
+
+.viz-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.85rem;
+  color: var(--lu-muted);
+}
+
+.viz-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.viz-legenda i {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.viz-cella.lv0, .viz-cella-svg.lv0 { background: var(--viz-vuoto); fill: var(--viz-vuoto); }
+.viz-cella.lv1, .viz-cella-svg.lv1 { background: var(--viz-lv1); fill: var(--viz-lv1); }
+.viz-cella.lv2, .viz-cella-svg.lv2 { background: var(--viz-lv2); fill: var(--viz-lv2); }
+.viz-cella.lv3, .viz-cella-svg.lv3 { background: var(--viz-lv3); fill: var(--viz-lv3); }
+
+.viz-filtri {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.viz-filtri label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.viz-filtri .form-select {
+  width: auto;
+}
+
+.viz-mappa-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  box-shadow: var(--lu-elev-1);
+}
+
+/* The map: 2px of white between cells (the gap separates marks, no borders) */
+.viz-mappa {
+  border-collapse: separate;
+  border-spacing: 2px;
+  margin: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.viz-mappa th {
+  font-weight: 400;
+}
+
+.viz-mappa .viz-gruppi th {
+  position: relative;
+  height: 1.5rem;
+  padding: 0 0.15rem 0.2rem;
+  border-bottom: 1px solid var(--viz-griglia);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lu-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.viz-mappa .viz-campi th {
+  height: 9.5rem;
+  vertical-align: bottom;
+  padding: 0.35rem 0 0.35rem;
+}
+
+.viz-mappa .viz-campi th > span {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  color: var(--lu-ink);
+}
+
+.viz-mappa .viz-campi .viz-col-titolo {
+  vertical-align: bottom;
+  font-weight: 600;
+}
+
+.viz-mappa .viz-copertura td {
+  position: relative;
+  width: 1.75rem;
+  padding: 0;
+  text-align: center;
+  cursor: default;
+}
+
+.viz-mappa .viz-copertura svg {
+  display: block;
+  width: 100%;
+  height: 2rem;
+}
+
+.viz-percento {
+  font-size: 0.68rem;
+  color: var(--lu-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.viz-mappa .viz-copertura th {
+  font-size: 0.72rem;
+  color: var(--lu-muted);
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.viz-mappa tbody td.viz-cella {
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.6rem;
+  padding: 0;
+  cursor: default;
+}
+
+.viz-mappa tbody td.viz-cella.viz-hover,
+.viz-mappa .viz-copertura td.viz-hover {
+  outline: 2px solid var(--lu-ink);
+  outline-offset: -1px;
+}
+
+.viz-col-titolo {
+  min-width: 14rem;
+  max-width: 20rem;
+  padding: 0 0.6rem 0 0.25rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.viz-col-titolo a {
+  color: var(--lu-ink);
+  text-decoration: none;
+}
+
+.viz-col-titolo a:hover {
+  color: var(--lu-accent);
+  text-decoration: underline;
+}
+
+.viz-col-completezza {
+  padding: 0 0.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--lu-muted);
+}
+
+.viz-stato {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.35rem;
+  border-radius: 50%;
+  vertical-align: 0.05em;
+}
+
+.viz-stato.stato-0 { border: 1.5px solid var(--lu-muted); }
+.viz-stato.stato-1 { background: #c8ac72; }
+.viz-stato.stato-2 { background: var(--viz-serie); }
+
+/* Database structure */
+.viz-struttura {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-size: 13px;
+}
+
+.viz-arco {
+  stroke: #c9c2b6;
+  stroke-linecap: round;
+}
+
+.viz-arco.arco-voci {
+  stroke: var(--viz-lv1);
+}
+
+.viz-nodo circle {
+  fill: #fff;
+  stroke: var(--lu-ink);
+  stroke-width: 1.2;
+}
+
+.viz-nodo.nodo-scheda circle {
+  fill: var(--viz-serie);
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.viz-nodo.nodo-voci circle {
+  fill: var(--lu-accent-soft);
+  stroke: var(--viz-lv2);
+}
+
+.viz-nodo.nodo-sistema circle {
+  fill: var(--viz-traccia);
+  stroke: var(--lu-muted);
+}
+
+.viz-nodo text {
+  fill: var(--lu-ink);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.viz-nodo .viz-num {
+  fill: var(--lu-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.viz-nodo .viz-num-centro {
+  fill: #fff;
+  stroke: none;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.viz-nodo {
+  cursor: default;
+  outline: none;
+}
+
+.viz-nodo.viz-hover circle,
+.viz-nodo:focus-visible circle {
+  stroke-width: 3;
+}
+
+/* Bars */
+.viz-barra {
+  display: block;
+  width: 100%;
+  height: 0.75rem;
+}
+
+.viz-barre li {
+  display: grid;
+  grid-template-columns: minmax(7rem, 11rem) 1fr 2.5rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0;
+  font-size: 0.9rem;
+}
+
+.viz-barre svg {
+  width: 100%;
+  height: 0.8rem;
+}
+
+.viz-barre-etichetta {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.viz-barre-valore {
+  font-variant-numeric: tabular-nums;
+  color: var(--lu-muted);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.viz-colonne {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 10rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--viz-griglia);
+}
+
+.viz-colonna {
+  display: flex;
+  flex: 1;
+  max-width: 3rem;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.viz-colonna svg {
+  flex: 1;
+  width: 70%;
+}
+
+.viz-colonna .viz-barre-valore {
+  text-align: center;
+}
+
+.viz-colonna-etichetta {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--lu-muted);
+  white-space: nowrap;
+}
+
+/* Shared tooltip: value first, then label */
+.viz-tooltip {
+  position: fixed;
+  left: var(--x, 0);
+  top: var(--y, 0);
+  z-index: 1080;
+  display: flex;
+  flex-direction: column;
+  max-width: 20rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  box-shadow: var(--lu-elev-3);
+  pointer-events: none;
+  font-size: 0.85rem;
+}
+
+.viz-tooltip[hidden] {
+  display: none;
+}
+
+.viz-tooltip strong {
+  order: 2;
+  font-weight: 400;
+  color: var(--lu-muted);
+}
+
+.viz-tooltip span {
+  order: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--lu-ink);
+}
+
+.viz-tooltip small {
+  order: 3;
+  color: var(--lu-muted);
+}
+
+.viz-tooltip small:empty {
+  display: none;
+}
+
+/* Group labels don't widen their columns: they fit the group's width, with an ellipsis */
+.viz-mappa .viz-gruppi th > span {
+  position: absolute;
+  left: 0.15rem;
+  right: 0.15rem;
+  bottom: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -5,7 +5,8 @@
     { stato: 1, titolo: t('In revisione'), vuoto: t('Nessuna scheda in attesa di approvazione.') },
     { stato: 2, titolo: t('Pubblicate'), vuoto: t('Nessuna scheda pubblicata.') },
   ];
-  const respinte = mie.filter(s => s.stato === 0 && s.ultima_azione === 'respinta').length;
+  // Rejected or sent back by an administrator: waiting for the cataloguer
+  const respinte = mie.filter(s => s.stato === 0 && (s.ultima_azione === 'respinta' || s.ultima_azione === 'depubblicata')).length;
 %>
 <div class="area-header">
   <div class="container py-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -32,13 +33,7 @@
   </div>
 
   <% if (respinte) { %>
-    <div class="alert alert-warning"><%= respinte === 1 ? t('Una scheda è stata respinta: leggi la motivazione e correggila.') : t('{n} schede sono state respinte: leggi le motivazioni e correggile.', { n: respinte }) %></div>
-  <% } %>
-  <% if (conteggi && (conteggi[1] || 0) > 0) { %>
-    <div class="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <span><%= conteggi[1] === 1 ? t('Una scheda attende la tua revisione.') : t('{n} schede attendono la tua revisione.', { n: conteggi[1] }) %></span>
-      <a class="btn btn-sm btn-primary" href="/area/revisione"><%= t('Vai alla revisione') %></a>
-    </div>
+    <div class="alert alert-warning"><%= respinte === 1 ? t('Una scheda ti è stata rimandata indietro: leggi il messaggio, poi correggila e inviala di nuovo oppure eliminala.') : t('{n} schede ti sono state rimandate indietro: leggi i messaggi, poi correggile e inviale di nuovo oppure eliminale.', { n: respinte }) %></div>
   <% } %>
 
   <ul class="nav nav-tabs mb-3" role="tablist">

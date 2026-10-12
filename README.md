@@ -20,8 +20,8 @@ flowchart LR
 | For | What they get |
 |---|---|
 | **Visitors** | Search with suggestions plus advanced search by field · indexes by author, material, place, exhibition… · record page with gallery and a **size comparison** silhouette (person or hand) · Italian/English UI chosen from the browser · watermarked previews only · **no cookies, no tracking** |
-| **Cataloguers** | Tabbed editor · **shared authority entries** (authors, materials, places…) with duplicate warnings · insert the record's own images into long texts · draft → review → publish workflow with comments |
-| **Admins** | Review queue · user management · merge duplicate entries · daily backups · **Excel export** |
+| **Cataloguers** | Tabbed editor · **shared authority entries** (authors, materials, places…) with duplicate warnings · insert the record's own images into long texts · submit for review; records sent back arrive with the admin's message, to fix and resubmit or delete |
+| **Admins** | Approve, reject or send back records (they never create, edit or delete them) · **database overview** (completeness map of every field, table structure, use of entries) · user management · merge duplicate entries · daily backups · **Excel export** and **photo export** (ZIP) |
 
 ## Try it in 2 minutes
 

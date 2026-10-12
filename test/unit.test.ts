@@ -103,10 +103,10 @@ describe('permessi sulle schede', () => {
     assert.equal(computePermessi(bozza, admin).visualizza, true);
   });
 
-  it('le schede pubblicate sono visibili a tutti ma non modificabili dallo schedatore', () => {
+  it('le schede pubblicate sono visibili a tutti e nessuno le modifica direttamente', () => {
     assert.equal(computePermessi(pubblicata, undefined).visualizza, true);
     assert.equal(computePermessi(pubblicata, schedatore).modifica, false);
-    assert.equal(computePermessi(pubblicata, admin).modifica, true);
+    assert.equal(computePermessi(pubblicata, admin).modifica, false);
   });
 
   it('lo schedatore modifica e invia solo le bozze', () => {
@@ -116,16 +116,31 @@ describe('permessi sulle schede', () => {
     assert.equal(computePermessi(inRevisione, schedatore).ritira, true);
   });
 
-  it('solo l\'amministratore approva o respinge', () => {
+  it('solo l\'amministratore approva, respinge o rimanda indietro', () => {
     assert.equal(computePermessi(inRevisione, schedatore).approva, false);
     assert.equal(computePermessi(inRevisione, admin).approva, true);
     assert.equal(computePermessi(inRevisione, admin).respingi, true);
     assert.equal(computePermessi(pubblicata, admin).depubblica, true);
+    assert.equal(computePermessi(pubblicata, schedatore).depubblica, false);
   });
 
-  it('una scheda pubblicata non si elimina senza prima ritirarla', () => {
-    assert.equal(computePermessi(pubblicata, admin).elimina, false);
-    assert.equal(computePermessi(bozza, admin).elimina, true);
+  it('nessun account ha tutti i privilegi: l\'amministratore non scrive né elimina', () => {
+    for (const s of [bozza, inRevisione, pubblicata]) {
+      const p = computePermessi(s, admin);
+      assert.equal(p.modifica, false);
+      assert.equal(p.elimina, false);
+      assert.equal(p.invia, false);
+    }
+    // nemmeno su una scheda che risulta creata da lui
+    const sua = computePermessi({ stato: 0, created_by: admin.id }, admin, true);
+    assert.equal(sua.modifica || sua.elimina, false);
+  });
+
+  it('solo lo schedatore elimina, e solo le sue bozze (anche quelle rimandate indietro)', () => {
+    assert.equal(computePermessi(bozza, schedatore).elimina, true);
+    assert.equal(computePermessi(inRevisione, schedatore).elimina, false);
+    assert.equal(computePermessi(pubblicata, schedatore).elimina, false);
+    assert.equal(computePermessi(bozza, altro).elimina, false);
   });
 
   it('un collaboratore accreditato ha gli stessi diritti del proprietario', () => {

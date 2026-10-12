@@ -174,10 +174,25 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction): 
   next();
 }
 
+/** Writing records is for cataloguers only: administrators review, they don't write. */
+export function requireSchedatore(req: Request, _res: Response, next: NextFunction): void {
+  if (!req.user) return next(unauthorized());
+  if (req.user.isAdmin) return next(forbidden(MESSAGGIO_SOLO_SCHEDATORI));
+  next();
+}
+
+export const MESSAGGIO_SOLO_SCHEDATORI = 'Gli amministratori non creano né modificano le schede: le approvano, le respingono o le rimandano agli schedatori';
+
 /** For pages: without a session, redirect to login (returning to the requested page). */
 export function requireUserPage(req: Request, res: Response, next: NextFunction): void {
   if (req.user) return next();
   res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+}
+
+export function requireSchedatorePage(req: Request, res: Response, next: NextFunction): void {
+  if (!req.user) return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+  if (req.user.isAdmin) return next(forbidden(MESSAGGIO_SOLO_SCHEDATORI));
+  next();
 }
 
 export function requireAdminPage(req: Request, res: Response, next: NextFunction): void {

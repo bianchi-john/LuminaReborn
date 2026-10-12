@@ -15,7 +15,7 @@
   };
   // Authenticated staff can open the original image; the public only sees the reduced version
   const originali = !!user;
-  const AZIONI = { creata: t('ha creato la scheda'), modificata: t('ha modificato la scheda'), inviata: t('ha inviato la scheda in revisione'), ritirata: t('ha ritirato la scheda dalla revisione'), approvata: t('ha approvato e pubblicato la scheda'), respinta: t('ha respinto la scheda'), depubblicata: t('ha ritirato la scheda dalla pubblicazione'), importata: t('scheda importata') };
+  const AZIONI = { creata: t('ha creato la scheda'), modificata: t('ha modificato la scheda'), inviata: t('ha inviato la scheda in revisione'), ritirata: t('ha ritirato la scheda dalla revisione'), approvata: t('ha approvato e pubblicato la scheda'), respinta: t('ha respinto la scheda'), depubblicata: t('ha rimandato la scheda allo schedatore'), importata: t('scheda importata') };
 %>
 <div class="container py-4">
   <nav aria-label="<%= t('Percorso') %>" class="no-print">
@@ -44,13 +44,13 @@
             <% if (p.modifica) { %><a class="btn btn-outline-primary btn-sm" href="/area/schede/<%= s.id %>/modifica"><%= t('Modifica') %></a><% } %>
             <% if (p.invia) { %><button class="btn btn-primary btn-sm" data-azione="invia" data-id="<%= s.id %>"><%= t('Invia in revisione') %></button><% } %>
             <% if (p.ritira) { %><button class="btn btn-outline-secondary btn-sm" data-azione="ritira" data-id="<%= s.id %>"><%= t('Ritira dalla revisione') %></button><% } %>
-            <% if (p.depubblica) { %><button class="btn btn-outline-danger btn-sm" data-azione="depubblica" data-id="<%= s.id %>"><%= t('Ritira dalla pubblicazione') %></button><% } %>
+            <% if (p.depubblica) { %><button class="btn btn-outline-danger btn-sm" data-azione="depubblica" data-id="<%= s.id %>"><%= t('Rimanda allo schedatore') %></button><% } %>
             <% if (p.elimina) { %><button class="btn btn-outline-danger btn-sm" data-azione="elimina" data-id="<%= s.id %>" data-dopo="/area"><%= t('Elimina') %></button><% } %>
           </div>
         </div>
         <% if (mostraRifiuto) { %>
           <div class="alert alert-warning mt-3 mb-0">
-            <strong><%= ultimoRifiuto.azione === 'respinta' ? t('Respinta da {nome}', { nome: ultimoRifiuto.username }) : t('Ritirata dalla pubblicazione da {nome}', { nome: ultimoRifiuto.username }) %>:</strong>
+            <strong><%= ultimoRifiuto.azione === 'respinta' ? t('Respinta da {nome}', { nome: ultimoRifiuto.username }) : t('Rimandata indietro da {nome}', { nome: ultimoRifiuto.username }) %>:</strong>
             <%= ultimoRifiuto.commento || t('nessuna motivazione indicata') %>
           </div>
         <% } %>

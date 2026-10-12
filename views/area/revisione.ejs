@@ -12,9 +12,13 @@
     <div>
       <p class="eyebrow mb-1"><%= t('Amministrazione') %></p>
       <h1 class="mb-1"><%= t('Revisione schede') %></h1>
-      <p class="text-muted-lu mb-0"><%= t('Approva le schede per pubblicarle nel catalogo, oppure respingile indicando cosa correggere.') %></p>
+      <p class="text-muted-lu mb-0"><%= t('Approva le schede per pubblicarle o respingile con un messaggio; quelle già pubblicate si possono rimandare allo schedatore in qualsiasi momento.') %></p>
     </div>
-    <a class="btn btn-outline-secondary" href="/api/esportazioni/catalogo.xlsx"><%= t('Esporta catalogo (Excel)') %></a>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-secondary" href="/area/panoramica"><%= t('Panoramica del database') %></a>
+      <a class="btn btn-outline-secondary" href="/api/esportazioni/catalogo.xlsx"><%= t('Esporta catalogo (Excel)') %></a>
+      <a class="btn btn-outline-secondary" href="/area/esportazioni/foto"><%= t('Esporta foto (ZIP)') %></a>
+    </div>
   </div>
 </div>
 <div class="container py-4">
