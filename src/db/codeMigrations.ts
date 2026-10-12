@@ -3,6 +3,7 @@ import { createHash } from 'crypto';
 import { logger } from '../logger';
 import { config } from '../config';
 import { creaAnteprima, elaboraImmagine, salvaFile } from '../services/immagini.service';
+import { generaCodice, LUNGHEZZA_CODICE_IMMAGINE, LUNGHEZZA_CODICE_OPERA } from '../util/codici';
 
 /**
  * Migrazioni che richiedono codice (non solo SQL). Il nome determina l'ordine
@@ -56,5 +57,19 @@ export const CODE_MIGRATIONS: Record<string, (conn: Connection) => Promise<void>
       }
     }
     logger.info(`Anteprime con watermark: ${ids.length}`);
+  },
+
+  /** Codici pubblici casuali per opere e immagini (indirizzi non sequenziali). */
+  async '006_codici_pubblici'(conn) {
+    for (const [tabella, lunghezza] of [
+      ['schede', LUNGHEZZA_CODICE_OPERA],
+      ['immagini', LUNGHEZZA_CODICE_IMMAGINE],
+    ] as const) {
+      const [colonne] = await conn.query<RowDataPacket[]>(`SHOW COLUMNS FROM ${tabella} LIKE 'codice'`);
+      if (!colonne.length) await conn.query(`ALTER TABLE ${tabella} ADD COLUMN codice VARCHAR(16) NULL AFTER id`);
+      const [righe] = await conn.query<RowDataPacket[]>(`SELECT id FROM ${tabella} WHERE codice IS NULL`);
+      for (const { id } of righe) await conn.query(`UPDATE ${tabella} SET codice = ? WHERE id = ?`, [generaCodice(lunghezza), id]);
+      await conn.query(`ALTER TABLE ${tabella} MODIFY codice VARCHAR(16) NOT NULL, ADD UNIQUE KEY uq_${tabella}_codice (codice)`);
+    }
   },
 };

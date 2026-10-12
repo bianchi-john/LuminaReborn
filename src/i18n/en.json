@@ -536,5 +536,13 @@
   "La password attuale non è corretta": "The current password is incorrect",
   "Origine della richiesta mancante": "Request origin missing",
   "La password deve avere 8-30 caratteri, solo lettere e numeri (vincolo dello user-manager)": "The password must be 8-30 characters, letters and numbers only (user-manager constraint)",
-  "Modulo scaduto o non valido: ricarica la pagina e riprova": "Form expired or invalid: reload the page and try again"
+  "Modulo scaduto o non valido: ricarica la pagina e riprova": "Form expired or invalid: reload the page and try again",
+  "Carica prima le immagini nella sezione «Immagini»: qui si possono inserire solo quelle della scheda.": "Upload the images in the “Images” section first: only the record's own images can be inserted here.",
+  "Immagine troppo grande: {n} megapixel (massimo {mp})": "Image too large: {n} megapixels (maximum {mp})",
+  "Immagine troppo grande: {w}×{h} pixel (massimo {lato} pixel per lato)": "Image too large: {w}×{h} pixels (maximum {lato} pixels per side)",
+  "Inserisci un'immagine della scheda": "Insert one of the record's images",
+  "Troppe richieste": "Too many requests",
+  "Troppe richieste da questo indirizzo: l'accesso è sospeso temporaneamente. Riprova più tardi.": "Too many requests from this address: access is temporarily suspended. Please try again later.",
+  "Troppe richieste. Riprova tra poco.": "Too many requests. Please try again shortly.",
+  "{file}: immagine troppo grande ({w}×{h} pixel; massimo {lato} pixel per lato e {mp} megapixel)": "{file}: image too large ({w}×{h} pixels; maximum {lato} pixels per side and {mp} megapixels)"
 }

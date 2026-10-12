@@ -1,4 +1,4 @@
-<%- include('partials/header', { description: h.text(s.descrizione_sintetica).slice(0, 160), ogImage: s.immagini.length && s.stato === 2 ? `/media/${s.immagini[0].id}/anteprima` : '' }) %>
+<%- include('partials/header', { description: h.text(s.descrizione_sintetica).slice(0, 160), ogImage: s.immagini.length && s.stato === 2 ? `/media/${s.immagini[0].codice}/anteprima` : '' }) %>
 <%
   const voci = s.voci;
   const esc = (x) => String(x ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -40,7 +40,7 @@
             <span class="small text-muted-lu ms-2"><%= t('Ultima modifica') %> <%= h.dateTime(s.updated_at) %></span>
           </div>
           <div class="d-flex flex-wrap gap-2">
-            <% if (s.stato === 2) { %><a class="btn btn-outline-secondary btn-sm" href="/scheda/<%= s.id %>"><%= t('Pagina pubblica') %></a><% } %>
+            <% if (s.stato === 2) { %><a class="btn btn-outline-secondary btn-sm" href="<%= s.percorso %>"><%= t('Pagina pubblica') %></a><% } %>
             <% if (p.modifica) { %><a class="btn btn-outline-primary btn-sm" href="/area/schede/<%= s.id %>/modifica"><%= t('Modifica') %></a><% } %>
             <% if (p.invia) { %><button class="btn btn-primary btn-sm" data-azione="invia" data-id="<%= s.id %>"><%= t('Invia in revisione') %></button><% } %>
             <% if (p.ritira) { %><button class="btn btn-outline-secondary btn-sm" data-azione="ritira" data-id="<%= s.id %>"><%= t('Ritira dalla revisione') %></button><% } %>
@@ -79,9 +79,9 @@
         <div id="galleria" class="carousel slide gallery-main shadow-sm" data-bs-ride="false" data-bs-interval="false" data-bs-touch="true">
           <div class="carousel-inner">
             <% s.immagini.forEach((img, i) => { %>
-              <div class="carousel-item <%= i === 0 ? 'active' : '' %>" data-caption="<%= img.didascalia || '' %>" data-originale="<%= originali ? `/media/${img.id}/originale` : '' %>"
+              <div class="carousel-item <%= i === 0 ? 'active' : '' %>" data-caption="<%= img.didascalia || '' %>" data-originale="<%= originali ? `/media/${img.codice}/originale` : '' %>"
                    data-dimensioni="<%= originali && img.larghezza ? `${img.larghezza} × ${img.altezza} px` : '' %>">
-                <img src="/media/<%= img.id %>/anteprima" alt="<%= img.didascalia || h.text(s.titolo_opera) %>" data-lightbox <%- i > 0 ? 'loading="lazy" decoding="async"' : 'fetchpriority="high"' %>>
+                <img src="/media/<%= img.codice %>/anteprima" alt="<%= img.didascalia || h.text(s.titolo_opera) %>" data-lightbox <%- i > 0 ? 'loading="lazy" decoding="async"' : 'fetchpriority="high"' %>>
               </div>
             <% }) %>
           </div>
@@ -97,7 +97,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mt-2 mb-2">
           <p class="gallery-caption mb-0" id="galleria-didascalia"><%= s.immagini[0].didascalia || '' %></p>
           <% if (originali) { %>
-            <a class="btn btn-sm btn-outline-secondary no-print" id="galleria-originale" href="/media/<%= s.immagini[0].id %>/originale" target="_blank" rel="noopener">
+            <a class="btn btn-sm btn-outline-secondary no-print" id="galleria-originale" href="/media/<%= s.immagini[0].codice %>/originale" target="_blank" rel="noopener">
               <%= t('Apri originale') %><span class="small text-muted-lu ms-1" id="galleria-dimensioni"><%= s.immagini[0].larghezza ? `${s.immagini[0].larghezza} × ${s.immagini[0].altezza} px` : '' %></span>
             </a>
           <% } %>
@@ -106,7 +106,7 @@
           <div class="gallery-thumbs">
             <% s.immagini.forEach((img, i) => { %>
               <button type="button" data-bs-target="#galleria" data-bs-slide-to="<%= i %>" class="<%= i === 0 ? 'active' : '' %>" aria-label="<%= t('Immagine {n}', { n: i + 1 }) %>">
-                <img src="/media/<%= img.id %>/miniatura" alt="" loading="lazy">
+                <img src="/media/<%= img.codice %>/miniatura" alt="" loading="lazy">
               </button>
             <% }) %>
           </div>

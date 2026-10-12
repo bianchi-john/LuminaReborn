@@ -145,20 +145,20 @@ api.get('/config', (_req, res) => {
     },
     proprieta: PROPRIETA_GIURIDICA,
     maxImageBytes: config.upload.maxImageBytes,
+    maxImageSide: config.upload.maxImageSide,
+    maxImageMegapixels: config.upload.maxImageMegapixels,
   });
-});
-
-/** Indirizzo della versione precedente: ora le immagini sono servite da /media. */
-api.get('/immagini/:id', (req, res) => {
-  res.redirect(301, `/media/${Number(req.params.id) || 0}/anteprima`);
 });
 
 // ---------------------------------------------------------------------------
 // Schede
 // ---------------------------------------------------------------------------
 
+// Dettaglio di una scheda per ID: solo per lo staff (editor, area riservata).
+// Il pubblico consulta le pagine /opere/..., con indirizzi non sequenziali.
 api.get(
   '/schede/:id',
+  requireUser,
   ah(async (req, res) => {
     res.json(await schede.getScheda(idParam(req), req.user));
   }),
@@ -269,7 +269,11 @@ api.get(
 api.get(
   '/vocabolari/:tipo/:id',
   ah(async (req, res) => {
-    res.json(await voci.getVoce(vocabParam(req), idParam(req)));
+    const v = vocabParam(req);
+    const voce = await voci.getVoce(v, idParam(req));
+    // Al pubblico solo le voci collegate ad almeno una scheda pubblicata
+    if (!req.user && !(await voci.usataInPubblicate(v, voce.id))) throw notFound();
+    res.json(voce);
   }),
 );
 

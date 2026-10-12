@@ -5,11 +5,11 @@ import sharp from 'sharp';
 import { confrontoDimensionale } from '../src/domain/dimensioni';
 import { chiaviDaTradurre } from '../src/i18n/chiavi';
 import { detectLang, DIZIONARI, translate } from '../src/i18n';
-import { elaboraImmagine, watermarkSvg } from '../src/services/immagini.service';
+import { elaboraImmagine, verificaDimensioni, watermarkSvg } from '../src/services/immagini.service';
 import { buildWhere, searchQuerySchema, searchTerms } from '../src/services/search.service';
 import { rigaScheda } from '../src/services/export.service';
 import type { SchedaCompleta } from '../src/services/schede.service';
-import { cleanHtml } from '../src/util/html';
+import { cleanHtml, soloImmagini } from '../src/util/html';
 import { haCriteri } from '../src/routes/pages';
 import { findDuplicatePairs, findSimilar, similarity } from '../src/util/similarity';
 
@@ -187,8 +187,25 @@ describe('immagini', () => {
   });
 
   it('nel testo formattato ammette solo immagini dell\'archivio', () => {
-    assert.equal(cleanHtml('<p><img src="/media/3/anteprima" alt="x"></p>', 'block'), '<p><img src="/media/3/anteprima" alt="x" /></p>');
+    const img = '<img src="/media/abcdefghjkmnpqrs/anteprima" alt="x" />';
+    assert.equal(cleanHtml(`<p>${img}</p>`, 'block'), `<p>${img}</p>`);
+    assert.equal(cleanHtml('<p><img src="/media/3/anteprima"></p>', 'block'), null, 'niente ID numerici: non si possono enumerare');
     assert.equal(cleanHtml('<p>a<img src="https://evil.example/x.png"><img src="data:image/png;base64,AA"></p>', 'block'), '<p>a</p>');
+    assert.equal(cleanHtml('<p>a<img src="/media/abcdefghjkmnpqrs/originale"></p>', 'block'), '<p>a</p>', 'mai l\'originale');
+  });
+
+  it('nel testo della scheda restano solo le sue immagini', () => {
+    const mia = '<img src="/media/abcdefghjkmnpqrs/anteprima" alt="mia" />';
+    const altrui = '<img src="/media/zzzzzzzzzzzzzzzz/anteprima" alt="altrui" />';
+    assert.equal(soloImmagini(`<p>testo</p><p>${mia}</p><p>${altrui}</p>`, new Set(['abcdefghjkmnpqrs'])), `<p>testo</p><p>${mia}</p>`);
+    assert.equal(soloImmagini(`<p>${altrui}</p>`, new Set()), null);
+    assert.equal(soloImmagini('<p>solo testo</p>', new Set()), '<p>solo testo</p>');
+  });
+
+  it('rifiuta immagini con troppi pixel anche se il file è piccolo', () => {
+    assert.doesNotThrow(() => verificaDimensioni(6000, 4000));
+    assert.throws(() => verificaDimensioni(30_000, 100), /pixel per lato/);
+    assert.throws(() => verificaDimensioni(15_000, 15_000), /megapixel/);
   });
 });
 
@@ -196,6 +213,8 @@ describe('esportazione Excel', () => {
   it('trasforma la scheda in una riga leggibile', () => {
     const s = {
       id: 7,
+      codice: 'abcdefghjk',
+      percorso: '/opere/studio-di-testa-abcdefghjk',
       stato: 2,
       titolo_opera: 'Studio di <i>testa</i>',
       classificazione: 'Dipinti',
@@ -232,6 +251,6 @@ describe('esportazione Excel', () => {
     assert.equal(r.ubicazione, 'Palazzo Mansi, Sala 3');
     assert.equal(r.descrizione, 'Testo & altro');
     assert.equal(r.bibliografia, 'Catalogo, 1909');
-    assert.equal(r.url, 'https://lumina.example/scheda/7');
+    assert.equal(r.url, 'https://lumina.example/opere/studio-di-testa-abcdefghjk');
   });
 });

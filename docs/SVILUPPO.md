@@ -91,6 +91,10 @@ Al salvataggio di una scheda una voce indicata per nome viene riusata se ne esis
 
 **Immagini**: `luminadb.immagini` contiene scheda, ordine, didascalia e dimensioni; i byte stanno in `luminamedia.immagini_file`, una riga per variante (`originale`, `anteprima` WebP 1280 px, `miniatura` WebP 480 px), con FK in cascata verso `immagini`. Le varianti ridotte non contengono metadati (EXIF/GPS) e l'anteprima porta il watermark `MEDIA_WATERMARK` (testo disegnato da sharp con il font Liberation Serif installato nell'immagine Docker). Il pubblico riceve solo `anteprima` e `miniatura`; `originale` richiede l'accesso.
 
+**Codici pubblici**: ogni opera e ogni immagine ha, oltre all'ID numerico interno, un `codice` casuale (10 e 16 caratteri, `src/util/codici.ts`, migrazione `006_codici_pubblici`). Il catalogo usa solo i codici: `/opere/<prime-parole-del-titolo>-<codice>` (il titolo è decorativo: se cambia, l'indirizzo vecchio fa un redirect 301 a quello nuovo) e `/media/<codice>/<variante>`. Gli indirizzi `/scheda/:id` funzionano solo per lo staff.
+
+**Immagini nel testo ricco**: nei campi lunghi il pulsante ▣ della barra inserisce una delle immagini già caricate nella scheda (versione `anteprima`, con la didascalia come testo alternativo). Non si possono incollare o trascinare file né immagini esterne; al salvataggio il server (`soloImmagini` in `src/util/html.ts`) toglie le immagini che non appartengono alla scheda, e quelle rimosse dalla sezione Immagini spariscono anche dai testi.
+
 **Migrazioni**: `migrations/NNN_nome.sql` e passi in codice in `src/db/codeMigrations.ts`, applicati in ordine di nome e registrati in `schema_migrations`. Nei file SQL `{{MAIN_DB}}` e `{{MEDIA_DB}}` diventano i nomi dei database configurati. Non modificare una migrazione già rilasciata: aggiungerne una nuova.
 
 ## Ricerca
@@ -111,12 +115,13 @@ Il quadro completo (mappatura OWASP/GDPR/AgID, verifiche, rischi residui) è in 
 |---|---|
 | SQL injection | solo query parametrizzate; i nomi di tabelle/colonne dinamici vengono da configurazioni statiche (`domain/vocabolari.ts`); `multipleStatements` solo per il migratore |
 | XSS | EJS fa l'escape di default; l'HTML dei campi formattati passa da `sanitize-html` con una lista di tag ammessi sia in scrittura sia in lettura; CSP senza script/stili inline o esterni; negli script del browser solo `textContent` |
-| CSRF | cookie `SameSite=Lax`, controllo dell'header `Origin` e obbligo di JSON sulle richieste che modificano dati |
-| Privacy dei visitatori | nessun cookie (la lingua viaggia nel parametro `?lang=`, propagato ai link da `common.js`), nessuno strumento di analisi né risorsa di terze parti; l'IP resta solo in memoria per pochi minuti nei limiti di frequenza. Un test end-to-end verifica che le pagine pubbliche non impostino cookie |
+| CSRF | cookie `SameSite=Strict`, Fetch Metadata, controllo dell'header `Origin` e obbligo di JSON sulle richieste che modificano dati |
+| Privacy dei visitatori | nessun cookie (la lingua viaggia nel parametro `?lang=`, propagato ai link da `common.js`), nessuno strumento di analisi né risorsa di terze parti; l'IP resta solo in memoria nei limiti di frequenza (pochi minuti, al massimo 24 ore se bloccato), mai su disco né nei log. Un test end-to-end verifica che le pagine pubbliche non impostino cookie |
 | Sessioni | cookie `HttpOnly` (e `Secure` in HTTPS) con durata massima; logout con revoca del token sullo user-manager; utenti bloccati esclusi anche con token valido |
 | Accessi non autorizzati | permessi calcolati lato server per ogni operazione (`computePermessi`); le bozze altrui rispondono 404 |
 | Forza bruta / abuso | limiti di frequenza su login, API e caricamenti |
-| File caricati | tipo verificato dai primi byte (niente SVG), limite di pixel contro le "decompression bomb", versioni pubbliche ricodificate senza metadati |
+| Scraping | `src/http/antiscraping.ts`: limiti per IP al minuto e all'ora su pagine, immagini e API, blocco temporaneo crescente per chi insiste, crawler di IA esclusi (robots.txt e 403); opere e immagini hanno codici casuali (`src/util/codici.ts`, indirizzi `/opere/<prime-parole-del-titolo>-<codice>`) quindi non si possono enumerare; gli ID numerici restano solo nell'area riservata |
+| File caricati | tipo verificato dai primi byte (niente SVG), limiti di peso e di pixel (per lato e totali) contro le "decompression bomb", versioni pubbliche ricodificate senza metadati |
 | Esposizione dei servizi | user-manager e MongoDB solo in rete interna; MySQL solo su localhost; app come utente non root, filesystem in sola lettura, `no-new-privileges` |
 | Dipendenze | versioni fissate, `npm audit` in CI |
 

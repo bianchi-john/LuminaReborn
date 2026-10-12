@@ -6,6 +6,7 @@ import { Db, execute, pool, select, selectOne, withTransaction } from '../db/poo
 import { badRequest, notFound } from '../http/errors';
 import { logger } from '../logger';
 import { computePermessi } from './schede.service';
+import { generaCodice, LUNGHEZZA_CODICE_IMMAGINE } from '../util/codici';
 
 /**
  * Immagini delle schede.
@@ -44,7 +45,8 @@ export interface FileVariante {
 }
 
 /** Limite contro le "decompression bomb": immagini oltre 200 megapixel vengono rifiutate. */
-const MAX_PIXELS = 200_000_000;
+// Margine sul limite configurato: il controllo esplicito in elaboraImmagine dà un messaggio chiaro
+const MAX_PIXELS = config.upload.maxImageMegapixels * 1_000_000 + 1;
 
 const escapeXml = (s: string) => s.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c] ?? c);
 
@@ -83,17 +85,29 @@ export function creaAnteprima(originale: Buffer): Promise<FileVariante> {
   return derivato(originale, config.media.previewSize, 82, 'anteprima', config.media.watermark);
 }
 
+/** Limiti sulle dimensioni in pixel (oltre a quello sul peso del file). */
+export function verificaDimensioni(larghezza: number, altezza: number): void {
+  const { maxImageSide: lato, maxImageMegapixels: mp } = config.upload;
+  if (larghezza > lato || altezza > lato) {
+    throw badRequest('Immagine troppo grande: {w}×{h} pixel (massimo {lato} pixel per lato)', undefined, { w: larghezza, h: altezza, lato });
+  }
+  if (larghezza * altezza > mp * 1_000_000) {
+    throw badRequest('Immagine troppo grande: {n} megapixel (massimo {mp})', undefined, { n: Math.round((larghezza * altezza) / 1e6), mp });
+  }
+}
+
 /** Verifica il file e produce le tre varianti da salvare. */
 export async function elaboraImmagine(buf: Buffer): Promise<FileVariante[]> {
   const mime = detectImageType(buf);
   if (!mime) throw badRequest('Formato non supportato: caricare un file JPEG, PNG, WebP, GIF o TIFF');
   let meta: Awaited<ReturnType<ReturnType<typeof sharp>["metadata"]>>;
   try {
-    meta = await sharp(buf, { limitInputPixels: MAX_PIXELS }).metadata();
+    meta = await sharp(buf, { limitInputPixels: false }).metadata();
   } catch {
     throw badRequest('Il file immagine è danneggiato o troppo grande');
   }
   if (!meta.width || !meta.height) throw badRequest('Impossibile leggere le dimensioni dell\'immagine');
+  verificaDimensioni(meta.width, meta.height);
   const ruotata = (meta.orientation ?? 1) >= 5;
   let ridotte: FileVariante[];
   try {
@@ -120,20 +134,24 @@ export async function salvaFile(db: Db, idImmagine: number, files: FileVariante[
 
 const sha256 = (buf: Buffer) => createHash('sha256').update(buf).digest('hex');
 
-export async function uploadImmagine(data: Buffer, user: SessionUser): Promise<{ id: number; larghezza: number; altezza: number }> {
+export async function uploadImmagine(
+  data: Buffer,
+  user: SessionUser,
+): Promise<{ id: number; codice: string; larghezza: number; altezza: number }> {
   const files = await elaboraImmagine(data);
   const originale = files[0];
+  const codice = generaCodice(LUNGHEZZA_CODICE_IMMAGINE);
   const id = await withTransaction(async (conn) => {
     const res = await execute(
       conn,
-      `INSERT INTO immagini (id_scheda, mime, larghezza, altezza, dimensione, sha256, uploaded_by)
-       VALUES (NULL, ?, ?, ?, ?, ?, ?)`,
-      [originale.mime, originale.larghezza, originale.altezza, data.length, sha256(data), user.id],
+      `INSERT INTO immagini (codice, id_scheda, mime, larghezza, altezza, dimensione, sha256, uploaded_by)
+       VALUES (?, NULL, ?, ?, ?, ?, ?, ?)`,
+      [codice, originale.mime, originale.larghezza, originale.altezza, data.length, sha256(data), user.id],
     );
     await salvaFile(conn, res.insertId, files);
     return res.insertId;
   });
-  return { id, larghezza: originale.larghezza, altezza: originale.altezza };
+  return { id, codice, larghezza: originale.larghezza, altezza: originale.altezza };
 }
 
 export interface ImmagineFile {
@@ -149,8 +167,9 @@ export interface ImmagineFile {
  * - anteprima e miniatura: a tutti se la scheda è pubblicata, altrimenti a chi può vedere la scheda;
  * - originale: solo a utenti autenticati che possono vedere la scheda.
  */
-export async function getFile(id: number, variante: Variante, user?: SessionUser): Promise<ImmagineFile> {
+export async function getFile(codice: string, variante: Variante, user?: SessionUser): Promise<ImmagineFile> {
   const row = await selectOne<{
+    id: number;
     id_scheda: number | null;
     uploaded_by: number | null;
     stato: number | null;
@@ -159,11 +178,11 @@ export async function getFile(id: number, variante: Variante, user?: SessionUser
     sha256: string | null;
   }>(
     pool,
-    `SELECT i.id_scheda, i.uploaded_by, i.sha256, s.stato, s.created_by,
+    `SELECT i.id, i.id_scheda, i.uploaded_by, i.sha256, s.stato, s.created_by,
             (SELECT 1 FROM tds_users_schede t WHERE t.id_scheda = s.id AND t.id_user = ?) AS accreditato
        FROM immagini i LEFT JOIN schede s ON s.id = i.id_scheda
-      WHERE i.id = ?`,
-    [user?.id ?? 0, id],
+      WHERE i.codice = ?`,
+    [user?.id ?? 0, codice],
   );
   if (!row) throw notFound('Immagine non trovata');
 
@@ -179,26 +198,26 @@ export async function getFile(id: number, variante: Variante, user?: SessionUser
   const file = await selectOne<{ mime: string; dati: Buffer }>(
     pool,
     `SELECT mime, dati FROM ${MEDIA_TABLE()} WHERE id_immagine = ? AND variante = ?`,
-    [id, variante],
+    [row.id, variante],
   );
   if (!file) throw notFound('Immagine non trovata');
   return {
     mime: file.mime,
     dati: file.dati,
     pubblica: row.stato === 2 && variante !== 'originale',
-    etag: `"${(row.sha256 ?? String(id)).slice(0, 16)}-${variante}"`,
+    etag: `"${(row.sha256 ?? codice).slice(0, 16)}-${variante}"`,
   };
 }
 
 /** Copertine di schede pubblicate in ordine casuale (sfondo dell'intestazione della home). */
-export async function copertineCasuali(limite: number): Promise<number[]> {
-  const rows = await select<{ id: number }>(
+export async function copertineCasuali(limite: number): Promise<string[]> {
+  const rows = await select<{ codice: string }>(
     pool,
-    `SELECT i.id FROM immagini i JOIN schede s ON s.id = i.id_scheda
+    `SELECT i.codice FROM immagini i JOIN schede s ON s.id = i.id_scheda
       WHERE s.stato = 2 AND i.ordine = 0 ORDER BY RAND() LIMIT ?`,
     [limite],
   );
-  return rows.map((r) => r.id);
+  return rows.map((r) => r.codice);
 }
 
 /** Elimina le immagini caricate ma mai collegate a una scheda (editor chiuso senza salvare). */

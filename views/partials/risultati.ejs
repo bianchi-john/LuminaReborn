@@ -14,7 +14,7 @@
     <% risultati.items.forEach(o => { %>
       <div class="col">
         <article class="opera-card">
-          <a href="/scheda/<%= o.id %>" class="stretched-link-wrapper">
+          <a href="<%= o.url %>" class="stretched-link-wrapper">
             <div class="thumb">
               <% if (o.copertina) { %>
                 <img src="/media/<%= o.copertina %>/miniatura" alt="" loading="lazy" decoding="async">

@@ -41,7 +41,7 @@
                 <% } else if (s.stato === 1 && colonnaAutore) { %>
                   <a class="btn btn-sm btn-primary" href="/area/schede/<%= s.id %>"><%= t('Valuta') %></a>
                 <% } else if (s.stato === 2) { %>
-                  <a class="btn btn-sm btn-outline-secondary" href="/scheda/<%= s.id %>"><%= t('Pagina pubblica') %></a>
+                  <a class="btn btn-sm btn-outline-secondary" href="<%= s.percorso %>"><%= t('Pagina pubblica') %></a>
                 <% } %>
               </div>
             </td>

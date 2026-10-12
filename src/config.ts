@@ -72,8 +72,22 @@ export const config = {
   /** Origini ammesse per le richieste che modificano dati (protezione CSRF). Vuoto = stesso host. */
   allowedOrigins: list('ALLOWED_ORIGINS'),
 
+  /** Limiti per indirizzo IP contro la copia automatica del catalogo (src/http/antiscraping.ts). */
+  scraping: {
+    attiva: bool('SCRAPING_PROTEZIONE', true),
+    pagineMinuto: int('SCRAPING_PAGINE_MINUTO', 60),
+    pagineOra: int('SCRAPING_PAGINE_ORA', 600),
+    mediaMinuto: int('SCRAPING_MEDIA_MINUTO', 600),
+    mediaOra: int('SCRAPING_MEDIA_ORA', 6000),
+    apiMinuto: int('SCRAPING_API_MINUTO', 300),
+    bloccoMinuti: int('SCRAPING_BLOCCO_MINUTI', 60),
+  },
+
   upload: {
     maxImageBytes: int('MAX_IMAGE_MB', 25) * 1024 * 1024,
+    /** Dimensioni massime dell'immagine decodificata: un file piccolo può nascondere milioni di pixel. */
+    maxImageSide: int('MAX_IMAGE_LATO_PX', 20_000),
+    maxImageMegapixels: int('MAX_IMAGE_MEGAPIXEL', 150),
   },
 
   media: {

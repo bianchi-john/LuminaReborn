@@ -5,11 +5,13 @@ import { STATI, STATO_LABEL } from '../domain/classificazioni';
 import { SchedaInput } from '../domain/scheda.schema';
 import { VOCAB_KEYS, VOCABOLARI, VocabKey } from '../domain/vocabolari';
 import { badRequest, conflict, forbidden, notFound } from '../http/errors';
-import { cleanHtml, htmlToText } from '../util/html';
+import { generaCodice, LUNGHEZZA_CODICE_OPERA, percorsoOpera } from '../util/codici';
+import { cleanHtml, htmlToText, soloImmagini } from '../util/html';
 import { linkedTo, linkScheda, VocabItem } from './vocabolari.service';
 
 interface SchedaRow {
   id: number;
+  codice: string;
   titolo_opera: string;
   titolo_testo: string;
   classificazione: string | null;
@@ -79,12 +81,14 @@ async function loadRow(db: Db, id: number, forUpdate = false): Promise<SchedaRow
 export interface SchedaCompleta extends Omit<SchedaRow, 'note_schedatore'> {
   note_schedatore?: string | null;
   stato_label: string;
+  /** Indirizzo pubblico (/opere/...), valido solo se la scheda è pubblicata */
+  percorso: string;
   schedatori: { id: number; username: string; display_name: string | null }[];
   cronologie: Record<string, unknown>[];
   inventari: Record<string, unknown>[];
   misure: (Record<string, unknown> & { misure: Record<string, unknown>[] })[];
   documentazioni_fotografiche: { id: number; riferimento: string }[];
-  immagini: { id: number; didascalia: string | null; mime: string; larghezza: number | null; altezza: number | null }[];
+  immagini: { id: number; codice: string; didascalia: string | null; mime: string; larghezza: number | null; altezza: number | null }[];
   revisioni?: { azione: string; commento: string | null; created_at: Date; username: string | null }[];
   permessi: Permessi;
   voci: Record<VocabKey, VocabItem[]>;
@@ -133,9 +137,9 @@ export async function getScheda(id: number, user?: SessionUser): Promise<SchedaC
       'SELECT id, riferimento_bibliografico AS riferimento FROM documentazioniFotografiche WHERE id_scheda = ? ORDER BY ordine, id',
       [id],
     ),
-    select<{ id: number; didascalia: string | null; mime: string; larghezza: number | null; altezza: number | null }>(
+    select<{ id: number; codice: string; didascalia: string | null; mime: string; larghezza: number | null; altezza: number | null }>(
       pool,
-      'SELECT id, didascalia, mime, larghezza, altezza FROM immagini WHERE id_scheda = ? ORDER BY ordine, id',
+      'SELECT id, codice, didascalia, mime, larghezza, altezza FROM immagini WHERE id_scheda = ? ORDER BY ordine, id',
       [id],
     ),
     riservato
@@ -167,6 +171,7 @@ export async function getScheda(id: number, user?: SessionUser): Promise<SchedaC
     corpo_scheda: cleanHtml(row.corpo_scheda, 'block'),
     ...(riservato ? { note_schedatore } : {}),
     stato_label: STATO_LABEL[row.stato] ?? 'Sconosciuto',
+    percorso: percorsoOpera(row.titolo_testo, row.codice),
     schedatori,
     cronologie,
     inventari,
@@ -273,6 +278,20 @@ async function syncImmagini(conn: PoolConnection, schedaId: number, input: Sched
   }
 }
 
+/** Nei campi di testo restano solo le immagini della scheda stessa. */
+async function conImmaginiDellaScheda(db: Db, input: SchedaInput): Promise<SchedaInput> {
+  const ids = input.immagini.map((i) => i.id);
+  const righe = ids.length ? await select<{ codice: string }>(db, 'SELECT codice FROM immagini WHERE id IN (?)', [ids]) : [];
+  const codici = new Set(righe.map((r) => r.codice));
+  return {
+    ...input,
+    descrizione_sintetica: soloImmagini(input.descrizione_sintetica, codici),
+    iscrizioni: soloImmagini(input.iscrizioni, codici),
+    storia_espositiva: soloImmagini(input.storia_espositiva, codici),
+    corpo_scheda: soloImmagini(input.corpo_scheda, codici),
+  };
+}
+
 function schedaColumns(input: SchedaInput) {
   return [
     input.titolo_opera,
@@ -286,14 +305,15 @@ function schedaColumns(input: SchedaInput) {
   ];
 }
 
-export async function createScheda(input: SchedaInput, user: SessionUser): Promise<number> {
+export async function createScheda(dati: SchedaInput, user: SessionUser): Promise<number> {
   return withTransaction(async (conn) => {
+    const input = await conImmaginiDellaScheda(conn, dati);
     const res = await execute(
       conn,
-      `INSERT INTO schede (titolo_opera, titolo_testo, classificazione, descrizione_sintetica, iscrizioni, storia_espositiva,
+      `INSERT INTO schede (codice, titolo_opera, titolo_testo, classificazione, descrizione_sintetica, iscrizioni, storia_espositiva,
                            corpo_scheda, note_schedatore, stato, created_by, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-      [...schedaColumns(input), STATI.BOZZA, user.id],
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [generaCodice(LUNGHEZZA_CODICE_OPERA), ...schedaColumns(input), STATI.BOZZA, user.id],
     );
     const id = res.insertId;
     await execute(conn, 'INSERT INTO tds_users_schede (id_user, id_scheda, data_modifica) VALUES (?, ?, NOW())', [user.id, id]);
@@ -305,8 +325,9 @@ export async function createScheda(input: SchedaInput, user: SessionUser): Promi
   });
 }
 
-export async function updateScheda(id: number, input: SchedaInput, user: SessionUser): Promise<void> {
+export async function updateScheda(id: number, dati: SchedaInput, user: SessionUser): Promise<void> {
   await withTransaction(async (conn) => {
+    const input = await conImmaginiDellaScheda(conn, dati);
     const row = await loadRow(conn, id, true);
     const permessi = computePermessi(row, user, await isAccreditato(conn, id, user));
     if (!permessi.visualizza) throw notFound('Scheda non trovata');
@@ -377,30 +398,38 @@ export async function cambiaStato(id: number, azione: Azione, user: SessionUser,
 
 export interface SchedaSintesi {
   id: number;
+  codice: string;
+  percorso: string;
   titolo_opera: string;
   titolo_testo: string;
   stato: number;
   stato_label: string;
   updated_at: Date;
   autore_scheda: string | null;
-  copertina: number | null;
+  copertina: string | null;
   ultima_azione: string | null;
   ultimo_commento: string | null;
   ultima_azione_il: Date | null;
 }
 
 const SINTESI_SELECT = `
-  SELECT s.id, s.titolo_opera, s.titolo_testo, s.stato, s.updated_at,
+  SELECT s.id, s.codice, s.titolo_opera, s.titolo_testo, s.stato, s.updated_at,
          COALESCE(u.display_name, u.username) AS autore_scheda,
-         (SELECT i.id FROM immagini i WHERE i.id_scheda = s.id ORDER BY i.ordine, i.id LIMIT 1) AS copertina,
+         (SELECT i.codice FROM immagini i WHERE i.id_scheda = s.id ORDER BY i.ordine, i.id LIMIT 1) AS copertina,
          r.azione AS ultima_azione, r.commento AS ultimo_commento, r.created_at AS ultima_azione_il
     FROM schede s
     LEFT JOIN users u ON u.id = s.created_by
     LEFT JOIN schede_revisioni r ON r.id = (SELECT r2.id FROM schede_revisioni r2 WHERE r2.id_scheda = s.id
                                              ORDER BY r2.created_at DESC, r2.id DESC LIMIT 1)`;
 
-const withLabel = (rows: Omit<SchedaSintesi, 'stato_label'>[]): SchedaSintesi[] =>
-  rows.map((r) => ({ ...r, stato_label: STATO_LABEL[r.stato] ?? '' }));
+const withLabel = (rows: Omit<SchedaSintesi, 'stato_label' | 'percorso'>[]): SchedaSintesi[] =>
+  rows.map((r) => ({ ...r, stato_label: STATO_LABEL[r.stato] ?? '', percorso: percorsoOpera(r.titolo_testo, r.codice) }));
+
+/** ID interno dell'opera a partire dal codice pubblico. */
+export async function idDaCodice(codice: string): Promise<number | null> {
+  const row = await selectOne<{ id: number }>(pool, 'SELECT id FROM schede WHERE codice = ?', [codice]);
+  return row?.id ?? null;
+}
 
 export async function listMie(user: SessionUser): Promise<SchedaSintesi[]> {
   return withLabel(

@@ -52,11 +52,13 @@ Tutte le variabili sono descritte in [`.env.example`](../.env.example). Le princ
 |---|---|
 | `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `JWT_SECRET`, `ADMIN_PASSWORD` | segreti: **da cambiare** (es. `openssl rand -hex 32`) |
 | `COOKIE_SECURE` | `true` quando il sito è in HTTPS |
-| `TRUST_PROXY` | numero di reverse proxy davanti all'app (es. `1`) |
+| `TRUST_PROXY` | numero di reverse proxy davanti all'app (es. `1`). **Obbligatorio dietro un proxy**: altrimenti tutti i visitatori hanno lo stesso indirizzo e la protezione dallo scraping bloccherebbe il sito a tutti |
 | `ALLOWED_ORIGINS` | indirizzo pubblico del sito, es. `https://catalogo.example.it` |
 | `MEDIA_PREVIEW_PX` | lato lungo delle immagini pubbliche (default 1280 px) |
 | `MEDIA_WATERMARK` | firma sulle anteprime pubbliche (default "© Musei Nazionali di Lucca", vuoto per disattivarla; per applicarla alle immagini esistenti va rigenerata l'anteprima) |
 | `MAX_IMAGE_MB` | dimensione massima di un'immagine caricata (default 25 MB) |
+| `MAX_IMAGE_LATO_PX`, `MAX_IMAGE_MEGAPIXEL` | dimensioni massime in pixel (default 20.000 px per lato, 150 megapixel) |
+| `SCRAPING_*` | limiti per indirizzo IP contro la copia automatica del catalogo (vedi `.env.example`); `SCRAPING_PROTEZIONE=false` li disattiva. Un indirizzo bloccato si sblocca riavviando l'app (`docker compose restart nodeapp`) |
 | `BACKUP_DIR`, `BACKUP_HOUR`, `EXPORT_HOUR`, `BACKUP_KEEP_DAYS` | backup ed esportazioni |
 
 ## Backup, ripristino, esportazione

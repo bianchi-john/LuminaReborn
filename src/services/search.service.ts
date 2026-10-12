@@ -3,6 +3,7 @@ import { pool, select, selectOne } from '../db/pool';
 import { CLASSIFICAZIONI } from '../domain/classificazioni';
 import { optInt, optText } from '../domain/scheda.schema';
 import { VOCAB_KEYS, VOCABOLARI, VocabKey } from '../domain/vocabolari';
+import { percorsoOpera } from '../util/codici';
 import { findSimilar, normalize } from '../util/similarity';
 import { escapeLike } from '../util/sql';
 import { listVoci } from './vocabolari.service';
@@ -58,13 +59,15 @@ export const searchQuerySchema = z.object({
   ...vocabIdShape,
   ordina: z.enum(['rilevanza', 'titolo', 'data', 'recenti']).optional().catch(undefined),
   pagina: z.coerce.number().int().min(1).max(10_000).catch(1),
-  per_pagina: z.coerce.number().int().min(1).max(100).catch(24),
+  // Limite basso: scaricare tutto il catalogo richiede molte richieste (vedi protezione anti-scraping)
+  per_pagina: z.coerce.number().int().min(1).max(48).catch(24),
 });
 
 export type SearchQuery = z.infer<typeof searchQuerySchema>;
 
 export interface SearchItem {
   id: number;
+  url: string;
   titolo_opera: string;
   titolo_testo: string;
   classificazione: string | null;
@@ -72,7 +75,7 @@ export interface SearchItem {
   datazione: string | null;
   ubicazione: string | null;
   inventario: string | null;
-  copertina: number | null;
+  copertina: string | null;
 }
 
 class Where {
@@ -242,9 +245,9 @@ export async function search(f: SearchQuery) {
 
   const [countRow, items, classi] = await Promise.all([
     selectOne<{ n: number }>(pool, `SELECT COUNT(*) AS n FROM schede s WHERE ${where.toSql()}`, where.params),
-    select<SearchItem & { anno: number | null }>(
+    select<Omit<SearchItem, 'url'> & { codice: string; anno: number | null }>(
       pool,
-      `SELECT s.id, s.titolo_opera, s.titolo_testo, s.classificazione,
+      `SELECT s.id, s.codice, s.titolo_opera, s.titolo_testo, s.classificazione,
               (SELECT GROUP_CONCAT(CONCAT_WS(' ', l.formula_precedente, a.nome, l.formula_successiva) ORDER BY l.ordine SEPARATOR '; ')
                  FROM tds_schede_autori l JOIN autori a ON a.id = l.id_autore WHERE l.id_scheda = s.id) AS autori,
               (SELECT c.etichetta_data FROM cronologie c WHERE c.id_scheda = s.id ORDER BY c.ordine LIMIT 1) AS datazione,
@@ -252,7 +255,7 @@ export async function search(f: SearchQuery) {
               (SELECT u.ubicazione FROM tds_schede_ubicazioni l JOIN ubicazioni u ON u.id = l.id_ubicazione
                 WHERE l.id_scheda = s.id ORDER BY l.ordine LIMIT 1) AS ubicazione,
               (SELECT i.numero_inventario FROM inventari i WHERE i.id_scheda = s.id ORDER BY i.ordine LIMIT 1) AS inventario,
-              (SELECT im.id FROM immagini im WHERE im.id_scheda = s.id ORDER BY im.ordine, im.id LIMIT 1) AS copertina
+              (SELECT im.codice FROM immagini im WHERE im.id_scheda = s.id ORDER BY im.ordine, im.id LIMIT 1) AS copertina
               ${useScore ? `, (${score.sql}) AS punteggio` : ''}
          FROM schede s
         WHERE ${where.toSql()}
@@ -269,7 +272,12 @@ export async function search(f: SearchQuery) {
 
   const total = Number(countRow?.n ?? 0);
   return {
-    items: items.map(({ anno: _anno, punteggio: _p, ...item }: SearchItem & { anno: number | null; punteggio?: number }) => item),
+    items: items.map(
+      ({ anno: _anno, punteggio: _p, codice, ...item }: Omit<SearchItem, 'url'> & { codice: string; anno: number | null; punteggio?: number }) => ({
+        ...item,
+        url: percorsoOpera(item.titolo_testo, codice),
+      }),
+    ),
     total,
     ordina,
     pagina: f.pagina,
@@ -293,16 +301,16 @@ export async function suggerimenti(q: string) {
   const term = q.trim().slice(0, 100);
   if (term.length < 2) return { opere: [], voci: [] };
   const [opere, ...voci] = await Promise.all([
-    select<{ id: number; titolo_testo: string }>(
+    select<{ codice: string; titolo_testo: string }>(
       pool,
-      `SELECT id, titolo_testo FROM schede WHERE stato = 2 AND titolo_testo LIKE ?
+      `SELECT codice, titolo_testo FROM schede WHERE stato = 2 AND titolo_testo LIKE ?
         ORDER BY (titolo_testo LIKE ?) DESC, titolo_testo LIMIT 5`,
       [like(term), `${escapeLike(term)}%`],
     ),
     ...SUGGEST_VOCI.map((k) => listVoci(VOCABOLARI[k], { q: term, limit: 4, soloPubblicate: true })),
   ]);
   return {
-    opere,
+    opere: opere.map((o) => ({ titolo_testo: o.titolo_testo, url: percorsoOpera(o.titolo_testo, o.codice) })),
     voci: SUGGEST_VOCI.flatMap((k, i) =>
       voci[i].map((item) => ({ tipo: k, id: item.id, label: String(item[VOCABOLARI[k].display]), schede: item.schede_pubblicate })),
     ),

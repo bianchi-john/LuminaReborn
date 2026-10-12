@@ -45,9 +45,18 @@ const getJson = async (url: string): Promise<any> => (await fetch(url)).json();
 
 const PNG_1PX = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
 
+/** Indirizzo pubblico di un'opera trovata con una ricerca (gli indirizzi non sono prevedibili). */
+async function unaOpera(q = 'sebastiano'): Promise<string> {
+  const html = await (await fetch(`${BASE}/?q=${q}`)).text();
+  const percorso = html.match(/href="(\/opere\/[a-z0-9-]+)"/)?.[1];
+  assert.ok(percorso, `la ricerca "${q}" trova almeno un'opera`);
+  return percorso;
+}
+
 describe('catalogo pubblico', () => {
   it('pagine principali', async () => {
-    for (const [path, status] of [['/', 200], ['/scheda/1', 200], ['/voci', 200], ['/voci/autori', 200], ['/login', 200], ['/area', 302], ['/inesistente', 404]] as const) {
+    const opera = await unaOpera();
+    for (const [path, status] of [['/', 200], [opera, 200], ['/voci', 200], ['/voci/autori', 200], ['/login', 200], ['/area', 302], ['/inesistente', 404]] as const) {
       const res = await fetch(BASE + path, { redirect: 'manual' });
       assert.equal(res.status, status, path);
     }
@@ -61,7 +70,7 @@ describe('catalogo pubblico', () => {
   });
 
   it('nessun cookie per i visitatori, nemmeno cambiando lingua', async () => {
-    for (const path of ['/', '/?lang=en', '/?q=giordano', '/scheda/1', '/informazioni', '/privacy?lang=en', '/termini']) {
+    for (const path of ['/', '/?lang=en', '/?q=giordano', await unaOpera(), '/informazioni', '/privacy?lang=en', '/termini']) {
       const res = await fetch(BASE + path);
       assert.equal(res.status, 200, path);
       assert.equal(res.headers.get('set-cookie'), null, path);
@@ -126,9 +135,9 @@ describe('catalogo pubblico', () => {
   });
 
   it('immagini: anteprima pubblica, originale riservato', async () => {
-    const html = await (await fetch(BASE + '/scheda/1')).text();
-    const id = html.match(/\/media\/(\d+)\/anteprima/)?.[1];
-    assert.ok(id, 'la scheda 1 ha immagini');
+    const html = await (await fetch(BASE + (await unaOpera()))).text();
+    const id = html.match(/\/media\/([a-z2-9]{16})\/anteprima/)?.[1];
+    assert.ok(id, 'l\'opera ha immagini');
     assert.equal((await fetch(`${BASE}/media/${id}/anteprima`)).headers.get('content-type'), 'image/webp');
     assert.equal((await fetch(`${BASE}/media/${id}/originale`)).status, 404);
   });
@@ -172,7 +181,8 @@ describe('flusso di lavoro', () => {
   });
 
   it('la bozza non è visibile al pubblico', async () => {
-    assert.equal((await fetch(`${BASE}/api/schede/${schedaId}`)).status, 404);
+    assert.equal((await fetch(`${BASE}/api/schede/${schedaId}`)).status, 401);
+    assert.equal((await fetch(`${BASE}/scheda/${schedaId}`)).status, 404, 'gli ID numerici non portano a nulla');
   });
 
   it('protezioni: CSRF e permessi', async () => {
@@ -197,7 +207,12 @@ describe('flusso di lavoro', () => {
     assert.equal((await admin.json('POST', `/api/schede/${schedaId}/respingi`, { commento: 'manca la datazione' })).status, 200);
     assert.equal((await schedatore.json('POST', `/api/schede/${schedaId}/invia`, {})).status, 200);
     assert.equal((await admin.json('POST', `/api/schede/${schedaId}/approva`, {})).status, 200);
-    assert.equal((await fetch(`${BASE}/scheda/${schedaId}`)).status, 200);
+    const { percorso } = (await schedatore.json('GET', `/api/schede/${schedaId}`)).data as { percorso: string };
+    assert.match(percorso, /^\/opere\/prova-e2e-[a-z2-9]{10}$/);
+    assert.equal((await fetch(BASE + percorso)).status, 200);
+    const altroTitolo = await fetch(`${BASE}/opere/titolo-sbagliato-${percorso.slice(-10)}`, { redirect: 'manual' });
+    assert.equal(altroTitolo.status, 301, 'il titolo nell\'indirizzo si corregge da solo');
+    assert.equal(new URL(altroTitolo.headers.get('location') ?? '', BASE).pathname, percorso);
   });
 
   it('cambio password: richiede quella attuale e chiude le altre sessioni', async () => {

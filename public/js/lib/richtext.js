@@ -22,12 +22,21 @@ const BLOCK_TOOLS = [
   { cmd: 'insertUnorderedList', label: 'Elenco puntato', html: '•≡' },
   { cmd: 'insertOrderedList', label: 'Elenco numerato', html: '1≡' },
   { cmd: 'blockquote', label: 'Citazione', html: '❝' },
-  ...INLINE_TOOLS.slice(5),
+  ...INLINE_TOOLS.slice(5, 6),
+  { cmd: 'image', label: 'Inserisci un\'immagine della scheda', html: '▣' },
+  ...INLINE_TOOLS.slice(6),
 ];
+
+/** Solo le versioni ridotte delle immagini già caricate nella scheda. */
+const IMMAGINE_INTERNA = /^\/media\/([a-z2-9]{16})\/(anteprima|miniatura)$/;
 
 const escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-export function createRichText({ kind = 'block', value = '', placeholder = '', labelledBy, onChange } = {}) {
+/**
+ * images: funzione che restituisce le immagini della scheda ({ codice, didascalia }):
+ * nei campi 'block' si possono inserire solo quelle, scegliendole da un elenco.
+ */
+export function createRichText({ kind = 'block', value = '', placeholder = '', labelledBy, onChange, images } = {}) {
   const content = el('div', {
     class: 'rte-content',
     contenteditable: 'true',
@@ -38,8 +47,71 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   });
   content.innerHTML = value || '';
 
+  // Selettore delle immagini: un pannello sotto la barra, con le miniature della scheda
+  const picker = el('div', { class: 'rte-picker', hidden: true, role: 'dialog', 'aria-label': t('Inserisci un\'immagine della scheda') });
+  let range = null;
+  const closePicker = () => {
+    picker.hidden = true;
+    picker.replaceChildren();
+  };
+  const openPicker = () => {
+    const sel = window.getSelection();
+    range = sel.rangeCount && content.contains(sel.getRangeAt(0).commonAncestorContainer) ? sel.getRangeAt(0).cloneRange() : null;
+    const list = images?.() ?? [];
+    picker.replaceChildren(
+      list.length
+        ? el(
+            'div',
+            { class: 'rte-picker-grid' },
+            list.map((img) =>
+              el(
+                'button',
+                { type: 'button', class: 'rte-picker-item', title: img.didascalia || t('Immagine'), onclick: () => insertImage(img) },
+                el('img', { src: `/media/${img.codice}/miniatura`, alt: '' }),
+                el('span', {}, img.didascalia || t('Immagine')),
+              ),
+            ),
+          )
+        : el('p', { class: 'hint mb-0' }, t('Carica prima le immagini nella sezione «Immagini»: qui si possono inserire solo quelle della scheda.')),
+      el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary mt-2', onclick: closePicker }, t('Chiudi')),
+    );
+    picker.hidden = false;
+  };
+  const insertImage = (img) => {
+    closePicker();
+    content.focus();
+    if (range) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    const alt = escapeHtml(img.didascalia || '');
+    document.execCommand('insertHTML', false, `<p><img src="/media/${img.codice}/anteprima" alt="${alt}"></p><p><br></p>`);
+    onChange?.();
+  };
+
+  /** Toglie le immagini che non appartengono (più) alla scheda, ad esempio dopo averne eliminata una. */
+  const pruneImages = () => {
+    const allowed = new Set((images?.() ?? []).map((i) => i.codice));
+    let changed = false;
+    content.querySelectorAll('img').forEach((node) => {
+      const codice = IMMAGINE_INTERNA.exec(node.getAttribute('src') ?? '')?.[1];
+      if (kind === 'block' && codice && allowed.has(codice)) return;
+      const p = node.parentElement;
+      node.remove();
+      if (p !== content && p?.tagName === 'P' && !p.textContent.trim() && !p.querySelector('img')) p.remove();
+      changed = true;
+    });
+    return changed;
+  };
+
   const exec = (cmd) => {
     content.focus();
+    if (cmd === 'image') {
+      if (picker.hidden) openPicker();
+      else closePicker();
+      return;
+    }
     if (cmd === 'link') {
       const url = window.prompt(t('Indirizzo del collegamento (https://…)'), 'https://');
       if (url && /^(https?:\/\/|mailto:)/i.test(url)) document.execCommand('createLink', false, url);
@@ -51,7 +123,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
     onChange?.();
   };
 
-  const tools = kind === 'block' ? BLOCK_TOOLS : INLINE_TOOLS;
+  const tools = kind === 'block' ? BLOCK_TOOLS.filter((x) => x.cmd !== 'image' || images) : INLINE_TOOLS;
   const toolbar = el(
     'div',
     { class: 'rte-toolbar', role: 'toolbar', 'aria-label': t('Formattazione') },
@@ -89,14 +161,42 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   });
   content.addEventListener('input', () => onChange?.());
 
-  const root = el('div', { class: `rte rte-${kind}` }, toolbar, content);
+  // Niente immagini trascinate dentro dal computer o da altri siti: si usano quelle caricate nella scheda
+  content.addEventListener('dragover', (event) => {
+    if (event.dataTransfer?.types.includes('Files')) event.preventDefault();
+  });
+  content.addEventListener('drop', (event) => {
+    const dt = event.dataTransfer;
+    if (!dt) return;
+    event.preventDefault();
+    if (dt.types.includes('Files')) {
+      if (kind === 'block' && images) openPicker();
+      return;
+    }
+    const text = dt.getData('text/plain');
+    if (text) document.execCommand('insertText', false, kind === 'inline' ? text.replace(/\s*\n\s*/g, ' ') : text);
+  });
+  picker.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closePicker();
+      content.focus();
+    }
+  });
+
+  const root = el('div', { class: `rte rte-${kind}` }, toolbar, picker, content);
 
   return {
     root,
     focus: () => content.focus(),
     getValue() {
-      if (!content.textContent.trim()) return '';
+      pruneImages();
+      if (!content.textContent.trim() && !content.querySelector('img')) return '';
       return content.innerHTML.trim();
+    },
+    /** Da chiamare quando cambia l'elenco delle immagini della scheda. */
+    refreshImages() {
+      if (pruneImages()) onChange?.();
+      if (!picker.hidden) openPicker();
     },
     setValue(html) {
       content.innerHTML = html || '';

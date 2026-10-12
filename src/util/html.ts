@@ -6,7 +6,7 @@ const linkTransform: sanitizeHtml.Transformer = (tagName, attribs) => ({
 });
 
 /** Solo immagini dell'archivio stesso (versioni ridotte), mai indirizzi esterni o data URL. */
-const INTERNAL_IMAGE = /^\/media\/\d+\/(anteprima|miniatura)$/;
+const INTERNAL_IMAGE = /^\/media\/([a-z2-9]{16})\/(anteprima|miniatura)$/;
 
 /** Testo ricco dei campi lunghi (commento, descrizione, iscrizioni...). */
 const BLOCK_OPTIONS: sanitizeHtml.IOptions = {
@@ -33,6 +33,21 @@ const INLINE_OPTIONS: sanitizeHtml.IOptions = {
 const TEXT_OPTIONS: sanitizeHtml.IOptions = { allowedTags: [], allowedAttributes: {} };
 
 export type HtmlKind = 'block' | 'inline';
+
+/**
+ * Testo ricco in cui restano solo le immagini indicate (quelle della scheda):
+ * non si possono mostrare nel commento immagini di altre opere, magari non pubblicate.
+ */
+export function soloImmagini(value: string | null, codici: ReadonlySet<string>): string | null {
+  if (!value || !value.includes('<img')) return value;
+  const cleaned = sanitizeHtml(value, {
+    ...BLOCK_OPTIONS,
+    exclusiveFilter: (frame) =>
+      (frame.tag === 'img' && !codici.has(INTERNAL_IMAGE.exec(frame.attribs.src ?? '')?.[1] ?? '')) ||
+      (frame.tag === 'p' && !frame.text.trim() && !frame.mediaChildren.length),
+  }).trim();
+  return cleaned === '' ? null : cleaned;
+}
 
 export function cleanHtml(value: string | null | undefined, kind: HtmlKind): string | null {
   if (value === null || value === undefined) return null;

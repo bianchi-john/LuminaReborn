@@ -445,7 +445,9 @@ function gruppoMisureRow(g) {
 // ---------------------------------------------------------------------------
 
 const imgContainer = document.getElementById('immagini');
-const images = (scheda?.immagini ?? []).map((i) => ({ id: i.id, didascalia: i.didascalia ?? '', larghezza: i.larghezza, altezza: i.altezza }));
+/** Editor di testo ricco, per nome del campo (montati più sotto). */
+const rich = {};
+const images = (scheda?.immagini ?? []).map((i) => ({ id: i.id, codice: i.codice, didascalia: i.didascalia ?? '', larghezza: i.larghezza, altezza: i.altezza }));
 
 function renderImages() {
   imgContainer.replaceChildren(
@@ -465,7 +467,7 @@ function renderImages() {
         el(
           'div',
           { class: 'img-tile shadow-sm' },
-          el('img', { src: `/media/${img.id}/miniatura`, alt: img.didascalia || t('Immagine {n}', { n: i + 1 }) }),
+          el('img', { src: `/media/${img.codice}/miniatura`, alt: img.didascalia || t('Immagine {n}', { n: i + 1 }) }),
           el(
             'div',
             { class: 'p-2' },
@@ -473,7 +475,7 @@ function renderImages() {
               'div',
               { class: 'd-flex justify-content-between align-items-center mb-2' },
               i === 0 ? el('span', { class: 'badge badge-soft', text: t('Copertina') }) : el('span'),
-              el('a', { class: 'small', href: `/media/${img.id}/originale`, target: '_blank', rel: 'noopener', text: img.larghezza ? `${t('Originale')} ${img.larghezza}×${img.altezza}` : t('Originale') }),
+              el('a', { class: 'small', href: `/media/${img.codice}/originale`, target: '_blank', rel: 'noopener', text: img.larghezza ? `${t('Originale')} ${img.larghezza}×${img.altezza}` : t('Originale') }),
             ),
             caption,
             el(
@@ -497,7 +499,21 @@ function renderImages() {
       );
     }),
   );
+  // Le immagini tolte dalla scheda spariscono anche dai testi
+  Object.values(rich).forEach((r) => r.refreshImages());
   listeners.forEach((fn) => fn());
+}
+
+/** Dimensioni in pixel, se il browser sa decodificare il formato (TIFF no: lo verifica il server). */
+async function dimensioniImmagine(file) {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const dim = { w: bitmap.width, h: bitmap.height };
+    bitmap.close();
+    return dim;
+  } catch {
+    return null;
+  }
 }
 
 async function uploadFiles(files) {
@@ -510,10 +526,15 @@ async function uploadFiles(files) {
       toast(t('{file}: file troppo grande (massimo {mb} MB)', { file: file.name, mb: Math.round(config.maxImageBytes / 1048576) }), 'danger');
       continue;
     }
+    const dim = await dimensioniImmagine(file);
+    if (dim && (Math.max(dim.w, dim.h) > config.maxImageSide || dim.w * dim.h > config.maxImageMegapixels * 1e6)) {
+      toast(t('{file}: immagine troppo grande ({w}×{h} pixel; massimo {lato} pixel per lato e {mp} megapixel)', { file: file.name, w: dim.w, h: dim.h, lato: config.maxImageSide, mp: config.maxImageMegapixels }), 'danger');
+      continue;
+    }
     statusEl.textContent = t('Caricamento ed elaborazione di {file}…', { file: file.name });
     try {
       const res = await api('POST', '/api/immagini', file);
-      images.push({ id: res.id, didascalia: file.name.replace(/\.[^.]+$/, ''), larghezza: res.larghezza, altezza: res.altezza });
+      images.push({ id: res.id, codice: res.codice, didascalia: file.name.replace(/\.[^.]+$/, ''), larghezza: res.larghezza, altezza: res.altezza });
       markDirty();
       renderImages();
     } catch (error) {
@@ -545,10 +566,9 @@ dropzone.addEventListener('drop', (event) => {
 // Montaggio
 // ---------------------------------------------------------------------------
 
-const rich = {};
 document.querySelectorAll('[data-rte]').forEach((mount) => {
   const name = mount.dataset.name;
-  const rte = createRichText({ kind: mount.dataset.rte, value: scheda?.[name] ?? '', placeholder: mount.dataset.placeholder ?? '', labelledBy: mount.dataset.labelledby, onChange: markDirty });
+  const rte = createRichText({ kind: mount.dataset.rte, value: scheda?.[name] ?? '', placeholder: mount.dataset.placeholder ?? '', labelledBy: mount.dataset.labelledby, onChange: markDirty, images: mount.dataset.rte === 'block' ? () => images : undefined });
   mount.replaceWith(rte.root);
   rich[name] = rte;
 });

@@ -35,7 +35,7 @@ fi
 
 [ "$(val COOKIE_SECURE)" = "true" ] && ok "COOKIE_SECURE=true" || ko "COOKIE_SECURE deve essere true (sito in HTTPS)"
 case "$(val ALLOWED_ORIGINS)" in https://*) ok "ALLOWED_ORIGINS in https" ;; *) ko "ALLOWED_ORIGINS: indicare l'indirizzo pubblico https://..." ;; esac
-[ "$(val TRUST_PROXY)" != "0" ] && [ -n "$(val TRUST_PROXY)" ] && ok "TRUST_PROXY" || warn "TRUST_PROXY=0: corretto solo se non c'è un reverse proxy davanti all'app"
+[ "$(val TRUST_PROXY)" != "0" ] && [ -n "$(val TRUST_PROXY)" ] && ok "TRUST_PROXY" || warn "TRUST_PROXY=0: corretto solo se non c'è un reverse proxy davanti all'app (altrimenti la protezione dallo scraping vede un solo indirizzo e blocca tutti)"
 [ -n "$(val SECURITY_CONTACT)" ] && ok "SECURITY_CONTACT" || warn "SECURITY_CONTACT vuoto: /.well-known/security.txt non verrà pubblicato"
 [ "$(val APP_BIND)" = "127.0.0.1" ] && ok "APP_BIND=127.0.0.1 (app raggiungibile solo dal reverse proxy)" || warn "APP_BIND diverso da 127.0.0.1: l'app è esposta anche in HTTP senza proxy"
 

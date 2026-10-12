@@ -10,6 +10,7 @@ import { confrontoDimensionale } from '../domain/dimensioni';
 import { isVocabKey, VOCAB_KEYS, VOCABOLARI } from '../domain/vocabolari';
 import { ah, forbidden, notFound } from '../http/errors';
 import * as schede from '../services/schede.service';
+import { codiceDaPercorso } from '../util/codici';
 import { copertineCasuali } from '../services/immagini.service';
 import { opzioniRicerca, search, searchQuerySchema } from '../services/search.service';
 import * as voci from '../services/vocabolari.service';
@@ -67,20 +68,36 @@ pages.get(
   }),
 );
 
-pages.get('/scheda', (req, res) => {
-  const id = Number(req.query.id);
-  if (Number.isInteger(id) && id > 0) return res.redirect(301, `/scheda/${id}`);
-  res.redirect('/');
-});
-
+/**
+ * Pagina pubblica dell'opera: /opere/<prime-parole-del-titolo>-<codice casuale>.
+ * Se il titolo è cambiato, si viene reindirizzati all'indirizzo aggiornato.
+ */
 pages.get(
-  '/scheda/:id',
+  '/opere/:percorso',
   ah(async (req, res) => {
-    const s = await schede.getScheda(idParam(req), req.user);
+    const codice = codiceDaPercorso(String(req.params.percorso));
+    const id = codice ? await schede.idDaCodice(codice) : null;
+    if (!id) throw notFound();
+    const s = await schede.getScheda(id, req.user);
     if (s.stato !== STATI.PUBBLICATA) return res.redirect(`/area/schede/${s.id}`);
+    if (req.path !== s.percorso) return res.redirect(301, s.percorso + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''));
     res.render('scheda', { title: s.titolo_testo, nav: 'catalogo', s, area: false, confronto: confrontoDimensionale(s.misure) });
   }),
 );
+
+/**
+ * Indirizzi numerici della versione precedente: solo per lo staff autenticato
+ * (rimandano all'indirizzo pubblico). Per gli altri non esistono, così le opere
+ * non si possono enumerare per numero.
+ */
+const vecchioIndirizzo = ah(async (req, res) => {
+  const id = Number(req.params.id ?? req.query.id);
+  if (!req.user || !Number.isInteger(id) || id <= 0) throw notFound();
+  const s = await schede.getScheda(id, req.user);
+  res.redirect(s.stato === STATI.PUBBLICATA ? s.percorso : `/area/schede/${s.id}`);
+});
+pages.get('/scheda', vecchioIndirizzo);
+pages.get('/scheda/:id', vecchioIndirizzo);
 
 pages.get(
   '/voci',

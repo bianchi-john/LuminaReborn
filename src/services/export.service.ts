@@ -64,7 +64,7 @@ export function rigaScheda(s: SchedaCompleta, baseUrl = '') {
     creata: s.created_at,
     modificata: s.updated_at,
     pubblicata: s.published_at ?? '',
-    url: s.stato === 2 ? `${baseUrl}/scheda/${s.id}` : '',
+    url: s.stato === 2 ? `${baseUrl}${s.percorso}` : '',
   };
 }
 

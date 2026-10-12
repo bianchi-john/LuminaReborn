@@ -7,6 +7,7 @@ import { config, ROOT_DIR } from './config';
 import { CLASSIFICAZIONI, STATO_LABEL } from './domain/classificazioni';
 import { VOCABOLARI } from './domain/vocabolari';
 import { ah, errorHandler, notFound } from './http/errors';
+import { protezioneScraping, robotsTxt } from './http/antiscraping';
 import { apiLimiter, noStoreForPrivate, permissionsPolicy, sameOriginOnly, securityHeaders } from './http/security';
 import { DIZIONARI, i18nMiddleware, Lang, LANGS, TFunction } from './i18n';
 import { chiaviClient } from './i18n/chiavi';
@@ -104,7 +105,7 @@ export function createApp(): Application {
     const scadenza = new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString();
     res.type('text/plain').send(`Contact: ${config.securityContact}\nExpires: ${scadenza}\nPreferred-Languages: it, en\n`);
   });
-  app.get('/robots.txt', (_req, res) => res.type('text/plain').send('User-agent: *\nDisallow: /area\nDisallow: /api\nDisallow: /login\n'));
+  app.get('/robots.txt', (_req, res) => res.type('text/plain').send(robotsTxt()));
 
   app.use(cookieParser());
   app.use(i18nMiddleware);
@@ -119,6 +120,7 @@ export function createApp(): Application {
     next();
   });
   app.use(noStoreForPrivate);
+  app.use(protezioneScraping);
 
   app.use('/media', media);
   app.use('/api', apiLimiter, sameOriginOnly, api);

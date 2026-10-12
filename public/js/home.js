@@ -19,7 +19,7 @@ if (q) {
     fetchItems: async (text) => {
       const res = await api('GET', `/api/suggerimenti?q=${encodeURIComponent(text)}`);
       return [
-        ...res.opere.map((o) => ({ kind: 'opera', id: o.id, label: o.titolo_testo, detail: t('Opera') })),
+        ...res.opere.map((o) => ({ kind: 'opera', url: o.url, label: o.titolo_testo, detail: t('Opera') })),
         ...res.voci.map((v) => ({
           kind: v.tipo,
           id: v.id,
@@ -31,7 +31,7 @@ if (q) {
     label: (item) => item.label,
     detail: (item) => item.detail,
     onSelect: (item) => {
-      window.location.href = item.kind === 'opera' ? `/scheda/${item.id}` : `/?${TIPI[item.kind].param}=${item.id}`;
+      window.location.href = item.kind === 'opera' ? item.url : `/?${TIPI[item.kind].param}=${item.id}`;
     },
   });
 }

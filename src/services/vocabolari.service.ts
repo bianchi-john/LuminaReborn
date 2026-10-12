@@ -185,3 +185,13 @@ export async function possibiliDuplicati(v: VocabDef) {
   const candidati = tutte.map((item) => ({ id: item.id, label: htmlToText(String(item[v.display])), schede: item.schede_totali }));
   return findDuplicatePairs(candidati, 0.85, 30);
 }
+
+/** La voce compare in almeno una scheda pubblicata? */
+export async function usataInPubblicate(v: VocabDef, id: number): Promise<boolean> {
+  const row = await selectOne(
+    pool,
+    `SELECT 1 AS ok FROM ${q(v.link)} l JOIN schede s ON s.id = l.id_scheda WHERE l.${q(v.fk)} = ? AND s.stato = 2 LIMIT 1`,
+    [id],
+  );
+  return !!row;
+}

@@ -8,12 +8,14 @@ export class HttpError extends Error {
     public readonly status: number,
     message: string,
     public readonly details?: unknown,
+    /** Valori per i segnaposto {nome} del messaggio, che resta traducibile. */
+    public readonly params?: Record<string, string | number>,
   ) {
     super(message);
   }
 }
 
-export const badRequest = (message: string, details?: unknown) => new HttpError(400, message, details);
+export const badRequest = (message: string, details?: unknown, params?: Record<string, string | number>) => new HttpError(400, message, details, params);
 export const unauthorized = (message = 'Autenticazione richiesta') => new HttpError(401, message);
 export const forbidden = (message = 'Operazione non consentita') => new HttpError(403, message);
 export const notFound = (message = 'Risorsa non trovata') => new HttpError(404, message);
@@ -48,7 +50,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
   if (res.headersSent) return;
   // Messaggi tradotti nella lingua dell'interfaccia (se disponibile)
   const t = req.t ?? ((s: string) => s);
-  const message = t(httpError.message);
+  const message = t(httpError.message, httpError.params);
   const details = Array.isArray(httpError.details)
     ? httpError.details.map((d: { campo?: string; messaggio?: string }) => ({ ...d, messaggio: d.messaggio ? t(d.messaggio) : d.messaggio }))
     : httpError.details;
