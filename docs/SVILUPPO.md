@@ -89,7 +89,7 @@ Al salvataggio di una scheda una voce indicata per nome viene riusata se ne esis
 
 **Stato e storico**: `schede.stato` (0 bozza, 1 in revisione, 2 pubblicata); ogni azione (creata, modificata, inviata, respinta, approvata…) con eventuale messaggio è in `schede_revisioni`. `tds_users_schede` elenca gli schedatori accreditati; `users` è la copia locale degli account dello user-manager.
 
-**Immagini**: `luminadb.immagini` contiene scheda, ordine, didascalia e dimensioni; i byte stanno in `luminamedia.immagini_file`, una riga per variante (`originale`, `anteprima` WebP 1280 px, `miniatura` WebP 480 px), con FK in cascata verso `immagini`. Le varianti ridotte non contengono metadati (EXIF/GPS). Il pubblico riceve solo `anteprima` e `miniatura`; `originale` richiede l'accesso.
+**Immagini**: `luminadb.immagini` contiene scheda, ordine, didascalia e dimensioni; i byte stanno in `luminamedia.immagini_file`, una riga per variante (`originale`, `anteprima` WebP 1280 px, `miniatura` WebP 480 px), con FK in cascata verso `immagini`. Le varianti ridotte non contengono metadati (EXIF/GPS) e l'anteprima porta il watermark `MEDIA_WATERMARK` (testo disegnato da sharp con il font Liberation Serif installato nell'immagine Docker). Il pubblico riceve solo `anteprima` e `miniatura`; `originale` richiede l'accesso.
 
 **Migrazioni**: `migrations/NNN_nome.sql` e passi in codice in `src/db/codeMigrations.ts`, applicati in ordine di nome e registrati in `schema_migrations`. Nei file SQL `{{MAIN_DB}}` e `{{MEDIA_DB}}` diventano i nomi dei database configurati. Non modificare una migrazione già rilasciata: aggiungerne una nuova.
 
@@ -101,7 +101,7 @@ Al salvataggio di una scheda una voce indicata per nome viene riusata se ne esis
 
 ## Lingue
 
-L'italiano è la lingua principale: i testi nel codice sono in italiano e fanno da chiave. `t('Testo')` nei template (e negli script, da `public/js/lib/i18n.js`) restituisce la traduzione inglese da `src/i18n/en.json`, se presente. La lingua viene da `?lang=`, dal cookie `lumina_lang` o dall'intestazione `Accept-Language`. Il test `ogni testo dell'interfaccia ha la traduzione inglese` fallisce se un testo nuovo non è tradotto: `npm run i18n:check` elenca quelli mancanti. I contenuti delle schede non vengono tradotti.
+L'italiano è la lingua principale: i testi nel codice sono in italiano e fanno da chiave. `t('Testo')` nei template (e negli script, da `public/js/lib/i18n.js`) restituisce la traduzione inglese da `src/i18n/en.json`, se presente. La lingua viene da `?lang=` o dall'intestazione `Accept-Language`; non si usano cookie. Il test `ogni testo dell'interfaccia ha la traduzione inglese` fallisce se un testo nuovo non è tradotto: `npm run i18n:check` elenca quelli mancanti. I contenuti delle schede non vengono tradotti.
 
 ## Sicurezza
 
@@ -110,6 +110,7 @@ L'italiano è la lingua principale: i testi nel codice sono in italiano e fanno 
 | SQL injection | solo query parametrizzate; i nomi di tabelle/colonne dinamici vengono da configurazioni statiche (`domain/vocabolari.ts`); `multipleStatements` solo per il migratore |
 | XSS | EJS fa l'escape di default; l'HTML dei campi formattati passa da `sanitize-html` con una lista di tag ammessi sia in scrittura sia in lettura; CSP senza script/stili inline o esterni; negli script del browser solo `textContent` |
 | CSRF | cookie `SameSite=Lax`, controllo dell'header `Origin` e obbligo di JSON sulle richieste che modificano dati |
+| Privacy dei visitatori | nessun cookie (la lingua viaggia nel parametro `?lang=`, propagato ai link da `common.js`), nessuno strumento di analisi né risorsa di terze parti; l'IP resta solo in memoria per pochi minuti nei limiti di frequenza. Un test end-to-end verifica che le pagine pubbliche non impostino cookie |
 | Sessioni | cookie `HttpOnly` (e `Secure` in HTTPS) con durata massima; logout con revoca del token sullo user-manager; utenti bloccati esclusi anche con token valido |
 | Accessi non autorizzati | permessi calcolati lato server per ogni operazione (`computePermessi`); le bozze altrui rispondono 404 |
 | Forza bruta / abuso | limiti di frequenza su login, API e caricamenti |

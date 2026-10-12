@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { config } from '../config';
 import en from './en.json';
 
 /**
@@ -8,15 +7,15 @@ import en from './en.json';
  * `en.json` contiene le traduzioni inglesi; una chiave mancante mostra l'italiano.
  * I contenuti delle schede (database) restano sempre in italiano.
  *
- * Scelta della lingua: parametro `?lang=` (salvato in un cookie) > cookie > lingua del browser.
+ * Scelta della lingua: parametro `?lang=` (mantenuto nei link della pagina da
+ * public/js/common.js) > lingua del browser. Nessun cookie: ai visitatori non
+ * viene salvato nulla sul dispositivo.
  */
 
 export const LANGS = ['it', 'en'] as const;
 export type Lang = (typeof LANGS)[number];
 
 export const DIZIONARI: Record<Lang, Record<string, string>> = { it: {}, en };
-
-const COOKIE = 'lumina_lang';
 
 export type TFunction = (text: string, vars?: Record<string, string | number>) => string;
 
@@ -29,8 +28,6 @@ const isLang = (v: unknown): v is Lang => typeof v === 'string' && (LANGS as rea
 
 export function detectLang(req: Request): Lang {
   if (isLang(req.query.lang)) return req.query.lang;
-  const cookie = req.cookies?.[COOKIE];
-  if (isLang(cookie)) return cookie;
   // Accept-Language: la prima lingua supportata in ordine di preferenza
   const accepted = (req.get('accept-language') ?? '')
     .split(',')
@@ -54,13 +51,11 @@ declare global {
 
 export function i18nMiddleware(req: Request, res: Response, next: NextFunction): void {
   const lang = detectLang(req);
-  if (isLang(req.query.lang)) {
-    res.cookie(COOKIE, lang, { maxAge: 365 * 24 * 3600 * 1000, sameSite: 'lax', secure: config.session.secureCookie, path: '/' });
-  }
   req.lang = lang;
   req.t = (text, vars) => translate(lang, text, vars);
   res.locals.lang = lang;
   res.locals.t = req.t;
   res.setHeader('Content-Language', lang);
+  res.vary('Accept-Language');
   next();
 }

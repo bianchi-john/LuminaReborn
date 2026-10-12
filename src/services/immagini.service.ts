@@ -46,14 +46,41 @@ export interface FileVariante {
 /** Limite contro le "decompression bomb": immagini oltre 200 megapixel vengono rifiutate. */
 const MAX_PIXELS = 200_000_000;
 
-async function derivato(buf: Buffer, size: number, quality: number, variante: Variante): Promise<FileVariante> {
+const escapeXml = (s: string) => s.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c] ?? c);
+
+/**
+ * Watermark piccolo in basso a destra: testo chiaro semitrasparente con un
+ * contorno scuro leggero, leggibile su fondi chiari e scuri. SVG generato qui
+ * (mai da input dell'utente) e disegnato da sharp.
+ */
+export function watermarkSvg(width: number, height: number, testo: string): Buffer {
+  const size = Math.max(11, Math.round(Math.min(width, height * 1.4) * 0.022));
+  const pad = Math.round(size * 0.9);
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+      <text x="${width - pad}" y="${height - pad}" text-anchor="end"
+            font-family="Liberation Serif, Times New Roman, Times, serif" font-size="${size}"
+            fill="#ffffff" fill-opacity="0.82" stroke="#000000" stroke-opacity="0.45"
+            stroke-width="${Math.max(1, size * 0.12).toFixed(2)}" paint-order="stroke">${escapeXml(testo)}</text>
+    </svg>`,
+  );
+}
+
+async function derivato(buf: Buffer, size: number, quality: number, variante: Variante, watermark = ''): Promise<FileVariante> {
   // rotate() applica l'orientamento EXIF; l'output non contiene metadati (GPS, fotocamera...)
-  const { data, info } = await sharp(buf, { limitInputPixels: MAX_PIXELS })
+  const ridotta = await sharp(buf, { limitInputPixels: MAX_PIXELS })
     .rotate()
     .resize({ width: size, height: size, fit: 'inside', withoutEnlargement: true })
-    .webp({ quality })
     .toBuffer({ resolveWithObject: true });
+  let img = sharp(ridotta.data);
+  if (watermark) img = img.composite([{ input: watermarkSvg(ridotta.info.width, ridotta.info.height, watermark), top: 0, left: 0 }]);
+  const { data, info } = await img.webp({ quality }).toBuffer({ resolveWithObject: true });
   return { variante, mime: 'image/webp', larghezza: info.width, altezza: info.height, dati: data };
+}
+
+/** Anteprima pubblica (ridotta, con watermark) a partire dall'originale. */
+export function creaAnteprima(originale: Buffer): Promise<FileVariante> {
+  return derivato(originale, config.media.previewSize, 82, 'anteprima', config.media.watermark);
 }
 
 /** Verifica il file e produce le tre varianti da salvare. */
@@ -70,7 +97,7 @@ export async function elaboraImmagine(buf: Buffer): Promise<FileVariante[]> {
   const ruotata = (meta.orientation ?? 1) >= 5;
   let ridotte: FileVariante[];
   try {
-    ridotte = [await derivato(buf, config.media.previewSize, 82, 'anteprima'), await derivato(buf, config.media.thumbSize, 76, 'miniatura')];
+    ridotte = [await creaAnteprima(buf), await derivato(buf, config.media.thumbSize, 76, 'miniatura')];
   } catch {
     // Intestazione leggibile ma contenuto corrotto: errore dell'utente, non del server
     throw badRequest('Il file immagine è danneggiato o troppo grande');

@@ -1,6 +1,6 @@
 // Utilità condivise: chiamate API, notifiche, finestre di conferma.
 // Nessun HTML costruito con dati non fidati: si usa textContent.
-import { t } from './i18n.js';
+import { lang, t } from './i18n.js';
 
 export class ApiError extends Error {
   constructor(status, message, details) {
@@ -11,7 +11,8 @@ export class ApiError extends Error {
 }
 
 export async function api(method, url, body) {
-  const init = { method, headers: { Accept: 'application/json' }, credentials: 'same-origin' };
+  // La lingua della pagina vale anche per i messaggi delle API (nessun cookie)
+  const init = { method, headers: { Accept: 'application/json', 'Accept-Language': lang }, credentials: 'same-origin' };
   if (body instanceof Blob) {
     init.body = body;
     init.headers['Content-Type'] = body.type || 'application/octet-stream';

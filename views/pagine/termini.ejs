@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+<div class="container py-5 pagina-testo">
+  <% if (lang === 'en') { %>
+    <div class="alert alert-warning mb-4">Draft: to be completed and checked by the museums' legal office before publication. Text in [square brackets] is missing information.</div>
+    <p class="eyebrow mb-1">Terms</p>
+    <h1 class="mb-4">Terms and conditions of use</h1>
+
+    <h2>1. The service</h2>
+    <p>LUMiNA is the online catalogue of the National Museums of Lucca, made available free of charge by [name of the body] for consultation, study and research.</p>
+
+    <h2>2. Ownership of the contents</h2>
+    <p>The records (texts, data, bibliography), the structure of the catalogue and the photographs are protected by copyright and belong to [name of the body] or to their authors. Reproductions of the works are also subject to the rules on cultural heritage (Italian Code of Cultural Heritage and Landscape, Legislative Decree 42/2004) [to be checked].</p>
+    <p>The images on this site are reduced previews with a watermark. Originals are not distributed online.</p>
+
+    <h2>3. Permitted use</h2>
+    <ul>
+      <li>consultation, personal study, teaching and non-commercial research;</li>
+      <li>quotation of short extracts, citing the source as indicated in each record ("How to cite this record").</li>
+    </ul>
+
+    <h2>4. Use requiring authorisation</h2>
+    <ul>
+      <li>any commercial use of texts or images;</li>
+      <li>republication of records or images, in whole or in substantial part;</li>
+      <li>removing or altering the watermark;</li>
+      <li>systematic extraction of the catalogue (automated downloading, scraping).</li>
+    </ul>
+    <p>Requests for authorisation or high-resolution images: [contact].</p>
+
+    <h2>5. Accuracy of the contents</h2>
+    <p>The records are the result of ongoing scholarly work and may be updated. To report errors: [contact].</p>
+
+    <h2>6. Liability and links</h2>
+    <p>The contents are provided for information purposes. The body is not responsible for external websites linked from the catalogue.</p>
+
+    <h2>7. Applicable law</h2>
+    <p>Italian law. [Competent court, if required.] Last updated: [date].</p>
+  <% } else { %>
+    <div class="alert alert-warning mb-4">Bozza: da completare e verificare con l'ufficio legale dei musei prima della pubblicazione. Le parti tra [parentesi quadre] sono informazioni mancanti.</div>
+    <p class="eyebrow mb-1">Termini</p>
+    <h1 class="mb-4">Termini e condizioni d'uso</h1>
+
+    <h2>1. Il servizio</h2>
+    <p>LUMiNA è il catalogo online dei Musei Nazionali di Lucca, messo a disposizione gratuitamente da [denominazione dell'ente] per la consultazione, lo studio e la ricerca.</p>
+
+    <h2>2. Titolarità dei contenuti</h2>
+    <p>Le schede (testi, dati, bibliografia), la struttura del catalogo e le fotografie sono protette dal diritto d'autore e appartengono a [denominazione dell'ente] o ai rispettivi autori. Le riproduzioni delle opere sono inoltre soggette alla disciplina dei beni culturali (Codice dei beni culturali e del paesaggio, D.Lgs. 42/2004) [da verificare].</p>
+    <p>Le immagini presenti nel sito sono anteprime ridotte con watermark. Gli originali non sono diffusi online.</p>
+
+    <h2>3. Usi consentiti</h2>
+    <ul>
+      <li>consultazione, studio personale, didattica e ricerca senza scopo di lucro;</li>
+      <li>citazione di brevi estratti indicando la fonte come riportato in ogni scheda ("Come citare questa scheda").</li>
+    </ul>
+
+    <h2>4. Usi soggetti ad autorizzazione</h2>
+    <ul>
+      <li>qualsiasi uso commerciale di testi o immagini;</li>
+      <li>ripubblicazione di schede o immagini, integrale o in parte sostanziale;</li>
+      <li>rimozione o alterazione del watermark;</li>
+      <li>estrazione sistematica del catalogo (download automatizzati, scraping).</li>
+    </ul>
+    <p>Richieste di autorizzazione o di immagini ad alta risoluzione: [contatto].</p>
+
+    <h2>5. Esattezza dei contenuti</h2>
+    <p>Le schede sono frutto di un lavoro scientifico in corso e possono essere aggiornate. Per segnalare errori: [contatto].</p>
+
+    <h2>6. Responsabilità e collegamenti</h2>
+    <p>I contenuti sono forniti a scopo informativo. L'ente non risponde dei siti esterni collegati dal catalogo.</p>
+
+    <h2>7. Legge applicabile</h2>
+    <p>Legge italiana. [Foro competente, se necessario.] Ultimo aggiornamento: [data].</p>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

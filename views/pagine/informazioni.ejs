@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+<% const MUSEI = 'http://www.luccamuseinazionali.it/'; %>
+<div class="container py-5 pagina-testo">
+  <% if (lang === 'en') { %>
+    <p class="eyebrow mb-1">About</p>
+    <h1 class="mb-4">LUMiNA, the catalogue of the National Museums of Lucca</h1>
+    <p class="lead-muted">LUMiNA is the digital catalogue of the works held by the National Museums of Lucca: paintings, sculptures, archaeological finds and decorative arts, described in scholarly records written by the museums' cataloguers and reviewed before publication.</p>
+
+    <h2>What you will find</h2>
+    <ul>
+      <li><strong>Search</strong> by title, artist, place or classification, or field by field with the advanced search.</li>
+      <li><strong>Indexes</strong> of artists, materials, techniques, locations, provenances and exhibitions: each entry brings together all the works linked to it.</li>
+      <li><strong>Records</strong> with images, dating, dimensions (also compared with a human figure), location, inventory, provenance, exhibitions, bibliography and a historical and critical commentary.</li>
+    </ul>
+
+    <h2>The museums</h2>
+    <p>Opening hours, tickets, exhibitions and visitor information are on the official website of the National Museums of Lucca.</p>
+    <p><a class="btn btn-primary" href="<%= MUSEI %>" rel="noopener" target="_blank">Visit the National Museums of Lucca website</a></p>
+
+    <h2>Using the contents</h2>
+    <p>Texts, data and images are protected: the images published here are reduced previews. Each record shows how to cite it. Read the <a href="/termini">terms and conditions</a> before reusing any content.</p>
+
+    <h2>Privacy</h2>
+    <p>The public catalogue does not use cookies or tracking tools and collects no personal data from visitors. Details are in the <a href="/privacy">privacy notice</a>.</p>
+  <% } else { %>
+    <p class="eyebrow mb-1">Informazioni</p>
+    <h1 class="mb-4">LUMiNA, il catalogo dei Musei Nazionali di Lucca</h1>
+    <p class="lead-muted">LUMiNA è il catalogo digitale delle opere dei Musei Nazionali di Lucca: dipinti, sculture, reperti archeologici e arti decorative, descritti in schede scientifiche redatte dagli schedatori dei musei e revisionate prima della pubblicazione.</p>
+
+    <h2>Che cosa trovi</h2>
+    <ul>
+      <li><strong>Ricerca</strong> per titolo, autore, luogo o classificazione, oppure campo per campo con la ricerca avanzata.</li>
+      <li><strong>Indici</strong> di autori, materiali, tecniche, ubicazioni, provenienze e mostre: ogni voce raccoglie tutte le opere a cui è collegata.</li>
+      <li><strong>Schede</strong> con immagini, datazione, misure (anche a confronto con una figura umana), collocazione, inventario, provenienza, mostre, bibliografia e commento storico-critico.</li>
+    </ul>
+
+    <h2>I musei</h2>
+    <p>Orari, biglietti, mostre e informazioni per la visita sono sul sito ufficiale dei Musei Nazionali di Lucca.</p>
+    <p><a class="btn btn-primary" href="<%= MUSEI %>" rel="noopener" target="_blank">Vai al sito dei Musei Nazionali di Lucca</a></p>
+
+    <h2>Uso dei contenuti</h2>
+    <p>Testi, dati e immagini sono protetti: le immagini pubblicate qui sono anteprime ridotte. Ogni scheda indica come citarla. Prima di riutilizzare un contenuto leggi i <a href="/termini">termini e condizioni</a>.</p>
+
+    <h2>Privacy</h2>
+    <p>Il catalogo pubblico non usa cookie né strumenti di tracciamento e non raccoglie dati personali dei visitatori. I dettagli sono nell'<a href="/privacy">informativa sulla privacy</a>.</p>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

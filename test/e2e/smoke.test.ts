@@ -58,6 +58,14 @@ describe('catalogo pubblico', () => {
     assert.match(cercata, /class="opera-card"/);
   });
 
+  it('nessun cookie per i visitatori, nemmeno cambiando lingua', async () => {
+    for (const path of ['/', '/?lang=en', '/?q=giordano', '/scheda/1', '/informazioni', '/privacy?lang=en', '/termini']) {
+      const res = await fetch(BASE + path);
+      assert.equal(res.status, 200, path);
+      assert.equal(res.headers.get('set-cookie'), null, path);
+    }
+  });
+
   it('header di sicurezza', async () => {
     const res = await fetch(BASE + '/');
     assert.match(res.headers.get('content-security-policy') ?? '', /script-src 'self'/);

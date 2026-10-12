@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+<div class="container py-5 pagina-testo">
+  <% if (lang === 'en') { %>
+    <div class="alert alert-warning mb-4">Draft: to be completed and checked by the museums' legal office or data protection officer before publication. Text in [square brackets] is missing information.</div>
+    <p class="eyebrow mb-1">Privacy</p>
+    <h1 class="mb-4">Privacy notice</h1>
+
+    <h2>1. Data controller</h2>
+    <p>[Name of the controlling body, address, certified email]. Data protection officer: [contact].</p>
+
+    <h2>2. Visitors of the public catalogue</h2>
+    <p>Browsing the catalogue <strong>does not require any personal data</strong> and none is collected:</p>
+    <ul>
+      <li>no cookies, neither technical nor for analytics or profiling;</li>
+      <li>no statistics or tracking tools, no social buttons, no third-party content (fonts, scripts and images are served by this site);</li>
+      <li>the language is taken from your browser settings or from the address of the page and is not stored;</li>
+      <li>the IP address is used only in memory, for a few minutes, to limit abuse (e.g. repeated sign-in attempts), and is not saved.</li>
+    </ul>
+    <p>[To be checked with the hosting provider: any connection logs kept by the server or reverse proxy, their purpose and retention period.]</p>
+
+    <h2>3. Staff (cataloguers and administrators)</h2>
+    <p>For staff accounts the following are processed: username, name, optional email, password (stored only as a hash), date of last sign-in, and the authorship and history of the records (who created, edited, submitted, approved or rejected a record, and when).</p>
+    <p>After signing in a technical session cookie (<code>lumina_session</code>) is set: it is strictly necessary for the staff area, cannot be read by scripts, lasts at most 8 hours and is deleted on sign-out.</p>
+    <p>Purpose: management of the catalogue and of the review workflow. Legal basis: [e.g. performance of a task carried out in the public interest / employment or collaboration relationship]. Retention: for as long as the account is active, then [period]; daily backups are kept for 14 days.</p>
+
+    <h2>4. Your rights</h2>
+    <p>You may request access, rectification, erasure, restriction or object to processing (Articles 15-22 GDPR) by writing to [contact], and lodge a complaint with the Italian Data Protection Authority (Garante per la protezione dei dati personali).</p>
+
+    <h2>5. Changes</h2>
+    <p>Last updated: [date].</p>
+  <% } else { %>
+    <div class="alert alert-warning mb-4">Bozza: da completare e verificare con l'ufficio legale o il responsabile della protezione dei dati dei musei prima della pubblicazione. Le parti tra [parentesi quadre] sono informazioni mancanti.</div>
+    <p class="eyebrow mb-1">Privacy</p>
+    <h1 class="mb-4">Informativa sulla privacy</h1>
+
+    <h2>1. Titolare del trattamento</h2>
+    <p>[Denominazione dell'ente titolare, indirizzo, PEC]. Responsabile della protezione dei dati: [contatto].</p>
+
+    <h2>2. Visitatori del catalogo pubblico</h2>
+    <p>La consultazione del catalogo <strong>non richiede alcun dato personale</strong> e nessun dato viene raccolto:</p>
+    <ul>
+      <li>nessun cookie, né tecnico né di statistica o profilazione;</li>
+      <li>nessuno strumento di statistica o tracciamento, nessun pulsante social, nessun contenuto di terze parti (caratteri, script e immagini sono serviti da questo sito);</li>
+      <li>la lingua è ricavata dalle impostazioni del browser o dall'indirizzo della pagina e non viene memorizzata;</li>
+      <li>l'indirizzo IP è usato solo in memoria, per pochi minuti, per limitare gli abusi (es. tentativi ripetuti di accesso) e non viene salvato.</li>
+    </ul>
+    <p>[Da verificare con chi gestisce il server: eventuali log di connessione conservati dal server o dal reverse proxy, finalità e durata.]</p>
+
+    <h2>3. Personale (schedatori e amministratori)</h2>
+    <p>Per gli account del personale sono trattati: nome utente, nome, email facoltativa, password (conservata solo in forma cifrata con hash), data dell'ultimo accesso, paternità e storico delle schede (chi ha creato, modificato, inviato, approvato o respinto una scheda e quando).</p>
+    <p>Dopo l'accesso viene impostato un cookie tecnico di sessione (<code>lumina_session</code>): è strettamente necessario per l'area riservata, non è leggibile dagli script, dura al massimo 8 ore e viene cancellato all'uscita.</p>
+    <p>Finalità: gestione del catalogo e del flusso di revisione. Base giuridica: [es. esecuzione di un compito di interesse pubblico / rapporto di lavoro o collaborazione]. Conservazione: per la durata dell'account, poi [periodo]; i backup giornalieri sono conservati 14 giorni.</p>
+
+    <h2>4. Diritti</h2>
+    <p>È possibile chiedere accesso, rettifica, cancellazione, limitazione od opporsi al trattamento (artt. 15-22 GDPR) scrivendo a [contatto], e proporre reclamo al Garante per la protezione dei dati personali.</p>
+
+    <h2>5. Aggiornamenti</h2>
+    <p>Ultimo aggiornamento: [data].</p>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

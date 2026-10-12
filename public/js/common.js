@@ -12,6 +12,27 @@ document.addEventListener('click', async (event) => {
   }
 });
 
+// Lingua scelta con il selettore: viaggia nell'indirizzo (?lang=) invece che in
+// un cookie, quindi va aggiunta ai link interni e ai moduli della pagina.
+const langScelta = new URLSearchParams(window.location.search).get('lang');
+if (langScelta === 'it' || langScelta === 'en') {
+  document.querySelectorAll('a[href]').forEach((a) => {
+    const url = new URL(a.getAttribute('href'), window.location.href);
+    const interno = url.origin === window.location.origin && !/^\/(api|media|static|vendor)\//.test(url.pathname);
+    if (!interno || url.searchParams.has('lang') || a.getAttribute('href').startsWith('#')) return;
+    url.searchParams.set('lang', langScelta);
+    a.setAttribute('href', url.pathname + url.search + url.hash);
+  });
+  document.querySelectorAll('form[method="get" i]').forEach((form) => {
+    if (form.querySelector('[name="lang"]')) return;
+    const hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'lang';
+    hidden.value = langScelta;
+    form.append(hidden);
+  });
+}
+
 // Form che si inviano al cambio di una select (es. ordinamento dei risultati)
 document.querySelectorAll('form[data-autosubmit]').forEach((form) => {
   form.addEventListener('change', () => form.submit());

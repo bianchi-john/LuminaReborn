@@ -55,6 +55,7 @@ Tutte le variabili sono descritte in [`.env.example`](../.env.example). Le princ
 | `TRUST_PROXY` | numero di reverse proxy davanti all'app (es. `1`) |
 | `ALLOWED_ORIGINS` | indirizzo pubblico del sito, es. `https://catalogo.example.it` |
 | `MEDIA_PREVIEW_PX` | lato lungo delle immagini pubbliche (default 1280 px) |
+| `MEDIA_WATERMARK` | firma sulle anteprime pubbliche (default "© Musei Nazionali di Lucca", vuoto per disattivarla; per applicarla alle immagini esistenti va rigenerata l'anteprima) |
 | `MAX_IMAGE_MB` | dimensione massima di un'immagine caricata (default 25 MB) |
 | `BACKUP_DIR`, `BACKUP_HOUR`, `EXPORT_HOUR`, `BACKUP_KEEP_DAYS` | backup ed esportazioni |
 
@@ -100,6 +101,7 @@ Le migrazioni sono registrate nella tabella `schema_migrations` e vengono applic
 - [ ] Utenti dimostrativi eliminati o con nuove password
 - [ ] Copia dei backup su un'altra macchina e prova di ripristino
 - [ ] Monitoraggio di `GET /healthz` e dello spazio disco
+- [ ] Pagine `/privacy` e `/termini` completate (parti tra parentesi quadre) e verificate dall'ufficio legale
 
 ## Interfaccia originale dello user-manager
 

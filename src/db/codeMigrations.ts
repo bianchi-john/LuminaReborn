@@ -1,7 +1,8 @@
 import { Connection, RowDataPacket } from 'mysql2/promise';
 import { createHash } from 'crypto';
 import { logger } from '../logger';
-import { elaboraImmagine, salvaFile } from '../services/immagini.service';
+import { config } from '../config';
+import { creaAnteprima, elaboraImmagine, salvaFile } from '../services/immagini.service';
 
 /**
  * Migrazioni che richiedono codice (non solo SQL). Il nome determina l'ordine
@@ -40,5 +41,20 @@ export const CODE_MIGRATIONS: Record<string, (conn: Connection) => Promise<void>
       }
     }
     logger.info(`Immagini spostate nel database media: ${fatte}`);
+  },
+
+  /** Rigenera le anteprime pubbliche dagli originali aggiungendo il watermark. */
+  async '005_watermark_anteprime'(conn) {
+    const media = `\`${config.db.mediaDatabase}\`.immagini_file`;
+    const [ids] = await conn.query<RowDataPacket[]>(`SELECT id_immagine AS id FROM ${media} WHERE variante = 'originale' ORDER BY id_immagine`);
+    for (const { id } of ids) {
+      const [[row]] = await conn.query<RowDataPacket[]>(`SELECT dati FROM ${media} WHERE id_immagine = ? AND variante = 'originale'`, [id]);
+      try {
+        await salvaFile(conn, id, [await creaAnteprima(row.dati as Buffer)]);
+      } catch (error) {
+        logger.warn(`Anteprima ${id} non rigenerata`, error instanceof Error ? error.message : error);
+      }
+    }
+    logger.info(`Anteprime con watermark: ${ids.length}`);
   },
 };

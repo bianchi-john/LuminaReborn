@@ -67,6 +67,13 @@
       <%- navLink(voce('/voci', esc(t('Tutti gli indici')), path === '/voci')) %>
     </div>
 
+    <div class="menu-section">
+      <p class="menu-heading"><%= t('Il progetto') %></p>
+      <%- navLink(voce('/informazioni', esc(t('Informazioni')), nav === 'informazioni')) %>
+      <%- navLink(voce('/privacy', esc(t('Privacy')), nav === 'privacy')) %>
+      <%- navLink(voce('/termini', esc(t('Termini e condizioni')), nav === 'termini')) %>
+    </div>
+
     <% if (user) { %>
       <div class="menu-section">
         <p class="menu-heading"><%= t('Area riservata') %></p>

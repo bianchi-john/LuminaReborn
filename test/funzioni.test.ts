@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import { confrontoDimensionale } from '../src/domain/dimensioni';
 import { chiaviDaTradurre } from '../src/i18n/chiavi';
 import { detectLang, DIZIONARI, translate } from '../src/i18n';
-import { elaboraImmagine } from '../src/services/immagini.service';
+import { elaboraImmagine, watermarkSvg } from '../src/services/immagini.service';
 import { buildWhere, searchQuerySchema, searchTerms } from '../src/services/search.service';
 import { rigaScheda } from '../src/services/export.service';
 import type { SchedaCompleta } from '../src/services/schede.service';
@@ -134,15 +134,14 @@ describe('home', () => {
 });
 
 describe('lingue', () => {
-  const req = (query: Record<string, string>, cookies: Record<string, string>, accept?: string) =>
-    ({ query, cookies, get: (h: string) => (h.toLowerCase() === 'accept-language' ? accept : undefined) }) as never;
+  const req = (query: Record<string, string>, accept?: string) =>
+    ({ query, cookies: {}, get: (h: string) => (h.toLowerCase() === 'accept-language' ? accept : undefined) }) as never;
 
-  it('sceglie la lingua da parametro, cookie o browser (italiano predefinito)', () => {
-    assert.equal(detectLang(req({ lang: 'en' }, { lumina_lang: 'it' })), 'en');
-    assert.equal(detectLang(req({}, { lumina_lang: 'en' })), 'en');
-    assert.equal(detectLang(req({}, {}, 'en-US,en;q=0.9,it;q=0.8')), 'en');
-    assert.equal(detectLang(req({}, {}, 'fr-FR,de;q=0.9')), 'it');
-    assert.equal(detectLang(req({}, {})), 'it');
+  it('sceglie la lingua dal parametro o dal browser (italiano predefinito), senza cookie', () => {
+    assert.equal(detectLang(req({ lang: 'en' }, 'it-IT')), 'en');
+    assert.equal(detectLang(req({}, 'en-US,en;q=0.9,it;q=0.8')), 'en');
+    assert.equal(detectLang(req({}, 'fr-FR,de;q=0.9')), 'it');
+    assert.equal(detectLang(req({})), 'it');
   });
 
   it('traduce con segnaposto e ricade sull\'italiano', () => {
@@ -175,6 +174,12 @@ describe('immagini', () => {
   it('un file danneggiato è un errore di validazione, non del server', async () => {
     const png = await sharp({ create: { width: 50, height: 50, channels: 3, background: '#fff' } }).png().toBuffer();
     await assert.rejects(elaboraImmagine(Buffer.concat([png.subarray(0, 60), Buffer.alloc(40)])), /danneggiato/);
+  });
+
+  it('il watermark delle anteprime è testo statico con l\'escape XML', () => {
+    const svg = watermarkSvg(1280, 900, '© Musei <Lucca> & "Co"').toString();
+    assert.match(svg, /© Musei &lt;Lucca&gt; &amp; &quot;Co&quot;/);
+    assert.match(svg, /text-anchor="end"/);
   });
 
   it('rifiuta file che non sono immagini', async () => {

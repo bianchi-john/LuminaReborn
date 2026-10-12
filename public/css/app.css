@@ -1739,3 +1739,120 @@ textarea.form-control {
     display: none !important;
   }
 }
+
+/* =========================================================================
+   v4 - Forme: tondi solo i campi di testo, il resto squadrato
+   - pillola: campi di una riga, menu a tendina dei form, barra di ricerca
+     (e il pulsante che vi è incastonato), etichette/filtri, selettore lingua
+   - raggio morbido: aree di testo su più righe ed editor di testo formattato
+   - squadrati: finestre, schede, pannelli, pulsanti, menu, immagini, avvisi
+   ========================================================================= */
+
+:root {
+  --lu-radius-window: 0;
+  --lu-radius-inner: 0;
+  --lu-radius-button: 2px;
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+  --bs-border-radius-xl: 0;
+}
+
+.btn,
+.page-link,
+.page-item .page-link,
+.nav-pills .nav-link,
+.editor-tabs .nav-link,
+.menu-link,
+.rte-toolbar button,
+.ac-menu button,
+.dropdown-item {
+  --bs-border-radius: var(--lu-radius-button);
+  --bs-btn-border-radius: var(--lu-radius-button);
+  --bs-nav-pills-border-radius: var(--lu-radius-button);
+  border-radius: var(--lu-radius-button) !important;
+}
+
+/* Il pulsante "Cerca" segue la forma della barra in cui è incastonato */
+.search-box .btn,
+.input-group > .btn {
+  --bs-btn-border-radius: var(--lu-pill);
+  border-radius: var(--lu-pill) !important;
+}
+
+.input-group > .btn:not(:last-child) {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.input-group > .btn:not(:first-child) {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+/* Campi di testo: restano tondi */
+.form-control,
+.form-select,
+.search-box,
+.input-group {
+  border-radius: var(--lu-pill);
+}
+
+textarea.form-control,
+.rte {
+  border-radius: var(--lu-radius-field);
+}
+
+.rte-toolbar {
+  border-radius: var(--lu-radius-field) var(--lu-radius-field) 0 0;
+}
+
+/* Finestre e contenitori: squadrati */
+.card,
+.card > .card-header:first-child,
+.modal-content,
+.offcanvas,
+.site-menu,
+.alert,
+.toast,
+.dropdown-menu,
+.ac-menu,
+.empty-state,
+.dropzone,
+.repeat-row,
+.voce-nuova,
+.voce-collegata,
+.hint,
+.messaggio,
+.citazione,
+.img-tile,
+.gallery-main,
+.gallery-thumbs button,
+.opera-card,
+.advanced-search,
+.advanced-search > summary,
+.table-schede .mini-thumb {
+  border-radius: 0 !important;
+}
+
+/* Il pulsante del menu resta un cerchio: è un'icona, non un contenitore */
+.menu-toggle,
+.menu-avatar {
+  border-radius: 50%;
+}
+
+/* Pagine informative */
+.pagina-testo {
+  max-width: 50rem;
+}
+
+.pagina-testo h2 {
+  font-size: 1.35rem;
+  margin-top: 2rem;
+}
+
+.pagina-testo p,
+.pagina-testo li {
+  font-size: 1.08rem;
+  line-height: 1.65;
+}

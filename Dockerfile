@@ -1,5 +1,7 @@
 # --- Sviluppo: tutte le dipendenze, sorgenti montati come volume (docker-compose.dev.yml)
 FROM node:22-alpine AS dev
+# Font per il watermark delle anteprime (Liberation Serif, metrica di Times New Roman)
+RUN apk add --no-cache fontconfig font-liberation
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -19,6 +21,8 @@ RUN npm run build && npm prune --omit=dev
 # --- Produzione: codice compilato e dipendenze di runtime, utente non root
 FROM node:22-alpine AS production
 ENV NODE_ENV=production
+# Font per il watermark delle anteprime (Liberation Serif, metrica di Times New Roman)
+RUN apk add --no-cache fontconfig font-liberation
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist

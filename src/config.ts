@@ -72,6 +72,8 @@ export const config = {
     /** Lato lungo (px) della versione pubblica: l'originale resta riservato allo staff. */
     previewSize: int('MEDIA_PREVIEW_PX', 1280),
     thumbSize: int('MEDIA_THUMB_PX', 480),
+    /** Firma sovrapposta alle anteprime pubbliche (vuoto = nessun watermark). */
+    watermark: process.env.MEDIA_WATERMARK ?? '© Musei Nazionali di Lucca',
   },
 
   export: {

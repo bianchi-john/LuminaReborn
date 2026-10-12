@@ -115,6 +115,19 @@ pages.get(
 );
 
 // ---------------------------------------------------------------------------
+// Pagine informative (testi in views/pagine, in italiano e inglese)
+// ---------------------------------------------------------------------------
+
+export const PAGINE_INFORMATIVE = { informazioni: 'Informazioni', privacy: 'Privacy', termini: 'Termini e condizioni' } as const;
+
+for (const [slug, titolo] of Object.entries(PAGINE_INFORMATIVE)) {
+  pages.get(`/${slug}`, (req, res) => {
+    res.render(`pagine/${slug}`, { title: req.t(titolo), nav: slug });
+  });
+}
+pages.get('/about', (_req, res) => res.redirect(301, '/informazioni'));
+
+// ---------------------------------------------------------------------------
 // Accesso
 // ---------------------------------------------------------------------------
 

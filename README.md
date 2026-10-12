@@ -14,7 +14,8 @@ LUMiNA è un archivio pensato per due pubblici: gli **schedatori e gli storici d
 - Indici per autore, materiale, tecnica, ubicazione, provenienza e mostra: ogni voce mostra tutte le opere collegate.
 - Scheda dell'opera con galleria, dati tecnici, bibliografia e un **confronto dimensionale** con la sagoma di una persona (o di una mano, per gli oggetti piccoli), calcolato dalle misure.
 - Interfaccia in **italiano** e **inglese** (scelta automatica dal browser o dal selettore in alto); i contenuti delle schede restano in italiano.
-- Immagini pubbliche in versione ridotta: gli originali ad alta risoluzione restano riservati allo staff.
+- Immagini pubbliche in versione ridotta con un piccolo watermark: gli originali ad alta risoluzione restano riservati allo staff.
+- Nessun cookie e nessun tracciamento per chi consulta; pagine Informazioni, Privacy e Termini e condizioni (le ultime due sono bozze da completare).
 
 **Per chi cataloga**
 - Editor a sezioni (identificazione, autori, datazione, misure, collocazione, testi, mostre, bibliografia, immagini, riepilogo).
