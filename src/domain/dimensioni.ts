@@ -1,7 +1,7 @@
 /**
- * Confronto dimensionale "a sagome": l'opera accanto a una figura umana (o a una
- * mano, per gli oggetti piccoli). Non è salvato nel database: viene calcolato
- * dalle misure ogni volta che si visualizza la scheda.
+ * Silhouette-based size comparison: the artwork next to a human figure (or a
+ * hand, for small objects). Not stored in the database: it is computed from
+ * the measurements every time the record (scheda) is displayed.
  */
 
 export interface MisuraInput {
@@ -25,7 +25,7 @@ export interface Pezzo {
 
 export interface Confronto {
   riferimento: 'persona' | 'mano';
-  /** Altezza della figura di riferimento in cm */
+  /** Height of the reference figure in cm */
   altezzaRiferimento: number;
   pezzi: Pezzo[];
 }
@@ -48,7 +48,7 @@ function asse(direzione: unknown): Asse {
   const d = String(direzione ?? '').trim().toLowerCase();
   if (/^(alt|h\b|h\.)/.test(d)) return 'altezza';
   if (/^(larg|lungh|diam|l\b|l\.|lung)/.test(d)) return 'larghezza';
-  return null; // profondità, spessore, peso: non disegnati
+  return null; // depth, thickness, weight: not drawn
 }
 
 function pezzo(g: GruppoInput): Pezzo | null {
@@ -62,7 +62,7 @@ function pezzo(g: GruppoInput): Pezzo | null {
     else larghezza = Math.max(larghezza, cm);
   }
   if (!altezza && !larghezza) return null;
-  // Con una sola dimensione la sagoma è indicativa
+  // With only one dimension the silhouette is approximate
   const stimata = !altezza || !larghezza;
   if (!altezza) altezza = larghezza * 0.5;
   if (!larghezza) larghezza = altezza * 0.4;
@@ -71,10 +71,10 @@ function pezzo(g: GruppoInput): Pezzo | null {
 }
 
 /**
- * - con misure "intere" (o senza indicazione) si mostra il gruppo più grande
- *   (es. "con cornice" invece di "senza cornice");
- * - se tutte le misure sono "parziali" (es. scomparti di un trittico) si
- *   mostrano tutti i pezzi affiancati.
+ * - with "whole" measurements (or no indication) the largest group is shown
+ *   (e.g. "with frame" rather than "without frame");
+ * - if all measurements are "partial" (e.g. panels of a triptych) all the
+ *   pieces are shown side by side.
  */
 export function confrontoDimensionale(gruppi: GruppoInput[]): Confronto | null {
   const candidati = gruppi.map((g) => ({ g, p: pezzo(g) })).filter((x): x is { g: GruppoInput; p: Pezzo } => x.p !== null);

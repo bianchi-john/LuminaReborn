@@ -1,6 +1,6 @@
-# Interfaccia web originale dello user-manager (facoltativa: la gestione utenti
-# è già disponibile nell'app, in /area/utenti). Pubblica l'API e l'interfaccia
-# solo su localhost:
+# Original web interface of the user-manager (optional: user management
+# is already available in the app, at /area/utenti). Publishes the API and the interface
+# on localhost only:
 #   docker compose -f docker-compose.yml -f docker-compose.user-front.yml up -d
 services:
   user-manager-api:
@@ -12,7 +12,7 @@ services:
     logging:
       driver: none
     environment:
-      # Il front gira nel browser: deve raggiungere l'API con l'indirizzo locale
+      # The front end runs in the browser: it must reach the API via the local address
       VUE_APP_USER_MANAGER_API_URL: ${USER_MANAGER_FRONT_API_URL:-http://localhost:7071}
     ports:
       - "127.0.0.1:${USER_MANAGER_FRONT_PORT:-8080}:80"

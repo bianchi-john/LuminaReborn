@@ -72,7 +72,7 @@ describe('protezione dallo scraping', () => {
     const s = sorveglianza(clock);
     let esito = s.registra('7.7.7.7', 'pagine');
     for (let i = 0; i < 20; i++) {
-      clock.t += 15_000; // 4 al minuto: sotto il limite al minuto
+      clock.t += 15_000; // 4 per minute: under the per-minute limit
       esito = s.registra('7.7.7.7', 'pagine');
     }
     assert.equal(!esito.ok && esito.bloccato, true);

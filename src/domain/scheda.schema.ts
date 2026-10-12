@@ -4,7 +4,7 @@ import { CLASSIFICAZIONI, MAX_GRUPPI_MISURE, MAX_MISURE_PER_GRUPPO } from './cla
 import { FieldDef, VOCAB_KEYS, VOCABOLARI, VocabDef, VocabKey } from './vocabolari';
 
 // ---------------------------------------------------------------------------
-// Tipi di campo riutilizzabili
+// Reusable field types
 // ---------------------------------------------------------------------------
 
 const blankToNull = (v: unknown) => {
@@ -52,7 +52,7 @@ function isBlankObject(value: unknown): boolean {
   return Object.entries(value as Record<string, unknown>).every(([k, v]) => k === 'ordine' || isBlankValue(v));
 }
 
-/** Array di righe del form: le righe completamente vuote vengono ignorate. */
+/** Array of form rows: completely empty rows are ignored. */
 const rows = <T extends z.ZodTypeAny>(item: T, max: number) =>
   z.preprocess((v) => (Array.isArray(v) ? v.filter((r) => !isBlankObject(r)) : v ?? []), z.array(item).max(max, `Massimo ${max} elementi`));
 
@@ -74,8 +74,8 @@ function fieldSchema(f: FieldDef): z.ZodTypeAny {
 }
 
 // ---------------------------------------------------------------------------
-// Riferimento a una voce condivisa: `id` di una voce esistente oppure i campi
-// per crearne una nuova (se esiste già una voce identica viene riutilizzata).
+// Reference to a shared authority entry: the `id` of an existing entry or the
+// fields to create a new one (if an identical entry already exists it is reused).
 // ---------------------------------------------------------------------------
 
 export function vocabRefSchema(v: VocabDef) {
@@ -107,7 +107,7 @@ export function vocabFieldsSchema(v: VocabDef) {
 }
 
 // ---------------------------------------------------------------------------
-// Dati propri della scheda
+// The record's (scheda) own data
 // ---------------------------------------------------------------------------
 
 const cronologiaSchema = z.object({

@@ -6,8 +6,8 @@ import { htmlToText } from '../util/html';
 import { findDuplicatePairs, findSimilar } from '../util/similarity';
 import { escapeLike } from '../util/sql';
 
-// I nomi di tabelle e colonne provengono solo dalla configurazione statica in
-// domain/vocabolari.ts, mai dall'input dell'utente.
+// Table and column names come only from the static configuration in
+// domain/vocabolari.ts, never from user input.
 const q = (name: string) => `\`${name}\``;
 
 export type VocabItem = { id: number } & Record<string, string | number | null>;
@@ -17,9 +17,9 @@ const orderExpr = (v: VocabDef, alias = 'e') =>
   v.fields[0].type === 'inline' ? `REGEXP_REPLACE(${alias}.${q(v.display)}, '<[^>]*>', '')` : `${alias}.${q(v.display)}`;
 
 /**
- * Restituisce l'id della voce: quello indicato se esiste, altrimenti crea la voce
- * oppure riusa quella identica già presente (vincolo UNIQUE + LAST_INSERT_ID).
- * Le voci esistenti non vengono modificate dal form della scheda.
+ * Returns the authority entry's id: the given one if it exists, otherwise creates the
+ * entry or reuses the identical one already present (UNIQUE constraint + LAST_INSERT_ID).
+ * Existing entries are not modified by the record (scheda) form.
  */
 export async function resolveRef(db: Db, v: VocabDef, ref: VocabRef): Promise<number> {
   if (ref.id) {
@@ -37,7 +37,7 @@ export async function resolveRef(db: Db, v: VocabDef, ref: VocabRef): Promise<nu
   return result.insertId;
 }
 
-/** Sostituisce i collegamenti di una scheda verso un tipo di voce, mantenendo l'ordine. */
+/** Replaces a record's links to one kind of entry, preserving their order. */
 export async function linkScheda(db: Db, schedaId: number, v: VocabDef, refs: VocabRef[]): Promise<void> {
   await execute(db, `DELETE FROM ${q(v.link)} WHERE id_scheda = ?`, [schedaId]);
   const linkCols = v.linkFields.map((f) => f.name);
@@ -56,7 +56,7 @@ export async function linkScheda(db: Db, schedaId: number, v: VocabDef, refs: Vo
   }
 }
 
-/** Voci collegate a una scheda, con i campi del collegamento. */
+/** Entries linked to a record, with the link's fields. */
 export async function linkedTo(db: Db, schedaId: number, v: VocabDef): Promise<VocabItem[]> {
   const linkCols = v.linkFields.map((f) => `, l.${q(f.name)}`).join('');
   return select<VocabItem>(
@@ -73,7 +73,7 @@ export interface ListOptions {
   q?: string;
   limit?: number;
   offset?: number;
-  /** Solo voci collegate ad almeno una scheda pubblicata (indici pubblici). */
+  /** Only entries linked to at least one published record (public indexes). */
   soloPubblicate?: boolean;
 }
 
@@ -87,7 +87,7 @@ export async function listVoci(v: VocabDef, opts: ListOptions = {}) {
   const having = opts.soloPubblicate ? 'HAVING schede_pubblicate > 0' : '';
   const limit = Math.min(Math.max(opts.limit ?? 50, 1), 500);
   const offset = Math.max(opts.offset ?? 0, 0);
-  // Prima le voci che iniziano con il testo cercato, poi le altre
+  // Entries starting with the search text first, then the others
   const startsWith = opts.q ? `(e.${q(v.display)} LIKE ?) DESC, ` : '';
   const orderParams = opts.q ? [`${escapeLike(opts.q)}%`] : [];
 
@@ -143,7 +143,7 @@ export async function updateVoce(v: VocabDef, id: number, fields: Record<string,
   return getVoce(v, id);
 }
 
-/** Fonde la voce `fromId` in `intoId`: i collegamenti passano alla seconda e la prima viene eliminata. */
+/** Merges entry `fromId` into `intoId`: the links move to the latter and the former is deleted. */
 export async function mergeVoci(v: VocabDef, fromId: number, intoId: number): Promise<void> {
   if (fromId === intoId) throw badRequest('Selezionare due voci diverse');
   await getVoce(v, fromId);
@@ -172,21 +172,21 @@ export function vocab(key: VocabKey): VocabDef {
   return VOCABOLARI[key];
 }
 
-/** Voci simili al testo indicato (probabili doppioni da proporre prima di crearne una nuova). */
+/** Entries similar to the given text (likely duplicates to suggest before creating a new one). */
 export async function vociSimili(v: VocabDef, testo: string) {
   const tutte = await listVoci(v, { limit: 5000 });
   const candidati = tutte.map((item) => ({ ...item, id: item.id, label: htmlToText(String(item[v.display])) }));
   return findSimilar(testo, candidati, 0.72, 6).map(({ label: _label, ...item }) => item);
 }
 
-/** Coppie di voci con nomi molto simili, da verificare ed eventualmente unire. */
+/** Pairs of entries with very similar names, to be checked and possibly merged. */
 export async function possibiliDuplicati(v: VocabDef) {
   const tutte = await listVoci(v, { limit: 5000 });
   const candidati = tutte.map((item) => ({ id: item.id, label: htmlToText(String(item[v.display])), schede: item.schede_totali }));
   return findDuplicatePairs(candidati, 0.85, 30);
 }
 
-/** La voce compare in almeno una scheda pubblicata? */
+/** Does the entry appear in at least one published record? */
 export async function usataInPubblicate(v: VocabDef, id: number): Promise<boolean> {
   const row = await selectOne(
     pool,

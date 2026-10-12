@@ -2,11 +2,11 @@ import { Request } from 'express';
 import { logger } from '../logger';
 
 /**
- * Registro degli eventi di sicurezza (OWASP ASVS 7, misure minime AgID ABSC 6):
- * accessi riusciti e falliti, logout, cambi di password, operazioni degli
- * amministratori, accessi negati. Scritto su stdout (raccolto da Docker) in una
- * riga JSON per evento. Per scelta di minimizzazione non contiene indirizzi IP,
- * password, token o contenuti delle schede.
+ * Security event log (OWASP ASVS 7, AgID ABSC 6 minimum measures):
+ * successful and failed logins, logouts, password changes, administrator
+ * operations, denied access. Written to stdout (collected by Docker) as one
+ * JSON line per event. For data minimisation it contains no IP addresses,
+ * passwords, tokens or record contents.
  */
 export type EventoAudit =
   | 'login.ok'

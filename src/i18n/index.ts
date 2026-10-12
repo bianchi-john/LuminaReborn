@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import en from './en.json';
 
 /**
- * Lingue dell'interfaccia. L'italiano è la lingua principale e i testi del codice
- * sono in italiano: fungono da chiave e da testo predefinito (`t('Catalogo')`).
- * `en.json` contiene le traduzioni inglesi; una chiave mancante mostra l'italiano.
- * I contenuti delle schede (database) restano sempre in italiano.
+ * Interface languages. Italian is the primary language and the texts in the code
+ * are in Italian: they act as both key and default text (`t('Catalogo')`).
+ * `en.json` holds the English translations; a missing key shows the Italian.
+ * Record contents (database) always stay in Italian.
  *
- * Scelta della lingua: parametro `?lang=` (mantenuto nei link della pagina da
- * public/js/common.js) > lingua del browser. Nessun cookie: ai visitatori non
- * viene salvato nulla sul dispositivo.
+ * Language selection: `?lang=` parameter (kept in the page links by
+ * public/js/common.js) > browser language. No cookies: nothing is stored on
+ * visitors' devices.
  */
 
 export const LANGS = ['it', 'en'] as const;
@@ -28,7 +28,7 @@ const isLang = (v: unknown): v is Lang => typeof v === 'string' && (LANGS as rea
 
 export function detectLang(req: Request): Lang {
   if (isLang(req.query.lang)) return req.query.lang;
-  // Accept-Language: la prima lingua supportata in ordine di preferenza
+  // Accept-Language: the first supported language in order of preference
   const accepted = (req.get('accept-language') ?? '')
     .split(',')
     .map((part) => {

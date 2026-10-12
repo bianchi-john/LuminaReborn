@@ -1,16 +1,16 @@
-# LUMiNA - stack completo. Avvio: `make up` (o `docker compose up -d --build`).
-# Sviluppo con ricarica automatica: `make dev` (vedi docs/SVILUPPO.md).
+# LUMiNA - full stack. Start: `make up` (or `docker compose up -d --build`).
+# Development with automatic reload: `make dev` (see docs/DEVELOPMENT.md).
 services:
   mysqldb:
     image: mysql:8.4
     container_name: mysqlcontainer
     restart: unless-stopped
     volumes:
-      # Volume Docker (reset con `make reset-demo`), oppure una cartella dell'host via MYSQL_DATA_DIR
+      # Docker volume (reset with `make reset-demo`), or a host folder via MYSQL_DATA_DIR
       - ${MYSQL_DATA_DIR:-mysql-data}:/var/lib/mysql
-      # Eseguiti solo al primo avvio: database media, schema e opere dimostrative
+      # Run only on first start: media database, schema and demo works
       - ./dbinit:/docker-entrypoint-initdb.d:ro
-    # Solo dalla macchina locale (manutenzione, sviluppo): mai esposto in rete
+    # Local machine only (maintenance, development): never exposed on the network
     ports:
       - "127.0.0.1:${MYSQL_HOST_PORT:-3306}:3306"
     environment:
@@ -20,7 +20,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME:-luminadb}
       MEDIA_DB_NAME: ${MEDIA_DB_NAME:-luminamedia}
     healthcheck:
-      # Durante l'inizializzazione MySQL non accetta connessioni TCP: "healthy" = pronto
+      # During initialisation MySQL does not accept TCP connections: "healthy" = ready
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 5s
       timeout: 5s
@@ -81,7 +81,7 @@ services:
       - /tmp
     security_opt:
       - no-new-privileges:true
-    # L'app non ha bisogno di alcuna capability del kernel (ascolta sulla porta 3000)
+    # The app needs no kernel capabilities (it listens on port 3000)
     cap_drop:
       - ALL
     networks:
@@ -89,8 +89,8 @@ services:
         ipv4_address: ${NODEAPP_CONTAINER_IP}
       extern:
 
-  # Backup giornaliero di catalogo e immagini (mysqldump compresso, con rotazione)
-  # in ./backups/db. Backup immediato: `make backup`.
+  # Daily backup of catalogue and images (compressed mysqldump, with rotation)
+  # in ./backups/db. Immediate backup: `make backup`.
   backup:
     image: mysql:8.4
     restart: unless-stopped
@@ -113,8 +113,8 @@ services:
     networks:
       internalnet:
 
-  # Servizio one-shot: crea gli schedatori dimostrativi al primo avvio.
-  # L'amministratore viene invece creato automaticamente dallo user-manager.
+  # One-shot service: creates the demo cataloguers on first start.
+  # The administrator, instead, is created automatically by the user-manager.
   user-seed:
     image: curlimages/curl:8.11.1
     restart: "no"
@@ -134,7 +134,7 @@ services:
     image: mongo:7.0
     container_name: mongocontainer
     restart: unless-stopped
-    # Autenticazione attiva: amministratore + utente dedicato allo user-manager
+    # Authentication enabled: administrator + dedicated user for the user-manager
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-root}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-letmein}
@@ -150,10 +150,10 @@ services:
       internalnet:
         ipv4_address: ${MONGO_CONTAINER_IP}
 
-  # Autenticazione e utenti. Raggiungibile solo dalla rete interna: l'app ne fa
-  # da proxy (login, gestione utenti in /area/utenti). Non va esposto: la sua
-  # API restituisce anche gli hash delle password e pubblica /docs e /metrics.
-  # Immagine fissata per digest (l'unico tag pubblicato è "latest").
+  # Authentication and users. Reachable only from the internal network: the app
+  # acts as its proxy (login, user management in /area/utenti). Must not be exposed:
+  # its API also returns password hashes and publishes /docs and /metrics.
+  # Image pinned by digest (the only published tag is "latest").
   user-manager-api:
     image: moreillon/user-manager-mongoose@sha256:24d5e49257138b8f824331355373aefa7f48a07c193d4ea1dc54a6a0fd406402
     restart: unless-stopped
@@ -162,7 +162,7 @@ services:
       MONGODB_DB: user_manager
       MONGODB_USERNAME: ${MONGO_APP_USERNAME:-user_manager}
       MONGODB_PASSWORD: ${MONGO_APP_PASSWORD:-letmein}
-      JWT_SECRET: ${JWT_SECRET:?Impostare JWT_SECRET nel file .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the .env file}
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     depends_on:

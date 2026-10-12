@@ -1,6 +1,6 @@
 #!/bin/bash
-# Per installazioni create prima del database media: crea il database delle
-# immagini e concede i permessi all'utente dell'applicazione, poi riavvia l'app.
+# For installations created before the media database: creates the image
+# database and grants permissions to the application user, then restarts the app.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 docker compose exec -T mysqldb bash -c '
@@ -10,4 +10,4 @@ GRANT ALL PRIVILEGES ON \`${MEDIA_DB_NAME:-luminamedia}\`.* TO "$MYSQL_USER"@"%"
 FLUSH PRIVILEGES;
 SQL'
 docker compose restart nodeapp
-echo "Database media pronto"
+echo "Media database ready"

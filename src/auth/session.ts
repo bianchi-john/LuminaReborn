@@ -9,7 +9,7 @@ import { getSelf, RemoteUser } from './userManager';
 export type Role = 'admin' | 'schedatore';
 
 export interface SessionUser {
-  /** id nella tabella locale `users` (usato per proprietà e storico delle schede) */
+  /** id in the local `users` table (used for record ownership and history) */
   id: number;
   remoteId: string;
   username: string;
@@ -30,7 +30,7 @@ declare global {
 
 const CACHE_TTL_MS = 60_000;
 const cache = new Map<string, { user: SessionUser; expires: number }>();
-/** Ultima attività per sessione (hash del token), per la scadenza per inattività. */
+/** Last activity per session (token hash), for the inactivity timeout. */
 const lastSeen = new Map<string, number>();
 
 const tokenKey = (token: string) => createHash('sha256').update(token).digest('hex');
@@ -39,7 +39,7 @@ export function cookieOptions(): CookieOptions {
   return {
     httpOnly: true,
     secure: config.session.secureCookie,
-    // Strict: il cookie non viaggia mai con richieste avviate da altri siti
+    // Strict: the cookie is never sent with requests initiated by other sites
     sameSite: 'strict',
     path: '/',
     maxAge: config.session.maxAgeHours * 3600 * 1000,
@@ -57,8 +57,8 @@ export function forgetToken(token: string): void {
 }
 
 /**
- * Scadenza per inattività (OWASP ASVS 3.3). Lo stato è in memoria: dopo un
- * riavvio dell'app le sessioni restano valide fino alla durata massima.
+ * Inactivity timeout (OWASP ASVS 3.3). State is kept in memory: after an
+ * app restart, sessions remain valid until their maximum lifetime.
  */
 function idleExpired(token: string): boolean {
   const key = tokenKey(token);
@@ -76,8 +76,8 @@ function idleExpired(token: string): boolean {
 }
 
 /**
- * Lo user-manager emette JWT senza scadenza: la durata massima della sessione
- * viene imposta qui leggendo `iat` (la firma è verificata dallo user-manager).
+ * The user-manager issues JWTs without expiry: the maximum session lifetime
+ * is enforced here by reading `iat` (the signature is verified by the user-manager).
  */
 function tokenTooOld(token: string): boolean {
   try {
@@ -90,9 +90,9 @@ function tokenTooOld(token: string): boolean {
 }
 
 /**
- * Allinea la copia locale dell'utente. Il nome visualizzato dello user-manager
- * vale lo username finché non viene personalizzato: in quel caso si mantiene
- * quello locale (es. "Pasquale Folcarile" delle schede importate).
+ * Syncs the local copy of the user. The user-manager display name equals the
+ * username until it is customised: in that case the local one is kept
+ * (e.g. "Pasquale Folcarile" from the imported records).
  */
 async function syncLocalUser(remote: RemoteUser): Promise<{ id: number; displayName: string }> {
   const custom = remote.display_name && remote.display_name !== remote.username ? remote.display_name : null;
@@ -135,7 +135,7 @@ async function resolveUser(token: string): Promise<SessionUser | null> {
   return user;
 }
 
-/** Popola `req.user` (e `res.locals.user` per i template) se la sessione è valida. */
+/** Populates `req.user` (and `res.locals.user` for templates) if the session is valid. */
 export async function loadSession(req: Request, res: Response, next: NextFunction): Promise<void> {
   const token: string | undefined = req.cookies?.[config.session.cookieName];
   res.locals.user = null;
@@ -157,7 +157,7 @@ export async function loadSession(req: Request, res: Response, next: NextFunctio
     res.locals.user = user;
     next();
   } catch (error) {
-    // User-manager irraggiungibile: le pagine pubbliche restano consultabili
+    // User-manager unreachable: public pages remain accessible
     logger.warn('Impossibile verificare la sessione', error instanceof Error ? error.message : error);
     next();
   }
@@ -174,7 +174,7 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction): 
   next();
 }
 
-/** Per le pagine: senza sessione si va al login (con ritorno alla pagina richiesta). */
+/** For pages: without a session, redirect to login (returning to the requested page). */
 export function requireUserPage(req: Request, res: Response, next: NextFunction): void {
   if (req.user) return next();
   res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);

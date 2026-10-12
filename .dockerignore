@@ -5,7 +5,7 @@ dist
 database-data
 user-data
 attach
-Doc
+docs
 *.log
 backups
 .github

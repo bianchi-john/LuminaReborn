@@ -41,11 +41,11 @@ export interface Permessi {
 }
 
 /**
- * Regole di accesso:
- * - le schede pubblicate sono visibili a tutti;
- * - lo schedatore vede e gestisce le proprie; può modificare/eliminare solo le bozze;
- * - l'amministratore vede tutto, può correggere le schede in qualunque stato,
- *   approvarle, respingerle (con motivazione) o ritirarle dalla pubblicazione.
+ * Access rules:
+ * - published records (schede) are visible to everyone;
+ * - a cataloguer sees and manages their own; they can edit/delete only drafts;
+ * - the administrator sees everything, can correct records in any state,
+ *   approve them, reject them (with a reason) or withdraw them from publication.
  */
 export function computePermessi(s: { stato: number; created_by: number | null }, user: SessionUser | undefined, accreditato = false): Permessi {
   const owner = !!user && (s.created_by === user.id || accreditato);
@@ -75,13 +75,13 @@ async function loadRow(db: Db, id: number, forUpdate = false): Promise<SchedaRow
 }
 
 // ---------------------------------------------------------------------------
-// Lettura
+// Reading
 // ---------------------------------------------------------------------------
 
 export interface SchedaCompleta extends Omit<SchedaRow, 'note_schedatore'> {
   note_schedatore?: string | null;
   stato_label: string;
-  /** Indirizzo pubblico (/opere/...), valido solo se la scheda è pubblicata */
+  /** Public address (/opere/...), valid only if the record is published */
   percorso: string;
   schedatori: { id: number; username: string; display_name: string | null }[];
   cronologie: Record<string, unknown>[];
@@ -94,11 +94,11 @@ export interface SchedaCompleta extends Omit<SchedaRow, 'note_schedatore'> {
   voci: Record<VocabKey, VocabItem[]>;
 }
 
-/** Scheda con tutti i dati collegati, se l'utente può vederla (altrimenti 404). */
+/** Record with all its linked data, if the user can see it (404 otherwise). */
 export async function getScheda(id: number, user?: SessionUser): Promise<SchedaCompleta> {
   const row = await loadRow(pool, id);
   const permessi = computePermessi(row, user, await isAccreditato(pool, id, user));
-  // 404 e non 403: non rivela l'esistenza di bozze altrui
+  // 404 rather than 403: does not reveal the existence of other users' drafts
   if (!permessi.visualizza) throw notFound('Scheda non trovata');
   const riservato = permessi.modifica || permessi.approva || !!user?.isAdmin || row.created_by === user?.id;
 
@@ -154,7 +154,7 @@ export async function getScheda(id: number, user?: SessionUser): Promise<SchedaC
     ...VOCAB_KEYS.map((k) => linkedTo(pool, id, VOCABOLARI[k])),
   ]);
 
-  // L'HTML viene ripulito anche in lettura: i dati importati non sono mai passati dal sanitizer
+  // HTML is sanitized on read too: imported data never went through the sanitizer
   const { note_schedatore, ...rest } = row;
   for (const k of VOCAB_KEYS) {
     const v = VOCABOLARI[k];
@@ -188,7 +188,7 @@ export async function getScheda(id: number, user?: SessionUser): Promise<SchedaC
 }
 
 // ---------------------------------------------------------------------------
-// Scrittura
+// Writing
 // ---------------------------------------------------------------------------
 
 async function logRevisione(db: Db, schedaId: number, user: SessionUser, azione: string, commento: string | null = null) {
@@ -223,7 +223,7 @@ async function replaceChildren(conn: PoolConnection, schedaId: number, input: Sc
     ]);
   }
 
-  // Le misure vengono eliminate in cascata con il gruppo
+  // Measurements are cascade-deleted with their group
   await execute(conn, 'DELETE FROM gruppi_misure WHERE id_scheda = ?', [schedaId]);
   for (const [ordine, g] of input.misure.entries()) {
     const res = await execute(
@@ -250,7 +250,7 @@ async function replaceChildren(conn: PoolConnection, schedaId: number, input: Sc
   }
 }
 
-/** Collega le immagini indicate (già caricate) e rimuove quelle tolte dalla scheda. */
+/** Links the given (already uploaded) images and removes those taken off the record. */
 async function syncImmagini(conn: PoolConnection, schedaId: number, input: SchedaInput, user: SessionUser) {
   const ids = [...new Set(input.immagini.map((i) => i.id))];
   if (ids.length) {
@@ -278,7 +278,7 @@ async function syncImmagini(conn: PoolConnection, schedaId: number, input: Sched
   }
 }
 
-/** Nei campi di testo restano solo le immagini della scheda stessa. */
+/** Only the record's own images are kept in text fields. */
 async function conImmaginiDellaScheda(db: Db, input: SchedaInput): Promise<SchedaInput> {
   const ids = input.immagini.map((i) => i.id);
   const righe = ids.length ? await select<{ codice: string }>(db, 'SELECT codice FROM immagini WHERE id IN (?)', [ids]) : [];
@@ -354,7 +354,7 @@ export async function deleteScheda(id: number, user: SessionUser): Promise<void>
     const permessi = computePermessi(row, user, await isAccreditato(conn, id, user));
     if (!permessi.visualizza) throw notFound('Scheda non trovata');
     if (!permessi.elimina) throw forbidden('La scheda non può essere eliminata nel suo stato attuale');
-    // Dati propri, collegamenti, immagini e storico vengono eliminati in cascata
+    // Own data, links, images and history are cascade-deleted
     await execute(conn, 'DELETE FROM schede WHERE id = ?', [id]);
   });
 }
@@ -381,7 +381,7 @@ export async function cambiaStato(id: number, azione: Azione, user: SessionUser,
         : forbidden();
     }
     const { stato, registro } = TRANSIZIONI[azione];
-    // Si arriva a "pubblicata" solo con l'approvazione; ogni altra transizione la annulla
+    // "Published" is reached only through approval; any other transition revokes it
     await execute(conn, 'UPDATE schede SET stato = ?, updated_at = NOW(), published_at = IF(? = 2, NOW(), NULL) WHERE id = ?', [
       stato,
       stato,
@@ -393,7 +393,7 @@ export async function cambiaStato(id: number, azione: Azione, user: SessionUser,
 }
 
 // ---------------------------------------------------------------------------
-// Elenchi per l'area riservata
+// Lists for the restricted area
 // ---------------------------------------------------------------------------
 
 export interface SchedaSintesi {
@@ -425,7 +425,7 @@ const SINTESI_SELECT = `
 const withLabel = (rows: Omit<SchedaSintesi, 'stato_label' | 'percorso'>[]): SchedaSintesi[] =>
   rows.map((r) => ({ ...r, stato_label: STATO_LABEL[r.stato] ?? '', percorso: percorsoOpera(r.titolo_testo, r.codice) }));
 
-/** ID interno dell'opera a partire dal codice pubblico. */
+/** Internal artwork ID from its public code. */
 export async function idDaCodice(codice: string): Promise<number | null> {
   const row = await selectOne<{ id: number }>(pool, 'SELECT id FROM schede WHERE codice = ?', [codice]);
   return row?.id ?? null;

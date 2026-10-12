@@ -1,24 +1,24 @@
 -- =============================================================================
--- 001 - Normalizzazione dello schema
+-- 001 - Schema normalisation
 --
--- Porta lo schema originale (dbinit/init.sql) a un modello relazionale in cui:
---   * le "voci" condivise (autori, materiali, tecniche, ubicazioni, provenienze,
---     mostre, bibliografie) esistono una sola volta e sono collegate alle schede
---     tramite tabelle TDS; gli attributi che dipendono dalla singola scheda
---     (es. "copia da", "Opera attribuita", sala/vetrina) stanno sul collegamento;
---   * i dati che appartengono a una sola scheda (cronologie, inventari, misure,
---     immagini, documentazione fotografica) hanno una FK diretta verso la scheda
---     con ON DELETE CASCADE, così eliminare una scheda non lascia orfani;
---   * lo stato della scheda è una colonna di `schede` e ogni passaggio di stato
---     viene registrato in `schede_revisioni`;
---   * le immagini sono salvate come binario (non più data URL in LONGTEXT).
+-- Brings the original schema (dbinit/init.sql) to a relational model where:
+--   * shared authority entries (authors, materials, techniques, locations,
+--     provenances, exhibitions, bibliographies) exist only once and are linked
+--     to records through TDS tables; attributes that depend on the single record
+--     (e.g. "copia da", "Opera attribuita", room/display case) live on the link;
+--   * data belonging to a single record (chronologies, inventories, measurements,
+--     images, photographic documentation) has a direct FK to the record
+--     with ON DELETE CASCADE, so deleting a record leaves no orphans;
+--   * the record status is a column of `schede` and every status change
+--     is logged in `schede_revisioni`;
+--   * images are stored as binary (no longer data URLs in LONGTEXT).
 --
--- I duplicati già presenti vengono fusi (confronto senza distinzione di
--- maiuscole/spazi). Eseguita una sola volta dal migratore dell'applicazione.
+-- Existing duplicates are merged (comparison ignoring case and
+-- whitespace). Run only once by the application's migrator.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Utenti (copia locale degli utenti dello user-manager)
+-- Users (local copy of the user-manager's users)
 -- -----------------------------------------------------------------------------
 UPDATE users SET username = TRIM(username);
 DELETE FROM users WHERE username IS NULL OR username = '';
@@ -39,7 +39,7 @@ ALTER TABLE users
   ADD UNIQUE KEY uq_users_username (username);
 
 -- -----------------------------------------------------------------------------
--- Schede: stato, metadati e titolo in testo semplice (per ordinamento e <title>)
+-- Records: status, metadata and plain-text title (for sorting and <title>)
 -- -----------------------------------------------------------------------------
 ALTER TABLE schede
   ADD COLUMN titolo_testo VARCHAR(500) NOT NULL DEFAULT '' AFTER titolo_opera,
@@ -73,7 +73,7 @@ ALTER TABLE schede
   ADD KEY idx_schede_titolo (titolo_testo),
   ADD CONSTRAINT fk_schede_created_by FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL;
 
--- Schedatori accreditati sulla scheda (molti-a-molti con utenti)
+-- Cataloguers credited on the record (many-to-many with users)
 CREATE TABLE tds_users_schede_new (
   id_user INT NOT NULL,
   id_scheda INT NOT NULL,
@@ -92,7 +92,7 @@ INSERT INTO tds_users_schede_new (id_user, id_scheda, data_modifica)
 DROP TABLE tds_users_schede;
 RENAME TABLE tds_users_schede_new TO tds_users_schede;
 
--- Storico delle revisioni (creazione, invio, approvazione, rifiuto, ...)
+-- Revision history (creation, submission, approval, rejection, ...)
 CREATE TABLE schede_revisioni (
   id INT PRIMARY KEY AUTO_INCREMENT,
   id_scheda INT NOT NULL,
@@ -112,7 +112,7 @@ DROP TABLE tds_schede_statoScheda;
 DROP TABLE statoScheda;
 
 -- -----------------------------------------------------------------------------
--- AUTORI: voce condivisa; formula e categoria passano sul collegamento
+-- AUTORI (authors): shared authority entry; formula and category move to the link
 -- -----------------------------------------------------------------------------
 UPDATE autori SET nome = TRIM(REGEXP_REPLACE(COALESCE(nome, ''), '[[:space:]]+', ' '));
 DELETE a FROM autori a LEFT JOIN tds_schede_autori t ON t.id_autore = a.id WHERE a.nome = '' AND t.id_autore IS NULL;
@@ -155,7 +155,7 @@ ALTER TABLE autori
   ADD UNIQUE KEY uq_autori_nome (nome);
 
 -- -----------------------------------------------------------------------------
--- MATERIALI
+-- MATERIALI (materials)
 -- -----------------------------------------------------------------------------
 UPDATE materiali SET nome_materiale = TRIM(REGEXP_REPLACE(COALESCE(nome_materiale, ''), '[[:space:]]+', ' '));
 DELETE m FROM materiali m LEFT JOIN tds_schede_materiali t ON t.id_materiale = m.id WHERE m.nome_materiale = '' AND t.id_materiale IS NULL;
@@ -185,7 +185,7 @@ RENAME TABLE tds_schede_materiali_new TO tds_schede_materiali;
 ALTER TABLE materiali ADD UNIQUE KEY uq_materiali_nome (nome_materiale);
 
 -- -----------------------------------------------------------------------------
--- TECNICHE
+-- TECNICHE (techniques)
 -- -----------------------------------------------------------------------------
 UPDATE tecniche SET nome_tecnica = TRIM(REGEXP_REPLACE(COALESCE(nome_tecnica, ''), '[[:space:]]+', ' '));
 DELETE x FROM tecniche x LEFT JOIN tds_schede_tecniche t ON t.id_tecnica = x.id WHERE x.nome_tecnica = '' AND t.id_tecnica IS NULL;
@@ -215,8 +215,8 @@ RENAME TABLE tds_schede_tecniche_new TO tds_schede_tecniche;
 ALTER TABLE tecniche ADD UNIQUE KEY uq_tecniche_nome (nome_tecnica);
 
 -- -----------------------------------------------------------------------------
--- UBICAZIONI: il luogo è condiviso; sala/vetrina diventa "collocazione"
--- sul collegamento
+-- UBICAZIONI (locations): the place is shared; room/display case becomes
+-- "collocazione" on the link
 -- -----------------------------------------------------------------------------
 UPDATE ubicazioni SET ubicazione = TRIM(REGEXP_REPLACE(COALESCE(ubicazione, ''), '[[:space:]]+', ' '));
 DELETE x FROM ubicazioni x LEFT JOIN tds_schede_ubicazioni t ON t.id_ubicazione = x.id WHERE x.ubicazione = '' AND t.id_ubicazione IS NULL;
@@ -246,18 +246,18 @@ DROP TABLE tds_schede_ubicazioni;
 DELETE x FROM ubicazioni x JOIN _map_ubicazioni m ON m.id = x.id WHERE m.id <> m.canon;
 DROP TABLE _map_ubicazioni;
 RENAME TABLE tds_schede_ubicazioni_new TO tds_schede_ubicazioni;
--- La vecchia descrizione era la collocazione della singola opera: ora è sul collegamento
+-- The old description was the placement of the single work: it now lives on the link
 UPDATE ubicazioni SET descrizione = NULL;
 ALTER TABLE ubicazioni ADD UNIQUE KEY uq_ubicazioni_nome (ubicazione);
 
 -- -----------------------------------------------------------------------------
--- PROVENIENZE: provenienza + descrizione condivise; note sul collegamento
+-- PROVENIENZE (provenances): provenance + description shared; notes on the link
 -- -----------------------------------------------------------------------------
 UPDATE provenienze
    SET provenienza = TRIM(REGEXP_REPLACE(COALESCE(provenienza, ''), '[[:space:]]+', ' ')),
        descrizione = TRIM(COALESCE(descrizione, '')),
        note = TRIM(COALESCE(note, ''));
--- Righe con solo la nota: la nota diventa la provenienza
+-- Rows with only the note: the note becomes the provenance
 UPDATE provenienze SET provenienza = note, note = '' WHERE provenienza = '' AND note <> '';
 DELETE x FROM provenienze x LEFT JOIN tds_schede_provenienze t ON t.id_provenienza = x.id WHERE x.provenienza = '' AND t.id_provenienza IS NULL;
 ALTER TABLE provenienze
@@ -295,7 +295,7 @@ ALTER TABLE provenienze
   ADD UNIQUE KEY uq_provenienze_chiave (chiave);
 
 -- -----------------------------------------------------------------------------
--- MOSTRE: voce condivisa, date numeriche
+-- MOSTRE (exhibitions): shared authority entry, numeric dates
 -- -----------------------------------------------------------------------------
 UPDATE mostre SET
   titolo_mostra = TRIM(COALESCE(titolo_mostra, '')),
@@ -344,7 +344,7 @@ RENAME TABLE tds_schede_mostre_new TO tds_schede_mostre;
 ALTER TABLE mostre ADD UNIQUE KEY uq_mostre_chiave (chiave);
 
 -- -----------------------------------------------------------------------------
--- BIBLIOGRAFIE e ALTRE BIBLIOGRAFIE: riferimenti condivisi tra schede
+-- BIBLIOGRAFIE and ALTRE BIBLIOGRAFIE (other bibliographies): references shared across records
 -- -----------------------------------------------------------------------------
 UPDATE bibliografie SET riferimento_bibliografico = TRIM(COALESCE(riferimento_bibliografico, ''));
 DELETE x FROM bibliografie x LEFT JOIN tds_schede_bibliografie t ON t.id_bibliografia = x.id WHERE x.riferimento_bibliografico = '' AND t.id_bibliografia IS NULL;
@@ -407,11 +407,11 @@ RENAME TABLE tds_schede_altreBibliografie_new TO tds_schede_altreBibliografie;
 ALTER TABLE altreBibliografie ADD UNIQUE KEY uq_altreBibliografie_chiave (chiave);
 
 -- -----------------------------------------------------------------------------
--- Dati propri della singola scheda: FK diretta con ON DELETE CASCADE
--- (le righe non collegate ad alcuna scheda sono residui di bozze eliminate)
+-- Data belonging to a single record: direct FK with ON DELETE CASCADE
+-- (rows not linked to any record are leftovers of deleted drafts)
 -- -----------------------------------------------------------------------------
 
--- Cronologie (date numeriche per consentire la ricerca per intervallo)
+-- Chronologies (numeric dates to allow range searches)
 ALTER TABLE cronologie ADD COLUMN id_scheda INT NULL AFTER id, ADD COLUMN ordine INT NOT NULL DEFAULT 0;
 UPDATE cronologie c JOIN (SELECT id_cronologia, MIN(id_scheda) AS id_scheda FROM tds_schede_cronologie GROUP BY id_cronologia) t
   ON t.id_cronologia = c.id SET c.id_scheda = t.id_scheda;
@@ -437,8 +437,8 @@ ALTER TABLE cronologie
   ADD CONSTRAINT fk_cronologie_scheda FOREIGN KEY (id_scheda) REFERENCES schede (id) ON DELETE CASCADE;
 DROP TABLE tds_schede_cronologie;
 
--- Inventari. La "proprietà giuridica" è in `descrizione`: il vecchio editor la
--- salvava per errore in `nome_inventario`.
+-- Inventories. The "proprietà giuridica" (legal ownership) is in `descrizione`:
+-- the old editor mistakenly saved it in `nome_inventario`.
 ALTER TABLE inventari ADD COLUMN id_scheda INT NULL AFTER id, ADD COLUMN ordine INT NOT NULL DEFAULT 0;
 UPDATE inventari i JOIN (SELECT id_inventario, MIN(id_scheda) AS id_scheda FROM tds_schede_inventari GROUP BY id_inventario) t
   ON t.id_inventario = i.id SET i.id_scheda = t.id_scheda;
@@ -454,7 +454,7 @@ ALTER TABLE inventari
   ADD CONSTRAINT fk_inventari_scheda FOREIGN KEY (id_scheda) REFERENCES schede (id) ON DELETE CASCADE;
 DROP TABLE tds_schede_inventari;
 
--- Documentazione fotografica
+-- Photographic documentation
 ALTER TABLE documentazioniFotografiche ADD COLUMN id_scheda INT NULL AFTER id, ADD COLUMN ordine INT NOT NULL DEFAULT 0;
 UPDATE documentazioniFotografiche d JOIN (SELECT id_documentazioneFotografica AS id_doc, MIN(id_scheda) AS id_scheda
                                             FROM tds_schede_documentazioniFotografiche GROUP BY id_documentazioneFotografica) t
@@ -465,7 +465,7 @@ ALTER TABLE documentazioniFotografiche
   ADD CONSTRAINT fk_docfoto_scheda FOREIGN KEY (id_scheda) REFERENCES schede (id) ON DELETE CASCADE;
 DROP TABLE tds_schede_documentazioniFotografiche;
 
--- Gruppi di misure (la vecchia tds_schede_gruppo_misure era in realtà un'entità)
+-- Measurement groups (the old tds_schede_gruppo_misure was actually an entity)
 RENAME TABLE tds_schede_gruppo_misure TO gruppi_misure;
 ALTER TABLE gruppi_misure ADD COLUMN id_scheda INT NULL AFTER id, ADD COLUMN ordine INT NOT NULL DEFAULT 0;
 UPDATE gruppi_misure g JOIN (SELECT id_gruppo_misure, MIN(id_scheda) AS id_scheda FROM tds_schede_misure GROUP BY id_gruppo_misure) t
@@ -487,8 +487,8 @@ ALTER TABLE misure
 UPDATE misure m JOIN (SELECT id, ROW_NUMBER() OVER (PARTITION BY id_gruppo_misure ORDER BY id) - 1 AS rn FROM misure) r
   ON r.id = m.id SET m.ordine = r.rn;
 
--- Immagini: da data URL (LONGTEXT) a binario + MIME. Le immagini caricate ma non
--- ancora collegate a una scheda hanno id_scheda NULL e vengono ripulite dall'app.
+-- Images: from data URL (LONGTEXT) to binary + MIME. Images uploaded but not yet
+-- linked to a record have id_scheda NULL and are cleaned up by the app.
 ALTER TABLE immagini
   ADD COLUMN id_scheda INT NULL AFTER id,
   ADD COLUMN ordine INT NOT NULL DEFAULT 0,

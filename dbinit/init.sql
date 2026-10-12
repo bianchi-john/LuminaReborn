@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS statoScheda;
 
 CREATE TABLE `statoScheda` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-   -- bozza = 0, pending = 1, approvata = 2
+   -- draft = 0, pending = 1, approved = 2
   `stato` int, 
   `commento` text
 );
@@ -32,7 +32,7 @@ DROP TABLE IF EXISTS tds_stato_schedeUser;
 
 CREATE TABLE `tds_stato_schedeUser` (
   `id_stato` int PRIMARY KEY,
-  -- user è lo user id
+  -- user is the user id
   `id_user` int
 );
 

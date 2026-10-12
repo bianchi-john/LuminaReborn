@@ -1,6 +1,6 @@
-# --- Sviluppo: tutte le dipendenze, sorgenti montati come volume (docker-compose.dev.yml)
+# --- Development: all dependencies, sources mounted as a volume (docker-compose.dev.yml)
 FROM node:22-alpine AS dev
-# Font per il watermark delle anteprime (Liberation Serif, metrica di Times New Roman)
+# Font for the preview watermark (Liberation Serif, metric-compatible with Times New Roman)
 RUN apk add --no-cache fontconfig font-liberation
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -9,7 +9,7 @@ COPY . .
 ENV NODE_ENV=development
 CMD ["npm", "run", "dev"]
 
-# --- Build: compila TypeScript, poi tiene solo le dipendenze di produzione
+# --- Build: compiles TypeScript, then keeps only the production dependencies
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -18,10 +18,10 @@ COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src
 RUN npm run build && npm prune --omit=dev
 
-# --- Produzione: codice compilato e dipendenze di runtime, utente non root
+# --- Production: compiled code and runtime dependencies, non-root user
 FROM node:22-alpine AS production
 ENV NODE_ENV=production
-# Font per il watermark delle anteprime (Liberation Serif, metrica di Times New Roman)
+# Font for the preview watermark (Liberation Serif, metric-compatible with Times New Roman)
 RUN apk add --no-cache fontconfig font-liberation
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules

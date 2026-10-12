@@ -9,7 +9,7 @@ Schede
 test-results
 *.log
 
-# Strumenti locali di migrazione
+# Local migration tools
 QUERY*.sh
 CARICA_SCHEDE.sh
 backups

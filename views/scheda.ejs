@@ -13,7 +13,7 @@
     const da = h.data(m.giorno_data_da, m.mese_data_da, m.anno_data_da), a = h.data(m.giorno_data_a, m.mese_data_a, m.anno_data_a);
     return da && a && da !== a ? `${da} – ${a}` : (da || a);
   };
-  // Lo staff autenticato può aprire l'immagine originale; il pubblico vede solo la versione ridotta
+  // Authenticated staff can open the original image; the public only sees the reduced version
   const originali = !!user;
   const AZIONI = { creata: t('ha creato la scheda'), modificata: t('ha modificato la scheda'), inviata: t('ha inviato la scheda in revisione'), ritirata: t('ha ritirato la scheda dalla revisione'), approvata: t('ha approvato e pubblicato la scheda'), respinta: t('ha respinto la scheda'), depubblicata: t('ha ritirato la scheda dalla pubblicazione'), importata: t('scheda importata') };
 %>

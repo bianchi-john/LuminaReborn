@@ -1,11 +1,11 @@
 /**
- * Somiglianza tra testi brevi (nomi di autori, luoghi, materiali...), usata per:
- * - avvisare lo schedatore che sta per creare un probabile doppione;
- * - segnalare all'amministratore le coppie di voci da unire;
- * - suggerire "Forse cercavi..." quando una ricerca non dà risultati.
+ * Similarity between short texts (names of authors, places, materials...), used to:
+ * - warn the cataloguer that they are about to create a likely duplicate;
+ * - point out to the administrator pairs of authority entries to merge;
+ * - suggest "Did you mean..." when a search returns no results.
  */
 
-/** Minuscolo, senza accenti, tag HTML e punteggiatura. */
+/** Lowercase, without accents, HTML tags or punctuation. */
 export function normalize(text: string): string {
   return text
     .replace(/<[^>]*>/g, ' ')
@@ -34,8 +34,8 @@ export function levenshtein(a: string, b: string): number {
 const ratio = (a: string, b: string) => (a || b ? 1 - levenshtein(a, b) / Math.max(a.length, b.length) : 1);
 
 /**
- * Valore tra 0 e 1. Tiene conto di errori di battitura ("Giordani"), dell'ordine
- * delle parole ("Giordano Luca") e delle forme abbreviate ("L. Giordano").
+ * Value between 0 and 1. Accounts for typos ("Giordani"), word order
+ * ("Giordano Luca") and abbreviated forms ("L. Giordano").
  */
 export function similarity(a: string, b: string): number {
   const na = normalize(a);
@@ -45,7 +45,7 @@ export function similarity(a: string, b: string): number {
   const ta = na.split(' ');
   const tb = nb.split(' ');
   const sorted = ratio([...ta].sort().join(' '), [...tb].sort().join(' '));
-  // Ogni parola del testo più corto ha una corrispondente nell'altro (anche iniziale puntata)
+  // Every word of the shorter text has a match in the other (including a dotted initial)
   const [short, long] = ta.length <= tb.length ? [ta, tb] : [tb, ta];
   const match = (x: string, y: string) =>
     x === y || (x.length === 1 && y.startsWith(x)) || (y.length === 1 && x.startsWith(y)) || (x.length > 3 && ratio(x, y) >= 0.8);
@@ -67,7 +67,7 @@ export function findSimilar<T extends Candidate>(text: string, candidates: T[], 
     .slice(0, limit);
 }
 
-/** Coppie di voci probabilmente duplicate. Confronta solo voci che condividono una parola (veloce anche con migliaia di voci). */
+/** Pairs of likely duplicate authority entries. Only compares entries sharing a word (fast even with thousands of entries). */
 export function findDuplicatePairs<T extends Candidate>(items: T[], threshold = 0.85, limit = 50): { a: T; b: T; score: number }[] {
   const buckets = new Map<string, T[]>();
   for (const item of items) {
@@ -80,7 +80,7 @@ export function findDuplicatePairs<T extends Candidate>(items: T[], threshold = 
   const seen = new Set<string>();
   const pairs: { a: T; b: T; score: number }[] = [];
   for (const group of buckets.values()) {
-    if (group.length > 200) continue; // parole troppo comuni (es. "museo"): poco informative
+    if (group.length > 200) continue; // words that are too common (e.g. "museo"): not very informative
     for (let i = 0; i < group.length; i++) {
       for (let j = i + 1; j < group.length; j++) {
         const [a, b] = group[i].id < group[j].id ? [group[i], group[j]] : [group[j], group[i]];

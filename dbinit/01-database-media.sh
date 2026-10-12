@@ -1,7 +1,7 @@
 #!/bin/bash
-# Eseguito da MySQL solo al primo avvio (cartella dati vuota), prima di init.sql.
-# Crea il database separato per i file delle immagini e lo rende accessibile
-# all'utente dell'applicazione.
+# Run by MySQL only on first start (empty data directory), before init.sql.
+# Creates the separate database for image files and makes it accessible
+# to the application user.
 set -euo pipefail
 MEDIA_DB="${MEDIA_DB_NAME:-luminamedia}"
 mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
@@ -9,4 +9,4 @@ CREATE DATABASE IF NOT EXISTS \`${MEDIA_DB}\` CHARACTER SET utf8mb4 COLLATE utf8
 GRANT ALL PRIVILEGES ON \`${MEDIA_DB}\`.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 SQL
-echo "Database media '${MEDIA_DB}' pronto"
+echo "Media database '${MEDIA_DB}' ready"

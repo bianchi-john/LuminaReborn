@@ -1,6 +1,6 @@
-# Sviluppo: l'app gira con tsx in modalità watch e legge sorgenti, template e
-# file statici direttamente dalla cartella del progetto. Ogni modifica è visibile
-# subito (TypeScript: riavvio automatico in ~1 s; EJS/CSS/JS: basta ricaricare la pagina).
+# Development: the app runs with tsx in watch mode and reads sources, templates and
+# static files directly from the project folder. Every change is visible
+# immediately (TypeScript: automatic restart in ~1 s; EJS/CSS/JS: just reload the page).
 #   make dev     (= docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build)
 services:
   nodeapp:
@@ -20,6 +20,6 @@ services:
       - ./test:/app/test
       - ${BACKUP_DIR:-./backups}/excel:/exports
 
-  # In sviluppo il backup automatico non serve (resta disponibile `make backup`)
+  # Automatic backup is not needed in development (`make backup` is still available)
   backup:
     profiles: ["backup"]

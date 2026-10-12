@@ -12,7 +12,7 @@ interface Migration {
   run: (conn: Connection) => Promise<void>;
 }
 
-/** Nei file SQL {{MAIN_DB}} e {{MEDIA_DB}} diventano i nomi configurati dei database. */
+/** In SQL files, {{MAIN_DB}} and {{MEDIA_DB}} become the configured database names. */
 function expand(sql: string): string {
   return sql.replace(/\{\{MAIN_DB\}\}/g, config.db.database).replace(/\{\{MEDIA_DB\}\}/g, config.db.mediaDatabase);
 }
@@ -31,11 +31,11 @@ async function loadMigrations(): Promise<Migration[]> {
 }
 
 /**
- * Applica in ordine le migrazioni non ancora eseguite: i file `migrations/NNN_*.sql`
- * e i passi in codice di `codeMigrations.ts` (es. elaborazione delle immagini).
- * Usa una connessione dedicata con `multipleStatements` (mai abilitato sul pool
- * applicativo) e registra ogni migrazione in `schema_migrations`.
- * Le DDL di MySQL non sono transazionali: fare un backup prima di aggiornare.
+ * Applies pending migrations in order: the `migrations/NNN_*.sql` files
+ * and the code steps in `codeMigrations.ts` (e.g. image processing).
+ * Uses a dedicated connection with `multipleStatements` (never enabled on the
+ * application pool) and records each migration in `schema_migrations`.
+ * MySQL DDL is not transactional: take a backup before upgrading.
  */
 export async function runMigrations(): Promise<void> {
   const conn = await mysql.createConnection({
@@ -53,7 +53,7 @@ export async function runMigrations(): Promise<void> {
       version VARCHAR(191) PRIMARY KEY,
       applied_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )`);
-    // Un solo processo alla volta (es. più repliche avviate insieme)
+    // Only one process at a time (e.g. several replicas started together)
     const [[lock]] = await conn.query<mysql.RowDataPacket[]>("SELECT GET_LOCK('lumina_migrations', 300) AS ok");
     if (!lock?.ok) throw new Error('Impossibile ottenere il lock per le migrazioni');
 

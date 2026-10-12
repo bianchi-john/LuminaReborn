@@ -4,15 +4,15 @@ import { config } from '../config';
 import { logger } from '../logger';
 
 /**
- * Protezione dalla copia automatica del catalogo (scraping).
+ * Protection against automated copying of the catalogue (scraping).
  *
- * Ogni indirizzo IP ha un numero massimo di richieste al minuto e all'ora per
- * pagine, immagini e API. Chi supera più volte il limite al minuto, o anche una
- * sola volta quello orario, viene bloccato per un'ora (poi 2, 4, ... fino a 24
- * ore se insiste). Lo staff autenticato non è soggetto ai limiti.
+ * Each IP address has a maximum number of requests per minute and per hour for
+ * pages, images and the API. Anyone who exceeds the per-minute limit repeatedly,
+ * or the hourly one even once, is blocked for an hour (then 2, 4, ... up to 24
+ * hours if they persist). Authenticated staff are not subject to the limits.
  *
- * Tutto resta in memoria e si azzera al riavvio: gli indirizzi non vengono mai
- * scritti su disco né nei log e sono dimenticati quando non servono più.
+ * Everything stays in memory and is reset on restart: addresses are never
+ * written to disk or to the logs, and are forgotten once no longer needed.
  */
 
 export type Categoria = 'pagine' | 'media' | 'api';
@@ -21,18 +21,18 @@ export interface Regola {
   categoria: Categoria;
   finestraMs: number;
   limite: number;
-  /** Superamenti conteggiati ogni volta che la regola viene violata. */
+  /** Violations counted each time the rule is broken. */
   peso: number;
 }
 
 export interface OpzioniSorveglianza {
   regole: Regola[];
-  /** Superamenti (entro `periodoMs`) che fanno scattare il blocco. */
+  /** Violations (within `periodoMs`) that trigger the block. */
   superamentiPerBlocco: number;
   periodoMs: number;
   bloccoMs: number;
   bloccoMaxMs: number;
-  /** Indirizzi seguiti contemporaneamente al massimo (limite di memoria). */
+  /** Maximum number of addresses tracked at once (memory limit). */
   maxIndirizzi: number;
 }
 
@@ -61,7 +61,7 @@ export class Sorveglianza {
     return this.stati.size;
   }
 
-  /** Verifica solo se l'indirizzo è bloccato, senza conteggiare la richiesta. */
+  /** Only checks whether the address is blocked, without counting the request. */
   bloccato(chiave: string): Esito {
     const s = this.stati.get(chiave);
     const adesso = this.ora();
@@ -82,7 +82,7 @@ export class Sorveglianza {
       c.n++;
       if (c.n <= r.limite) return;
       riprovaTraMs = Math.max(riprovaTraMs, (finestra + 1) * r.finestraMs - adesso);
-      // Un solo superamento per finestra: le richieste successive vengono solo respinte
+      // Only one violation per window: subsequent requests are just rejected
       if (c.n === r.limite + 1) for (let k = 0; k < r.peso; k++) s.superamenti.push(adesso);
     });
     if (!riprovaTraMs) return { ok: true };
@@ -98,7 +98,7 @@ export class Sorveglianza {
     return { ok: false, bloccato: false, riprovaTraS: Math.ceil(riprovaTraMs / 1000) };
   }
 
-  /** Dimentica gli indirizzi senza blocchi in corso né richieste recenti. */
+  /** Forgets addresses with no active block and no recent requests. */
   pulisci(): void {
     const adesso = this.ora();
     for (const [chiave, s] of this.stati) if (this.dimenticabile(s, adesso)) this.stati.delete(chiave);
@@ -115,7 +115,7 @@ export class Sorveglianza {
     if (s) return s;
     if (this.stati.size >= this.o.maxIndirizzi) {
       this.pulisci();
-      // Ancora pieno: si sacrifica il più vecchio non bloccato (l'ordine della Map è quello di inserimento)
+      // Still full: evict the oldest unblocked entry (Map order is insertion order)
       const adesso = this.ora();
       for (const [k, v] of this.stati) {
         if (this.stati.size < this.o.maxIndirizzi) break;
@@ -128,7 +128,7 @@ export class Sorveglianza {
   }
 }
 
-/** Gli indirizzi IPv6 si raggruppano per /64: una singola connessione ne ha a disposizione milioni. */
+/** IPv6 addresses are grouped by /64: a single connection has millions of them available. */
 export function chiaveIndirizzo(ip: string): string {
   const v4 = ip.startsWith('::ffff:') ? ip.slice(7) : ip;
   if (isIPv4(v4)) return v4;
@@ -140,7 +140,7 @@ export function chiaveIndirizzo(ip: string): string {
   return `${gruppi.slice(0, 4).map((g) => g.toLowerCase().replace(/^0+(?=.)/, '')).join(':')}::/64`;
 }
 
-/** Categoria della richiesta; `null` = non conteggiata (accesso staff, controlli tecnici). */
+/** Request category; `null` = not counted (staff access, technical checks). */
 export function categoriaDi(path: string): Categoria | null {
   if (/^\/(login|logout|healthz|robots\.txt|\.well-known)(\/|$)/.test(path)) return null;
   if (path.startsWith('/media/')) return 'media';
@@ -148,7 +148,7 @@ export function categoriaDi(path: string): Categoria | null {
   return 'pagine';
 }
 
-/** Crawler che raccolgono contenuti per addestrare modelli di IA: esclusi del tutto. */
+/** Crawlers that collect content to train AI models: excluded entirely. */
 export const CRAWLER_IA = [
   'GPTBot', 'ChatGPT-User', 'OAI-SearchBot', 'CCBot', 'ClaudeBot', 'Claude-Web', 'anthropic-ai', 'Google-Extended',
   'Applebot-Extended', 'Bytespider', 'PerplexityBot', 'Meta-ExternalAgent', 'FacebookBot', 'Amazonbot', 'cohere-ai',
@@ -204,7 +204,7 @@ export function protezioneScraping(req: Request, res: Response, next: NextFuncti
   res.status(429);
   if (categoria === 'api') return void res.json({ error: messaggio });
   if (categoria === 'media') return void res.type('text/plain').send(messaggio);
-  // Pagina minima, senza consultare database o template
+  // Minimal page, without touching the database or templates
   const titolo = req.t('Troppe richieste');
   res.type('html').send(
     `<!doctype html><html lang="${req.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +

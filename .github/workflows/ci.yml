@@ -1,5 +1,5 @@
-# Controlli automatici a ogni push e pull request: tipi, test unitari,
-# traduzioni complete, build dell'immagine Docker e audit delle dipendenze.
+# Automatic checks on every push and pull request: types, unit tests,
+# complete translations, Docker image build and dependency audit.
 name: CI
 
 on:
@@ -21,9 +21,9 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm run typecheck
       - run: npm test
-      # Segnala le vulnerabilità note nelle dipendenze di produzione. Non bloccante
-      # finché è aperto l'avviso su librsvg in sharp (riguarda solo gli SVG, che
-      # l'app rifiuta prima di elaborarli): rimuovere continue-on-error con sharp >= 0.35.5.
+      # Reports known vulnerabilities in production dependencies. Non-blocking
+      # while the librsvg advisory in sharp is open (it only affects SVGs, which
+      # the app rejects before processing them): remove continue-on-error with sharp >= 0.35.5.
       - run: npm audit --omit=dev --audit-level=high
         continue-on-error: true
 

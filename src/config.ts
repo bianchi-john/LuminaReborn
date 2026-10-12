@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import path from 'path';
 
-/** Radice del progetto: funziona sia da `src/` (tsx) sia da `dist/` (build). */
+/** Project root: works both from `src/` (tsx) and from `dist/` (build). */
 export const ROOT_DIR = path.resolve(__dirname, '..');
 
 function str(name: string, fallback?: string): string {
@@ -38,7 +38,7 @@ const secureCookie = bool('COOKIE_SECURE', isProduction);
 export const config = {
   isProduction,
   port: int('SERVER_PORT', 3000),
-  /** Valore per `app.set('trust proxy')`: numero di proxy fidati davanti all'app. */
+  /** Value for `app.set('trust proxy')`: number of trusted proxies in front of the app. */
   trustProxy: int('TRUST_PROXY', 0),
 
   db: {
@@ -47,7 +47,7 @@ export const config = {
     user: str('DB_USER'),
     password: str('DB_PASSWORD'),
     database: str('DB_NAME', 'luminadb'),
-    /** Database separato che contiene i file delle immagini (originali e versioni ridotte). */
+    /** Separate database holding the image files (originals and resized versions). */
     mediaDatabase: str('MEDIA_DB_NAME', 'luminamedia'),
     connectionLimit: int('DB_CONNECTION_LIMIT', 10),
   },
@@ -56,23 +56,23 @@ export const config = {
   userManagerUrl: str('USER_MANAGER_API_URL', 'http://user-manager-api').replace(/\/+$/, ''),
 
   session: {
-    /** In HTTPS il prefisso __Host- impedisce che il cookie sia impostato da sottodomini o senza Secure. */
+    /** Over HTTPS the __Host- prefix prevents the cookie from being set by subdomains or without Secure. */
     cookieName: secureCookie ? '__Host-lumina_session' : 'lumina_session',
-    /** Da attivare quando il sito è servito in HTTPS (obbligatorio in produzione). */
+    /** Enable when the site is served over HTTPS (mandatory in production). */
     secureCookie,
-    /** Durata massima assoluta della sessione. */
+    /** Absolute maximum session lifetime. */
     maxAgeHours: int('SESSION_MAX_AGE_HOURS', 8),
-    /** Chiusura automatica dopo questo periodo di inattività. */
+    /** Automatic logout after this period of inactivity. */
     idleMinutes: int('SESSION_IDLE_MINUTES', 60),
   },
 
-  /** Contatto per le segnalazioni di vulnerabilità (/.well-known/security.txt, RFC 9116). */
+  /** Contact for vulnerability reports (/.well-known/security.txt, RFC 9116). */
   securityContact: process.env.SECURITY_CONTACT ?? '',
 
-  /** Origini ammesse per le richieste che modificano dati (protezione CSRF). Vuoto = stesso host. */
+  /** Origins allowed for data-modifying requests (CSRF protection). Empty = same host. */
   allowedOrigins: list('ALLOWED_ORIGINS'),
 
-  /** Limiti per indirizzo IP contro la copia automatica del catalogo (src/http/antiscraping.ts). */
+  /** Per-IP limits against automated copying of the catalogue (src/http/antiscraping.ts). */
   scraping: {
     attiva: bool('SCRAPING_PROTEZIONE', true),
     pagineMinuto: int('SCRAPING_PAGINE_MINUTO', 60),
@@ -85,35 +85,35 @@ export const config = {
 
   upload: {
     maxImageBytes: int('MAX_IMAGE_MB', 25) * 1024 * 1024,
-    /** Dimensioni massime dell'immagine decodificata: un file piccolo può nascondere milioni di pixel. */
+    /** Maximum dimensions of the decoded image: a small file can hide millions of pixels. */
     maxImageSide: int('MAX_IMAGE_LATO_PX', 20_000),
     maxImageMegapixels: int('MAX_IMAGE_MEGAPIXEL', 150),
   },
 
   media: {
-    /** Lato lungo (px) della versione pubblica: l'originale resta riservato allo staff. */
+    /** Long side (px) of the public version: the original stays reserved to staff. */
     previewSize: int('MEDIA_PREVIEW_PX', 1280),
     thumbSize: int('MEDIA_THUMB_PX', 480),
-    /** Firma sovrapposta alle anteprime pubbliche (vuoto = nessun watermark). */
+    /** Signature overlaid on public previews (empty = no watermark). */
     watermark: process.env.MEDIA_WATERMARK ?? '© Musei Nazionali di Lucca',
   },
 
   export: {
-    /** Cartella in cui salvare ogni notte l'esportazione Excel del catalogo (vuoto = disattivato). */
+    /** Folder where the nightly Excel export of the catalogue is saved (empty = disabled). */
     dir: process.env.EXPORT_DIR ?? '',
-    /** Ora (0-23, fuso Europe/Rome) dell'esportazione automatica. */
+    /** Hour (0-23, Europe/Rome time zone) of the automatic export. */
     hour: int('EXPORT_HOUR', 2),
     keep: int('EXPORT_KEEP', 14),
   },
 } as const;
 
-// In HTTPS (cioè in un'installazione reale) non si parte con le credenziali dimostrative
+// Over HTTPS (i.e. in a real installation) the app refuses to start with the demo credentials
 const DEMO_PASSWORDS = ['letmein', 'admin', 'password', 'changeme'];
 if (config.session.secureCookie && DEMO_PASSWORDS.includes(config.db.password)) {
-  throw new Error('DB_PASSWORD è ancora la password dimostrativa: impostarne una nuova in .env (vedi docs/SICUREZZA.md)');
+  throw new Error('DB_PASSWORD è ancora la password dimostrativa: impostarne una nuova in .env (vedi docs/SECURITY.md)');
 }
 
-// Il nome del database media viene usato nelle query: solo caratteri sicuri
+// The media database name is used in queries: safe characters only
 for (const name of [config.db.database, config.db.mediaDatabase]) {
   if (!/^[A-Za-z0-9_]+$/.test(name)) throw new Error(`Nome di database non valido: ${name}`);
 }

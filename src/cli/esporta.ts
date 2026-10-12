@@ -1,4 +1,4 @@
-/* Esportazione Excel immediata: `make export` (nel container) o `npx tsx src/cli/esporta.ts`. */
+/* Immediate Excel export: `make export` (inside the container) or `npx tsx src/cli/esporta.ts`. */
 import { config } from '../config';
 import { pool } from '../db/pool';
 import { esportaInCartella } from '../services/export.service';

@@ -2,10 +2,10 @@ import { el } from './api.js';
 import { t } from './i18n.js';
 
 /**
- * Editor di testo formattato minimale. Il server ripulisce comunque l'HTML
- * (sanitize-html) ammettendo solo i tag offerti da questa barra.
- * kind: 'inline' (titoli, riferimenti: una riga, solo formattazione del testo)
- *       'block'  (paragrafi, elenchi, citazioni)
+ * Minimal rich-text editor. The server sanitizes the HTML anyway
+ * (sanitize-html), allowing only the tags offered by this toolbar.
+ * kind: 'inline' (titles, references: one line, text formatting only)
+ *       'block'  (paragraphs, lists, quotations)
  */
 const INLINE_TOOLS = [
   { cmd: 'italic', label: 'Corsivo', html: '<em>I</em>', key: 'i' },
@@ -27,14 +27,14 @@ const BLOCK_TOOLS = [
   ...INLINE_TOOLS.slice(6),
 ];
 
-/** Solo le versioni ridotte delle immagini già caricate nella scheda. */
+/** Only the reduced versions of images already uploaded to the record. */
 const IMMAGINE_INTERNA = /^\/media\/([a-z2-9]{16})\/(anteprima|miniatura)$/;
 
 const escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /**
- * images: funzione che restituisce le immagini della scheda ({ codice, didascalia }):
- * nei campi 'block' si possono inserire solo quelle, scegliendole da un elenco.
+ * images: function returning the record's images ({ codice, didascalia }):
+ * 'block' fields can only insert those, picking them from a list.
  */
 export function createRichText({ kind = 'block', value = '', placeholder = '', labelledBy, onChange, images } = {}) {
   const content = el('div', {
@@ -47,7 +47,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   });
   content.innerHTML = value || '';
 
-  // Selettore delle immagini: un pannello sotto la barra, con le miniature della scheda
+  // Image picker: a panel below the toolbar, with the record's thumbnails
   const picker = el('div', { class: 'rte-picker', hidden: true, role: 'dialog', 'aria-label': t('Inserisci un\'immagine della scheda') });
   let range = null;
   const closePicker = () => {
@@ -90,7 +90,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
     onChange?.();
   };
 
-  /** Toglie le immagini che non appartengono (più) alla scheda, ad esempio dopo averne eliminata una. */
+  /** Removes images that no longer belong to the record, e.g. after one has been deleted. */
   const pruneImages = () => {
     const allowed = new Set((images?.() ?? []).map((i) => i.codice));
     let changed = false;
@@ -129,7 +129,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
     { class: 'rte-toolbar', role: 'toolbar', 'aria-label': t('Formattazione') },
     tools.map((tool) => {
       const b = el('button', { type: 'button', title: t(tool.label), 'aria-label': t(tool.label), onmousedown: (e) => e.preventDefault(), onclick: () => exec(tool.cmd) });
-      b.innerHTML = tool.html; // contenuto statico definito sopra
+      b.innerHTML = tool.html; // static content defined above
       return b;
     }),
   );
@@ -147,7 +147,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
     }
   });
 
-  // Incolla solo testo: evita stili e markup estranei (es. da Word)
+  // Paste plain text only: avoids foreign styles and markup (e.g. from Word)
   content.addEventListener('paste', (event) => {
     event.preventDefault();
     const text = event.clipboardData?.getData('text/plain') ?? '';
@@ -161,7 +161,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
   });
   content.addEventListener('input', () => onChange?.());
 
-  // Niente immagini trascinate dentro dal computer o da altri siti: si usano quelle caricate nella scheda
+  // No images dragged in from the computer or other sites: only those uploaded to the record are used
   content.addEventListener('dragover', (event) => {
     if (event.dataTransfer?.types.includes('Files')) event.preventDefault();
   });
@@ -193,7 +193,7 @@ export function createRichText({ kind = 'block', value = '', placeholder = '', l
       if (!content.textContent.trim() && !content.querySelector('img')) return '';
       return content.innerHTML.trim();
     },
-    /** Da chiamare quando cambia l'elenco delle immagini della scheda. */
+    /** Call when the record's image list changes. */
     refreshImages() {
       if (pruneImages()) onChange?.();
       if (!picker.hidden) openPicker();

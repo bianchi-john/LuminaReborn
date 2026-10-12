@@ -1,6 +1,6 @@
-// Eseguito da MongoDB solo al primo avvio (volume dei dati vuoto): crea l'utente
-// con cui lo user-manager accede al proprio database, con i soli permessi di
-// lettura e scrittura su quel database (minimo privilegio).
+// Run by MongoDB only on first start (empty data volume): creates the user
+// the user-manager connects to its own database with, with read and write
+// permissions on that database only (least privilege).
 const nomeDb = process.env.MONGO_APP_DB || 'user_manager';
 const appDb = db.getSiblingDB(nomeDb);
 appDb.createUser({
@@ -8,4 +8,4 @@ appDb.createUser({
   pwd: process.env.MONGO_APP_PASSWORD,
   roles: [{ role: 'readWrite', db: nomeDb }],
 });
-print(`Utente ${process.env.MONGO_APP_USERNAME} creato su ${nomeDb}`);
+print(`User ${process.env.MONGO_APP_USERNAME} created on ${nomeDb}`);

@@ -1,5 +1,5 @@
-// Galleria della scheda: didascalia, miniatura attiva e link all'originale sincronizzati;
-// ingrandimento della versione pubblica (l'originale è disponibile solo allo staff).
+// Record gallery: caption, active thumbnail and link to the original kept in sync;
+// zoom on the public version (the original is available to staff only).
 const galleria = document.getElementById('galleria');
 
 if (galleria) {

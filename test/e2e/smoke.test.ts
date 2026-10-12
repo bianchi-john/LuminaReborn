@@ -1,7 +1,7 @@
 /**
- * Test end-to-end sull'istanza avviata (dati dimostrativi): `make test-e2e`
- * oppure BASE_URL=http://localhost:3000 npm run test:e2e.
- * Crea una scheda di prova, la porta fino alla pubblicazione e poi la elimina.
+ * End-to-end tests against the running instance (demo data): `make test-e2e`
+ * or BASE_URL=http://localhost:3000 npm run test:e2e.
+ * Creates a test record, takes it all the way to publication and then deletes it.
  */
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
@@ -18,7 +18,7 @@ class Client {
       redirect: 'manual',
       headers: {
         ...(this.cookie ? { Cookie: this.cookie } : {}),
-        // Come un browser: le richieste che modificano dati portano l'origine del sito
+        // Like a browser: requests that modify data carry the site's origin
         ...(method !== 'GET' ? { Origin: BASE } : {}),
         ...(body !== undefined && !(body instanceof Uint8Array) ? { 'Content-Type': 'application/json' } : {}),
         ...headers,
@@ -45,7 +45,7 @@ const getJson = async (url: string): Promise<any> => (await fetch(url)).json();
 
 const PNG_1PX = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
 
-/** Indirizzo pubblico di un'opera trovata con una ricerca (gli indirizzi non sono prevedibili). */
+/** Public URL of a work found via a search (URLs are not predictable). */
 async function unaOpera(q = 'sebastiano'): Promise<string> {
   const html = await (await fetch(`${BASE}/?q=${q}`)).text();
   const percorso = html.match(/href="(\/opere\/[a-z0-9-]+)"/)?.[1];

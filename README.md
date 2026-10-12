@@ -1,59 +1,57 @@
 # LUMiNA
 
-**Catalogo digitale delle opere dei [Musei Nazionali di Lucca](http://www.luccamuseinazionali.it/).**
+**Digital catalogue of the works of the [Musei Nazionali di Lucca](http://www.luccamuseinazionali.it/).**
 
-LUMiNA è un archivio pensato per due pubblici: gli **schedatori e gli storici dell'arte**, che descrivono le opere con schede ricche e collegate tra loro, e i **visitatori**, che consultano il catalogo, cercano e scoprono le relazioni tra opere, autori, luoghi e mostre.
+Cataloguers describe artworks with rich, linked records. Visitors search the catalogue and browse the links between works, authors, places and exhibitions.
 
-> Stato: prototipo avanzato. Il repository include sei schede dimostrative con immagini, caricate automaticamente al primo avvio.
+> Status: advanced prototype. Six demo records with images load automatically on first start.
 
-## Cosa fa
+```mermaid
+flowchart LR
+  V([Visitor]) -->|search, browse| Site
+  C([Cataloguer]) -->|write records| Site
+  A([Admin]) -->|review, publish, export| Site
+  Site[LUMiNA web app] --> DB[(MySQL<br/>catalogue + images)]
+  Site --> UM[user-manager] --> M[(MongoDB<br/>accounts)]
+```
 
-**Per chi consulta**
-- Home con intestazione a tutta pagina sullo sfondo sfocato delle opere; le opere compaiono solo dopo una ricerca.
-- Ricerca semplice con suggerimenti mentre si scrive e ricerca avanzata campo per campo (datazione anche a.C., menu a tendina per classificazione, materiali, ubicazioni…).
-- Indici per autore, materiale, tecnica, ubicazione, provenienza e mostra: ogni voce mostra tutte le opere collegate.
-- Scheda dell'opera con galleria, dati tecnici, bibliografia e un **confronto dimensionale** con la sagoma di una persona (o di una mano, per gli oggetti piccoli), calcolato dalle misure.
-- Interfaccia in **italiano** e **inglese** (scelta automatica dal browser o dal selettore in alto); i contenuti delle schede restano in italiano.
-- Immagini pubbliche in versione ridotta con un piccolo watermark: gli originali ad alta risoluzione restano riservati allo staff.
-- Nessun cookie e nessun tracciamento per chi consulta; pagine Informazioni, Privacy e Termini e condizioni (le ultime due sono bozze da completare).
+## Features
 
-**Per chi cataloga**
-- Editor a sezioni (identificazione, autori, datazione, misure, collocazione, testi, mostre, bibliografia, immagini, riepilogo).
-- Autori, materiali, tecniche, luoghi, mostre e bibliografia sono **voci condivise**: si cerca prima tra quelle esistenti e, prima di crearne una nuova, il sistema avvisa se ce ne sono di simili. Così le schede restano collegate e senza doppioni.
-- Flusso di revisione: bozza → invio con messaggio → approvazione o rifiuto motivato dell'amministratore → pubblicazione. Ogni passaggio resta nello storico.
+| For | What they get |
+|---|---|
+| **Visitors** | Search with suggestions plus advanced search by field · indexes by author, material, place, exhibition… · record page with gallery and a **size comparison** silhouette (person or hand) · Italian/English UI chosen from the browser · watermarked previews only · **no cookies, no tracking** |
+| **Cataloguers** | Tabbed editor · **shared authority entries** (authors, materials, places…) with duplicate warnings · insert the record's own images into long texts · draft → review → publish workflow with comments |
+| **Admins** | Review queue · user management · merge duplicate entries · daily backups · **Excel export** |
 
-**Per chi amministra**
-- Revisione delle schede, gestione degli utenti, vocabolari con unione dei duplicati.
-- Backup automatico giornaliero del database ed **esportazione Excel** del catalogo, leggibile anche senza strumenti tecnici.
+## Try it in 2 minutes
 
-## Provarlo in 2 minuti
-
-Serve solo **Docker** (con Compose v2) e `make`.
+You need **Docker** (Compose v2) and `make`.
 
 ```bash
 git clone https://github.com/bianchi-john/LuminaReborn.git
 cd LuminaReborn
-make up
+make up            # then open http://localhost:3000
 ```
 
-Apri <http://localhost:3000>. Per l'area riservata:
-
-| Ruolo | Utente | Password |
+| Role | User | Password |
 |---|---|---|
-| Amministratore | `admin` | `admin` |
-| Schedatore | `pasquale`, `elena`, `virginia` | `schedatore` |
+| Admin | `admin` | `admin` |
+| Cataloguer | `pasquale`, `elena`, `virginia` | `schedatore` |
 
-Per ricominciare da capo con i dati dimostrativi: `make reset-demo`. Tutti i comandi: `make`.
+`make reset-demo` starts over from the demo data. `make` lists every command.
 
-## Documentazione
+## Documentation
 
 | | |
 |---|---|
-| [docs/INSTALLAZIONE.md](docs/INSTALLAZIONE.md) | Installazione, configurazione, dati dimostrativi, aggiornamenti, backup e ripristino, messa in produzione |
-| [docs/SVILUPPO.md](docs/SVILUPPO.md) | Ambiente di sviluppo con ricarica automatica, architettura, modello dei dati, traduzioni, test |
-| [docs/SICUREZZA.md](docs/SICUREZZA.md) | Misure di sicurezza e conformità (OWASP, GDPR, AgID), verifiche, rischi residui |
-| [docs/MIGLIORAMENTI.md](docs/MIGLIORAMENTI.md) | Proposte per i prossimi sviluppi |
+| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Install, configure, back up, update, go to production |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Dev environment, architecture, data model, search, i18n, tests |
+| [docs/SECURITY.md](docs/SECURITY.md) | Security and compliance (OWASP, GDPR, AgID), checks, residual risks |
+| [docs/IMPROVEMENTS.md](docs/IMPROVEMENTS.md) | Roadmap |
+| [docs/Doc/](docs/Doc/) | **Original documentation** of the website (historical, Italian) |
 
-## Tecnologie
+## Stack
 
-Node.js 22 e TypeScript, Express, pagine renderizzate dal server con EJS, Bootstrap 5; MySQL 8.4 (catalogo e, in un database separato, i file delle immagini); MongoDB con [user-manager](https://github.com/maximemoreillon/user_manager) per gli account. Tutto gira in Docker.
+Node.js 22 + TypeScript, Express, server-rendered EJS, Bootstrap 5 · MySQL 8.4 (catalogue, plus image files in a separate database) · MongoDB with [user-manager](https://github.com/maximemoreillon/user_manager) for accounts · everything in Docker.
+
+Comments and documentation are in English. Identifiers, database names and UI strings keep Italian domain terms (`scheda` = record, `voce` = authority entry, `opera` = work). Italian UI strings double as translation keys.

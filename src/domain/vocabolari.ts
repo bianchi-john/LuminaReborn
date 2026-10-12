@@ -1,13 +1,13 @@
 /**
- * "Voci" condivise tra le schede (authority file): ogni voce esiste una sola volta
- * nel database ed è collegata alle schede tramite la propria tabella TDS.
+ * Authority entries ("voci") shared between records (schede): each entry exists only
+ * once in the database and is linked to records through its own TDS table.
  *
- * - `fields`      colonne della voce (la prima è quella visualizzata e cercata);
- * - `linkFields`  colonne del collegamento: dipendono dalla singola scheda
- *                 (es. "copia da" o "Opera attribuita" per un autore).
+ * - `fields`      the entry's columns (the first is the one displayed and searched);
+ * - `linkFields`  columns of the link: they depend on the individual record
+ *                 (e.g. "copia da" or "Opera attribuita" for an author).
  *
- * Questa definizione guida validazione, salvataggio, ricerca, pagine pubbliche
- * e l'editor (viene esposta al client tramite /api/vocabolari).
+ * This definition drives validation, saving, search, public pages
+ * and the editor (it is exposed to the client via /api/vocabolari).
  */
 
 export type FieldType = 'text' | 'longtext' | 'inline' | 'int';
@@ -46,7 +46,7 @@ export interface VocabDef {
   display: string;
   fields: FieldDef[];
   linkFields: FieldDef[];
-  /** Mostrata negli indici pubblici (le bibliografie sono consultabili ma non elencate in menu). */
+  /** Shown in the public indexes (bibliographies can be browsed but are not listed in the menu). */
   indice: boolean;
 }
 
@@ -190,7 +190,7 @@ export function isVocabKey(value: string): value is VocabKey {
   return (VOCAB_KEYS as readonly string[]).includes(value);
 }
 
-/** Descrizione serializzabile per il client (niente nomi di tabelle). */
+/** Serializable description for the client (no table names). */
 export function vocabolariPublicSchema() {
   return VOCAB_KEYS.map((key) => {
     const v = VOCABOLARI[key];

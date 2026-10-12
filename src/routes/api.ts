@@ -44,7 +44,7 @@ const vocabParam = (req: Request): VocabDef => {
 api.use(express.json({ limit: '2mb' }));
 
 // ---------------------------------------------------------------------------
-// Sessione
+// Session
 // ---------------------------------------------------------------------------
 
 const loginSchema = z.object({
@@ -58,7 +58,7 @@ api.post(
   loginUserLimiter,
   ah(async (req, res) => {
     const { username, password } = loginSchema.parse(req.body);
-    // Messaggio volutamente generico: non rivela se l'utente esiste
+    // Deliberately generic message: does not reveal whether the user exists
     if (!(await eseguiLogin(req, res, username, password))) throw unauthorized('Nome utente o password non corretti');
     res.json({ ok: true });
   }),
@@ -82,8 +82,8 @@ const PASSWORD_RULE = z
   .regex(/^[a-zA-Z0-9]{8,30}$/, 'La password deve avere 8-30 caratteri, solo lettere e numeri (vincolo dello user-manager)');
 
 /**
- * Cambio della propria password: richiede quella attuale, poi chiude tutte le
- * sessioni dell'utente (anche su altri dispositivi) e ne apre una nuova.
+ * Change one's own password: requires the current one, then closes all of the
+ * user's sessions (including on other devices) and opens a new one.
  */
 api.post(
   '/auth/password',
@@ -114,7 +114,7 @@ api.get('/me', (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Catalogo pubblico
+// Public catalogue
 // ---------------------------------------------------------------------------
 
 api.get(
@@ -151,11 +151,11 @@ api.get('/config', (_req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Schede
+// Records
 // ---------------------------------------------------------------------------
 
-// Dettaglio di una scheda per ID: solo per lo staff (editor, area riservata).
-// Il pubblico consulta le pagine /opere/..., con indirizzi non sequenziali.
+// Record detail by ID: staff only (editor, staff area).
+// The public browses the /opere/... pages, with non-sequential addresses.
 api.get(
   '/schede/:id',
   requireUser,
@@ -220,7 +220,7 @@ api.post(
 );
 
 // ---------------------------------------------------------------------------
-// Immagini (caricamento separato: la scheda ne riceve solo gli id)
+// Images (separate upload: the record only receives their ids)
 // ---------------------------------------------------------------------------
 
 api.post(
@@ -235,7 +235,7 @@ api.post(
 );
 
 // ---------------------------------------------------------------------------
-// Voci condivise (autori, materiali, ...)
+// Shared authority entries (authors, materials, ...)
 // ---------------------------------------------------------------------------
 
 api.get(
@@ -244,7 +244,7 @@ api.get(
     const v = vocabParam(req);
     const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 200) : undefined;
     const limit = Number(req.query.limit) || 20;
-    // Gli utenti anonimi vedono solo le voci usate in schede pubblicate
+    // Anonymous users only see authority entries used in published records
     res.json(await voci.listVoci(v, { q, limit, soloPubblicate: !req.user }));
   }),
 );
@@ -271,7 +271,7 @@ api.get(
   ah(async (req, res) => {
     const v = vocabParam(req);
     const voce = await voci.getVoce(v, idParam(req));
-    // Al pubblico solo le voci collegate ad almeno una scheda pubblicata
+    // The public only gets authority entries linked to at least one published record
     if (!req.user && !(await voci.usataInPubblicate(v, voce.id))) throw notFound();
     res.json(voce);
   }),
@@ -309,7 +309,7 @@ api.delete(
   }),
 );
 
-/** Valori già usati per l'ambito storico-culturale (suggerimenti nell'editor). */
+/** Values already used for the historical-cultural context (suggestions in the editor). */
 api.get(
   '/suggerimenti/ambiti',
   requireUser,
@@ -325,7 +325,7 @@ api.get(
 );
 
 // ---------------------------------------------------------------------------
-// Esportazione Excel del catalogo (tutte le schede, per gli amministratori)
+// Excel export of the catalogue (all records, for administrators)
 // ---------------------------------------------------------------------------
 
 api.get(
@@ -344,7 +344,7 @@ api.get(
 );
 
 // ---------------------------------------------------------------------------
-// Utenti (proxy verso lo user-manager, solo amministratori)
+// Users (proxy to the user-manager, administrators only)
 // ---------------------------------------------------------------------------
 
 
@@ -403,7 +403,7 @@ api.put(
   ah(async (req, res) => {
     const { password } = z.object({ password: PASSWORD_RULE }).parse(req.body);
     await userManager.setPassword(req.sessionToken!, req.params.id, password);
-    // La password impostata dall'amministratore chiude le sessioni aperte dell'utente
+    // A password set by an administrator closes the user's open sessions
     await userManager.revokeUserTokens(req.sessionToken!, req.params.id).catch(() => undefined);
     audit('utente.password', req, { destinatario: req.params.id });
     res.json({ ok: true });

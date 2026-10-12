@@ -1,4 +1,4 @@
-/** Classi di oggetti: il valore salvato è il plurale, l'etichetta è mostrata nei form. */
+/** Object classes: the stored value is the plural, the label is shown in forms. */
 export const CLASSIFICAZIONI: { value: string; label: string }[] = [
   { value: 'Dipinti', label: 'Dipinto' },
   { value: 'Mosaici', label: 'Mosaico' },
@@ -39,7 +39,7 @@ export const STATO_LABEL: Record<number, string> = {
   2: 'Pubblicata',
 };
 
-// Valori proposti nei menu delle misure (i dati importati possono contenerne altri, che restano validi)
+// Values offered in the measurement menus (imported data may contain others, which remain valid)
 export const UNITA_MISURA = ['m', 'cm', 'mm', 'μm', 'g', 'hg', 'kg'];
 export const DIREZIONI_MISURA = [
   'altezza',
@@ -59,7 +59,7 @@ export const INTERO_PARZIALE = ['intero', 'parziale'];
 export const MAX_GRUPPI_MISURE = 10;
 export const MAX_MISURE_PER_GRUPPO = 12;
 
-/** Condizione giuridica (sul modello delle voci ICCD "CDGG"). */
+/** Legal status (modelled on the ICCD "CDGG" entries). */
 export const PROPRIETA_GIURIDICA = [
   'Proprietà dello Stato',
   'Proprietà Ente pubblico territoriale',

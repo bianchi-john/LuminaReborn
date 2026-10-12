@@ -4,9 +4,9 @@ import { getFile, Variante, VARIANTI } from '../services/immagini.service';
 import { CODICE_IMMAGINE } from '../util/codici';
 
 /**
- * File delle immagini: /media/:codice/anteprima | miniatura | originale.
- * Il codice è casuale (non sequenziale): le immagini non si possono enumerare.
- * Il pubblico riceve solo le versioni ridotte; l'originale richiede l'accesso.
+ * Image files: /media/:codice/anteprima | miniatura | originale (preview | thumbnail | original).
+ * The code is random (non-sequential): images cannot be enumerated.
+ * The public only gets the resized versions; the original requires login.
  */
 const media = Router();
 

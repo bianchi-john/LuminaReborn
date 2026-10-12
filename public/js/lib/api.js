@@ -1,5 +1,5 @@
-// Utilità condivise: chiamate API, notifiche, finestre di conferma.
-// Nessun HTML costruito con dati non fidati: si usa textContent.
+// Shared utilities: API calls, notifications, confirmation dialogs.
+// No HTML built from untrusted data: textContent is used.
 import { lang, t } from './i18n.js';
 
 export class ApiError extends Error {
@@ -11,7 +11,7 @@ export class ApiError extends Error {
 }
 
 export async function api(method, url, body) {
-  // La lingua della pagina vale anche per i messaggi delle API (nessun cookie)
+  // The page language also applies to API messages (no cookie)
   const init = { method, headers: { Accept: 'application/json', 'Accept-Language': lang }, credentials: 'same-origin' };
   if (body instanceof Blob) {
     init.body = body;
@@ -55,7 +55,7 @@ export function el(tag, attrs = {}, ...children) {
   return node;
 }
 
-/** Testo semplice da un frammento HTML (per etichette di voci con corsivi). */
+/** Plain text from an HTML fragment (for authority entry labels with italics). */
 export function htmlToText(html) {
   const doc = new DOMParser().parseFromString(String(html ?? ''), 'text/html');
   return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
@@ -76,8 +76,8 @@ export function toast(message, variant = 'success') {
 }
 
 /**
- * Finestra di conferma. Con `input` chiede anche un testo (es. motivazione del rifiuto).
- * Restituisce false se annullata, altrimenti true o il testo inserito.
+ * Confirmation dialog. With `input` it also asks for text (e.g. the reason for rejection).
+ * Returns false if cancelled, otherwise true or the text entered.
  */
 export function confirmDialog({ title, body, confirmText = t('Conferma'), variant = 'primary', input }) {
   return new Promise((resolve) => {

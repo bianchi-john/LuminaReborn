@@ -1,4 +1,4 @@
-/* Logger minimale su stdout/stderr in formato leggibile; mai token o password nei messaggi. */
+/* Minimal human-readable logger on stdout/stderr; never tokens or passwords in messages. */
 type Level = 'debug' | 'info' | 'warn' | 'error';
 
 function write(level: Level, message: string, extra?: unknown): void {

@@ -32,7 +32,7 @@ table.addEventListener('click', async (event) => {
   }
 });
 
-// --- Modifica ---------------------------------------------------------------
+// --- Editing ----------------------------------------------------------------
 
 const campi = document.getElementById('voce-campi');
 const voceErrore = document.getElementById('voce-errore');
@@ -74,7 +74,7 @@ document.getElementById('form-voce').addEventListener('submit', async (event) =>
   }
 });
 
-// --- Unione dei duplicati ----------------------------------------------------
+// --- Merging duplicates ------------------------------------------------------
 
 const cerca = document.getElementById('unisci-cerca');
 const scelta = document.getElementById('unisci-scelta');
@@ -117,7 +117,7 @@ document.getElementById('form-unisci').addEventListener('submit', async (event) 
   }
 });
 
-// --- Possibili duplicati: coppie con nomi molto simili, unibili con un clic ----
+// --- Possible duplicates: pairs with very similar names, mergeable in one click
 
 async function caricaDuplicati() {
   let coppie = [];
@@ -130,7 +130,7 @@ async function caricaDuplicati() {
   const box = document.getElementById('duplicati');
   document.getElementById('duplicati-elenco').replaceChildren(
     ...coppie.map(({ a, b, score }) => {
-      // Si conserva la voce più usata
+      // Keep the most used authority entry
       const [da, verso] = a.schede > b.schede ? [b, a] : [a, b];
       const unisci = el('button', {
         type: 'button',

@@ -2,14 +2,14 @@ import { randomInt } from 'crypto';
 import { htmlToText } from './html';
 
 /**
- * Identificativi pubblici non sequenziali e non calcolabili.
+ * Public identifiers that are non-sequential and not guessable.
  *
- * Gli ID numerici del database restano interni (area riservata): nel catalogo
- * pubblico opere e immagini sono raggiungibili solo tramite un codice casuale,
- * quindi non si possono enumerare (/scheda/1, /scheda/2, ...) per copiarle.
+ * Numeric database IDs stay internal (staff area): in the public catalogue,
+ * works and images can only be reached via a random code, so they cannot be
+ * enumerated (/scheda/1, /scheda/2, ...) to copy them.
  */
 
-/** 31 simboli senza caratteri ambigui (0/o, 1/l/i). */
+/** 31 symbols with no ambiguous characters (0/o, 1/l/i). */
 const ALFABETO = 'abcdefghjkmnpqrstuvwxyz23456789';
 
 export const LUNGHEZZA_CODICE_OPERA = 10; // ~49 bit
@@ -24,7 +24,7 @@ export function generaCodice(lunghezza: number): string {
 export const CODICE_OPERA = new RegExp(`^[${ALFABETO}]{${LUNGHEZZA_CODICE_OPERA}}$`);
 export const CODICE_IMMAGINE = new RegExp(`^[${ALFABETO}]{${LUNGHEZZA_CODICE_IMMAGINE}}$`);
 
-/** Prime parole del titolo, senza accenti né punteggiatura (al massimo ~50 caratteri). */
+/** First words of the title, without accents or punctuation (at most ~50 characters). */
 export function slugTitolo(titolo: string): string {
   const parole = htmlToText(titolo)
     .normalize('NFD')
@@ -43,12 +43,12 @@ export function slugTitolo(titolo: string): string {
   return slug || 'opera';
 }
 
-/** Indirizzo pubblico dell'opera: /opere/<prime-parole-del-titolo>-<codice>. */
+/** Public address of a work: /opere/<first-words-of-the-title>-<code>. */
 export function percorsoOpera(titolo: string, codice: string): string {
   return `/opere/${slugTitolo(titolo)}-${codice}`;
 }
 
-/** Estrae il codice dall'ultimo segmento dell'indirizzo; la parte descrittiva è ignorata. */
+/** Extracts the code from the last path segment; the descriptive part is ignored. */
 export function codiceDaPercorso(segmento: string): string | null {
   const codice = segmento.slice(segmento.lastIndexOf('-') + 1);
   return CODICE_OPERA.test(codice) ? codice : null;

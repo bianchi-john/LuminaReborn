@@ -1,7 +1,7 @@
 import { api, confirmDialog, toast } from './lib/api.js';
 import { t } from './lib/i18n.js';
 
-// Logout: il cookie di sessione è httpOnly, quindi va chiuso lato server
+// Logout: the session cookie is httpOnly, so it must be closed server-side
 document.addEventListener('click', async (event) => {
   const logout = event.target.closest('[data-logout]');
   if (!logout) return;
@@ -12,8 +12,8 @@ document.addEventListener('click', async (event) => {
   }
 });
 
-// Lingua scelta con il selettore: viaggia nell'indirizzo (?lang=) invece che in
-// un cookie, quindi va aggiunta ai link interni e ai moduli della pagina.
+// Language chosen with the selector: it travels in the URL (?lang=) rather than in
+// a cookie, so it must be added to the page's internal links and forms.
 const langScelta = new URLSearchParams(window.location.search).get('lang');
 if (langScelta === 'it' || langScelta === 'en') {
   document.querySelectorAll('a[href]').forEach((a) => {
@@ -33,14 +33,14 @@ if (langScelta === 'it' || langScelta === 'en') {
   });
 }
 
-// Moduli inviati automaticamente al cambio di un menu a tendina (es. ordinamento dei risultati)
+// Forms submitted automatically when a drop-down changes (e.g. result sorting)
 document.querySelectorAll('form[data-autosubmit]').forEach((form) => {
   form.addEventListener('change', () => form.submit());
 });
 
 document.querySelectorAll('[data-print]').forEach((btn) => btn.addEventListener('click', () => window.print()));
 
-// Azioni sulle schede (area riservata): invio, ritiro, approvazione, rifiuto, eliminazione
+// Record actions (staff area): submit, withdraw, approve, reject, delete
 const AZIONI = {
   invia: {
     title: 'Inviare in revisione?',
@@ -82,7 +82,7 @@ const AZIONI = {
   },
 };
 
-/** Testi della finestra di conferma nella lingua dell'interfaccia. */
+/** Confirmation dialog texts in the interface language. */
 const tradotta = (cfg) => ({
   ...cfg,
   title: t(cfg.title),
@@ -115,7 +115,7 @@ document.addEventListener('click', async (event) => {
   }
 });
 
-// Cambio della propria password (area riservata)
+// Changing one's own password (staff area)
 const formPassword = document.getElementById('form-password');
 if (formPassword) {
   const errore = document.getElementById('password-errore');

@@ -5,8 +5,8 @@ import { config } from '../config';
 import { forbidden, HttpError } from './errors';
 
 /**
- * Header di sicurezza (OWASP Secure Headers). Nessuno script o stile esterno o
- * inline: tutto è servito da 'self', quindi la CSP può essere restrittiva.
+ * Security headers (OWASP Secure Headers). No external or inline scripts or
+ * styles: everything is served from 'self', so the CSP can be strict.
  */
 export const securityHeaders = helmet({
   contentSecurityPolicy: {
@@ -30,14 +30,14 @@ export const securityHeaders = helmet({
     },
   },
   strictTransportSecurity: config.session.secureCookie ? { maxAge: 31536000, includeSubDomains: true } : false,
-  // Tutte le risorse sono dello stesso sito: l'isolamento cross-origin non rompe nulla
+  // All resources are same-site: cross-origin isolation breaks nothing
   crossOriginEmbedderPolicy: { policy: 'require-corp' },
   crossOriginResourcePolicy: { policy: 'same-origin' },
   referrerPolicy: { policy: 'same-origin' },
   xFrameOptions: { action: 'deny' },
 });
 
-/** Funzionalità del browser non usate dal sito: disattivate esplicitamente. */
+/** Browser features the site does not use: explicitly disabled. */
 export function permissionsPolicy(_req: Request, res: Response, next: NextFunction): void {
   res.setHeader(
     'Permissions-Policy',
@@ -49,8 +49,8 @@ export function permissionsPolicy(_req: Request, res: Response, next: NextFuncti
 }
 
 /**
- * Le pagine dell'area riservata e le risposte a utenti autenticati non devono
- * restare nella cache del browser o di proxy intermedi (OWASP ASVS 8.2.1).
+ * Staff area pages and responses to authenticated users must not remain
+ * in the cache of the browser or intermediate proxies (OWASP ASVS 8.2.1).
  */
 export function noStoreForPrivate(req: Request, res: Response, next: NextFunction): void {
   if (req.user || /^\/(area|login)(\/|$)/.test(req.path)) {
@@ -67,13 +67,13 @@ function expectedHost(req: Request): string | undefined {
 }
 
 /**
- * Protezione CSRF a più livelli per le API autenticate da cookie:
- * 1. cookie di sessione SameSite=Strict;
- * 2. Fetch Metadata: il browser dichiara se la richiesta è cross-site e la si rifiuta;
- * 3. Origin/Referer devono indicare questo sito (obbligatori se c'è una sessione);
- * 4. corpo solo JSON o immagine: un form di un altro sito non può produrli.
+ * Layered CSRF protection for cookie-authenticated APIs:
+ * 1. SameSite=Strict session cookie;
+ * 2. Fetch Metadata: the browser declares whether the request is cross-site, and if so it is rejected;
+ * 3. Origin/Referer must point to this site (mandatory when there is a session);
+ * 4. JSON or image bodies only: a form on another site cannot produce them.
  */
-/** Verifica che una richiesta che modifica dati provenga da questo sito (null = ok). */
+/** Checks that a data-modifying request comes from this site (null = ok). */
 export function verificaOrigine(req: Request): HttpError | null {
   const fetchSite = req.get('sec-fetch-site');
   if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none') return forbidden('Richiesta da un sito non autorizzato');
@@ -89,7 +89,7 @@ export function verificaOrigine(req: Request): HttpError | null {
     const allowed = config.allowedOrigins.length ? config.allowedOrigins.includes(origin.origin) : origin.host === expectedHost(req);
     if (!allowed) return forbidden('Richiesta da un sito non autorizzato');
   } else if (req.cookies?.[config.session.cookieName]) {
-    // Un browser invia sempre Origin con le richieste che modificano dati
+    // A browser always sends Origin with data-modifying requests
     return forbidden('Origine della richiesta mancante');
   }
   return null;
@@ -110,7 +110,7 @@ export function sameOriginOnly(req: Request, _res: Response, next: NextFunction)
 
 const limiterBase = { standardHeaders: 'draft-7' as const, legacyHeaders: false };
 
-/** Tentativi di accesso falliti per indirizzo IP (contro la forza bruta). */
+/** Failed login attempts per IP address (against brute force). */
 export const loginLimiter = rateLimit({
   ...limiterBase,
   windowMs: 15 * 60 * 1000,
@@ -119,7 +119,7 @@ export const loginLimiter = rateLimit({
   message: { error: 'Troppi tentativi di accesso. Riprova tra qualche minuto.' },
 });
 
-/** Tentativi falliti per nome utente (contro attacchi distribuiti su più IP). */
+/** Failed attempts per username (against attacks distributed over many IPs). */
 export const loginUserLimiter = rateLimit({
   ...limiterBase,
   windowMs: 15 * 60 * 1000,

@@ -10,8 +10,8 @@ const TIPI = {
   mostre: { label: 'Mostra', param: 'mostre' },
 };
 
-// Ricerca semplice: suggerimenti di opere e voci mentre si scrive.
-// Scegliendo un'opera si apre la scheda; scegliendo una voce si filtrano le opere collegate.
+// Simple search: suggests works and authority entries while typing.
+// Choosing a work opens its record; choosing an authority entry filters the linked works.
 const q = document.getElementById('q');
 if (q) {
   attachAutocomplete(q, {
@@ -36,7 +36,7 @@ if (q) {
   });
 }
 
-// Ricerca avanzata: suggerimenti sui campi testuali di autore e mostra
+// Advanced search: suggestions on the free-text author and exhibition fields
 document.querySelectorAll('input[data-suggest]').forEach((input) => {
   const tipo = input.dataset.suggest;
   attachAutocomplete(input, {
@@ -50,9 +50,9 @@ document.querySelectorAll('input[data-suggest]').forEach((input) => {
 });
 
 
-// Sfondo dell'intestazione: le copertine sfocate si alternano con una dissolvenza
-// (ordine casuale scelto dal server a ogni visita). Niente animazione se l'utente
-// ha chiesto al sistema di ridurre il movimento.
+// Header background: the blurred covers alternate with a cross-fade
+// (random order chosen by the server on each visit). No animation if the user
+// has asked the system to reduce motion.
 const sfondo = document.querySelector('[data-hero-sfondo]');
 const immagini = sfondo ? [...sfondo.querySelectorAll('img')] : [];
 if (immagini.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -60,7 +60,7 @@ if (immagini.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)'
   setInterval(() => {
     if (document.hidden) return;
     const prossima = (corrente + 1) % immagini.length;
-    // Passa alla successiva solo quando è già caricata, per evitare lampi vuoti
+    // Move to the next one only once it has loaded, to avoid blank flashes
     if (!immagini[prossima].complete) {
       immagini[prossima].loading = 'eager';
       return;

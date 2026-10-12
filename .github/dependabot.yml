@@ -1,4 +1,4 @@
-# Aggiornamenti di sicurezza automatici: dipendenze npm, immagini Docker e azioni della CI
+# Automatic security updates: npm dependencies, Docker images and CI actions
 version: 2
 updates:
   - package-ecosystem: npm

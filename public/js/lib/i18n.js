@@ -1,5 +1,5 @@
-// Traduzioni per gli script del browser: il server incorpora nella pagina il
-// dizionario della lingua corrente (vuoto in italiano, che è la lingua delle chiavi).
+// Translations for browser scripts: the server embeds the current language's
+// dictionary in the page (empty for Italian, which is the language of the keys).
 const dict = JSON.parse(document.getElementById('i18n')?.textContent || '{}');
 
 export const lang = document.documentElement.lang || 'it';

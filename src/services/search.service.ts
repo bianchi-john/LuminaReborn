@@ -9,17 +9,17 @@ import { escapeLike } from '../util/sql';
 import { listVoci } from './vocabolari.service';
 
 /**
- * Ricerca nel catalogo pubblico (solo schede pubblicate).
+ * Search in the public catalogue (published records only).
  *
- * Ricerca semplice (`q`), per requisito, nei campi: titolo, autore, classificazione,
- * commento storico-critico, descrizione sintetica, ubicazione, provenienza,
- * vicende collezionistiche. Ogni parola deve comparire in almeno uno di questi
- * campi; i risultati sono ordinati per rilevanza (titolo e autore pesano di più).
- * Maiuscole e accenti non contano (collation del database) e singolare/plurale
- * sono equivalenti ("dipinto" trova "dipinti").
+ * Simple search (`q`), as required, across the fields: title, author, classification,
+ * historical-critical commentary, short description, location, provenance,
+ * collection history. Every word must appear in at least one of these
+ * fields; results are ordered by relevance (title and author weigh more).
+ * Case and accents do not matter (database collation) and singular/plural
+ * are equivalent ("dipinto" finds "dipinti").
  *
- * Ricerca avanzata: un criterio per campo, tutti in AND.
- * Tutti i valori sono passati come parametri: niente SQL costruito con l'input.
+ * Advanced search: one criterion per field, all ANDed together.
+ * All values are passed as parameters: no SQL built from the input.
  */
 
 const text = optText(200);
@@ -59,7 +59,7 @@ export const searchQuerySchema = z.object({
   ...vocabIdShape,
   ordina: z.enum(['rilevanza', 'titolo', 'data', 'recenti']).optional().catch(undefined),
   pagina: z.coerce.number().int().min(1).max(10_000).catch(1),
-  // Limite basso: scaricare tutto il catalogo richiede molte richieste (vedi protezione anti-scraping)
+  // Low limit: downloading the whole catalogue takes many requests (see anti-scraping protection)
   per_pagina: z.coerce.number().int().min(1).max(48).catch(24),
 });
 
@@ -87,7 +87,7 @@ class Where {
     this.params.push(...params);
   }
 
-  /** EXISTS su una voce collegata (tabelle dalla configurazione statica). */
+  /** EXISTS on a linked authority entry (tables from the static configuration). */
   voce(key: VocabKey, cond: string, ...params: unknown[]) {
     this.add(existsVoce(key, cond), ...params);
   }
@@ -105,9 +105,9 @@ function existsVoce(key: VocabKey, cond: string): string {
 const like = (value: string) => `%${escapeLike(value)}%`;
 
 /**
- * Parole della ricerca semplice. Per le parole lunghe che finiscono in vocale si
- * toglie la vocale finale: singolare e plurale italiani coincidono ("croce" → "croc"
- * trova "croce" e "croci"; "dipinto" → "dipint").
+ * Words of the simple search. For long words ending in a vowel the final vowel
+ * is dropped, so Italian singular and plural match ("croce" → "croc"
+ * finds "croce" and "croci"; "dipinto" → "dipint").
  */
 export function searchTerms(q: string): string[] {
   return q
@@ -118,13 +118,13 @@ export function searchTerms(q: string): string[] {
     .map((t) => (t.length >= 5 && /[aeiouàèéìòù]$/i.test(t) ? t.slice(0, -1) : t));
 }
 
-/** Classificazioni la cui etichetta o valore contiene la parola (es. "dipint" → "Dipinti"). */
+/** Classifications whose label or value contains the word (e.g. "dipint" → "Dipinti"). */
 function classificazioniPer(term: string): string[] {
   const n = normalize(term);
   return CLASSIFICAZIONI.filter((c) => normalize(c.label).includes(n) || normalize(c.value).includes(n)).map((c) => c.value);
 }
 
-/** Condizione e peso per ciascun campo della ricerca semplice. */
+/** Condition and weight for each simple-search field. */
 const CAMPI_GENERICI: { peso: number; cond: string }[] = [
   { peso: 10, cond: 's.titolo_testo LIKE ?' },
   { peso: 8, cond: existsVoce('autori', 'e.nome LIKE ?') },
@@ -198,11 +198,11 @@ export function buildWhere(f: SearchQuery): { where: Where; score: { sql: string
   }
 
   if (f.ambito) w.add('EXISTS (SELECT 1 FROM cronologie c WHERE c.id_scheda = s.id AND c.ambito_storico LIKE ?)', like(f.ambito));
-  // Nel form l'anno è positivo e l'era (a.C./d.C.) è un campo a parte
+  // In the form the year is positive and the era (BC/AD) is a separate field
   const annoDa = f.anno_da !== null && f.era_da === 'ac' ? -Math.abs(f.anno_da) : f.anno_da;
   const annoA = f.anno_a !== null && f.era_a === 'ac' ? -Math.abs(f.anno_a) : f.anno_a;
   if (annoDa !== null || annoA !== null) {
-    // Sovrapposizione tra l'intervallo cercato e la datazione dell'opera
+    // Overlap between the searched range and the artwork's dating
     const conds = ['(c.anno_data_da IS NOT NULL OR c.anno_data_a IS NOT NULL)'];
     const params: unknown[] = [];
     if (annoDa !== null) {
@@ -291,12 +291,12 @@ export async function search(f: SearchQuery) {
 export type SearchResult = Awaited<ReturnType<typeof search>>;
 
 // ---------------------------------------------------------------------------
-// Suggerimenti
+// Suggestions
 // ---------------------------------------------------------------------------
 
 const SUGGEST_VOCI: VocabKey[] = ['autori', 'ubicazioni', 'materiali', 'tecniche', 'mostre'];
 
-/** Suggerimenti mentre si scrive nella ricerca: opere e voci usate in schede pubblicate. */
+/** Search-as-you-type suggestions: artworks and entries used in published records. */
 export async function suggerimenti(q: string) {
   const term = q.trim().slice(0, 100);
   if (term.length < 2) return { opere: [], voci: [] };
@@ -317,7 +317,7 @@ export async function suggerimenti(q: string) {
   };
 }
 
-/** Per ricerche senza risultati: nomi simili (errori di battitura) tra voci e titoli pubblicati. */
+/** For searches with no results: similar names (typos) among published entries and titles. */
 async function forseCercavi(q: string): Promise<string[]> {
   const [titoli, ...voci] = await Promise.all([
     select<{ id: number; titolo_testo: string }>(pool, 'SELECT id, titolo_testo FROM schede WHERE stato = 2'),
@@ -325,7 +325,7 @@ async function forseCercavi(q: string): Promise<string[]> {
   ]);
   const candidati = [
     ...voci.flatMap((items, i) => items.map((item) => ({ id: item.id, label: normalize(String(item[VOCABOLARI[SUGGEST_VOCI[i]].display])) }))),
-    // anche le singole parole dei titoli
+    // also the individual words of titles
     ...titoli.flatMap((t) => normalize(t.titolo_testo).split(' ').filter((w) => w.length >= 4).map((w) => ({ id: t.id, label: w }))),
   ];
   const unici = [...new Map(candidati.map((c) => [c.label, c])).values()];
@@ -333,7 +333,7 @@ async function forseCercavi(q: string): Promise<string[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Opzioni per i menu a tendina della ricerca avanzata
+// Options for the advanced search drop-down menus
 // ---------------------------------------------------------------------------
 
 export async function opzioniRicerca() {

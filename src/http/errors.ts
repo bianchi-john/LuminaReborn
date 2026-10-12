@@ -8,7 +8,7 @@ export class HttpError extends Error {
     public readonly status: number,
     message: string,
     public readonly details?: unknown,
-    /** Valori per i segnaposto {nome} del messaggio, che resta traducibile. */
+    /** Values for the {name} placeholders in the message, which stays translatable. */
     public readonly params?: Record<string, string | number>,
   ) {
     super(message);
@@ -21,7 +21,7 @@ export const forbidden = (message = 'Operazione non consentita') => new HttpErro
 export const notFound = (message = 'Risorsa non trovata') => new HttpError(404, message);
 export const conflict = (message: string) => new HttpError(409, message);
 
-/** Express 4 non gestisce le promise rifiutate: inoltra l'errore al gestore centrale. */
+/** Express 4 does not handle rejected promises: forwards the error to the central handler. */
 export const ah =
   <Req extends Request = Request>(fn: (req: Req, res: Response, next: NextFunction) => Promise<unknown>): RequestHandler =>
   (req, res, next) => {
@@ -41,14 +41,14 @@ function toHttpError(error: unknown): HttpError {
   return new HttpError(500, 'Errore interno del server');
 }
 
-/** Risposta JSON per le API, pagina di errore per il resto. Lo stack non esce mai dal server. */
+/** JSON response for the API, error page for everything else. The stack trace never leaves the server. */
 export function errorHandler(error: unknown, req: Request, res: Response, _next: NextFunction): void {
   const httpError = toHttpError(error);
   if (httpError.status >= 500) logger.error(`${req.method} ${req.originalUrl.split('?')[0]}`, error);
   if (httpError.status === 403) audit('accesso.negato', req, { motivo: httpError.message });
 
   if (res.headersSent) return;
-  // Messaggi tradotti nella lingua dell'interfaccia (se disponibile)
+  // Messages translated into the interface language (if available)
   const t = req.t ?? ((s: string) => s);
   const message = t(httpError.message, httpError.params);
   const details = Array.isArray(httpError.details)

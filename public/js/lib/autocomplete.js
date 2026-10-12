@@ -3,11 +3,11 @@ import { debounce, el } from './api.js';
 let counter = 0;
 
 /**
- * Autocompletamento accessibile (pattern combobox ARIA) su un <input> o su un
- * elemento contenteditable (editor di testo formattato).
+ * Accessible autocomplete (ARIA combobox pattern) on an <input> or a
+ * contenteditable element (rich-text editor).
  * - fetchItems(q): Promise<item[]>
- * - label(item): testo da mostrare
- * - detail(item): testo secondario facoltativo
+ * - label(item): text to display
+ * - detail(item): optional secondary text
  * - onSelect(item, label)
  */
 export function attachAutocomplete(input, { fetchItems, label, detail, onSelect, minChars = 1 }) {

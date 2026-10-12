@@ -21,7 +21,7 @@ const { version } = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json
 const TZ = 'Europe/Rome';
 const classLabel = new Map(CLASSIFICAZIONI.map((c) => [c.value, c.label]));
 
-/** Funzioni disponibili in tutti i template EJS come `h.*` (dipendono dalla lingua). */
+/** Helpers available in every EJS template as `h.*` (they depend on the language). */
 function viewHelpers(lang: Lang, t: TFunction) {
   const locale = lang === 'en' ? 'en-GB' : 'it-IT';
   const dateFmt = new Intl.DateTimeFormat(locale, { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -36,13 +36,13 @@ function viewHelpers(lang: Lang, t: TFunction) {
       return [g, m].every((x) => x !== null && x !== undefined) ? `${g}/${m}/${y}` : m ? `${m}/${y}` : y;
     },
     text: htmlToText,
-    /** HTML ripulito anche in uscita: i dati importati non sono mai passati dal sanitizer. */
+    /** HTML is sanitized on output too: imported data never went through the sanitizer. */
     block: (html: string | null | undefined) => cleanHtml(html, 'block') ?? '',
     inline: (html: string | null | undefined) => cleanHtml(html, 'inline') ?? '',
-    /** Etichetta della classificazione nella lingua dell'interfaccia (nel database resta in italiano). */
+    /** Classification label in the interface language (it stays in Italian in the database). */
     classLabel: (v: string | null) => (v ? t(classLabel.get(v) ?? v) : ''),
     statoLabel: (s: number) => t(STATO_LABEL[s] ?? ''),
-    /** Querystring corrente con alcuni parametri sostituiti (paginazione, filtri, lingua). */
+    /** Current query string with some parameters replaced (pagination, filters, language). */
     qs: (query: Record<string, unknown>, overrides: Record<string, unknown>) => {
       const params = new URLSearchParams();
       for (const [k, v] of Object.entries({ ...query, ...overrides })) {
@@ -52,12 +52,12 @@ function viewHelpers(lang: Lang, t: TFunction) {
       return s ? `?${s}` : '?';
     },
     num: (n: number | null | undefined) => (n === null || n === undefined ? '' : n.toLocaleString(locale, { maximumFractionDigits: 3 })),
-    /** "1 opera" / "3 opere" */
+    /** "1 work" / "3 works" */
     plural: (n: number, one: string, many: string) => t(n === 1 ? one : many, { n }),
   };
 }
 
-/** Dizionari per gli script del browser: solo le chiavi che usano davvero. */
+/** Dictionaries for browser scripts: only the keys they actually use. */
 function dizionariClient(): Record<Lang, string> {
   const chiavi = chiaviClient(ROOT_DIR);
   return Object.fromEntries(
@@ -77,7 +77,7 @@ export function createApp(): Application {
   app.set('view engine', 'ejs');
   if (config.isProduction) app.set('view cache', true);
 
-  // Valori predefiniti: EJS solleva ReferenceError sulle variabili non definite
+  // Defaults: EJS throws ReferenceError on undefined variables
   app.locals.user = null;
   app.locals.nav = '';
   app.locals.title = '';
@@ -99,7 +99,7 @@ export function createApp(): Application {
   app.use('/vendor/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules', 'bootstrap', 'dist'), staticOptions));
   app.get('/favicon.ico', (_req, res) => res.redirect(301, '/static/img/favicon.png'));
   app.get('/healthz', (_req, res) => res.json({ ok: true }));
-  // Canale per la segnalazione responsabile di vulnerabilità (RFC 9116)
+  // Channel for responsible vulnerability disclosure (RFC 9116)
   app.get('/.well-known/security.txt', (_req, res) => {
     if (!config.securityContact) return void res.status(404).type('text/plain').send('Not found');
     const scadenza = new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString();
@@ -115,7 +115,7 @@ export function createApp(): Application {
     res.locals.query = req.query;
     res.locals.user = req.user ?? null;
     res.locals.h = viewHelpers(req.lang, req.t);
-    // Dizionario per gli script del browser (vuoto in italiano)
+    // Dictionary for browser scripts (empty in Italian)
     res.locals.dizionarioClient = dizionari[req.lang];
     next();
   });

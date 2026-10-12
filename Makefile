@@ -1,75 +1,75 @@
-# Comandi rapidi. `make` da solo mostra l'elenco.
+# Shortcuts. `make` on its own shows the list.
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f docker-compose.yml -f docker-compose.dev.yml
-# Node in un container: non serve installarlo sulla macchina
-# (node_modules in un volume Docker: niente file di root nella cartella del progetto)
+# Node in a container: no need to install it on the machine
+# (node_modules in a Docker volume: no root-owned files in the project folder)
 NODE        := docker run --rm -v "$(CURDIR)":/app -v lumina-node-modules:/app/node_modules -w /app node:22-alpine
 
 .DEFAULT_GOAL := help
 .PHONY: help setup up down restart logs ps dev reset-demo backup restore export test typecheck test-e2e grant-media mongo-auth db verifica-produzione scansione-sicurezza
 
-help: ## Mostra i comandi disponibili
+help: ## Show the available commands
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
-setup: ## Prepara .env, la rete Docker e le cartelle dei backup (prima installazione)
-	@test -f .env || (cp .env.example .env && chmod 600 .env && echo "Creato .env da .env.example: cambiare password e JWT_SECRET")
+setup: ## Prepare .env, the Docker network and the backup folders (first install)
+	@test -f .env || (cp .env.example .env && chmod 600 .env && echo "Created .env from .env.example: change the passwords and JWT_SECRET")
 	@docker network inspect extern >/dev/null 2>&1 || docker network create extern >/dev/null
 	@mkdir -p backups/db backups/excel
 
-up: setup ## Avvia il sito (al primo avvio carica le opere dimostrative)
+up: setup ## Start the site (loads the demo works on first start)
 	$(COMPOSE) up -d --build
-	@echo "Sito: http://localhost:$${APP_PORT:-3000}"
+	@echo "Site: http://localhost:$${APP_PORT:-3000}"
 
-down: ## Ferma i container (i dati restano)
+down: ## Stop the containers (data is kept)
 	$(COMPOSE) down
 
-restart: ## Riavvia l'applicazione
+restart: ## Restart the application
 	$(COMPOSE) restart nodeapp
 
-logs: ## Log dell'applicazione in tempo reale
+logs: ## Follow the application logs
 	$(COMPOSE) logs -f nodeapp
 
-ps: ## Stato dei servizi
+ps: ## Service status
 	$(COMPOSE) ps
 
-dev: setup ## Sviluppo con ricarica automatica del codice
+dev: setup ## Development with automatic code reload
 	$(COMPOSE_DEV) up --build
 
-reset-demo: setup ## Cancella tutti i dati e ricarica le opere e gli utenti dimostrativi
+reset-demo: setup ## Delete all data and reload the demo works and demo users
 	./scripts/demo-reset.sh
 
-backup: setup ## Backup immediato del database in backups/db
+backup: setup ## Back up the database now to backups/db
 	$(COMPOSE) run --rm backup once
 
-restore: ## Ripristina un backup: make restore FILE=backups/db/lumina-....sql.gz
+restore: ## Restore a backup: make restore FILE=backups/db/lumina-....sql.gz
 	./scripts/restore.sh "$(FILE)"
 
-export: ## Esporta subito il catalogo in Excel in backups/excel
+export: ## Export the catalogue to Excel now, in backups/excel
 	$(COMPOSE) exec nodeapp node dist/cli/esporta.js
 
-grant-media: ## Crea il database delle immagini su installazioni precedenti
+grant-media: ## Create the image database on older installations
 	./scripts/grant-media.sh
 
-mongo-auth: ## Attiva l'autenticazione MongoDB su installazioni precedenti
+mongo-auth: ## Enable MongoDB authentication on older installations
 	./scripts/mongo-auth.sh
 
-verifica-produzione: ## Controlla che .env sia adatto alla produzione (password, HTTPS, ...)
+verifica-produzione: ## Check that .env is fit for production (passwords, HTTPS, ...)
 	./scripts/verifica-produzione.sh
 
-scansione-sicurezza: ## Scansione OWASP ZAP (baseline) dell'istanza avviata, rapporto in backups/zap
+scansione-sicurezza: ## OWASP ZAP (baseline) scan of the running instance, report in backups/zap
 	@mkdir -p backups/zap && chmod 777 backups/zap && cp scripts/zap-regole.conf backups/zap/
 	docker run --rm --network host -v "$(CURDIR)/backups/zap":/zap/wrk ghcr.io/zaproxy/zaproxy:stable \
 		zap-baseline.py -t $${BASE_URL:-http://localhost:3000} -c zap-regole.conf -r zap-rapporto.html
 
-db: ## Console MySQL
+db: ## MySQL console
 	$(COMPOSE) exec mysqldb sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
 
-typecheck: ## Controllo dei tipi TypeScript
+typecheck: ## TypeScript type check
 	$(NODE) sh -c "npm ci --no-audit --no-fund --silent && npm run typecheck"
 
-test: ## Test unitari
+test: ## Unit tests
 	$(NODE) sh -c "npm ci --no-audit --no-fund --silent && npm test"
 
-test-e2e: ## Test end-to-end sull'istanza avviata (BASE_URL, default http://localhost:3000)
+test-e2e: ## End-to-end tests against the running instance (BASE_URL, default http://localhost:3000)
 	docker run --rm --network host -e BASE_URL=$${BASE_URL:-http://localhost:3000} -v "$(CURDIR)":/app -v lumina-node-modules:/app/node_modules -w /app node:22-alpine \
 		sh -c "npm ci --no-audit --no-fund --silent && npm run test:e2e"

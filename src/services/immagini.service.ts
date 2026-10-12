@@ -9,13 +9,13 @@ import { computePermessi } from './schede.service';
 import { generaCodice, LUNGHEZZA_CODICE_IMMAGINE } from '../util/codici';
 
 /**
- * Immagini delle schede.
+ * Record (scheda) images.
  *
- * - `immagini` (database principale): a quale scheda appartiene, ordine, didascalia, dimensioni;
- * - `immagini_file` (database media separato): i byte, in tre varianti:
- *     originale  il file caricato, intatto: solo per utenti autenticati che possono vedere la scheda
- *     anteprima  WebP ridotto (lato lungo MEDIA_PREVIEW_PX), senza metadati: è ciò che vede il pubblico
- *     miniatura  WebP piccolo per elenchi e risultati
+ * - `immagini` (main database): which record it belongs to, order, caption, dimensions;
+ * - `immagini_file` (separate media database): the bytes, in three variants:
+ *     originale  original: the uploaded file, untouched; only for authenticated users who can see the record
+ *     anteprima  preview: downscaled WebP (long side MEDIA_PREVIEW_PX), no metadata; what the public sees
+ *     miniatura  thumbnail: small WebP for lists and results
  */
 
 export type Variante = 'originale' | 'anteprima' | 'miniatura';
@@ -23,7 +23,7 @@ export const VARIANTI: Variante[] = ['originale', 'anteprima', 'miniatura'];
 
 const MEDIA_TABLE = () => `\`${config.db.mediaDatabase}\`.immagini_file`;
 
-/** Formati accettati, riconosciuti dai primi byte del file (mai dall'estensione). Niente SVG: può contenere script. */
+/** Accepted formats, detected from the file's first bytes (never from the extension). No SVG: it can contain scripts. */
 export function detectImageType(buf: Buffer): string | null {
   if (buf.length < 12) return null;
   if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return 'image/jpeg';
@@ -44,16 +44,16 @@ export interface FileVariante {
   dati: Buffer;
 }
 
-/** Limite contro le "decompression bomb": immagini oltre 200 megapixel vengono rifiutate. */
-// Margine sul limite configurato: il controllo esplicito in elaboraImmagine dà un messaggio chiaro
+/** Guard against "decompression bombs": images over 200 megapixels are rejected. */
+// Headroom over the configured limit: the explicit check in elaboraImmagine gives a clear message
 const MAX_PIXELS = config.upload.maxImageMegapixels * 1_000_000 + 1;
 
 const escapeXml = (s: string) => s.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c] ?? c);
 
 /**
- * Watermark piccolo in basso a destra: testo chiaro semitrasparente con un
- * contorno scuro leggero, leggibile su fondi chiari e scuri. SVG generato qui
- * (mai da input dell'utente) e disegnato da sharp.
+ * Small watermark in the bottom-right corner: light semi-transparent text with a
+ * thin dark outline, readable on both light and dark backgrounds. The SVG is
+ * generated here (never from user input) and rendered by sharp.
  */
 export function watermarkSvg(width: number, height: number, testo: string): Buffer {
   const size = Math.max(11, Math.round(Math.min(width, height * 1.4) * 0.022));
@@ -69,7 +69,7 @@ export function watermarkSvg(width: number, height: number, testo: string): Buff
 }
 
 async function derivato(buf: Buffer, size: number, quality: number, variante: Variante, watermark = ''): Promise<FileVariante> {
-  // rotate() applica l'orientamento EXIF; l'output non contiene metadati (GPS, fotocamera...)
+  // rotate() applies the EXIF orientation; the output contains no metadata (GPS, camera...)
   const ridotta = await sharp(buf, { limitInputPixels: MAX_PIXELS })
     .rotate()
     .resize({ width: size, height: size, fit: 'inside', withoutEnlargement: true })
@@ -80,12 +80,12 @@ async function derivato(buf: Buffer, size: number, quality: number, variante: Va
   return { variante, mime: 'image/webp', larghezza: info.width, altezza: info.height, dati: data };
 }
 
-/** Anteprima pubblica (ridotta, con watermark) a partire dall'originale. */
+/** Public preview (downscaled, watermarked) from the original. */
 export function creaAnteprima(originale: Buffer): Promise<FileVariante> {
   return derivato(originale, config.media.previewSize, 82, 'anteprima', config.media.watermark);
 }
 
-/** Limiti sulle dimensioni in pixel (oltre a quello sul peso del file). */
+/** Limits on pixel dimensions (in addition to the file size limit). */
 export function verificaDimensioni(larghezza: number, altezza: number): void {
   const { maxImageSide: lato, maxImageMegapixels: mp } = config.upload;
   if (larghezza > lato || altezza > lato) {
@@ -96,7 +96,7 @@ export function verificaDimensioni(larghezza: number, altezza: number): void {
   }
 }
 
-/** Verifica il file e produce le tre varianti da salvare. */
+/** Validates the file and produces the three variants to store. */
 export async function elaboraImmagine(buf: Buffer): Promise<FileVariante[]> {
   const mime = detectImageType(buf);
   if (!mime) throw badRequest('Formato non supportato: caricare un file JPEG, PNG, WebP, GIF o TIFF');
@@ -113,13 +113,13 @@ export async function elaboraImmagine(buf: Buffer): Promise<FileVariante[]> {
   try {
     ridotte = [await creaAnteprima(buf), await derivato(buf, config.media.thumbSize, 76, 'miniatura')];
   } catch {
-    // Intestazione leggibile ma contenuto corrotto: errore dell'utente, non del server
+    // Readable header but corrupt content: a user error, not a server error
     throw badRequest('Il file immagine è danneggiato o troppo grande');
   }
   return [{ variante: 'originale', mime, larghezza: ruotata ? meta.height : meta.width, altezza: ruotata ? meta.width : meta.height, dati: buf }, ...ridotte];
 }
 
-/** Salva i file di un'immagine nel database media (stessa connessione: stessa transazione). */
+/** Stores an image's files in the media database (same connection: same transaction). */
 export async function salvaFile(db: Db, idImmagine: number, files: FileVariante[]): Promise<void> {
   for (const f of files) {
     await execute(
@@ -157,15 +157,15 @@ export async function uploadImmagine(
 export interface ImmagineFile {
   mime: string;
   dati: Buffer;
-  /** Visibile senza autenticazione (scheda pubblicata, variante ridotta) */
+  /** Visible without authentication (published record, downscaled variant) */
   pubblica: boolean;
   etag: string;
 }
 
 /**
- * Restituisce un file solo a chi può vederlo:
- * - anteprima e miniatura: a tutti se la scheda è pubblicata, altrimenti a chi può vedere la scheda;
- * - originale: solo a utenti autenticati che possono vedere la scheda.
+ * Returns a file only to those allowed to see it:
+ * - preview and thumbnail: to everyone if the record is published, otherwise to whoever can see the record;
+ * - original: only to authenticated users who can see the record.
  */
 export async function getFile(codice: string, variante: Variante, user?: SessionUser): Promise<ImmagineFile> {
   const row = await selectOne<{
@@ -188,7 +188,7 @@ export async function getFile(codice: string, variante: Variante, user?: Session
 
   let visibile: boolean;
   if (row.id_scheda === null) {
-    // Caricata ma non ancora salvata in una scheda: solo chi l'ha caricata
+    // Uploaded but not yet saved in a record: only the uploader
     visibile = !!user && (row.uploaded_by === user.id || user.isAdmin);
   } else {
     visibile = computePermessi({ stato: row.stato ?? 0, created_by: row.created_by }, user, !!row.accreditato).visualizza;
@@ -209,7 +209,7 @@ export async function getFile(codice: string, variante: Variante, user?: Session
   };
 }
 
-/** Copertine di schede pubblicate in ordine casuale (sfondo dell'intestazione della home). */
+/** Covers of published records in random order (home page header background). */
 export async function copertineCasuali(limite: number): Promise<string[]> {
   const rows = await select<{ codice: string }>(
     pool,
@@ -220,7 +220,7 @@ export async function copertineCasuali(limite: number): Promise<string[]> {
   return rows.map((r) => r.codice);
 }
 
-/** Elimina le immagini caricate ma mai collegate a una scheda (editor chiuso senza salvare). */
+/** Deletes images uploaded but never linked to a record (editor closed without saving). */
 export async function pulisciImmaginiOrfane(): Promise<void> {
   try {
     const res = await execute(pool, 'DELETE FROM immagini WHERE id_scheda IS NULL AND created_at < NOW() - INTERVAL 1 DAY');

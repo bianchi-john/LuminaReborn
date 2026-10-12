@@ -3,10 +3,10 @@ import { HttpError } from '../http/errors';
 import { logger } from '../logger';
 
 /**
- * Client dello user-manager (moreillon/user-manager-mongoose).
- * Il JWT viaggia sempre nell'header Authorization, mai in query string
- * (finirebbe nei log). Le risposte vengono ripulite dai campi sensibili:
- * `/users/self` restituisce anche l'hash della password.
+ * Client for the user-manager (moreillon/user-manager-mongoose).
+ * The JWT is always sent in the Authorization header, never in the query string
+ * (it would end up in logs). Responses are stripped of sensitive fields:
+ * `/users/self` also returns the password hash.
  */
 
 export interface RemoteUser {
@@ -55,7 +55,7 @@ async function failure(res: Response, fallback: string): Promise<HttpError> {
   return new HttpError(status, text && status === 400 ? `${fallback}: ${text}` : fallback);
 }
 
-/** Restituisce il JWT oppure null se le credenziali non sono valide. */
+/** Returns the JWT, or null if the credentials are invalid. */
 export async function login(username: string, password: string): Promise<string | null> {
   const res = await call('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
   if (res.status === 400 || res.status === 401 || res.status === 403) return null;
@@ -64,7 +64,7 @@ export async function login(username: string, password: string): Promise<string 
   return data.jwt ?? null;
 }
 
-/** Utente associato al token, oppure null se il token non è (più) valido. */
+/** User associated with the token, or null if the token is not (or no longer) valid. */
 export async function getSelf(token: string): Promise<RemoteUser | null> {
   const res = await call('/users/self', { token });
   if (res.status === 401 || res.status === 403 || res.status === 404) return null;
@@ -72,13 +72,13 @@ export async function getSelf(token: string): Promise<RemoteUser | null> {
   return pickUser((await res.json()) as Record<string, unknown>);
 }
 
-/** Invalida tutti i token dell'utente (logout lato server). */
+/** Invalidates all of the user's tokens (server-side logout). */
 export async function revokeTokens(token: string): Promise<void> {
   const res = await call('/users/self/token', { method: 'DELETE', token });
   if (!res.ok) logger.warn(`Revoca del token non riuscita (HTTP ${res.status})`);
 }
 
-// --- Gestione utenti (solo amministratori, con il loro token) -------------------
+// --- User management (administrators only, with their token) -------------------
 
 export async function listUsers(token: string): Promise<RemoteUser[]> {
   const res = await call('/users?limit=500&sort=username', { token });

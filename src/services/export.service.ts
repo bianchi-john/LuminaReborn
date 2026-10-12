@@ -12,14 +12,14 @@ import { getScheda, SchedaCompleta } from './schede.service';
 import { listVoci } from './vocabolari.service';
 
 /**
- * Esportazione del catalogo in Excel, leggibile senza strumenti tecnici:
- * un foglio "Schede" (una riga per opera, testi senza formattazione) e un
- * foglio per ogni vocabolario. Include tutte le schede, in qualunque stato.
+ * Catalogue export to Excel, readable without technical tools:
+ * a "Schede" sheet (one row per artwork, plain text without formatting) and
+ * one sheet per vocabulary. Includes all records (schede), in any state.
  */
 
-// Utente di sistema con i permessi di lettura dell'amministratore
+// System user with the administrator's read permissions
 const SISTEMA: SessionUser = { id: 0, remoteId: '', username: 'sistema', displayName: 'Esportazione', role: 'admin', isAdmin: true };
-const MAX_CELL = 32_000; // limite di Excel per cella: 32.767 caratteri
+const MAX_CELL = 32_000; // Excel per-cell limit: 32,767 characters
 const classLabel = new Map(CLASSIFICAZIONI.map((c) => [c.value, c.label]));
 
 const anno = (y: unknown) => (typeof y === 'number' ? (y < 0 ? `${-y} a.C.` : String(y)) : '');
@@ -157,13 +157,13 @@ export async function esportaInCartella(dir = config.export.dir): Promise<string
   const file = path.join(dir, `lumina-catalogo-${stamp}.xlsx`);
   const wb = await creaWorkbook();
   await wb.xlsx.writeFile(file);
-  // Rotazione: conserva solo le ultime N esportazioni
+  // Rotation: keep only the last N exports
   const old = (await fs.readdir(dir)).filter((f) => /^lumina-catalogo-\d{8}\.xlsx$/.test(f)).sort().reverse().slice(config.export.keep);
   await Promise.all(old.map((f) => fs.unlink(path.join(dir, f)).catch(() => undefined)));
   return file;
 }
 
-/** Esportazione automatica giornaliera, se EXPORT_DIR è configurato. */
+/** Automatic daily export, if EXPORT_DIR is configured. */
 export function avviaEsportazioneProgrammata(): void {
   if (!config.export.dir) return;
   const oraRoma = () => Number(new Intl.DateTimeFormat('it-IT', { timeZone: 'Europe/Rome', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));

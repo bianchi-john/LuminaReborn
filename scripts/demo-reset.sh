@@ -1,29 +1,29 @@
 #!/bin/bash
-# Riporta l'ambiente allo stato iniziale: elimina i dati (catalogo, immagini,
-# utenti) e riavvia, ricaricando le opere e gli utenti dimostrativi.
-#   scripts/demo-reset.sh        chiede conferma
-#   scripts/demo-reset.sh -y     senza conferma
+# Resets the environment to its initial state: deletes the data (catalogue, images,
+# users) and restarts, reloading the demo works and demo users.
+#   scripts/demo-reset.sh        asks for confirmation
+#   scripts/demo-reset.sh -y     no confirmation
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [ "${1:-}" != "-y" ]; then
-  read -r -p "Tutti i dati attuali verranno eliminati e sostituiti con quelli dimostrativi. Continuare? [s/N] " ok
-  [ "$ok" = "s" ] || [ "$ok" = "S" ] || { echo "Annullato"; exit 0; }
+  read -r -p "All current data will be deleted and replaced with the demo data. Continue? [y/N] " ok
+  case "$ok" in [yYsS]*) ;; *) echo "Cancelled"; exit 0 ;; esac
 fi
 if grep -qE '^(MYSQL|MONGO)_DATA_DIR=.+/' .env 2>/dev/null; then
-  echo "Attenzione: .env usa cartelle dell'host per i dati (MYSQL_DATA_DIR/MONGO_DATA_DIR)." >&2
-  echo "Svuotarle a mano prima di proseguire, oppure rimuovere quelle variabili." >&2
+  echo "Warning: .env uses host folders for the data (MYSQL_DATA_DIR/MONGO_DATA_DIR)." >&2
+  echo "Empty them manually before continuing, or remove those variables." >&2
   exit 1
 fi
 docker network inspect extern >/dev/null 2>&1 || docker network create extern >/dev/null
 docker compose down --volumes --remove-orphans
 docker compose up -d --build
-echo "Attendo che l'applicazione sia pronta..."
+echo "Waiting for the application to be ready..."
 for _ in $(seq 1 90); do
   if [ "$(docker inspect -f '{{.State.Health.Status}}' nodeappcontainer 2>/dev/null)" = healthy ]; then
-    echo "Pronto: http://localhost:${APP_PORT:-3000}"
+    echo "Ready: http://localhost:${APP_PORT:-3000}"
     exit 0
   fi
   sleep 2
 done
-echo "L'applicazione non risulta pronta: controllare con 'docker compose logs nodeapp'" >&2
+echo "The application does not seem to be ready: check with 'docker compose logs nodeapp'" >&2
 exit 1

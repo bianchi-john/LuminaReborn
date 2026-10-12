@@ -1,7 +1,7 @@
 <%#
-  Confronto dimensionale: sagoma di riferimento (persona o mano) e sagome dell'opera
-  nella stessa scala. Calcolato a ogni visualizzazione da domain/dimensioni.ts.
-  Parametro: confronto
+  Size comparison: reference silhouette (person or hand) and silhouettes of the work
+  at the same scale. Computed on every view by domain/dimensioni.ts.
+  Parameter: confronto
 %>
 <%
   const c = confronto;
@@ -29,7 +29,7 @@
         <circle cx="20" cy="8" r="7"/>
         <path d="M12.5 17.5C12.5 16.3 13.4 15.5 14.6 15.5H25.4C26.6 15.5 27.5 16.3 27.5 17.5L31.8 44C32 45.3 31.1 46.4 29.8 46.5C28.6 46.6 27.7 45.8 27.5 44.7L25 26.5L25.8 95.5C25.9 97.4 24.7 100 23 100C21.4 100 20.3 97.6 20.2 96L20 58L19.8 96C19.7 97.6 18.6 100 17 100C15.3 100 14.1 97.4 14.2 95.5L15 26.5L12.5 44.7C12.3 45.8 11.4 46.6 10.2 46.5C8.9 46.4 8 45.3 8.2 44Z"/>
       <% } else { %>
-        <%# Mano destra aperta vista dal palmo, in un riquadro 56 x 100 %>
+        <%# Open right hand seen from the palm, in a 56 x 100 box %>
         <path d="M21 100C19 92 17.5 84 17 76C12.5 72 7 65 3.5 56.5C1.4 51 5.8 46.4 10.2 49.6L17 57.5L15.5 21C15.4 13.6 24.6 13.6 24.6 21L25 45.5C25.2 47.3 26.3 47.3 26.4 45.5L26.2 13.5C26.2 6 35.4 6 35.4 13.5L35.6 45.5C35.8 47.3 36.9 47.3 37 45.5L37.2 19C37.3 11.6 46.3 11.6 46.3 19L46.2 47.5C46.4 49 47.4 49 47.6 47.5L47.8 33C48 26.6 55.6 26.6 55.6 33L55.4 62C55.2 79 53.2 90 51.5 100Z"/>
       <% } %>
     </g>

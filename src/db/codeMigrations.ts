@@ -6,13 +6,13 @@ import { creaAnteprima, elaboraImmagine, salvaFile } from '../services/immagini.
 import { generaCodice, LUNGHEZZA_CODICE_IMMAGINE, LUNGHEZZA_CODICE_OPERA } from '../util/codici';
 
 /**
- * Migrazioni che richiedono codice (non solo SQL). Il nome determina l'ordine
- * insieme ai file di migrations/ e viene registrato in schema_migrations.
+ * Migrations that require code (not just SQL). The name determines the order
+ * together with the files in migrations/ and is recorded in schema_migrations.
  */
 export const CODE_MIGRATIONS: Record<string, (conn: Connection) => Promise<void>> = {
   /**
-   * Sposta i byte delle immagini nel database media generando anteprima e
-   * miniatura. Una immagine alla volta, per non caricare tutto in memoria.
+   * Moves image bytes into the media database, generating preview and
+   * thumbnail. One image at a time, so as not to load everything into memory.
    */
   async '003_immagini_nel_database_media'(conn) {
     const [ids] = await conn.query<RowDataPacket[]>('SELECT id FROM immagini WHERE dati IS NOT NULL ORDER BY id');
@@ -36,7 +36,7 @@ export const CODE_MIGRATIONS: Record<string, (conn: Connection) => Promise<void>
         fatte++;
       } catch (error) {
         await conn.rollback().catch(() => undefined);
-        // Un file illeggibile non deve bloccare l'avvio: viene rimosso e segnalato nei log
+        // An unreadable file must not block startup: it is removed and reported in the logs
         logger.warn(`Immagine ${id} non elaborabile, rimossa`, error instanceof Error ? error.message : error);
         await conn.query('DELETE FROM immagini WHERE id = ?', [id]);
       }
@@ -44,7 +44,7 @@ export const CODE_MIGRATIONS: Record<string, (conn: Connection) => Promise<void>
     logger.info(`Immagini spostate nel database media: ${fatte}`);
   },
 
-  /** Rigenera le anteprime pubbliche dagli originali aggiungendo il watermark. */
+  /** Regenerates the public previews from the originals, adding the watermark. */
   async '005_watermark_anteprime'(conn) {
     const media = `\`${config.db.mediaDatabase}\`.immagini_file`;
     const [ids] = await conn.query<RowDataPacket[]>(`SELECT id_immagine AS id FROM ${media} WHERE variante = 'originale' ORDER BY id_immagine`);
@@ -59,7 +59,7 @@ export const CODE_MIGRATIONS: Record<string, (conn: Connection) => Promise<void>
     logger.info(`Anteprime con watermark: ${ids.length}`);
   },
 
-  /** Codici pubblici casuali per opere e immagini (indirizzi non sequenziali). */
+  /** Random public codes for works and images (non-sequential addresses). */
   async '006_codici_pubblici'(conn) {
     for (const [tabella, lunghezza] of [
       ['schede', LUNGHEZZA_CODICE_OPERA],

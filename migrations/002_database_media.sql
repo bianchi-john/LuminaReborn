@@ -1,15 +1,15 @@
 -- =============================================================================
--- 002 - Database separato per i file delle immagini
+-- 002 - Separate database for image files
 --
--- `{{MAIN_DB}}.immagini` resta il catalogo delle immagini (scheda, ordine,
--- didascalia, dimensioni). I byte stanno in `{{MEDIA_DB}}.immagini_file`, una
--- riga per variante:
---   originale  il file caricato, visibile solo a schedatori e amministratori
---   anteprima  versione ridotta (WebP) mostrata al pubblico
---   miniatura  per elenchi e risultati di ricerca
--- Eliminando l'immagine (o la scheda) i file vengono eliminati in cascata.
--- Il database media e i permessi sono creati da dbinit/01-database-media.sh
--- (o da scripts/grant-media.sh su installazioni esistenti).
+-- `{{MAIN_DB}}.immagini` remains the image catalogue (record, order,
+-- caption, dimensions). The bytes live in `{{MEDIA_DB}}.immagini_file`, one
+-- row per variant:
+--   originale  original: the uploaded file, visible only to cataloguers and administrators
+--   anteprima  preview: reduced version (WebP) shown to the public
+--   miniatura  thumbnail: for lists and search results
+-- Deleting the image (or the record) deletes its files in cascade.
+-- The media database and its permissions are created by dbinit/01-database-media.sh
+-- (or by scripts/grant-media.sh on existing installations).
 -- =============================================================================
 
 CREATE TABLE IF NOT EXISTS `{{MEDIA_DB}}`.immagini_file (

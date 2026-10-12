@@ -3,7 +3,7 @@
   const f = filtri;
   const v = (name) => f[name] === null || f[name] === undefined ? '' : f[name];
   const sel = (a, b) => String(a) === String(b) ? 'selected' : '';
-  // Filtri attivi, con il link per rimuoverli singolarmente
+  // Active filters, each with a link to remove it
   const etichette = {
     q: t('Ricerca'), titolo: t('Titolo'), autore: t('Autore'), categoria: t('Categoria di attribuzione'),
     classificazione: t('Classificazione'), ambito: t('Ambito storico-culturale'), anno_da: t('Dal'), anno_a: t('Al'),
@@ -24,7 +24,7 @@
   });
 %>
 <section class="hero-home <%= risultati ? 'hero-compatto' : '' %>">
-  <%# Sfondo: copertine delle opere pubblicate, sfocate, in ordine casuale a ogni visita %>
+  <%# Background: blurred covers of published works, in random order on each visit %>
   <div class="hero-sfondo" aria-hidden="true" data-hero-sfondo>
     <% sfondi.forEach((id, i) => { %>
       <img src="/media/<%= id %>/anteprima" alt="" class="<%= i === 0 ? 'attiva' : '' %>" <%- i > 0 ? 'loading="lazy"' : 'fetchpriority="high"' %> decoding="async">

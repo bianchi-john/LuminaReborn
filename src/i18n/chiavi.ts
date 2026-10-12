@@ -11,21 +11,21 @@ import {
 } from '../domain/classificazioni';
 
 /**
- * Raccoglie tutti i testi da tradurre: le chiamate t('...') in template, script
- * del browser e server, più le etichette che arrivano dal dominio (vocabolari,
- * classificazioni, misure...). Usato dal test che verifica che en.json sia completo
- * e da `npm run i18n:check` per elencare le chiavi mancanti.
+ * Collects all texts to translate: the t('...') calls in templates, browser
+ * scripts and server, plus the labels coming from the domain (vocabularies,
+ * classifications, measurements...). Used by the test that checks en.json is complete
+ * and by `npm run i18n:check` to list missing keys.
  */
 
 const CALL = /\bt\(\s*(['"`])((?:\\.|(?!\1).)*?)\1/g;
-// Messaggi lanciati dal server (tradotti dal gestore degli errori)
+// Messages thrown by the server (translated by the error handler)
 const ERROR = /\b(?:badRequest|forbidden|notFound|conflict|unauthorized)\(\s*(['"`])((?:\\.|(?!\1).)*?)\1/g;
 const HTTP_ERROR = /new HttpError\(\s*\d+\s*,\s*(['"`])((?:\\.|(?!\1).)*?)\1/g;
 const ZOD_MESSAGE = /message:\s*(['"`])((?:\\.|(?!\1).)*?)\1/g;
-// Plurali (h.plural(n, 'uno', 'molti')) e alternative dentro t(cond ? 'a' : 'b')
+// Plurals (h.plural(n, 'one', 'many')) and alternatives inside t(cond ? 'a' : 'b')
 const PLURAL = /\bplural\([^,]+,\s*(['"])((?:\\.|(?!\1).)*?)\1\s*,\s*(['"])((?:\\.|(?!\3).)*?)\3/g;
 const TERNARY = /\bt\(\s*[^'"`()]*?\?\s*(['"])((?:\\.|(?!\1).)*?)\1\s*:\s*(['"])((?:\\.|(?!\3).)*?)\3/g;
-// Etichette usate negli script del browser e passate poi a t()
+// Labels used in browser scripts and later passed to t()
 const LABEL_MAP = /\b(?:title|body|confirmText|ok|label):\s*(['"])((?:\\.|(?!\1).)*?)\1/g;
 
 function walk(dir: string, exts: string[]): string[] {
@@ -47,7 +47,7 @@ function chiaviDaFile(files: string[]): Set<string> {
     for (const re of patterns) {
       for (const m of text.matchAll(re)) {
         const key = unescape(m[2]);
-        // Scarta template literal con interpolazioni: non sono chiavi fisse
+        // Skip template literals with interpolations: they are not fixed keys
         if (key && !key.includes('${')) keys.add(key);
       }
     }
@@ -58,7 +58,7 @@ function chiaviDaFile(files: string[]): Set<string> {
   return keys;
 }
 
-/** Etichette che arrivano dal dominio (vocabolari, classificazioni, misure...). */
+/** Labels coming from the domain (vocabularies, classifications, measurements...). */
 function chiaviDominio(): string[] {
   return [
     ...VOCAB_KEYS.flatMap((k) => {
@@ -75,7 +75,7 @@ function chiaviDominio(): string[] {
   ];
 }
 
-/** Tutti i testi dell'interfaccia: template, script del browser, server e dominio. */
+/** All interface texts: templates, browser scripts, server and domain. */
 export function chiaviDaTradurre(root: string): Set<string> {
   const files = [...walk(path.join(root, 'views'), ['.ejs']), ...walk(path.join(root, 'public', 'js'), ['.js']), ...walk(path.join(root, 'src'), ['.ts'])];
   const keys = chiaviDaFile(files);
@@ -83,7 +83,7 @@ export function chiaviDaTradurre(root: string): Set<string> {
   return keys;
 }
 
-/** Solo i testi usati dagli script del browser: è il dizionario incorporato nelle pagine. */
+/** Only the texts used by browser scripts: this is the dictionary embedded in pages. */
 export function chiaviClient(root: string): Set<string> {
   const keys = chiaviDaFile(walk(path.join(root, 'public', 'js'), ['.js']));
   chiaviDominio().forEach((k) => keys.add(k));

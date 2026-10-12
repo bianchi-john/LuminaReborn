@@ -2,7 +2,7 @@ import mysql, { Connection, Pool, PoolConnection, ResultSetHeader, RowDataPacket
 import { config } from '../config';
 import { logger } from '../logger';
 
-/** Unico pool di connessioni per tutta l'applicazione. */
+/** Single connection pool for the whole application. */
 export const pool: Pool = mysql.createPool({
   host: config.db.host,
   port: config.db.port,
@@ -17,7 +17,7 @@ export const pool: Pool = mysql.createPool({
   timezone: 'Z',
 });
 
-/** Esecutore di query: il pool oppure una connessione dentro una transazione. */
+/** Query executor: the pool, or a connection inside a transaction. */
 export type Db = Pool | Connection;
 
 export async function select<T>(db: Db, sql: string, params: unknown[] = []): Promise<T[]> {
@@ -35,7 +35,7 @@ export async function execute(db: Db, sql: string, params: unknown[] = []): Prom
   return result;
 }
 
-/** Esegue `fn` in una transazione: commit se va a buon fine, rollback altrimenti. */
+/** Runs `fn` in a transaction: commit on success, rollback otherwise. */
 export async function withTransaction<T>(fn: (conn: PoolConnection) => Promise<T>): Promise<T> {
   const conn = await pool.getConnection();
   try {
@@ -51,7 +51,7 @@ export async function withTransaction<T>(fn: (conn: PoolConnection) => Promise<T
   }
 }
 
-/** Attende che MySQL accetti connessioni (al primo avvio l'inizializzazione può richiedere tempo). */
+/** Waits until MySQL accepts connections (on first start, initialisation can take a while). */
 export async function waitForDatabase(attempts = 60, delayMs = 2000): Promise<void> {
   for (let i = 1; i <= attempts; i++) {
     try {

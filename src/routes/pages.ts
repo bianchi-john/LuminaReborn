@@ -23,16 +23,16 @@ const idParam = (req: Request): number => {
   return id;
 };
 
-/** Solo percorsi interni: evita open redirect verso altri siti. */
+/** Internal paths only: prevents open redirects to other sites. */
 export function safeNext(value: unknown): string {
   return typeof value === 'string' && /^\/(?![/\\])/.test(value) ? value : '/area';
 }
 
-/** JSON da incorporare in <script type="application/json"> senza poter chiudere il tag. */
+/** JSON to embed in <script type="application/json"> without being able to close the tag. */
 const embedJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c').replace(/\u2028|\u2029/g, '');
 
 // ---------------------------------------------------------------------------
-// Catalogo pubblico
+// Public catalogue
 // ---------------------------------------------------------------------------
 
 const ADVANCED_FIELDS = [
@@ -41,10 +41,10 @@ const ADVANCED_FIELDS = [
   'luogo_mostra', 'mostra_anno_da', 'mostra_anno_a', 'bibliografia', 'documentazione',
 ];
 
-/** Parametri che non sono criteri di ricerca (ordinamento, paginazione, lingua). */
+/** Parameters that are not search criteria (sorting, pagination, language). */
 const NON_CRITERI = new Set(['ordina', 'pagina', 'per_pagina', 'era_da', 'era_a', 'lang']);
 
-/** La home mostra le opere solo dopo una ricerca: senza criteri c'è solo l'intestazione. */
+/** The home page shows works only after a search: without criteria there is only the header. */
 export function haCriteri(query: Record<string, unknown>): boolean {
   return Object.entries(query).some(([k, v]) => !NON_CRITERI.has(k) && typeof v === 'string' && v.trim() !== '');
 }
@@ -69,8 +69,8 @@ pages.get(
 );
 
 /**
- * Pagina pubblica dell'opera: /opere/<prime-parole-del-titolo>-<codice casuale>.
- * Se il titolo è cambiato, si viene reindirizzati all'indirizzo aggiornato.
+ * Public page of a work: /opere/<first-words-of-the-title>-<random code>.
+ * If the title has changed, the visitor is redirected to the updated address.
  */
 pages.get(
   '/opere/:percorso',
@@ -86,9 +86,9 @@ pages.get(
 );
 
 /**
- * Indirizzi numerici della versione precedente: solo per lo staff autenticato
- * (rimandano all'indirizzo pubblico). Per gli altri non esistono, così le opere
- * non si possono enumerare per numero.
+ * Numeric addresses from the previous version: authenticated staff only
+ * (they redirect to the public address). For everyone else they do not exist,
+ * so works cannot be enumerated by number.
  */
 const vecchioIndirizzo = ah(async (req, res) => {
   const id = Number(req.params.id ?? req.query.id);
@@ -130,14 +130,14 @@ pages.get(
     const voce = await voci.getVoce(v, idParam(req));
     const filtri = searchQuerySchema.parse({ ...req.query, [tipo]: voce.id, per_pagina: 48 });
     const risultati = await search(filtri);
-    // Una voce usata solo in bozze non è pubblica
+    // An authority entry used only in drafts is not public
     if (risultati.total === 0 && !req.user) throw notFound();
     res.render('voce', { title: `${req.t(v.singolare)}: ${voce[v.display]}`, nav: 'indici', v, voce, risultati });
   }),
 );
 
 // ---------------------------------------------------------------------------
-// Pagine informative (testi in views/pagine, in italiano e inglese)
+// Information pages (texts in views/pagine, in Italian and English)
 // ---------------------------------------------------------------------------
 
 export const PAGINE_INFORMATIVE = {
@@ -155,13 +155,13 @@ for (const [slug, titolo] of Object.entries(PAGINE_INFORMATIVE)) {
 pages.get('/about', (_req, res) => res.redirect(301, '/informazioni'));
 
 // ---------------------------------------------------------------------------
-// Accesso
+// Login
 // ---------------------------------------------------------------------------
 
 /**
- * Token anti-CSRF del modulo di accesso (double submit): lo stesso valore casuale
- * sta in un campo nascosto e in un cookie tecnico limitato al percorso /login,
- * valido un'ora e cancellato dopo l'accesso. Non riguarda il catalogo pubblico.
+ * Anti-CSRF token for the login form (double submit): the same random value
+ * is in a hidden field and in a technical cookie restricted to the /login path,
+ * valid for one hour and deleted after login. It does not affect the public catalogue.
  */
 const CSRF_COOKIE = 'lumina_csrf';
 const csrfCookieOptions = () => ({ httpOnly: true, secure: config.session.secureCookie, sameSite: 'strict' as const, path: '/login' });
@@ -184,7 +184,7 @@ pages.get('/login', (req, res) => {
   res.render('login', { title: req.t('Accesso'), nav: 'login', next, errore: null, csrf: nuovoTokenCsrf(res) });
 });
 
-/** Accesso senza JavaScript: il modulo viene inviato in POST (mai credenziali nell'URL). */
+/** Login without JavaScript: the form is submitted via POST (never credentials in the URL). */
 pages.post(
   '/login',
   express.urlencoded({ extended: false, limit: '10kb' }),
@@ -211,7 +211,7 @@ pages.post(
 );
 
 // ---------------------------------------------------------------------------
-// Area riservata
+// Staff area
 // ---------------------------------------------------------------------------
 
 pages.get(
@@ -273,7 +273,7 @@ pages.get('/area/utenti', requireAdminPage, (req, res) => {
   res.render('area/utenti', { title: req.t('Utenti'), nav: 'utenti' });
 });
 
-// Indirizzi della versione precedente
+// Addresses from the previous version
 pages.get(['/bozze', '/schedeInApprovazione'], (_req, res) => res.redirect(301, '/area'));
 pages.get('/amministratore', (_req, res) => res.redirect(301, '/area/revisione'));
 pages.get('/bozzaEditor', (_req, res) => res.redirect(301, '/area/schede/nuova'));

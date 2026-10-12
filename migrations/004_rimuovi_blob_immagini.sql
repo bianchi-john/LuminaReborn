@@ -1,3 +1,3 @@
--- 004 - I byte delle immagini ora stanno solo nel database media (vedi 003 in
--- src/db/codeMigrations.ts, che li ha spostati generando anche le versioni ridotte).
+-- 004 - Image bytes now live only in the media database (see 003 in
+-- src/db/codeMigrations.ts, which moved them and also generated the reduced versions).
 ALTER TABLE immagini DROP COLUMN dati;

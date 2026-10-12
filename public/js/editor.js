@@ -28,14 +28,14 @@ let uid = 0;
 const nextId = (prefix) => `${prefix}-${++uid}`;
 
 // ---------------------------------------------------------------------------
-// Campi elementari
+// Basic fields
 // ---------------------------------------------------------------------------
 
 function labelled(labelText, control, { col = 'col-md-6', id } = {}) {
   return el('div', { class: col }, el('label', { class: 'form-label small mb-1', for: id, text: labelText }), control);
 }
 
-/** <select> con le opzioni proposte; un valore diverso (dati importati) viene mantenuto. */
+/** <select> with the suggested options; a different value (imported data) is kept. */
 function selectWith(options, value, { id, translate = true, empty = '—', ariaLabel } = {}) {
   const select = el('select', { class: 'form-select', id, 'aria-label': ariaLabel }, el('option', { value: '', text: empty }));
   for (const o of options) select.append(el('option', { value: o, text: translate ? t(o) : o }));
@@ -44,7 +44,7 @@ function selectWith(options, value, { id, translate = true, empty = '—', ariaL
   return select;
 }
 
-/** Campo generico da una definizione {name, label, type, options, ...}. */
+/** Generic field from a definition {name, label, type, options, ...}. */
 function field(def, value, { col } = {}) {
   const id = nextId(def.name);
   if (def.type === 'inline') {
@@ -73,7 +73,7 @@ function field(def, value, { col } = {}) {
   };
 }
 
-/** Anno con era (a.C./d.C.): nel database gli anni a.C. sono negativi. */
+/** Year with era (BC/AD): in the database BC years are negative. */
 function annoConEra(label, valore) {
   const input = el('input', { class: 'form-control', type: 'number', min: 0, max: 99999, placeholder: t('Anno'), 'aria-label': `${label}: ${t('anno')}` });
   const era = el('select', { class: 'form-select flex-grow-0 w-auto', 'aria-label': `${label}: ${t('era')}` }, el('option', { value: 'dc', text: t('d.C.') }), el('option', { value: 'ac', text: t('a.C.') }));
@@ -88,7 +88,7 @@ function annoConEra(label, valore) {
 }
 
 // ---------------------------------------------------------------------------
-// Righe ripetibili (con riordino e limite massimo)
+// Repeatable rows (with reordering and a maximum limit)
 // ---------------------------------------------------------------------------
 
 function repeater(container, { addLabel, createRow, initial = [], startWithOne = false, emptyText, max = Infinity, rowClass = () => '' }) {
@@ -156,7 +156,7 @@ function repeater(container, { addLabel, createRow, initial = [], startWithOne =
 }
 
 // ---------------------------------------------------------------------------
-// Voci condivise: prima si cerca tra quelle esistenti, poi (se serve) si crea
+// Shared authority entries: first search the existing ones, then create one if needed
 // ---------------------------------------------------------------------------
 
 function describeVoce(v, item) {
@@ -175,7 +175,7 @@ function vocabRow(v, data) {
   let mode = data.id ? 'collegata' : data[display.name] ? 'nuova' : 'cerca';
   let selected = data.id ? { id: data.id, label: htmlToText(data[display.name]), detail: describeVoce(v, data) } : null;
 
-  // --- Ricerca
+  // --- Search
   const searchId = nextId('cerca');
   const search = el('input', { class: 'form-control', id: searchId, maxlength: 300, placeholder: t('Cerca {voce} esistente…', { voce: singolare }) });
   const searchPane = el(
@@ -186,10 +186,10 @@ function vocabRow(v, data) {
     el('div', { class: 'form-text', text: t('Scrivi almeno 2 lettere e scegli dall\'elenco. Se non la trovi, scegli "Crea nuova voce" in fondo all\'elenco.') }),
   );
 
-  // --- Avviso voci simili
+  // --- Similar authority entries warning
   const similarPane = el('div', { class: 'voce-simili alert alert-warning d-none', role: 'alert' });
 
-  // --- Nuova voce
+  // --- New authority entry
   const lblId = nextId('lbl');
   let getDisplay;
   let setDisplay;
@@ -215,13 +215,13 @@ function vocabRow(v, data) {
     el('div', { class: 'row g-2' }, displayNode, extraFields.map((f) => f.node)),
   );
 
-  // --- Voce collegata
+  // --- Linked authority entry
   const linkedLabel = el('span', { class: 'fw-semibold' });
   const linkedDetail = el('span', { class: 'small text-muted-lu' });
   const changeBtn = el('button', { type: 'button', class: 'btn btn-sm btn-link ms-auto', text: t('Cambia') });
   const linkedPane = el('div', { class: 'voce-collegata' }, el('span', { class: 'voce-icona', 'aria-hidden': 'true', text: '✓' }), el('span', {}, linkedLabel, ' ', linkedDetail), changeBtn);
 
-  // --- Campi del collegamento (es. "copia da", categoria)
+  // --- Link fields (e.g. "copy of", category)
   const linkFields = v.linkFields.map((f) => field(f, data[f.name], { col: v.linkFields.length > 1 ? 'col-md-4' : 'col-12' }));
   const linkPane = linkFields.length ? el('div', { class: 'row g-2 mt-2 voce-link' }, linkFields.map((f) => f.node)) : null;
 
@@ -254,13 +254,13 @@ function vocabRow(v, data) {
     markDirty();
   };
 
-  /** Prima di creare una voce, propone quelle con un nome simile. */
+  /** Before creating an authority entry, suggests those with a similar name. */
   const proponiSimili = async (text) => {
     let simili = [];
     try {
       simili = await api('GET', `/api/vocabolari/${v.key}/simili?testo=${encodeURIComponent(text)}`);
     } catch {
-      /* in caso di errore si procede con la creazione */
+      /* on error, go ahead with creation */
     }
     if (!simili.length) return creaNuova(text);
     similarPane.replaceChildren(
@@ -316,7 +316,7 @@ function vocabRow(v, data) {
   return {
     node: el('div', {}, searchPane, similarPane, linkedPane, newPane, linkPane),
     focus: () => search.focus(),
-    /** Testo cercato ma non scelto: va risolto prima di salvare. */
+    /** Text searched but not chosen: must be resolved before saving. */
     pending: () => (mode === 'cerca' && search.value.trim() ? search.value.trim() : null),
     get() {
       const link = {};
@@ -333,7 +333,7 @@ function vocabRow(v, data) {
 }
 
 // ---------------------------------------------------------------------------
-// Righe specifiche
+// Specific rows
 // ---------------------------------------------------------------------------
 
 function cronologiaRow(c) {
@@ -376,7 +376,7 @@ function documentazioneRow(d) {
   return { node: el('div', { class: 'row' }, f.node), get: () => ({ riferimento: f.get() }) };
 }
 
-// --- Misure: gruppi colorati con una tabella di misure ciascuno -------------
+// --- Measurements: coloured groups, each with its own measurements table ----
 
 function misuraRow(m) {
   const direzione = selectWith(config.misure.direzioni, m.direzione, { ariaLabel: t('Direzione') });
@@ -441,11 +441,11 @@ function gruppoMisureRow(g) {
 }
 
 // ---------------------------------------------------------------------------
-// Immagini (caricamento separato, poi collegate alla scheda al salvataggio)
+// Images (uploaded separately, then linked to the record on save)
 // ---------------------------------------------------------------------------
 
 const imgContainer = document.getElementById('immagini');
-/** Editor di testo ricco, per nome del campo (montati più sotto). */
+/** Rich-text editors, by field name (mounted further below). */
 const rich = {};
 const images = (scheda?.immagini ?? []).map((i) => ({ id: i.id, codice: i.codice, didascalia: i.didascalia ?? '', larghezza: i.larghezza, altezza: i.altezza }));
 
@@ -499,12 +499,12 @@ function renderImages() {
       );
     }),
   );
-  // Le immagini tolte dalla scheda spariscono anche dai testi
+  // Images removed from the record also disappear from the texts
   Object.values(rich).forEach((r) => r.refreshImages());
   listeners.forEach((fn) => fn());
 }
 
-/** Dimensioni in pixel, se il browser sa decodificare il formato (TIFF no: lo verifica il server). */
+/** Pixel dimensions, if the browser can decode the format (not TIFF: the server checks it). */
 async function dimensioniImmagine(file) {
   try {
     const bitmap = await createImageBitmap(file);
@@ -563,7 +563,7 @@ dropzone.addEventListener('drop', (event) => {
 });
 
 // ---------------------------------------------------------------------------
-// Montaggio
+// Mounting
 // ---------------------------------------------------------------------------
 
 document.querySelectorAll('[data-rte]').forEach((mount) => {
@@ -620,7 +620,7 @@ form.note_schedatore.value = scheda?.note_schedatore ?? '';
 renderImages();
 
 // ---------------------------------------------------------------------------
-// Navigazione tra i pannelli, contatori e completezza
+// Panel navigation, counters and completeness
 // ---------------------------------------------------------------------------
 
 const tabs = [...document.querySelectorAll('#editor-tabs [data-pannello]')];
@@ -702,7 +702,7 @@ listeners.add(() => {
 updateBadges();
 
 // ---------------------------------------------------------------------------
-// Salvataggio
+// Saving
 // ---------------------------------------------------------------------------
 
 function collect() {
@@ -770,7 +770,7 @@ function showErrors(message, problems) {
   if (pannelli.size) showTab([...pannelli][0]);
 }
 
-/** Voci cercate ma non scelte: l'utente deve collegarle o crearle esplicitamente. */
+/** Authority entries searched but not chosen: the user must link or create them explicitly. */
 function pendingVoci() {
   const problems = [];
   for (const [k, r] of Object.entries(vocabRepeaters)) {
