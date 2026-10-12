@@ -52,6 +52,6 @@ make up            # then open http://localhost:3000
 
 ## Stack
 
-Node.js 22 + TypeScript, Express, server-rendered EJS, Bootstrap 5 · MySQL 8.4 (catalogue, plus image files in a separate database) · MongoDB with [user-manager](https://github.com/maximemoreillon/user_manager) for accounts · everything in Docker.
+Node.js 22 + TypeScript, Express, server-rendered EJS, Bootstrap 5 · Playfair Display (titles) and Inter (text), served by the site itself · MySQL 8.4 (catalogue, plus image files in a separate database) · MongoDB with [user-manager](https://github.com/maximemoreillon/user_manager) for accounts · everything in Docker.
 
 Comments and documentation are in English. Identifiers, database names and UI strings keep Italian domain terms (`scheda` = record, `voce` = authority entry, `opera` = work). Italian UI strings double as translation keys.

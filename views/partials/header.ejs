@@ -12,6 +12,8 @@
   <% } %>
   <meta name="theme-color" content="#7a1f24">
   <link rel="icon" type="image/png" href="/static/img/favicon.png">
+  <link rel="preload" href="/vendor/fonts/inter/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/vendor/fonts/playfair-display/playfair-display-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/app.css?v=<%= assetVersion %>">
 </head>
@@ -92,7 +94,11 @@
           <%- navLink(voce('/area/vocabolari', esc(t('Vocabolari')), nav === 'vocabolari')) %>
           <%- navLink(voce('/area/utenti', esc(t('Utenti')), nav === 'utenti')) %>
           <%- navLink(voce('/api/esportazioni/catalogo.xlsx', esc(t('Esporta catalogo (Excel)')), false)) %>
-          <%- navLink(voce('/area/esportazioni/foto', esc(t('Esporta foto (ZIP)')), nav === 'foto')) %>
+          <details class="menu-sub" <%= nav === 'foto' ? 'open' : '' %>>
+            <summary class="menu-link"><%= t('Esporta foto (ZIP)') %></summary>
+            <a class="menu-link" href="/api/esportazioni/foto.zip?variante=originale&amp;ambito=tutte" download><%= t('Tutte le foto (originali)') %></a>
+            <%- navLink(voce('/area/esportazioni/foto', esc(t('Scegli cosa esportare…')), nav === 'foto')) %>
+          </details>
         </div>
       <% } %>
       <div class="menu-section menu-account">

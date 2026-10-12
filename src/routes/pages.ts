@@ -237,8 +237,12 @@ pages.get(
   ah(async (req, res) => {
     const viste: Record<string, number> = { revisione: STATI.IN_REVISIONE, pubblicate: STATI.PUBBLICATA, bozze: STATI.BOZZA };
     const vista = typeof req.query.vista === 'string' && req.query.vista in viste ? req.query.vista : 'revisione';
-    const [elenco, conteggi] = await Promise.all([schede.listPerStato(viste[vista]), schede.contaPerStato()]);
-    res.render('area/revisione', { title: req.t('Revisione schede'), nav: 'revisione', elenco, vista, conteggi });
+    const [elenco, conteggi, fotoTutte] = await Promise.all([
+      schede.listPerStato(viste[vista]),
+      schede.contaPerStato(),
+      foto.stimaFoto({ variante: 'originale', ambito: 'tutte' }),
+    ]);
+    res.render('area/revisione', { title: req.t('Revisione schede'), nav: 'revisione', elenco, vista, conteggi, fotoTutte });
   }),
 );
 

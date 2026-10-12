@@ -101,6 +101,10 @@ export function createApp(): Application {
   const staticOptions = { maxAge: config.isProduction ? '7d' : 0, index: false as const };
   app.use('/static', express.static(path.join(ROOT_DIR, 'public'), staticOptions));
   app.use('/vendor/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules', 'bootstrap', 'dist'), staticOptions));
+  // Fonts served by the site itself (no third-party requests): only the font files of the two packages
+  for (const font of ['inter', 'playfair-display']) {
+    app.use(`/vendor/fonts/${font}`, express.static(path.join(ROOT_DIR, 'node_modules', '@fontsource-variable', font, 'files'), { ...staticOptions, maxAge: config.isProduction ? '365d' : 0, immutable: config.isProduction }));
+  }
   app.get('/favicon.ico', (_req, res) => res.redirect(301, '/static/img/favicon.png'));
   app.get('/healthz', (_req, res) => res.json({ ok: true }));
   // Channel for responsible vulnerability disclosure (RFC 9116)

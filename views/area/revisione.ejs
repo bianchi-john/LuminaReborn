@@ -17,7 +17,19 @@
     <div class="d-flex flex-wrap gap-2">
       <a class="btn btn-outline-secondary" href="/area/panoramica"><%= t('Panoramica del database') %></a>
       <a class="btn btn-outline-secondary" href="/api/esportazioni/catalogo.xlsx"><%= t('Esporta catalogo (Excel)') %></a>
-      <a class="btn btn-outline-secondary" href="/area/esportazioni/foto"><%= t('Esporta foto (ZIP)') %></a>
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><%= t('Esporta foto (ZIP)') %></button>
+        <ul class="dropdown-menu dropdown-menu-end shadow">
+          <li>
+            <a class="dropdown-item" href="/api/esportazioni/foto.zip?variante=originale&amp;ambito=tutte" download>
+              <span class="d-block"><%= t('Tutte le foto (originali)') %></span>
+              <span class="small text-muted-lu"><%= h.plural(fotoTutte.foto, '{n} foto', '{n} foto') %> · <%= h.plural(fotoTutte.schede, '{n} opera', '{n} opere') %> · <%= fotoTutte.byte >= 1024 ** 3 ? `${h.num(Math.round(fotoTutte.byte / 1024 ** 3 * 10) / 10)} GB` : `${h.num(Math.round(fotoTutte.byte / 1024 ** 2 * 10) / 10)} MB` %></span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="/area/esportazioni/foto"><%= t('Scegli cosa esportare…') %></a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

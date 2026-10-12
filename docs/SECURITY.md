@@ -68,7 +68,7 @@ Limits are set with `SCRAPING_*` in `.env`. IPv6 addresses are grouped by /64. A
 
 ## Privacy (GDPR)
 
-- **Visitors:** no personal data collected, **no cookies**, no analytics, no third-party resources. The language comes from `Accept-Language` or `?lang=` and is never stored. The IP is held only in memory by the rate limits (minutes, or up to 24 h if blocked), never on disk or in logs. An e2e test asserts that public pages set no cookies.
+- **Visitors:** no personal data collected, **no cookies**, no analytics, no third-party resources (fonts too are served by the site: Google Fonts would pass visitors' IPs to Google). The language comes from `Accept-Language` or `?lang=` and is never stored. The IP is held only in memory by the rate limits (minutes, or up to 24 h if blocked), never on disk or in logs. An e2e test asserts that public pages set no cookies.
 - **Staff:** technical cookies only (session; a login-form CSRF token), which don't need consent and are described in the policy. Audit logs contain no IPs, passwords, tokens or record content.
 - `/privacy` and `/termini` are drafts: the data controller details and a legal review are still to do.
 

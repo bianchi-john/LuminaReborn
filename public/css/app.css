@@ -2370,12 +2370,19 @@ ol.elenco-bibliografia > li::marker {
 .indice-mostre { --tinta: #f6f1e4; --filo: #c8ac72; }
 
 [class*="indice-"].card-link {
+  border: 1px solid color-mix(in srgb, var(--filo, transparent) 35%, transparent);
   background: var(--tinta, #fff);
-  box-shadow: inset 0 3px 0 var(--filo, transparent), var(--lu-elev-1);
+  box-shadow: var(--lu-elev-1);
 }
 
 [class*="indice-"].card-link:hover {
-  box-shadow: inset 0 3px 0 var(--filo, transparent), var(--lu-elev-2);
+  border-color: var(--filo, var(--lu-line));
+  box-shadow: var(--lu-elev-2);
+}
+
+/* Home page: fully rounded index buttons (an exception to the square shapes, like the menu button) */
+.indice-tile.card-link {
+  border-radius: var(--lu-pill) !important;
 }
 
 /* Home background: when the browser can pre-blur the image once (home.js),
@@ -2799,4 +2806,181 @@ ol.elenco-bibliografia > li::marker {
   bottom: 0.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* =========================================================================
+   v7 typography: Playfair Display for the LUMiNA name and the headings,
+   Inter (open source, in the spirit of Helvetica Neue / San Francisco) for
+   everything else. Both served by the site: Latin and extended Latin only.
+   ========================================================================= */
+
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(/vendor/fonts/inter/inter-latin-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(/vendor/fonts/inter/inter-latin-ext-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Inter Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(/vendor/fonts/inter/inter-latin-wght-italic.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(/vendor/fonts/inter/inter-latin-ext-wght-italic.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Playfair Display Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url(/vendor/fonts/playfair-display/playfair-display-latin-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Playfair Display Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url(/vendor/fonts/playfair-display/playfair-display-latin-ext-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Playfair Display Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url(/vendor/fonts/playfair-display/playfair-display-latin-wght-italic.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Playfair Display Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url(/vendor/fonts/playfair-display/playfair-display-latin-ext-wght-italic.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --lu-font: "Inter Variable", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --lu-titoli: "Playfair Display Variable", Georgia, "Times New Roman", serif;
+  --lu-serif: var(--lu-titoli);
+  --bs-body-font-family: var(--lu-font);
+  --bs-font-sans-serif: var(--lu-font);
+  --bs-body-font-size: 1rem;
+}
+
+body {
+  font-feature-settings: "cv11", "ss01"; /* Inter: single-storey a and open digits, softer on screen */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings and work titles in Playfair; small labels stay in Inter */
+h1, h2, h3, .serif,
+.scheda-title,
+.opera-card .card-title,
+.indice-tile,
+.empty-state .serif {
+  font-family: var(--lu-titoli);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+h4, h5, h6 {
+  font-family: var(--lu-font);
+  font-weight: 600;
+}
+
+/* The LUMiNA name: Playfair, with the lowercase italic i */
+.brand-mark,
+.hero-lumina {
+  font-family: var(--lu-titoli);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-mark em,
+.hero-lumina em {
+  font-weight: 600;
+}
+
+/* Subtitle "Musei Nazionali di Lucca": Inter, spaced capitals */
+.brand small,
+.site-header .navbar-brand small,
+.hero-sottotitolo {
+  font-family: var(--lu-font);
+  font-weight: 500;
+}
+
+/* Figures and data labels: Inter (proportional digits for big numbers) */
+.stat-card .stat-value {
+  font-family: var(--lu-font);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow,
+.scheda-occhiello,
+.scheda-fatti dt,
+.scheda-etichetta,
+.menu-heading,
+.viz-mappa .viz-gruppi th {
+  font-family: var(--lu-font);
+  font-weight: 600;
+}
+
+.indice-tile {
+  font-size: 1.2rem;
+}
+
+/* Side menu: "Export photos" opens its two choices */
+.menu-sub > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.menu-sub > summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-sub > summary::after {
+  content: "▸";
+  float: right;
+  color: var(--lu-muted);
+  transition: transform 0.15s ease;
+}
+
+.menu-sub[open] > summary::after {
+  transform: rotate(90deg);
+}
+
+.menu-sub > a {
+  margin-left: 1rem;
+  font-size: 0.95rem;
 }

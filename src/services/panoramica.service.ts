@@ -151,7 +151,9 @@ export async function getPanoramica(): Promise<Panoramica> {
     select<{ stato: number; n: number }>(pool, 'SELECT stato, COUNT(*) AS n FROM schede GROUP BY stato'),
     selectOne<{ n: number; originali: number | null; totali: number | null }>(
       pool,
-      `SELECT COUNT(DISTINCT id_immagine) AS n, SUM(IF(variante = 'originale', dimensione, 0)) AS originali, SUM(dimensione) AS totali FROM ${media}`,
+      // Only images attached to a record (an upload never saved is cleaned up later)
+      `SELECT COUNT(DISTINCT f.id_immagine) AS n, SUM(IF(f.variante = 'originale', f.dimensione, 0)) AS originali, SUM(f.dimensione) AS totali
+         FROM ${media} f JOIN immagini i ON i.id = f.id_immagine WHERE i.id_scheda IS NOT NULL`,
     ),
     contaRighe('users'),
     Promise.all(
