@@ -518,5 +518,7 @@
   "usata in {n} scheda": "used in {n} record",
   "usata in {n} schede": "used in {n} records",
   "{n} scheda": "{n} record",
-  "{n} schede": "{n} records"
+  "{n} schede": "{n} records",
+  "Oppure sfoglia gli indici": "Or browse the indexes",
+  "Ogni voce raccoglie tutte le opere a cui è collegata.": "Each entry gathers all the works linked to it."
 }

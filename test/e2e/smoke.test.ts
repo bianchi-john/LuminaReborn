@@ -51,6 +51,13 @@ describe('catalogo pubblico', () => {
     }
   });
 
+  it('la home mostra le opere solo dopo una ricerca', async () => {
+    const vuota = await (await fetch(BASE + '/')).text();
+    assert.doesNotMatch(vuota, /class="opera-card"/);
+    const cercata = await (await fetch(BASE + '/?q=sebastiano')).text();
+    assert.match(cercata, /class="opera-card"/);
+  });
+
   it('header di sicurezza', async () => {
     const res = await fetch(BASE + '/');
     assert.match(res.headers.get('content-security-policy') ?? '', /script-src 'self'/);
@@ -62,7 +69,8 @@ describe('catalogo pubblico', () => {
     const res = await fetch(BASE + '/?lang=en');
     const html = await res.text();
     assert.match(html, /<html lang="en">/);
-    assert.match(html, /Catalogue of works/);
+    assert.match(html, /National Museums of Lucca/);
+    assert.match(html, /Or browse the indexes/);
   });
 
   it('ricerca: rilevanza, injection innocua, suggerimenti', async () => {

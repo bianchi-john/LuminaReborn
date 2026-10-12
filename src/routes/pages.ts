@@ -5,6 +5,7 @@ import { confrontoDimensionale } from '../domain/dimensioni';
 import { isVocabKey, VOCAB_KEYS, VOCABOLARI } from '../domain/vocabolari';
 import { ah, forbidden, notFound } from '../http/errors';
 import * as schede from '../services/schede.service';
+import { copertineCasuali } from '../services/immagini.service';
 import { opzioniRicerca, search, searchQuerySchema } from '../services/search.service';
 import * as voci from '../services/vocabolari.service';
 
@@ -34,17 +35,30 @@ const ADVANCED_FIELDS = [
   'luogo_mostra', 'mostra_anno_da', 'mostra_anno_a', 'bibliografia', 'documentazione',
 ];
 
+/** Parametri che non sono criteri di ricerca (ordinamento, paginazione, lingua). */
+const NON_CRITERI = new Set(['ordina', 'pagina', 'per_pagina', 'era_da', 'era_a', 'lang']);
+
+/** La home mostra le opere solo dopo una ricerca: senza criteri c'è solo l'intestazione. */
+export function haCriteri(query: Record<string, unknown>): boolean {
+  return Object.entries(query).some(([k, v]) => !NON_CRITERI.has(k) && typeof v === 'string' && v.trim() !== '');
+}
+
 pages.get(
   '/',
   ah(async (req, res) => {
     const filtri = searchQuerySchema.parse(req.query);
-    const [risultati, opzioni] = await Promise.all([search(filtri), opzioniRicerca()]);
+    const cercato = haCriteri(req.query);
+    const [risultati, opzioni, sfondi] = await Promise.all([
+      cercato ? search(filtri) : Promise.resolve(null),
+      opzioniRicerca(),
+      copertineCasuali(8),
+    ]);
     const avanzata = ADVANCED_FIELDS.some((f) => {
       const v = (filtri as Record<string, unknown>)[f];
       return v !== null && v !== undefined && f !== 'classificazione';
     });
     const avanzataId = ['ubicazioni', 'materiali', 'tecniche'].some((k) => (filtri as Record<string, unknown>)[k]);
-    res.render('home', { title: req.t('Catalogo'), nav: 'catalogo', filtri, risultati, opzioni, avanzata: avanzata || avanzataId });
+    res.render('home', { title: '', nav: 'catalogo', filtri, risultati, opzioni, sfondi, avanzata: avanzata || avanzataId });
   }),
 );
 

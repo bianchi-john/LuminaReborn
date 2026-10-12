@@ -49,3 +49,24 @@ document.querySelectorAll('input[data-suggest]').forEach((input) => {
   });
 });
 
+
+// Sfondo dell'intestazione: le copertine sfocate si alternano con una dissolvenza
+// (ordine casuale scelto dal server a ogni visita). Niente animazione se l'utente
+// ha chiesto al sistema di ridurre il movimento.
+const sfondo = document.querySelector('[data-hero-sfondo]');
+const immagini = sfondo ? [...sfondo.querySelectorAll('img')] : [];
+if (immagini.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let corrente = 0;
+  setInterval(() => {
+    if (document.hidden) return;
+    const prossima = (corrente + 1) % immagini.length;
+    // Passa alla successiva solo quando è già caricata, per evitare lampi vuoti
+    if (!immagini[prossima].complete) {
+      immagini[prossima].loading = 'eager';
+      return;
+    }
+    immagini[corrente].classList.remove('attiva');
+    immagini[prossima].classList.add('attiva');
+    corrente = prossima;
+  }, 6500);
+}

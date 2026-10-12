@@ -10,6 +10,7 @@ import { buildWhere, searchQuerySchema, searchTerms } from '../src/services/sear
 import { rigaScheda } from '../src/services/export.service';
 import type { SchedaCompleta } from '../src/services/schede.service';
 import { cleanHtml } from '../src/util/html';
+import { haCriteri } from '../src/routes/pages';
 import { findDuplicatePairs, findSimilar, similarity } from '../src/util/similarity';
 
 describe('somiglianza tra nomi', () => {
@@ -118,6 +119,17 @@ describe('ricerca', () => {
 
   it('pubblica solo le schede approvate', () => {
     assert.ok(buildWhere(searchQuerySchema.parse({})).where.toSql().startsWith('s.stato = 2'));
+  });
+});
+
+describe('home', () => {
+  it('considera una ricerca solo se c\'è almeno un criterio', () => {
+    assert.equal(haCriteri({}), false);
+    assert.equal(haCriteri({ lang: 'en', ordina: 'titolo', pagina: '2', era_da: 'ac' }), false);
+    assert.equal(haCriteri({ q: '   ' }), false);
+    assert.equal(haCriteri({ q: 'giordano' }), true);
+    assert.equal(haCriteri({ classificazione: 'Dipinti' }), true);
+    assert.equal(haCriteri({ autori: '1' }), true);
   });
 });
 

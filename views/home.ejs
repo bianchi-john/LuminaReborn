@@ -23,11 +23,20 @@
     return { k, label: etichette[k], valore };
   });
 %>
-<section class="hero">
-  <div class="container py-4 py-lg-5">
-    <p class="eyebrow mb-2"><%= t('Musei Nazionali di Lucca') %></p>
-    <h1 class="mb-2"><%= t('Catalogo delle opere') %></h1>
-    <p class="lead-muted mb-4"><%= t('Dipinti, sculture, reperti e oggetti d\'arte: cerca per titolo, autore, luogo o sfoglia gli indici.') %></p>
+<section class="hero-home <%= risultati ? 'hero-compatto' : '' %>">
+  <%# Sfondo: copertine delle opere pubblicate, sfocate, in ordine casuale a ogni visita %>
+  <div class="hero-sfondo" aria-hidden="true" data-hero-sfondo>
+    <% sfondi.forEach((id, i) => { %>
+      <img src="/media/<%= id %>/anteprima" alt="" class="<%= i === 0 ? 'attiva' : '' %>" <%- i > 0 ? 'loading="lazy"' : 'fetchpriority="high"' %> decoding="async">
+    <% }) %>
+  </div>
+  <div class="hero-velo" aria-hidden="true"></div>
+  <div class="container hero-contenuto">
+    <h1 class="hero-titolo">
+      <span class="hero-lumina">LUM<em>i</em>NA</span>
+      <span class="hero-sottotitolo"><%= t('Musei Nazionali di Lucca') %></span>
+    </h1>
+    <p class="hero-lead"><%= t('Dipinti, sculture, reperti e oggetti d\'arte: cerca per titolo, autore, luogo o sfoglia gli indici.') %></p>
 
     <form method="get" action="/" class="search-main" role="search" id="form-ricerca">
       <div class="search-box shadow-sm">
@@ -204,6 +213,7 @@
   </div>
 </section>
 
+<% if (risultati) { %>
 <section class="container py-4" aria-labelledby="risultati">
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
     <h2 class="h5 mb-0" id="risultati"><%= h.plural(risultati.total, '{n} opera', '{n} opere') %></h2>
@@ -246,4 +256,19 @@
 
   <%- include('partials/risultati', { baseUrl: '/' }) %>
 </section>
+<% } else { %>
+<section class="container py-5" aria-labelledby="sfoglia">
+  <h2 class="h4 text-center mb-2" id="sfoglia"><%= t('Oppure sfoglia gli indici') %></h2>
+  <p class="text-center text-muted-lu mb-4"><%= t('Ogni voce raccoglie tutte le opere a cui è collegata.') %></p>
+  <div class="row row-cols-2 row-cols-md-3 g-3 justify-content-center">
+    <% Object.values(vocabolari).filter(v => v.indice).forEach(v => { %>
+      <div class="col">
+        <a class="card card-link indice-tile h-100 text-decoration-none" href="/voci/<%= v.key %>">
+          <span class="card-body"><%= t(v.plurale) %></span>
+        </a>
+      </div>
+    <% }) %>
+  </div>
+</section>
+<% } %>
 <%- include('partials/footer', { scripts: ['home.js'] }) %>

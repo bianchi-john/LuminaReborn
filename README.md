@@ -9,6 +9,7 @@ LUMiNA è un archivio pensato per due pubblici: gli **schedatori e gli storici d
 ## Cosa fa
 
 **Per chi consulta**
+- Home con intestazione a tutta pagina sullo sfondo sfocato delle opere; le opere compaiono solo dopo una ricerca.
 - Ricerca semplice con suggerimenti mentre si scrive e ricerca avanzata campo per campo (datazione anche a.C., menu a tendina per classificazione, materiali, ubicazioni…).
 - Indici per autore, materiale, tecnica, ubicazione, provenienza e mostra: ogni voce mostra tutte le opere collegate.
 - Scheda dell'opera con galleria, dati tecnici, bibliografia e un **confronto dimensionale** con la sagoma di una persona (o di una mano, per gli oggetti piccoli), calcolato dalle misure.

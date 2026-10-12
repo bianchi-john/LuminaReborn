@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import sharp from 'sharp';
 import { SessionUser } from '../auth/session';
 import { config } from '../config';
-import { Db, execute, pool, selectOne, withTransaction } from '../db/pool';
+import { Db, execute, pool, select, selectOne, withTransaction } from '../db/pool';
 import { badRequest, notFound } from '../http/errors';
 import { logger } from '../logger';
 import { computePermessi } from './schede.service';
@@ -161,6 +161,17 @@ export async function getFile(id: number, variante: Variante, user?: SessionUser
     pubblica: row.stato === 2 && variante !== 'originale',
     etag: `"${(row.sha256 ?? String(id)).slice(0, 16)}-${variante}"`,
   };
+}
+
+/** Copertine di schede pubblicate in ordine casuale (sfondo dell'intestazione della home). */
+export async function copertineCasuali(limite: number): Promise<number[]> {
+  const rows = await select<{ id: number }>(
+    pool,
+    `SELECT i.id FROM immagini i JOIN schede s ON s.id = i.id_scheda
+      WHERE s.stato = 2 AND i.ordine = 0 ORDER BY RAND() LIMIT ?`,
+    [limite],
+  );
+  return rows.map((r) => r.id);
 }
 
 /** Elimina le immagini caricate ma mai collegate a una scheda (editor chiuso senza salvare). */

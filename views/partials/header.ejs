@@ -16,67 +16,89 @@
   <link rel="stylesheet" href="/static/css/app.css?v=<%= assetVersion %>">
 </head>
 <body>
+<%
+  const voce = (href, label, attivo) => ({ href, label, attivo });
+  const navLink = (v) => `<a class="menu-link${v.attivo ? ' active' : ''}" href="${v.href}"${v.attivo ? ' aria-current="page"' : ''}>${v.label}</a>`;
+  const esc = (x) => String(x).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+%>
 <a class="visually-hidden-focusable position-absolute top-0 start-0 p-2 bg-white" href="#contenuto"><%= t('Vai al contenuto') %></a>
 <header class="site-header">
-  <nav class="navbar navbar-expand-lg" aria-label="<%= t('Navigazione principale') %>">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <span class="brand-mark">LUM<em>i</em>NA</span>
-        <small><%= t('Musei Nazionali di Lucca') %></small>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-principale" aria-controls="nav-principale" aria-expanded="false" aria-label="<%= t('Apri il menu') %>">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="nav-principale">
-        <ul class="navbar-nav me-auto ms-lg-4">
-          <li class="nav-item"><a class="nav-link <%= nav === 'catalogo' ? 'active' : '' %>" href="/" <%- nav === 'catalogo' ? 'aria-current="page"' : '' %>><%= t('Catalogo') %></a></li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle <%= nav === 'indici' ? 'active' : '' %>" href="/voci" role="button" data-bs-toggle="dropdown" aria-expanded="false"><%= t('Indici') %></a>
-            <ul class="dropdown-menu shadow-sm">
-              <% Object.values(vocabolari).filter(v => v.indice).forEach(v => { %>
-                <li><a class="dropdown-item" href="/voci/<%= v.key %>"><%= t(v.plurale) %></a></li>
-              <% }) %>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/voci"><%= t('Tutti gli indici') %></a></li>
-            </ul>
-          </li>
-        </ul>
-        <ul class="navbar-nav align-items-lg-center">
-          <% if (user) { %>
-            <li class="nav-item"><a class="nav-link <%= nav === 'area' ? 'active' : '' %>" href="/area"><%= t('Le mie schede') %></a></li>
-            <li class="nav-item"><a class="nav-link <%= nav === 'nuova' ? 'active' : '' %>" href="/area/schede/nuova"><%= t('Nuova scheda') %></a></li>
-            <% if (user.isAdmin) { %>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle <%= ['revisione', 'vocabolari', 'utenti'].includes(nav) ? 'active' : '' %>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><%= t('Amministrazione') %></a>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                  <li><a class="dropdown-item" href="/area/revisione"><%= t('Revisione schede') %></a></li>
-                  <li><a class="dropdown-item" href="/area/vocabolari"><%= t('Vocabolari') %></a></li>
-                  <li><a class="dropdown-item" href="/area/utenti"><%= t('Utenti') %></a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="/api/esportazioni/catalogo.xlsx"><%= t('Esporta catalogo (Excel)') %></a></li>
-                </ul>
-              </li>
-            <% } %>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><%= user.displayName %></a>
-              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li><span class="dropdown-item-text small text-muted"><%= user.isAdmin ? t('Amministratore') : t('Schedatore') %> · <%= user.username %></span></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><button class="dropdown-item" type="button" data-logout><%= t('Esci') %></button></li>
-              </ul>
-            </li>
-          <% } else { %>
-            <li class="nav-item"><a class="nav-link <%= nav === 'login' ? 'active' : '' %>" href="/login"><%= t('Area riservata') %></a></li>
-          <% } %>
-          <li class="nav-item ms-lg-2">
-            <div class="lang-switch" role="group" aria-label="<%= t('Lingua') %>">
-              <a href="<%= h.qs(query, { lang: 'it' }) %>" class="<%= lang === 'it' ? 'active' : '' %>" lang="it" hreflang="it" <%- lang === 'it' ? 'aria-current="true"' : '' %> title="Italiano">IT</a>
-              <a href="<%= h.qs(query, { lang: 'en' }) %>" class="<%= lang === 'en' ? 'active' : '' %>" lang="en" hreflang="en" <%- lang === 'en' ? 'aria-current="true"' : '' %> title="English">EN</a>
-            </div>
-          </li>
-        </ul>
+  <div class="container-fluid px-3 px-lg-4 d-flex align-items-center gap-2 gap-sm-3">
+    <button class="menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#menu" aria-controls="menu" aria-label="<%= t('Apri il menu') %>">
+      <span class="menu-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <a class="brand" href="/">
+      <span class="brand-mark">LUM<em>i</em>NA</span>
+      <small class="d-none d-sm-block"><%= t('Musei Nazionali di Lucca') %></small>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-2 gap-sm-3">
+      <% if (user) { %>
+        <a class="header-user d-none d-md-inline" href="/area" title="<%= t('Le mie schede') %>"><%= user.displayName %></a>
+      <% } else { %>
+        <a class="header-user d-none d-md-inline" href="/login"><%= t('Area riservata') %></a>
+      <% } %>
+      <div class="lang-switch" role="group" aria-label="<%= t('Lingua') %>">
+        <a href="<%= h.qs(query, { lang: 'it' }) %>" class="<%= lang === 'it' ? 'active' : '' %>" lang="it" hreflang="it" <%- lang === 'it' ? 'aria-current="true"' : '' %> title="Italiano">IT</a>
+        <a href="<%= h.qs(query, { lang: 'en' }) %>" class="<%= lang === 'en' ? 'active' : '' %>" lang="en" hreflang="en" <%- lang === 'en' ? 'aria-current="true"' : '' %> title="English">EN</a>
       </div>
     </div>
-  </nav>
+  </div>
 </header>
+
+<nav class="offcanvas offcanvas-start site-menu" tabindex="-1" id="menu" aria-labelledby="menu-titolo">
+  <div class="offcanvas-header">
+    <a class="brand" href="/" id="menu-titolo">
+      <span class="brand-mark">LUM<em>i</em>NA</span>
+      <small><%= t('Musei Nazionali di Lucca') %></small>
+    </a>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="<%= t('Chiudi') %>"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="menu-section">
+      <p class="menu-heading"><%= t('Catalogo') %></p>
+      <%- navLink(voce('/', esc(t('Cerca nel catalogo')), nav === 'catalogo')) %>
+    </div>
+
+    <div class="menu-section">
+      <p class="menu-heading"><%= t('Indici') %></p>
+      <% Object.values(vocabolari).filter(v => v.indice).forEach(v => { %>
+        <%- navLink(voce(`/voci/${v.key}`, esc(t(v.plurale)), path === `/voci/${v.key}`)) %>
+      <% }) %>
+      <%- navLink(voce('/voci', esc(t('Tutti gli indici')), path === '/voci')) %>
+    </div>
+
+    <% if (user) { %>
+      <div class="menu-section">
+        <p class="menu-heading"><%= t('Area riservata') %></p>
+        <%- navLink(voce('/area', esc(t('Le mie schede')), nav === 'area')) %>
+        <%- navLink(voce('/area/schede/nuova', esc(t('Nuova scheda')), nav === 'nuova')) %>
+      </div>
+      <% if (user.isAdmin) { %>
+        <div class="menu-section">
+          <p class="menu-heading"><%= t('Amministrazione') %></p>
+          <%- navLink(voce('/area/revisione', esc(t('Revisione schede')), nav === 'revisione')) %>
+          <%- navLink(voce('/area/vocabolari', esc(t('Vocabolari')), nav === 'vocabolari')) %>
+          <%- navLink(voce('/area/utenti', esc(t('Utenti')), nav === 'utenti')) %>
+          <%- navLink(voce('/api/esportazioni/catalogo.xlsx', esc(t('Esporta catalogo (Excel)')), false)) %>
+        </div>
+      <% } %>
+      <div class="menu-section menu-account">
+        <div class="menu-user">
+          <span class="menu-avatar" aria-hidden="true"><%= user.displayName.charAt(0).toUpperCase() %></span>
+          <span>
+            <span class="d-block fw-bold"><%= user.displayName %></span>
+            <span class="small text-muted-lu"><%= user.isAdmin ? t('Amministratore') : t('Schedatore') %> · <%= user.username %></span>
+          </span>
+        </div>
+        <button class="btn btn-outline-secondary w-100 mt-3" type="button" data-logout><%= t('Esci') %></button>
+      </div>
+    <% } else { %>
+      <div class="menu-section menu-account">
+        <p class="menu-heading"><%= t('Area riservata') %></p>
+        <p class="small text-muted-lu mb-3"><%= t('Accesso per schedatori e amministratori.') %></p>
+        <a class="btn btn-primary w-100" href="/login"><%= t('Accedi') %></a>
+      </div>
+    <% } %>
+  </div>
+</nav>
 <main id="contenuto">

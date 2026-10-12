@@ -74,6 +74,7 @@ export function createApp(): Application {
   app.locals.t = (s: string) => s;
   app.locals.h = viewHelpers('it', (s) => s);
   app.locals.query = {};
+  app.locals.path = '';
   app.locals.dizionarioClient = '{}';
 
   app.use(securityHeaders);
