@@ -1957,3 +1957,406 @@ textarea.form-control,
   max-height: 16rem;
   cursor: default;
 }
+
+/* =========================================================================
+   v5: compact result cards and a reorganised record page
+   Long content is shortened only when JavaScript is available (the full text
+   is always in the page) and is printed in full.
+   ========================================================================= */
+
+:root {
+  --lu-header-h: 4rem; /* updated by scheda.js with the real header height */
+  --lu-sezioni-h: 3rem;
+}
+
+/* --- Result cards: same structure for every work ------------------------ */
+
+.opera-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.opera-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem 0.85rem;
+}
+
+.opera-card .card-title {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.opera-card .card-author {
+  margin: 0;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-piede {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--lu-line);
+  font-size: 0.82rem;
+  color: var(--lu-muted);
+}
+
+.card-dati {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-inv {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Record page: summary next to the gallery --------------------------- */
+
+.breadcrumb-titolo {
+  max-width: min(42ch, 55vw);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.scheda-occhiello {
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lu-accent);
+}
+
+.scheda-title {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  line-height: 1.2;
+}
+
+.scheda-title.titolo-lungo {
+  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+  line-height: 1.3;
+}
+
+.scheda-title.compresso {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.btn-testo {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--lu-accent);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.btn-testo:hover,
+.btn-testo:focus-visible {
+  color: var(--lu-accent-dark);
+}
+
+.scheda-title + .btn-testo {
+  display: block;
+  margin: -0.35rem 0 0.9rem;
+}
+
+.scheda-autori {
+  margin-bottom: 1.25rem;
+  font-size: 1.12rem;
+}
+
+.scheda-autori li + li {
+  margin-top: 0.2rem;
+}
+
+.scheda-fatti {
+  margin: 0 0 1.5rem;
+  border-top: 1px solid var(--lu-line);
+}
+
+.scheda-fatti > div {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--lu-line);
+}
+
+.scheda-fatti dt,
+.scheda-etichetta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lu-muted);
+}
+
+.scheda-fatti dt {
+  padding-top: 0.2rem;
+}
+
+.scheda-fatti dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.fatto-nota {
+  font-size: 0.88rem;
+  color: var(--lu-muted);
+}
+
+.scheda-sintesi .confronto-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  box-shadow: var(--lu-elev-1);
+}
+
+.scheda-sintesi .confronto-card .scheda-etichetta {
+  margin-bottom: 0.5rem;
+}
+
+/* --- Section bar: stays below the header while scrolling ---------------- */
+
+.sezioni-nav {
+  position: sticky;
+  top: var(--lu-header-h);
+  z-index: 1020;
+  display: flex;
+  gap: 0.25rem;
+  margin: 2.5rem calc(var(--bs-gutter-x, 1.5rem) * -0.5) 0;
+  padding: 0 calc(var(--bs-gutter-x, 1.5rem) * 0.5);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--lu-line);
+  background: rgba(251, 250, 247, 0.94);
+  backdrop-filter: blur(8px);
+}
+
+.sezioni-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.sezioni-nav a {
+  flex: none;
+  padding: 0.8rem 0.75rem 0.7rem;
+  border-bottom: 2px solid transparent;
+  color: var(--lu-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sezioni-nav a:hover {
+  color: var(--lu-accent);
+}
+
+.sezioni-nav a.attiva {
+  border-bottom-color: var(--lu-accent);
+  color: var(--lu-accent);
+}
+
+.sezioni-nav .conteggio {
+  margin-left: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--lu-muted);
+}
+
+/* --- Record body -------------------------------------------------------- */
+
+.scheda-corpo .sezione {
+  margin-top: 0;
+  padding: 2rem 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--lu-line);
+  scroll-margin-top: calc(var(--lu-header-h) + var(--lu-sezioni-h) + 0.5rem);
+}
+
+.scheda-corpo .sezione:last-child {
+  border-bottom: 0;
+}
+
+.scheda-corpo .sezione h2 {
+  margin-bottom: 1rem;
+  font-size: 1.45rem;
+}
+
+.scheda-corpo .scheda-etichetta {
+  margin: 1.25rem 0 0.5rem;
+}
+
+.scheda-corpo .sezione h2 + .scheda-etichetta {
+  margin-top: 0;
+}
+
+/* Long text shortened with a fade; the button opens it */
+.prose.compresso {
+  max-height: var(--altezza-compressa, 24rem);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 7rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 7rem), transparent);
+}
+
+.btn-espandi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  color: var(--lu-accent);
+  font-size: 0.92rem;
+  box-shadow: var(--lu-elev-1);
+}
+
+.btn-espandi:hover,
+.btn-espandi:focus-visible {
+  border-color: var(--lu-accent);
+}
+
+.btn-espandi::after {
+  content: "↓";
+}
+
+.btn-espandi[aria-expanded="true"]::after {
+  content: "↑";
+}
+
+/* Sources: exhibitions, bibliography, photographs */
+.elenco-fonti {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.elenco-fonti > li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--lu-line);
+}
+
+.elenco-fonti > li:last-child {
+  border-bottom: 0;
+}
+
+.elenco-fonti .fatto-nota {
+  display: block;
+}
+
+ol.elenco-bibliografia {
+  padding-left: 2.2rem;
+  list-style: decimal;
+}
+
+ol.elenco-bibliografia > li::marker {
+  color: var(--lu-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.fonte-link {
+  margin-left: 0.2rem;
+  color: var(--lu-muted);
+  text-decoration: none;
+}
+
+.fonte-link:hover {
+  color: var(--lu-accent);
+}
+
+.elenco-fonti > .nascosto,
+.timeline > .nascosto {
+  display: none;
+}
+
+/* Side panel: authorship and citation */
+.scheda-aside {
+  padding: 1.25rem 1.4rem;
+  margin-top: 2rem;
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  box-shadow: var(--lu-elev-1);
+}
+
+.scheda-aside .scheda-etichetta {
+  margin-bottom: 0.3rem;
+}
+
+.scheda-aside p {
+  margin-bottom: 1.1rem;
+}
+
+.scheda-aside .citazione {
+  padding: 0.75rem 0.9rem;
+  border: 0;
+  border-left: 3px solid var(--lu-accent);
+  border-radius: 0;
+  background: var(--lu-paper);
+  box-shadow: none;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 992px) {
+  .scheda-aside {
+    position: sticky;
+    top: calc(var(--lu-header-h) + var(--lu-sezioni-h) + 1rem);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .scheda-fatti > div {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+@media print {
+  .scheda-title.compresso {
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+  }
+  .prose.compresso {
+    max-height: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .elenco-fonti > .nascosto {
+    display: list-item;
+  }
+  .btn-espandi,
+  .btn-testo,
+  .sezioni-nav {
+    display: none !important;
+  }
+  .scheda-aside {
+    position: static;
+    box-shadow: none;
+  }
+}

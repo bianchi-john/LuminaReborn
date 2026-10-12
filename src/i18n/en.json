@@ -473,7 +473,6 @@
   "ha respinto la scheda": "rejected the record",
   "ha ritirato la scheda dalla pubblicazione": "unpublished the record",
   "ha ritirato la scheda dalla revisione": "withdrew the record from review",
-  "in LUMiNA – Catalogo dei Musei Nazionali di Lucca, scheda n. {id}": "in LUMiNA – Catalogue of the National Museums of Lucca, record no. {id}",
   "intero": "whole",
   "larghezza": "width",
   "lunghezza": "length",
@@ -544,5 +543,19 @@
   "Troppe richieste": "Too many requests",
   "Troppe richieste da questo indirizzo: l'accesso è sospeso temporaneamente. Riprova più tardi.": "Too many requests from this address: access is temporarily suspended. Please try again later.",
   "Troppe richieste. Riprova tra poco.": "Too many requests. Please try again shortly.",
-  "{file}: immagine troppo grande ({w}×{h} pixel; massimo {lato} pixel per lato e {mp} megapixel)": "{file}: image too large ({w}×{h} pixels; maximum {lato} pixels per side and {mp} megapixels)"
+  "{file}: immagine troppo grande ({w}×{h} pixel; massimo {lato} pixel per lato e {mp} megapixel)": "{file}: image too large ({w}×{h} pixels; maximum {lato} pixels per side and {mp} megapixels)",
+  "Citazione copiata": "Citation copied",
+  "Continua a leggere": "Continue reading",
+  "Copia citazione": "Copy citation",
+  "Copia non riuscita: seleziona il testo e copialo a mano": "Copy failed: select the text and copy it manually",
+  "Inv.": "Inv.",
+  "Mostra il titolo completo": "Show full title",
+  "Mostra meno": "Show less",
+  "Mostra tutti ({n})": "Show all ({n})",
+  "Note interne": "Internal notes",
+  "Provenienza e storia": "Provenance and history",
+  "Pubblicata il": "Published on",
+  "Riduci": "Show less",
+  "Riduci il titolo": "Shorten title",
+  "in LUMiNA – Catalogo dei Musei Nazionali di Lucca": "in LUMiNA – Catalogue of the National Museums of Lucca"
 }

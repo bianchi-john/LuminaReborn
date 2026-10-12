@@ -10,7 +10,7 @@ import { buildWhere, searchQuerySchema, searchTerms } from '../src/services/sear
 import { rigaScheda } from '../src/services/export.service';
 import type { SchedaCompleta } from '../src/services/schede.service';
 import { cleanHtml, soloImmagini } from '../src/util/html';
-import { haCriteri } from '../src/routes/pages';
+import { haCriteri, titoloBreve } from '../src/routes/pages';
 import { findDuplicatePairs, findSimilar, similarity } from '../src/util/similarity';
 
 describe('somiglianza tra nomi', () => {
@@ -130,6 +130,16 @@ describe('home', () => {
     assert.equal(haCriteri({ q: 'giordano' }), true);
     assert.equal(haCriteri({ classificazione: 'Dipinti' }), true);
     assert.equal(haCriteri({ autori: '1' }), true);
+  });
+});
+
+describe('titolo della pagina', () => {
+  it('accorcia i titoli lunghi a una parola intera', () => {
+    assert.equal(titoloBreve('San Sebastiano'), 'San Sebastiano');
+    const lungo = 'Croce dipinta con Cristo vivo; nella cimasa, Ascensione di Cristo; nei terminali dei bracci orizzontali';
+    const breve = titoloBreve(lungo);
+    assert.ok(breve.length <= 71);
+    assert.equal(breve, 'Croce dipinta con Cristo vivo; nella cimasa, Ascensione di Cristo…');
   });
 });
 

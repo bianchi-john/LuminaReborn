@@ -70,9 +70,9 @@ export function toast(message, variant = 'success') {
     el('div', { class: 'd-flex' }, el('div', { class: 'toast-body', text: message }), el('button', { type: 'button', class: 'btn-close btn-close-white me-2 m-auto', 'data-bs-dismiss': 'toast', 'aria-label': t('Chiudi') })),
   );
   container.append(node);
-  const t = new window.bootstrap.Toast(node, { delay: variant === 'danger' ? 8000 : 4000 });
+  const istanza = new window.bootstrap.Toast(node, { delay: variant === 'danger' ? 8000 : 4000 });
   node.addEventListener('hidden.bs.toast', () => node.remove());
-  t.show();
+  istanza.show();
 }
 
 /**

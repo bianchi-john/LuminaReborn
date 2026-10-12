@@ -27,7 +27,7 @@
         <li class="breadcrumb-item"><a href="/"><%= t('Catalogo') %></a></li>
         <% if (s.classificazione) { %><li class="breadcrumb-item"><a href="/?classificazione=<%= encodeURIComponent(s.classificazione) %>"><%= h.classLabel(s.classificazione) %></a></li><% } %>
       <% } %>
-      <li class="breadcrumb-item active" aria-current="page"><%= t('Scheda n. {id}', { id: s.id }) %></li>
+      <li class="breadcrumb-item active breadcrumb-titolo" aria-current="page"><%= area ? t('Scheda n. {id}', { id: s.id }) : h.text(s.titolo_opera) %></li>
     </ol>
   </nav>
 
@@ -73,8 +73,30 @@
     </div>
   <% } %>
 
-  <div class="row g-4 g-lg-5">
-    <div class="col-lg-6">
+  <%
+    // Body sections in reading order: only those with content are shown and listed in the section bar
+    const nBibliografia = voci.bibliografie.length + voci.altre_bibliografie.length;
+    const sezioni = [
+      s.descrizione_sintetica && { id: 'descrizione', titolo: t('Descrizione') },
+      s.corpo_scheda && { id: 'commento', titolo: t('Commento storico-critico') },
+      s.iscrizioni && { id: 'iscrizioni', titolo: t('Iscrizioni') },
+      (s.storia_espositiva || voci.provenienze.length) && { id: 'storia', titolo: t('Provenienza e storia') },
+      voci.mostre.length && { id: 'mostre', titolo: t('Mostre'), n: voci.mostre.length },
+      nBibliografia && { id: 'bibliografia', titolo: t('Bibliografia'), n: nBibliografia },
+      s.documentazioni_fotografiche.length && { id: 'documentazione', titolo: t('Documentazione fotografica'), n: s.documentazioni_fotografiche.length },
+      area && s.note_schedatore && { id: 'note', titolo: t('Note interne') },
+      area && revisioni.length && { id: 'storico', titolo: t('Storico e messaggi') },
+    ].filter(Boolean);
+    const occhiello = [h.classLabel(s.classificazione), s.cronologie[0] ? datazione(s.cronologie[0]) : ''].filter(Boolean);
+    const ambiti = s.cronologie.map(c => c.ambito_storico).filter(Boolean);
+    const proprieta = s.inventari.map(i => i.descrizione).filter(Boolean);
+    const schedatori = s.schedatori.map(u => u.display_name || u.username).join(', ');
+    const lingua = lang !== 'it' ? 'lang="it"' : '';
+    // Long lists show the first items; the rest opens with "Show all"
+    const ELENCO = 6;
+  %>
+  <div class="row g-4 g-xl-5 scheda-testa">
+    <div class="col-lg-7">
       <% if (s.immagini.length) { %>
         <div id="galleria" class="carousel slide gallery-main shadow-sm" data-bs-ride="false" data-bs-interval="false" data-bs-touch="true">
           <div class="carousel-inner">
@@ -116,158 +138,208 @@
       <% } %>
     </div>
 
-    <div class="col-lg-6">
-      <h1 class="scheda-title mb-2"><%- h.inline(s.titolo_opera) %></h1>
-      <% if (voci.autori.length) { %>
-        <p class="scheda-autori mb-4">
-          <% voci.autori.forEach((a, i) => { %>
-            <%- i ? '<br>' : '' %>
-            <%= a.formula_precedente || '' %> <%- link('autori', a, esc(a.nome)) %> <%= a.formula_successiva || '' %>
-            <% if (a.categoria) { %><span class="badge badge-soft fw-normal"><%= t(a.categoria) %></span><% } %>
-          <% }) %>
-        </p>
-      <% } %>
-
-      <dl class="dati-tecnici">
-        <% if (s.cronologie.length) { %>
-          <dt><%= t('Datazione') %></dt>
-          <dd><% s.cronologie.forEach(c => { %><div><%= datazione(c) %></div><% }) %></dd>
-          <% const ambiti = s.cronologie.map(c => c.ambito_storico).filter(Boolean) %>
-          <% if (ambiti.length) { %><dt><%= t('Ambito storico-culturale') %></dt><dd><%= ambiti.join('; ') %></dd><% } %>
-        <% } %>
-        <% if (s.classificazione) { %>
-          <dt><%= t('Classificazione') %></dt>
-          <dd><a href="/?classificazione=<%= encodeURIComponent(s.classificazione) %>"><%= h.classLabel(s.classificazione) %></a></dd>
-        <% } %>
-        <% if (voci.materiali.length || voci.tecniche.length) { %>
-          <dt><%= t('Materia e tecnica') %></dt>
-          <dd><%- [...voci.materiali.map(m => link('materiali', m, esc(m.nome_materiale))), ...voci.tecniche.map(x => link('tecniche', x, esc(x.nome_tecnica)))].join(', ') %></dd>
-        <% } %>
-        <% if (s.misure.length) { %>
-          <dt><%= t('Misure') %></dt>
-          <dd>
-            <% s.misure.forEach(g => { %>
-              <div class="misure-gruppo">
-                <% if (g.titolo_gruppo_misure || g.intero_parziale) { %>
-                  <div class="fst-italic"><%= [g.titolo_gruppo_misure, g.intero_parziale ? `(${t(g.intero_parziale)})` : ''].filter(Boolean).join(' ') %></div>
-                <% } %>
-                <%= g.misure.map(m => [m.direzione ? t(m.direzione) : '', m.tipo ? t(m.tipo) : '', h.num(m.valore), m.unita_di_misura].filter(Boolean).join(' ')).join('; ') %>
-                <% if (g.note) { %><div class="small text-muted-lu"><%= g.note %></div><% } %>
-              </div>
+    <div class="col-lg-5">
+      <div class="scheda-sintesi">
+        <% if (occhiello.length) { %><p class="scheda-occhiello"><%= occhiello.join(' · ') %></p><% } %>
+        <h1 class="scheda-title <%= h.text(s.titolo_opera).length > 90 ? 'titolo-lungo' : '' %>" data-titolo-comprimibile><%- h.inline(s.titolo_opera) %></h1>
+        <% if (voci.autori.length) { %>
+          <ul class="scheda-autori list-unstyled">
+            <% voci.autori.forEach(a => { %>
+              <li>
+                <% if (a.formula_precedente) { %><span class="text-muted-lu"><%= a.formula_precedente %></span><% } %>
+                <%- link('autori', a, esc(a.nome)) %>
+                <% if (a.formula_successiva) { %><span class="text-muted-lu"><%= a.formula_successiva %></span><% } %>
+                <% if (a.categoria) { %><span class="badge badge-soft fw-normal"><%= t(a.categoria) %></span><% } %>
+              </li>
             <% }) %>
-          </dd>
+          </ul>
         <% } %>
-        <% if (voci.ubicazioni.length) { %>
-          <dt><%= t('Ubicazione') %></dt>
-          <dd><% voci.ubicazioni.forEach(u => { %><div><%- link('ubicazioni', u, esc(u.ubicazione)) %><%= u.collocazione ? `, ${u.collocazione}` : '' %></div><% }) %></dd>
-        <% } %>
-        <% if (s.inventari.length) { %>
-          <dt><%= t('Inventario') %></dt>
-          <dd><% s.inventari.forEach(i => { %><div><%= [i.numero_inventario, i.nome_inventario].filter(Boolean).join(', ') %></div><% }) %></dd>
-          <% const proprieta = s.inventari.map(i => i.descrizione).filter(Boolean) %>
-          <% if (proprieta.length) { %><dt><%= t('Proprietà giuridica') %></dt><dd><%= proprieta.map(x => t(x)).join('; ') %></dd><% } %>
-        <% } %>
-        <% if (voci.provenienze.length) { %>
-          <dt><%= t('Provenienza') %></dt>
-          <dd>
-            <% voci.provenienze.forEach(pr => { %>
-              <div><%- link('provenienze', pr, esc(pr.provenienza)) %><%= pr.descrizione ? ` (${pr.descrizione})` : '' %><%= pr.note ? ` — ${pr.note}` : '' %></div>
-            <% }) %>
-          </dd>
-        <% } %>
-        <% if (s.schedatori.length) { %>
-          <dt><%= t('Scheda di') %></dt>
-          <dd><%= s.schedatori.map(u => u.display_name || u.username).join(', ') %></dd>
-        <% } %>
-      </dl>
 
-      <% if (confronto) { %>
-        <div class="card confronto-card shadow-sm mt-3">
-          <div class="card-body">
-            <h2 class="h6 text-uppercase text-muted-lu mb-2"><%= t('Dimensioni a confronto') %></h2>
+        <dl class="scheda-fatti">
+          <% if (s.cronologie.length) { %>
+            <div>
+              <dt><%= t('Datazione') %></dt>
+              <dd>
+                <% s.cronologie.forEach(c => { %><div><%= datazione(c) %></div><% }) %>
+                <% if (ambiti.length) { %><div class="fatto-nota"><%= ambiti.join('; ') %></div><% } %>
+              </dd>
+            </div>
+          <% } %>
+          <% if (voci.materiali.length || voci.tecniche.length) { %>
+            <div>
+              <dt><%= t('Materia e tecnica') %></dt>
+              <dd><%- [...voci.materiali.map(m => link('materiali', m, esc(m.nome_materiale))), ...voci.tecniche.map(x => link('tecniche', x, esc(x.nome_tecnica)))].join(', ') %></dd>
+            </div>
+          <% } %>
+          <% if (s.misure.length) { %>
+            <div>
+              <dt><%= t('Misure') %></dt>
+              <dd>
+                <% s.misure.forEach(g => { %>
+                  <div class="misure-gruppo">
+                    <% if (g.titolo_gruppo_misure || g.intero_parziale) { %>
+                      <span class="fatto-nota"><%= [(g.titolo_gruppo_misure || '').replace(/[\s:]+$/, ''), g.intero_parziale ? `(${t(g.intero_parziale)})` : ''].filter(Boolean).join(' ') %>:</span>
+                    <% } %>
+                    <%= g.misure.map(m => [m.direzione ? t(m.direzione) : '', m.tipo ? t(m.tipo) : '', h.num(m.valore), m.unita_di_misura].filter(Boolean).join(' ')).join('; ') %>
+                    <% if (g.note) { %><div class="fatto-nota"><%= g.note %></div><% } %>
+                  </div>
+                <% }) %>
+              </dd>
+            </div>
+          <% } %>
+          <% if (voci.ubicazioni.length) { %>
+            <div>
+              <dt><%= t('Ubicazione') %></dt>
+              <dd><% voci.ubicazioni.forEach(u => { %><div><%- link('ubicazioni', u, esc(u.ubicazione)) %><% if (u.collocazione) { %><span class="fatto-nota"> · <%= u.collocazione %></span><% } %></div><% }) %></dd>
+            </div>
+          <% } %>
+          <% if (s.inventari.length) { %>
+            <div>
+              <dt><%= t('Inventario') %></dt>
+              <dd>
+                <% s.inventari.forEach(i => { %><div><%= [i.numero_inventario, i.nome_inventario].filter(Boolean).join(', ') %></div><% }) %>
+                <% if (proprieta.length) { %><div class="fatto-nota"><%= proprieta.map(x => t(x)).join('; ') %></div><% } %>
+              </dd>
+            </div>
+          <% } %>
+        </dl>
+
+        <% if (confronto) { %>
+          <div class="confronto-card">
+            <h2 class="scheda-etichetta"><%= t('Dimensioni a confronto') %></h2>
             <%- include('partials/confronto', { confronto }) %>
           </div>
-        </div>
-      <% } %>
+        <% } %>
+      </div>
     </div>
   </div>
 
-  <% [['descrizione_sintetica', 'Descrizione'], ['corpo_scheda', 'Commento storico-critico'], ['iscrizioni', 'Iscrizioni'], ['storia_espositiva', 'Vicende collezionistiche e storia espositiva']].forEach(([campo, titolo]) => { %>
-    <% if (s[campo]) { %>
-      <section class="sezione">
-        <h2><%= t(titolo) %></h2>
-        <div class="prose" <%- lang !== 'it' ? 'lang="it"' : '' %>><%- h.block(s[campo]) %></div>
-      </section>
-    <% } %>
-  <% }) %>
-
-  <% if (voci.mostre.length) { %>
-    <section class="sezione">
-      <h2><%= t('Mostre') %></h2>
-      <ul class="list-unstyled bibliografia">
-        <% voci.mostre.forEach(m => { %>
-          <li>
-            <a href="/voci/mostre/<%= m.id %>"><%- h.inline(m.titolo_mostra) %></a><%= [m.luogo_mostra, m.descrizione, periodoMostra(m)].filter(Boolean).map(x => `, ${x}`).join('') %><% if (m.curatore) { %>, <%= t('a cura di') %> <%= m.curatore %><% } %>
-          </li>
-        <% }) %>
-      </ul>
-    </section>
+  <% if (sezioni.length > 1) { %>
+    <nav class="sezioni-nav no-print" aria-label="<%= t('Sezioni della scheda') %>" data-sezioni-nav>
+      <% sezioni.forEach(x => { %>
+        <a href="#<%= x.id %>"><%= x.titolo %><% if (x.n) { %> <span class="conteggio"><%= x.n %></span><% } %></a>
+      <% }) %>
+    </nav>
   <% } %>
 
-  <% [['bibliografie', 'Bibliografia'], ['altre_bibliografie', 'Altra bibliografia']].forEach(([key, titolo]) => { %>
-    <% if (voci[key].length) { %>
-      <section class="sezione">
-        <h2><%= t(titolo) %></h2>
-        <ul class="list-unstyled bibliografia">
-          <% voci[key].forEach(b => { %>
-            <li><%- h.inline(b.riferimento_bibliografico) %> <a class="small no-print" href="/voci/<%= key %>/<%= b.id %>" title="<%= t('Altre opere che citano questo riferimento') %>">↗</a></li>
+  <div class="row g-4 g-xl-5 scheda-corpo">
+    <div class="col-lg-8">
+      <% [['descrizione', 'descrizione_sintetica', 16], ['commento', 'corpo_scheda', 24], ['iscrizioni', 'iscrizioni', 16]].forEach(([id, campo, righe]) => { %>
+        <% if (s[campo]) { %>
+          <section class="sezione" id="<%= id %>">
+            <h2><%= sezioni.find(x => x.id === id).titolo %></h2>
+            <div class="prose" data-comprimi="<%= righe %>" <%- lingua %>><%- h.block(s[campo]) %></div>
+          </section>
+        <% } %>
+      <% }) %>
+
+      <% if (s.storia_espositiva || voci.provenienze.length) { %>
+        <section class="sezione" id="storia">
+          <h2><%= t('Provenienza e storia') %></h2>
+          <% if (voci.provenienze.length) { %>
+            <h3 class="scheda-etichetta"><%= t('Provenienza') %></h3>
+            <ul class="elenco-fonti" data-elenco="<%= ELENCO %>">
+              <% voci.provenienze.forEach(pr => { %>
+                <li><%- link('provenienze', pr, esc(pr.provenienza)) %><%= pr.descrizione ? ` (${pr.descrizione})` : '' %><% if (pr.note) { %><span class="fatto-nota"> — <%= pr.note %></span><% } %></li>
+              <% }) %>
+            </ul>
+          <% } %>
+          <% if (s.storia_espositiva) { %>
+            <h3 class="scheda-etichetta"><%= t('Vicende collezionistiche e storia espositiva') %></h3>
+            <div class="prose" data-comprimi="16" <%- lingua %>><%- h.block(s.storia_espositiva) %></div>
+          <% } %>
+        </section>
+      <% } %>
+
+      <% if (voci.mostre.length) { %>
+        <section class="sezione" id="mostre">
+          <h2><%= t('Mostre') %></h2>
+          <ul class="elenco-fonti" data-elenco="<%= ELENCO %>">
+            <% voci.mostre.forEach(m => { %>
+              <li>
+                <a href="/voci/mostre/<%= m.id %>"><%- h.inline(m.titolo_mostra) %></a>
+                <span class="fatto-nota"><%= [m.luogo_mostra, m.descrizione, periodoMostra(m)].filter(Boolean).join(', ') %><% if (m.curatore) { %>, <%= t('a cura di') %> <%= m.curatore %><% } %></span>
+              </li>
+            <% }) %>
+          </ul>
+        </section>
+      <% } %>
+
+      <% if (nBibliografia) { %>
+        <section class="sezione" id="bibliografia">
+          <h2><%= t('Bibliografia') %></h2>
+          <% [['bibliografie', ''], ['altre_bibliografie', 'Altra bibliografia']].forEach(([key, sotto]) => { %>
+            <% if (voci[key].length) { %>
+              <% if (sotto) { %><h3 class="scheda-etichetta"><%= t(sotto) %></h3><% } %>
+              <ol class="elenco-fonti elenco-bibliografia" data-elenco="<%= ELENCO %>">
+                <% voci[key].forEach(b => { %>
+                  <li><%- h.inline(b.riferimento_bibliografico) %> <a class="fonte-link no-print" href="/voci/<%= key %>/<%= b.id %>" title="<%= t('Altre opere che citano questo riferimento') %>" aria-label="<%= t('Altre opere che citano questo riferimento') %>">↗</a></li>
+                <% }) %>
+              </ol>
+            <% } %>
           <% }) %>
-        </ul>
-      </section>
-    <% } %>
-  <% }) %>
+        </section>
+      <% } %>
 
-  <% if (s.documentazioni_fotografiche.length) { %>
-    <section class="sezione">
-      <h2><%= t('Documentazione fotografica') %></h2>
-      <ul class="list-unstyled bibliografia">
-        <% s.documentazioni_fotografiche.forEach(d => { %><li><%- h.inline(d.riferimento) %></li><% }) %>
-      </ul>
-    </section>
-  <% } %>
+      <% if (s.documentazioni_fotografiche.length) { %>
+        <section class="sezione" id="documentazione">
+          <h2><%= t('Documentazione fotografica') %></h2>
+          <ul class="elenco-fonti" data-elenco="<%= ELENCO %>">
+            <% s.documentazioni_fotografiche.forEach(d => { %><li><%- h.inline(d.riferimento) %></li><% }) %>
+          </ul>
+        </section>
+      <% } %>
 
-  <% if (area && s.note_schedatore) { %>
-    <section class="sezione no-print">
-      <h2><%= t('Note interne dello schedatore') %></h2>
-      <p class="mb-0"><%= s.note_schedatore %></p>
-    </section>
-  <% } %>
+      <% if (area && s.note_schedatore) { %>
+        <section class="sezione no-print" id="note">
+          <h2><%= t('Note interne dello schedatore') %></h2>
+          <p class="mb-0"><%= s.note_schedatore %></p>
+        </section>
+      <% } %>
 
-  <% if (area && revisioni.length) { %>
-    <section class="sezione no-print">
-      <h2><%= t('Storico e messaggi') %></h2>
-      <ol class="timeline list-unstyled">
-        <% revisioni.forEach(r => { %>
-          <li class="timeline-item timeline-<%= r.azione %>">
-            <div class="small text-muted-lu"><%= h.dateTime(r.created_at) %></div>
-            <div><strong><%= r.username || t('Sistema') %></strong> — <%= AZIONI[r.azione] || r.azione %></div>
-            <% if (r.commento) { %><div class="messaggio mt-1"><%= r.commento %></div><% } %>
-          </li>
-        <% }) %>
-      </ol>
-    </section>
-  <% } %>
+      <% if (area && revisioni.length) { %>
+        <section class="sezione no-print" id="storico">
+          <h2><%= t('Storico e messaggi') %></h2>
+          <ol class="timeline list-unstyled" data-elenco="<%= ELENCO %>">
+            <% revisioni.forEach(r => { %>
+              <li class="timeline-item timeline-<%= r.azione %>">
+                <div class="small text-muted-lu"><%= h.dateTime(r.created_at) %></div>
+                <div><strong><%= r.username || t('Sistema') %></strong> — <%= AZIONI[r.azione] || r.azione %></div>
+                <% if (r.commento) { %><div class="messaggio mt-1"><%= r.commento %></div><% } %>
+              </li>
+            <% }) %>
+          </ol>
+        </section>
+      <% } %>
+    </div>
 
-  <% if (!area) { %>
-    <section class="sezione">
-      <h2 class="h6 text-uppercase text-muted-lu"><%= t('Come citare questa scheda') %></h2>
-      <p class="citazione p-3 mb-2">
-        <%= s.schedatori.map(u => u.display_name || u.username).join(', ') %><%= s.schedatori.length ? ', ' : '' %><em><%= h.text(s.titolo_opera) %></em>,
-        <%= t('in LUMiNA – Catalogo dei Musei Nazionali di Lucca, scheda n. {id}', { id: s.id }) %><%= s.published_at ? `, ${t('pubblicata il {data}', { data: h.date(s.published_at) })}` : '' %>.
-      </p>
-      <button class="btn btn-sm btn-outline-secondary no-print" type="button" data-print><%= t('Stampa la scheda') %></button>
-    </section>
-  <% } %>
+    <aside class="col-lg-4">
+      <div class="scheda-aside">
+        <% if (schedatori) { %>
+          <h2 class="scheda-etichetta"><%= t('Scheda di') %></h2>
+          <p><%= schedatori %></p>
+        <% } %>
+        <% if (s.published_at && !area) { %>
+          <h2 class="scheda-etichetta"><%= t('Pubblicata il') %></h2>
+          <p><%= h.date(s.published_at) %></p>
+        <% } %>
+        <% if (!area) { %>
+          <h2 class="scheda-etichetta"><%= t('Come citare questa scheda') %></h2>
+          <p class="citazione" id="citazione">
+            <%= schedatori %><%= schedatori ? ', ' : '' %><em><%= h.text(s.titolo_opera) %></em>,
+            <%= t('in LUMiNA – Catalogo dei Musei Nazionali di Lucca') %>, <%= indirizzo %><%= s.published_at ? `, ${t('pubblicata il {data}', { data: h.date(s.published_at) })}` : '' %>.
+          </p>
+          <div class="d-flex flex-wrap gap-2 no-print">
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-copia="citazione"><%= t('Copia citazione') %></button>
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-print><%= t('Stampa la scheda') %></button>
+          </div>
+        <% } else { %>
+          <h2 class="scheda-etichetta"><%= t('Ultima modifica') %></h2>
+          <p class="mb-0"><%= h.dateTime(s.updated_at) %></p>
+        <% } %>
+      </div>
+    </aside>
+  </div>
 </div>
 
 <div class="modal fade" id="lightbox" tabindex="-1" aria-label="<%= t('Immagine ingrandita') %>" aria-hidden="true">

@@ -14,7 +14,7 @@
     <% risultati.items.forEach(o => { %>
       <div class="col">
         <article class="opera-card">
-          <a href="<%= o.url %>" class="stretched-link-wrapper">
+          <a href="<%= o.url %>" class="opera-card-link" title="<%= h.text(o.titolo_opera) %>">
             <div class="thumb">
               <% if (o.copertina) { %>
                 <img src="/media/<%= o.copertina %>/miniatura" alt="" loading="lazy" decoding="async">
@@ -22,13 +22,13 @@
                 <span class="placeholder-icon" aria-hidden="true">L</span>
               <% } %>
             </div>
-            <div class="p-3">
-              <h3 class="card-title mb-2"><%- h.inline(o.titolo_opera) %></h3>
-              <% if (o.autori) { %><div class="card-author mb-1"><%= o.autori %></div><% } %>
-              <div class="meta">
-                <% if (o.datazione) { %><div><%= o.datazione %></div><% } %>
-                <% if (o.classificazione) { %><div><%= h.classLabel(o.classificazione) %></div><% } %>
-                <% if (o.inventario) { %><div><%= o.inventario %></div><% } %>
+            <div class="opera-card-body">
+              <h3 class="card-title"><%- h.inline(o.titolo_opera) %></h3>
+              <% if (o.autori) { %><p class="card-author"><%= o.autori %></p><% } %>
+              <% const dati = [o.datazione, h.classLabel(o.classificazione)].filter(Boolean) %>
+              <div class="card-piede">
+                <span class="card-dati"><%= dati.join(' · ') %></span>
+                <% if (o.inventario) { %><span class="card-inv"><%= t('Inv.') %> <%= o.inventario.replace(/^inv\.?\s*(n\.?\s*)?/i, '') %></span><% } %>
               </div>
             </div>
           </a>

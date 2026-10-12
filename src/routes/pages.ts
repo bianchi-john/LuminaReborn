@@ -29,6 +29,10 @@ export function safeNext(value: unknown): string {
 }
 
 /** JSON to embed in <script type="application/json"> without being able to close the tag. */
+/** Page <title>: long titles (some exceed 400 characters) are cut at a word boundary. */
+export const titoloBreve = (titolo: string, max = 70): string =>
+  titolo.length <= max ? titolo : `${titolo.slice(0, max).replace(/[\s,;:.]+\S*$/, '')}…`;
+
 const embedJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c').replace(/\u2028|\u2029/g, '');
 
 // ---------------------------------------------------------------------------
@@ -81,7 +85,8 @@ pages.get(
     const s = await schede.getScheda(id, req.user);
     if (s.stato !== STATI.PUBBLICATA) return res.redirect(`/area/schede/${s.id}`);
     if (req.path !== s.percorso) return res.redirect(301, s.percorso + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''));
-    res.render('scheda', { title: s.titolo_testo, nav: 'catalogo', s, area: false, confronto: confrontoDimensionale(s.misure) });
+    const indirizzo = `${req.protocol}://${req.get('host')}${s.percorso}`;
+    res.render('scheda', { title: titoloBreve(s.titolo_testo), nav: 'catalogo', s, area: false, indirizzo, confronto: confrontoDimensionale(s.misure) });
   }),
 );
 
@@ -253,7 +258,7 @@ pages.get(
   requireUserPage,
   ah(async (req, res) => {
     const s = await schede.getScheda(idParam(req), req.user);
-    res.render('scheda', { title: s.titolo_testo, nav: 'area', s, area: true, confronto: confrontoDimensionale(s.misure) });
+    res.render('scheda', { title: titoloBreve(s.titolo_testo), nav: 'area', s, area: true, indirizzo: '', confronto: confrontoDimensionale(s.misure) });
   }),
 );
 
