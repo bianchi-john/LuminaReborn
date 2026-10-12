@@ -1,4 +1,9 @@
-import { Request, Router } from 'express';
+import { randomBytes, timingSafeEqual } from 'crypto';
+import express, { Request, Response, Router } from 'express';
+import { config } from '../config';
+import { eseguiLogin } from '../auth/login';
+import { loginLimiter, loginUserLimiter, verificaOrigine } from '../http/security';
+import { loginSchema } from './api';
 import { requireAdminPage, requireUserPage } from '../auth/session';
 import { STATI } from '../domain/classificazioni';
 import { confrontoDimensionale } from '../domain/dimensioni';
@@ -118,7 +123,12 @@ pages.get(
 // Pagine informative (testi in views/pagine, in italiano e inglese)
 // ---------------------------------------------------------------------------
 
-export const PAGINE_INFORMATIVE = { informazioni: 'Informazioni', privacy: 'Privacy', termini: 'Termini e condizioni' } as const;
+export const PAGINE_INFORMATIVE = {
+  informazioni: 'Informazioni',
+  privacy: 'Privacy',
+  termini: 'Termini e condizioni',
+  accessibilita: 'Accessibilità',
+} as const;
 
 for (const [slug, titolo] of Object.entries(PAGINE_INFORMATIVE)) {
   pages.get(`/${slug}`, (req, res) => {
@@ -131,11 +141,57 @@ pages.get('/about', (_req, res) => res.redirect(301, '/informazioni'));
 // Accesso
 // ---------------------------------------------------------------------------
 
+/**
+ * Token anti-CSRF del modulo di accesso (double submit): lo stesso valore casuale
+ * sta in un campo nascosto e in un cookie tecnico limitato al percorso /login,
+ * valido un'ora e cancellato dopo l'accesso. Non riguarda il catalogo pubblico.
+ */
+const CSRF_COOKIE = 'lumina_csrf';
+const csrfCookieOptions = () => ({ httpOnly: true, secure: config.session.secureCookie, sameSite: 'strict' as const, path: '/login' });
+
+function nuovoTokenCsrf(res: Response): string {
+  const token = randomBytes(32).toString('hex');
+  res.cookie(CSRF_COOKIE, token, { ...csrfCookieOptions(), maxAge: 3600 * 1000 });
+  return token;
+}
+
+function tokenCsrfValido(req: Request): boolean {
+  const cookie = String(req.cookies?.[CSRF_COOKIE] ?? '');
+  const campo = String(req.body?.csrf_token ?? '');
+  return cookie.length === 64 && campo.length === 64 && timingSafeEqual(Buffer.from(cookie), Buffer.from(campo));
+}
+
 pages.get('/login', (req, res) => {
   const next = safeNext(req.query.next);
   if (req.user) return res.redirect(next);
-  res.render('login', { title: req.t('Accesso'), nav: 'login', next });
+  res.render('login', { title: req.t('Accesso'), nav: 'login', next, errore: null, csrf: nuovoTokenCsrf(res) });
 });
+
+/** Accesso senza JavaScript: il modulo viene inviato in POST (mai credenziali nell'URL). */
+pages.post(
+  '/login',
+  express.urlencoded({ extended: false, limit: '10kb' }),
+  loginLimiter,
+  loginUserLimiter,
+  ah(async (req, res) => {
+    const origine = verificaOrigine(req);
+    if (origine) throw origine;
+    if (!tokenCsrfValido(req)) throw forbidden('Modulo scaduto o non valido: ricarica la pagina e riprova');
+    const next = safeNext(req.body?.next);
+    const dati = loginSchema.safeParse(req.body);
+    if (dati.success && (await eseguiLogin(req, res, dati.data.username, dati.data.password))) {
+      res.clearCookie(CSRF_COOKIE, csrfCookieOptions());
+      return res.redirect(303, next);
+    }
+    res.status(401).render('login', {
+      title: req.t('Accesso'),
+      nav: 'login',
+      next,
+      errore: req.t('Nome utente o password non corretti'),
+      csrf: nuovoTokenCsrf(res),
+    });
+  }),
+);
 
 // ---------------------------------------------------------------------------
 // Area riservata

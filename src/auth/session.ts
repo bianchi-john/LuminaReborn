@@ -30,6 +30,8 @@ declare global {
 
 const CACHE_TTL_MS = 60_000;
 const cache = new Map<string, { user: SessionUser; expires: number }>();
+/** Ultima attività per sessione (hash del token), per la scadenza per inattività. */
+const lastSeen = new Map<string, number>();
 
 const tokenKey = (token: string) => createHash('sha256').update(token).digest('hex');
 
@@ -37,7 +39,8 @@ export function cookieOptions(): CookieOptions {
   return {
     httpOnly: true,
     secure: config.session.secureCookie,
-    sameSite: 'lax',
+    // Strict: il cookie non viaggia mai con richieste avviate da altri siti
+    sameSite: 'strict',
     path: '/',
     maxAge: config.session.maxAgeHours * 3600 * 1000,
   };
@@ -50,6 +53,26 @@ export function clearSessionCookie(res: Response): void {
 
 export function forgetToken(token: string): void {
   cache.delete(tokenKey(token));
+  lastSeen.delete(tokenKey(token));
+}
+
+/**
+ * Scadenza per inattività (OWASP ASVS 3.3). Lo stato è in memoria: dopo un
+ * riavvio dell'app le sessioni restano valide fino alla durata massima.
+ */
+function idleExpired(token: string): boolean {
+  const key = tokenKey(token);
+  const now = Date.now();
+  const previous = lastSeen.get(key);
+  if (previous !== undefined && now - previous > config.session.idleMinutes * 60_000) {
+    lastSeen.delete(key);
+    return true;
+  }
+  lastSeen.set(key, now);
+  if (lastSeen.size > 10_000) {
+    for (const [k, t] of lastSeen) if (now - t > config.session.idleMinutes * 60_000) lastSeen.delete(k);
+  }
+  return false;
 }
 
 /**
@@ -118,7 +141,8 @@ export async function loadSession(req: Request, res: Response, next: NextFunctio
   res.locals.user = null;
   if (!token) return next();
 
-  if (token.length > 4096 || tokenTooOld(token)) {
+  if (token.length > 4096 || tokenTooOld(token) || idleExpired(token)) {
+    forgetToken(token);
     clearSessionCookie(res);
     return next();
   }

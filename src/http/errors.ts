@@ -1,6 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ZodError } from 'zod';
 import { logger } from '../logger';
+import { audit } from './audit';
 
 export class HttpError extends Error {
   constructor(
@@ -41,7 +42,8 @@ function toHttpError(error: unknown): HttpError {
 /** Risposta JSON per le API, pagina di errore per il resto. Lo stack non esce mai dal server. */
 export function errorHandler(error: unknown, req: Request, res: Response, _next: NextFunction): void {
   const httpError = toHttpError(error);
-  if (httpError.status >= 500) logger.error(`${req.method} ${req.originalUrl}`, error);
+  if (httpError.status >= 500) logger.error(`${req.method} ${req.originalUrl.split('?')[0]}`, error);
+  if (httpError.status === 403) audit('accesso.negato', req, { motivo: httpError.message });
 
   if (res.headersSent) return;
   // Messaggi tradotti nella lingua dell'interfaccia (se disponibile)

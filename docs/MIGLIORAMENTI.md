@@ -11,6 +11,7 @@
 - Backup giornaliero con rotazione, ripristino, esportazione Excel
 - Sicurezza: query parametrizzate, sanitizzazione HTML, CSP, CSRF, sessioni con scadenza e revoca, rate limit, servizi interni non esposti
 - Test unitari ed end-to-end, CI, ambiente di sviluppo con ricarica automatica
+- Revisione di sicurezza (OWASP ZAP senza avvisi), audit log, scadenza per inattività, cambio password, MongoDB con autenticazione, Dependabot
 
 ## Priorità alta
 

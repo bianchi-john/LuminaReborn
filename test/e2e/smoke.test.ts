@@ -18,13 +18,15 @@ class Client {
       redirect: 'manual',
       headers: {
         ...(this.cookie ? { Cookie: this.cookie } : {}),
+        // Come un browser: le richieste che modificano dati portano l'origine del sito
+        ...(method !== 'GET' ? { Origin: BASE } : {}),
         ...(body !== undefined && !(body instanceof Uint8Array) ? { 'Content-Type': 'application/json' } : {}),
         ...headers,
       },
       body: body === undefined ? undefined : body instanceof Uint8Array ? body : JSON.stringify(body),
     });
     const set = res.headers.get('set-cookie');
-    if (set?.startsWith('lumina_session=')) this.cookie = set.split(';')[0];
+    if (set && /^(__Host-)?lumina_session=/.test(set)) this.cookie = set.split(';')[0];
     return res;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,8 +71,40 @@ describe('catalogo pubblico', () => {
   it('header di sicurezza', async () => {
     const res = await fetch(BASE + '/');
     assert.match(res.headers.get('content-security-policy') ?? '', /script-src 'self'/);
+    assert.match(res.headers.get('content-security-policy') ?? '', /frame-ancestors 'none'/);
     assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+    assert.equal(res.headers.get('x-frame-options'), 'DENY');
+    assert.match(res.headers.get('permissions-policy') ?? '', /camera=\(\)/);
+    assert.equal(res.headers.get('referrer-policy'), 'same-origin');
     assert.equal(res.headers.get('x-powered-by'), null);
+    const login = await fetch(BASE + '/login');
+    assert.equal(login.headers.get('cache-control'), 'no-store');
+  });
+
+  it('login senza JavaScript: POST con token anti-CSRF, mai credenziali nell\'URL', async () => {
+    const pagina = await fetch(BASE + '/login');
+    const html = await pagina.text();
+    assert.match(html, /<form id="login-form" method="post" action="\/login"/);
+    const token = html.match(/name="csrf_token" value="([a-f0-9]{64})"/)?.[1];
+    const cookie = pagina.headers.get('set-cookie')?.split(';')[0] ?? '';
+    assert.ok(token && cookie.startsWith('lumina_csrf='));
+    const invia = (extra: Record<string, string>, headers: Record<string, string>) =>
+      fetch(BASE + '/login', {
+        method: 'POST',
+        redirect: 'manual',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Origin: BASE, ...headers },
+        body: new URLSearchParams({ username: ADMIN.username, password: ADMIN.password, next: '/area', ...extra }).toString(),
+      });
+    assert.equal((await invia({}, {})).status, 403, 'senza token');
+    assert.equal((await invia({ csrf_token: token! }, { Cookie: cookie })).status, 303, 'con token');
+  });
+
+  it('la lingua segue il browser senza cookie', async () => {
+    const en = await fetch(BASE + '/', { headers: { 'Accept-Language': 'en-GB,en;q=0.9' } });
+    assert.match(await en.text(), /<html lang="en">/);
+    assert.equal(en.headers.get('set-cookie'), null);
+    const fr = await fetch(BASE + '/', { headers: { 'Accept-Language': 'fr-FR' } });
+    assert.match(await fr.text(), /<html lang="it">/);
   });
 
   it('versione inglese', async () => {
@@ -144,6 +178,15 @@ describe('flusso di lavoro', () => {
   it('protezioni: CSRF e permessi', async () => {
     const csrf = await schedatore.req('POST', `/api/schede/${schedaId}/invia`, {}, { Origin: 'https://evil.example' });
     assert.equal(csrf.status, 403);
+    const crossSite = await schedatore.req('POST', `/api/schede/${schedaId}/invia`, {}, { 'Sec-Fetch-Site': 'cross-site' });
+    assert.equal(crossSite.status, 403);
+    const senzaOrigine = await fetch(`${BASE}/api/schede/${schedaId}/invia`, {
+      method: 'POST',
+      headers: { Cookie: schedatore.cookie, 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+    assert.equal(senzaOrigine.status, 403);
+    assert.equal((await schedatore.req('GET', '/area')).headers.get('cache-control'), 'no-store');
     const approva = await schedatore.json('POST', `/api/schede/${schedaId}/approva`, {});
     assert.equal(approva.status, 403);
   });
@@ -155,6 +198,17 @@ describe('flusso di lavoro', () => {
     assert.equal((await schedatore.json('POST', `/api/schede/${schedaId}/invia`, {})).status, 200);
     assert.equal((await admin.json('POST', `/api/schede/${schedaId}/approva`, {})).status, 200);
     assert.equal((await fetch(`${BASE}/scheda/${schedaId}`)).status, 200);
+  });
+
+  it('cambio password: richiede quella attuale e chiude le altre sessioni', async () => {
+    const altra = new Client();
+    await altra.login(SCHEDATORE);
+    const sbagliata = await schedatore.json('POST', '/api/auth/password', { attuale: 'sbagliata', nuova: 'NuovaPassword2026' });
+    assert.equal(sbagliata.status, 400);
+    assert.equal((await schedatore.json('POST', '/api/auth/password', { attuale: SCHEDATORE.password, nuova: 'NuovaPassword2026' })).status, 200);
+    assert.equal((await altra.req('GET', '/api/schede')).status, 401, 'la sessione sull\'altro dispositivo è chiusa');
+    assert.equal((await schedatore.req('GET', '/api/schede')).status, 200, 'la sessione corrente resta attiva');
+    assert.equal((await schedatore.json('POST', '/api/auth/password', { attuale: 'NuovaPassword2026', nuova: SCHEDATORE.password })).status, 200);
   });
 
   it('esportazione Excel solo per gli amministratori', async () => {

@@ -33,6 +33,7 @@ function list(name: string): string[] {
 }
 
 const isProduction = (process.env.NODE_ENV ?? 'development') === 'production';
+const secureCookie = bool('COOKIE_SECURE', isProduction);
 
 export const config = {
   isProduction,
@@ -55,11 +56,18 @@ export const config = {
   userManagerUrl: str('USER_MANAGER_API_URL', 'http://user-manager-api').replace(/\/+$/, ''),
 
   session: {
-    cookieName: 'lumina_session',
+    /** In HTTPS il prefisso __Host- impedisce che il cookie sia impostato da sottodomini o senza Secure. */
+    cookieName: secureCookie ? '__Host-lumina_session' : 'lumina_session',
     /** Da attivare quando il sito è servito in HTTPS (obbligatorio in produzione). */
-    secureCookie: bool('COOKIE_SECURE', isProduction),
+    secureCookie,
+    /** Durata massima assoluta della sessione. */
     maxAgeHours: int('SESSION_MAX_AGE_HOURS', 8),
+    /** Chiusura automatica dopo questo periodo di inattività. */
+    idleMinutes: int('SESSION_IDLE_MINUTES', 60),
   },
+
+  /** Contatto per le segnalazioni di vulnerabilità (/.well-known/security.txt, RFC 9116). */
+  securityContact: process.env.SECURITY_CONTACT ?? '',
 
   /** Origini ammesse per le richieste che modificano dati (protezione CSRF). Vuoto = stesso host. */
   allowedOrigins: list('ALLOWED_ORIGINS'),
@@ -84,6 +92,12 @@ export const config = {
     keep: int('EXPORT_KEEP', 14),
   },
 } as const;
+
+// In HTTPS (cioè in un'installazione reale) non si parte con le credenziali dimostrative
+const DEMO_PASSWORDS = ['letmein', 'admin', 'password', 'changeme'];
+if (config.session.secureCookie && DEMO_PASSWORDS.includes(config.db.password)) {
+  throw new Error('DB_PASSWORD è ancora la password dimostrativa: impostarne una nuova in .env (vedi docs/SICUREZZA.md)');
+}
 
 // Il nome del database media viene usato nelle query: solo caratteri sicuri
 for (const name of [config.db.database, config.db.mediaDatabase]) {

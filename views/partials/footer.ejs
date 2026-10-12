@@ -6,10 +6,43 @@
       <a class="link-secondary" href="/informazioni"><%= t('Informazioni') %></a>
       <a class="link-secondary" href="/privacy"><%= t('Privacy') %></a>
       <a class="link-secondary" href="/termini"><%= t('Termini e condizioni') %></a>
+      <a class="link-secondary" href="/accessibilita"><%= t('Accessibilità') %></a>
       <a class="link-secondary" href="/login"><%= t('Area riservata') %></a>
     </div>
   </div>
 </footer>
+<% if (user) { %>
+<div class="modal fade" id="modale-password" tabindex="-1" aria-labelledby="modale-password-titolo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content" id="form-password" novalidate>
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="modale-password-titolo"><%= t('Cambia password') %></h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('Chiudi') %>"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" id="password-errore" role="alert"></div>
+        <div class="mb-3">
+          <label class="form-label" for="pw-attuale"><%= t('Password attuale') %></label>
+          <input class="form-control" type="password" id="pw-attuale" name="attuale" autocomplete="current-password" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="pw-nuova"><%= t('Nuova password') %></label>
+          <input class="form-control" type="password" id="pw-nuova" name="nuova" autocomplete="new-password" required minlength="8" maxlength="30" aria-describedby="pw-aiuto">
+          <div class="form-text" id="pw-aiuto"><%= t('8-30 caratteri, solo lettere e numeri') %>. <%= t('Le altre sessioni aperte verranno chiuse.') %></div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label" for="pw-conferma"><%= t('Ripeti la nuova password') %></label>
+          <input class="form-control" type="password" id="pw-conferma" name="conferma" autocomplete="new-password" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><%= t('Annulla') %></button>
+        <button type="submit" class="btn btn-primary"><%= t('Cambia password') %></button>
+      </div>
+    </form>
+  </div>
+</div>
+<% } %>
 <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts" aria-live="polite"></div>
 <script type="application/json" id="i18n"><%- dizionarioClient %></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

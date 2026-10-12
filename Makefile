@@ -6,7 +6,7 @@ COMPOSE_DEV := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 NODE        := docker run --rm -v "$(CURDIR)":/app -v lumina-node-modules:/app/node_modules -w /app node:22-alpine
 
 .DEFAULT_GOAL := help
-.PHONY: help setup up down restart logs ps dev reset-demo backup restore export test typecheck test-e2e grant-media db
+.PHONY: help setup up down restart logs ps dev reset-demo backup restore export test typecheck test-e2e grant-media mongo-auth db verifica-produzione scansione-sicurezza
 
 help: ## Mostra i comandi disponibili
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -49,6 +49,17 @@ export: ## Esporta subito il catalogo in Excel in backups/excel
 
 grant-media: ## Crea il database delle immagini su installazioni precedenti
 	./scripts/grant-media.sh
+
+mongo-auth: ## Attiva l'autenticazione MongoDB su installazioni precedenti
+	./scripts/mongo-auth.sh
+
+verifica-produzione: ## Controlla che .env sia adatto alla produzione (password, HTTPS, ...)
+	./scripts/verifica-produzione.sh
+
+scansione-sicurezza: ## Scansione OWASP ZAP (baseline) dell'istanza avviata, rapporto in backups/zap
+	@mkdir -p backups/zap && chmod 777 backups/zap && cp scripts/zap-regole.conf backups/zap/
+	docker run --rm --network host -v "$(CURDIR)/backups/zap":/zap/wrk ghcr.io/zaproxy/zaproxy:stable \
+		zap-baseline.py -t $${BASE_URL:-http://localhost:3000} -c zap-regole.conf -r zap-rapporto.html
 
 db: ## Console MySQL
 	$(COMPOSE) exec mysqldb sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'

@@ -72,6 +72,7 @@
       <%- navLink(voce('/informazioni', esc(t('Informazioni')), nav === 'informazioni')) %>
       <%- navLink(voce('/privacy', esc(t('Privacy')), nav === 'privacy')) %>
       <%- navLink(voce('/termini', esc(t('Termini e condizioni')), nav === 'termini')) %>
+      <%- navLink(voce('/accessibilita', esc(t('Accessibilità')), nav === 'accessibilita')) %>
     </div>
 
     <% if (user) { %>
@@ -97,7 +98,8 @@
             <span class="small text-muted-lu"><%= user.isAdmin ? t('Amministratore') : t('Schedatore') %> · <%= user.username %></span>
           </span>
         </div>
-        <button class="btn btn-outline-secondary w-100 mt-3" type="button" data-logout><%= t('Esci') %></button>
+        <button class="btn btn-outline-secondary w-100 mt-3" type="button" data-bs-toggle="modal" data-bs-target="#modale-password"><%= t('Cambia password') %></button>
+        <button class="btn btn-outline-secondary w-100 mt-2" type="button" data-logout><%= t('Esci') %></button>
       </div>
     <% } else { %>
       <div class="menu-section menu-account">

@@ -1,6 +1,7 @@
 import express, { Request, Router } from 'express';
 import { z } from 'zod';
 import { clearSessionCookie, cookieOptions, forgetToken, requireAdmin, requireUser } from '../auth/session';
+import { eseguiLogin } from '../auth/login';
 import * as userManager from '../auth/userManager';
 import { config } from '../config';
 import { pool, select } from '../db/pool';
@@ -17,7 +18,8 @@ import {
 import { optText, parseSchedaInput, vocabFieldsSchema } from '../domain/scheda.schema';
 import { isVocabKey, VOCABOLARI, vocabolariPublicSchema, VocabDef } from '../domain/vocabolari';
 import { ah, badRequest, forbidden, notFound, unauthorized } from '../http/errors';
-import { loginLimiter, uploadLimiter } from '../http/security';
+import { audit } from '../http/audit';
+import { loginLimiter, loginUserLimiter, uploadLimiter } from '../http/security';
 import { escapeLike } from '../util/sql';
 import * as immagini from '../services/immagini.service';
 import * as schede from '../services/schede.service';
@@ -53,12 +55,11 @@ const loginSchema = z.object({
 api.post(
   '/auth/login',
   loginLimiter,
+  loginUserLimiter,
   ah(async (req, res) => {
     const { username, password } = loginSchema.parse(req.body);
-    const token = await userManager.login(username, password);
     // Messaggio volutamente generico: non rivela se l'utente esiste
-    if (!token) throw unauthorized('Nome utente o password non corretti');
-    res.cookie(config.session.cookieName, token, cookieOptions());
+    if (!(await eseguiLogin(req, res, username, password))) throw unauthorized('Nome utente o password non corretti');
     res.json({ ok: true });
   }),
 );
@@ -69,8 +70,40 @@ api.post(
     if (req.sessionToken) {
       forgetToken(req.sessionToken);
       await userManager.revokeTokens(req.sessionToken).catch(() => undefined);
+      audit('logout', req);
     }
     clearSessionCookie(res);
+    res.json({ ok: true });
+  }),
+);
+
+const PASSWORD_RULE = z
+  .string()
+  .regex(/^[a-zA-Z0-9]{8,30}$/, 'La password deve avere 8-30 caratteri, solo lettere e numeri (vincolo dello user-manager)');
+
+/**
+ * Cambio della propria password: richiede quella attuale, poi chiude tutte le
+ * sessioni dell'utente (anche su altri dispositivi) e ne apre una nuova.
+ */
+api.post(
+  '/auth/password',
+  requireUser,
+  loginLimiter,
+  ah(async (req, res) => {
+    const { attuale, nuova } = z.object({ attuale: z.string().min(1).max(200), nuova: PASSWORD_RULE }).parse(req.body);
+    if (attuale === nuova) throw badRequest('La nuova password deve essere diversa da quella attuale');
+    const verifica = await userManager.login(req.user!.username, attuale);
+    if (!verifica) {
+      audit('login.fallito', req, { motivo: 'cambio password' });
+      throw badRequest('La password attuale non è corretta');
+    }
+    await userManager.setPassword(verifica, 'self', nuova);
+    await userManager.revokeTokens(verifica);
+    forgetToken(req.sessionToken!);
+    const nuovoToken = await userManager.login(req.user!.username, nuova);
+    if (nuovoToken) res.cookie(config.session.cookieName, nuovoToken, cookieOptions());
+    else clearSessionCookie(res);
+    audit('password.cambiata', req);
     res.json({ ok: true });
   }),
 );
@@ -168,6 +201,7 @@ api.delete(
   requireUser,
   ah(async (req, res) => {
     await schede.deleteScheda(idParam(req), req.user!);
+    audit('scheda.eliminata', req, { scheda: idParam(req) });
     res.status(204).end();
   }),
 );
@@ -180,6 +214,7 @@ api.post(
   ah(async (req, res) => {
     const { commento } = azioneSchema.parse(req.body ?? {});
     const stato = await schede.cambiaStato(idParam(req), req.params.azione as schede.Azione, req.user!, commento ?? null);
+    audit('scheda.stato', req, { scheda: idParam(req), azione: req.params.azione });
     res.json({ stato });
   }),
 );
@@ -243,7 +278,9 @@ api.put(
   requireAdmin,
   ah(async (req, res) => {
     const v = vocabParam(req);
-    res.json(await voci.updateVoce(v, idParam(req), vocabFieldsSchema(v).parse(req.body)));
+    const voce = await voci.updateVoce(v, idParam(req), vocabFieldsSchema(v).parse(req.body));
+    audit('voce.modificata', req, { tipo: v.key, voce: voce.id });
+    res.json(voce);
   }),
 );
 
@@ -253,6 +290,7 @@ api.post(
   ah(async (req, res) => {
     const { in: intoId } = z.object({ in: z.coerce.number().int().positive() }).parse(req.body);
     await voci.mergeVoci(vocabParam(req), idParam(req), intoId);
+    audit('voce.unita', req, { tipo: req.params.tipo, da: idParam(req), in: intoId });
     res.json({ id: intoId });
   }),
 );
@@ -262,6 +300,7 @@ api.delete(
   requireAdmin,
   ah(async (req, res) => {
     await voci.deleteVoce(vocabParam(req), idParam(req));
+    audit('voce.eliminata', req, { tipo: req.params.tipo, voce: idParam(req) });
     res.status(204).end();
   }),
 );
@@ -289,7 +328,8 @@ api.get(
   '/esportazioni/catalogo.xlsx',
   requireAdmin,
   ah(async (req, res) => {
-    const wb = await creaWorkbook(`${req.protocol}://${req.get('host')}`);
+    const wb = await creaWorkbook(config.allowedOrigins[0] ?? `${req.protocol}://${req.get('host')}`);
+    audit('esportazione', req);
     const stamp = new Date().toISOString().slice(0, 10);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="lumina-catalogo-${stamp}.xlsx"`);
@@ -303,9 +343,6 @@ api.get(
 // Utenti (proxy verso lo user-manager, solo amministratori)
 // ---------------------------------------------------------------------------
 
-const PASSWORD_RULE = z
-  .string()
-  .regex(/^[a-zA-Z0-9]{8,30}$/, 'La password deve avere 8-30 caratteri, solo lettere e numeri (vincolo dello user-manager)');
 
 api.get(
   '/utenti',
@@ -331,6 +368,7 @@ api.post(
     const created = await userManager.createUser(req.sessionToken!, input);
     const updates = { ...(input.display_name ? { display_name: input.display_name } : {}), ...(input.isAdmin ? { isAdmin: true } : {}) };
     if (Object.keys(updates).length) await userManager.updateUser(req.sessionToken!, created._id, updates);
+    audit('utente.creato', req, { destinatario: input.username, amministratore: !!input.isAdmin });
     res.status(201).json({ id: created._id });
   }),
 );
@@ -350,6 +388,7 @@ api.patch(
       throw badRequest('Non puoi rimuovere i privilegi o bloccare il tuo stesso account');
     }
     await userManager.updateUser(req.sessionToken!, req.params.id, input);
+    audit('utente.modificato', req, { destinatario: req.params.id, ...input });
     res.json({ ok: true });
   }),
 );
@@ -360,6 +399,9 @@ api.put(
   ah(async (req, res) => {
     const { password } = z.object({ password: PASSWORD_RULE }).parse(req.body);
     await userManager.setPassword(req.sessionToken!, req.params.id, password);
+    // La password impostata dall'amministratore chiude le sessioni aperte dell'utente
+    await userManager.revokeUserTokens(req.sessionToken!, req.params.id).catch(() => undefined);
+    audit('utente.password', req, { destinatario: req.params.id });
     res.json({ ok: true });
   }),
 );
@@ -369,6 +411,7 @@ api.post(
   requireAdmin,
   ah(async (req, res) => {
     await userManager.revokeUserTokens(req.sessionToken!, req.params.id);
+    audit('utente.disconnesso', req, { destinatario: req.params.id });
     res.json({ ok: true });
   }),
 );
@@ -379,10 +422,12 @@ api.delete(
   ah(async (req, res) => {
     if (req.params.id === req.user!.remoteId) throw badRequest('Non puoi eliminare il tuo stesso account');
     await userManager.deleteUser(req.sessionToken!, req.params.id);
+    audit('utente.eliminato', req, { destinatario: req.params.id });
     res.status(204).end();
   }),
 );
 
 api.use((_req, _res, next) => next(notFound('Endpoint inesistente')));
 
+export { loginSchema };
 export default api;

@@ -38,9 +38,8 @@ function walk(dir: string, exts: string[]): string[] {
 
 const unescape = (s: string) => s.replace(/\\(['"`\\])/g, '$1');
 
-export function chiaviDaTradurre(root: string): Set<string> {
+function chiaviDaFile(files: string[]): Set<string> {
   const keys = new Set<string>();
-  const files = [...walk(path.join(root, 'views'), ['.ejs']), ...walk(path.join(root, 'public', 'js'), ['.js']), ...walk(path.join(root, 'src'), ['.ts'])];
   for (const file of files) {
     if (file.endsWith('chiavi.ts')) continue;
     const text = fs.readFileSync(file, 'utf8');
@@ -56,11 +55,16 @@ export function chiaviDaTradurre(root: string): Set<string> {
       for (const m of text.matchAll(re)) [unescape(m[2]), unescape(m[4])].forEach((k) => k && !k.includes('${') && keys.add(k));
     }
   }
-  for (const k of VOCAB_KEYS) {
-    const v = VOCABOLARI[k];
-    [v.singolare, v.plurale, ...v.fields.map((f) => f.label), ...v.linkFields.map((f) => f.label)].forEach((s) => keys.add(s));
-  }
-  [
+  return keys;
+}
+
+/** Etichette che arrivano dal dominio (vocabolari, classificazioni, misure...). */
+function chiaviDominio(): string[] {
+  return [
+    ...VOCAB_KEYS.flatMap((k) => {
+      const v = VOCABOLARI[k];
+      return [v.singolare, v.plurale, ...v.fields.map((f) => f.label), ...v.linkFields.map((f) => f.label)];
+    }),
     ...CLASSIFICAZIONI.map((c) => c.label),
     ...Object.values(STATO_LABEL),
     ...CATEGORIE_AUTORE,
@@ -68,6 +72,20 @@ export function chiaviDaTradurre(root: string): Set<string> {
     ...TIPI_MISURA,
     ...INTERO_PARZIALE,
     ...PROPRIETA_GIURIDICA,
-  ].forEach((s) => keys.add(s));
+  ];
+}
+
+/** Tutti i testi dell'interfaccia: template, script del browser, server e dominio. */
+export function chiaviDaTradurre(root: string): Set<string> {
+  const files = [...walk(path.join(root, 'views'), ['.ejs']), ...walk(path.join(root, 'public', 'js'), ['.js']), ...walk(path.join(root, 'src'), ['.ts'])];
+  const keys = chiaviDaFile(files);
+  chiaviDominio().forEach((k) => keys.add(k));
+  return keys;
+}
+
+/** Solo i testi usati dagli script del browser: è il dizionario incorporato nelle pagine. */
+export function chiaviClient(root: string): Set<string> {
+  const keys = chiaviDaFile(walk(path.join(root, 'public', 'js'), ['.js']));
+  chiaviDominio().forEach((k) => keys.add(k));
   return keys;
 }

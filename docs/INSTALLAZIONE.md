@@ -91,11 +91,16 @@ Le migrazioni sono registrate nella tabella `schema_migrations` e vengono applic
 **Installazioni precedenti alla versione 2** (dati in `database-data/` e `user-data/`, MySQL 8.0):
 
 - se i dati erano solo quelli dimostrativi, non serve fare nulla: la nuova versione usa volumi Docker e ricarica le opere di esempio (le vecchie cartelle si possono poi cancellare);
+- installazioni con MongoDB senza autenticazione (precedenti a questa versione): dopo `make up` eseguire una volta `make mongo-auth`, che crea gli utenti del database;
 - per conservarli, aggiungere a `.env` `MYSQL_DATA_DIR=./database-data` e `MONGO_DATA_DIR=./user-data/mongo-data`, avviare con `make up` (MySQL 8.0 → 8.4 si aggiorna da solo), eseguire una volta `make grant-media` per creare il database delle immagini e infine `make restart`.
 
 ## Messa in produzione: elenco di controllo
 
-- [ ] Nuovi valori per `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `JWT_SECRET`, `ADMIN_PASSWORD`; `.env` con permessi `600`
+Dettagli e motivazioni in [SICUREZZA.md](SICUREZZA.md). `make verifica-produzione` controlla automaticamente i punti di configurazione.
+
+- [ ] Nuovi valori per `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `JWT_SECRET`, `ADMIN_PASSWORD`, `MONGO_ROOT_PASSWORD`, `MONGO_APP_PASSWORD`; `.env` con permessi `600`
+- [ ] `SECURITY_CONTACT` impostato (pubblicato in `/.well-known/security.txt`)
+- [ ] `make verifica-produzione` senza errori e `make scansione-sicurezza` senza avvisi
 - [ ] Reverse proxy con HTTPS (Caddy, Traefik o nginx) davanti a `nodeapp`; `APP_BIND=127.0.0.1` se il proxy è sulla stessa macchina
 - [ ] `COOKIE_SECURE=true`, `TRUST_PROXY=1`, `ALLOWED_ORIGINS=https://…`
 - [ ] Utenti dimostrativi eliminati o con nuove password

@@ -524,5 +524,17 @@
   "Informazioni": "About",
   "Privacy": "Privacy",
   "Termini e condizioni": "Terms and conditions",
-  "Il progetto": "The project"
+  "Il progetto": "The project",
+  "Accessibilità": "Accessibility",
+  "Cambia password": "Change password",
+  "Password attuale": "Current password",
+  "Nuova password": "New password",
+  "Ripeti la nuova password": "Repeat the new password",
+  "Le altre sessioni aperte verranno chiuse.": "Your other open sessions will be closed.",
+  "Le due password non coincidono": "The two passwords do not match",
+  "La nuova password deve essere diversa da quella attuale": "The new password must be different from the current one",
+  "La password attuale non è corretta": "The current password is incorrect",
+  "Origine della richiesta mancante": "Request origin missing",
+  "La password deve avere 8-30 caratteri, solo lettere e numeri (vincolo dello user-manager)": "The password must be 8-30 characters, letters and numbers only (user-manager constraint)",
+  "Modulo scaduto o non valido: ricarica la pagina e riprova": "Form expired or invalid: reload the page and try again"
 }

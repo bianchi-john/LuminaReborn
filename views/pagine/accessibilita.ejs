@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+<div class="container py-5 pagina-testo">
+  <% if (lang === 'en') { %>
+    <div class="alert alert-warning mb-4">Draft. Italian public bodies must publish the official accessibility statement through the AgID form and link it here; this page summarises the design choices and must be completed with the results of the assessment.</div>
+    <p class="eyebrow mb-1">Accessibility</p>
+    <h1 class="mb-4">Accessibility</h1>
+    <p>LUMiNA is designed to meet the WCAG 2.1 level AA guidelines, as required by Italian law (Law 4/2004 and AgID guidelines).</p>
+    <h2>What has been done</h2>
+    <ul>
+      <li>semantic page structure with headings, landmarks and a "skip to content" link;</li>
+      <li>full keyboard navigation, visible focus, menus and dialogs that can be closed with Esc;</li>
+      <li>text alternatives for images, labels for every form field, error messages announced to screen readers;</li>
+      <li>text that can be enlarged up to 200% and a layout that adapts to small screens;</li>
+      <li>animations disabled when the operating system asks to reduce motion.</li>
+    </ul>
+    <h2>Accessibility statement</h2>
+    <p>[Link to the statement published on form.agid.gov.it, compliance status, date of the last assessment.]</p>
+    <h2>Feedback</h2>
+    <p>To report accessibility problems: [contact]. If you receive no answer, you can contact the Agency for Digital Italy (AgID).</p>
+  <% } else { %>
+    <div class="alert alert-warning mb-4">Bozza. Le pubbliche amministrazioni devono pubblicare la dichiarazione di accessibilità ufficiale tramite il modulo AgID e collegarla qui; questa pagina riassume le scelte di progetto e va completata con gli esiti della valutazione.</div>
+    <p class="eyebrow mb-1">Accessibilità</p>
+    <h1 class="mb-4">Accessibilità</h1>
+    <p>LUMiNA è progettato per rispettare le linee guida WCAG 2.1 livello AA, come richiesto dalla normativa italiana (Legge 4/2004 e Linee guida AgID).</p>
+    <h2>Che cosa è stato fatto</h2>
+    <ul>
+      <li>struttura semantica con titoli, aree di riferimento e collegamento "Vai al contenuto";</li>
+      <li>navigazione completa da tastiera, focus visibile, menu e finestre chiudibili con Esc;</li>
+      <li>testi alternativi per le immagini, etichette per ogni campo, messaggi di errore annunciati ai lettori di schermo;</li>
+      <li>testo ingrandibile fino al 200% e impaginazione che si adatta agli schermi piccoli;</li>
+      <li>animazioni disattivate quando il sistema operativo chiede di ridurre il movimento.</li>
+    </ul>
+    <h2>Dichiarazione di accessibilità</h2>
+    <p>[Collegamento alla dichiarazione pubblicata su form.agid.gov.it, stato di conformità, data dell'ultima valutazione.]</p>
+    <h2>Segnalazioni</h2>
+    <p>Per segnalare problemi di accessibilità: [contatto]. In caso di risposta insoddisfacente o mancata risposta è possibile rivolgersi all'Agenzia per l'Italia Digitale (AgID).</p>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

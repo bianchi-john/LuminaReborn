@@ -51,6 +51,7 @@ Per ricominciare da capo con i dati dimostrativi: `make reset-demo`. Tutti i com
 |---|---|
 | [docs/INSTALLAZIONE.md](docs/INSTALLAZIONE.md) | Installazione, configurazione, dati dimostrativi, aggiornamenti, backup e ripristino, messa in produzione |
 | [docs/SVILUPPO.md](docs/SVILUPPO.md) | Ambiente di sviluppo con ricarica automatica, architettura, modello dei dati, traduzioni, test |
+| [docs/SICUREZZA.md](docs/SICUREZZA.md) | Misure di sicurezza e conformità (OWASP, GDPR, AgID), verifiche, rischi residui |
 | [docs/MIGLIORAMENTI.md](docs/MIGLIORAMENTI.md) | Proposte per i prossimi sviluppi |
 
 ## Tecnologie

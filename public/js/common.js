@@ -33,7 +33,7 @@ if (langScelta === 'it' || langScelta === 'en') {
   });
 }
 
-// Form che si inviano al cambio di una select (es. ordinamento dei risultati)
+// Moduli inviati automaticamente al cambio di un menu a tendina (es. ordinamento dei risultati)
 document.querySelectorAll('form[data-autosubmit]').forEach((form) => {
   form.addEventListener('change', () => form.submit());
 });
@@ -114,3 +114,28 @@ document.addEventListener('click', async (event) => {
     toast(error.message, 'danger');
   }
 });
+
+// Cambio della propria password (area riservata)
+const formPassword = document.getElementById('form-password');
+if (formPassword) {
+  const errore = document.getElementById('password-errore');
+  formPassword.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    errore.classList.add('d-none');
+    const { attuale, nuova, conferma } = formPassword.elements;
+    if (nuova.value !== conferma.value) {
+      errore.textContent = t('Le due password non coincidono');
+      errore.classList.remove('d-none');
+      return;
+    }
+    try {
+      await api('POST', '/api/auth/password', { attuale: attuale.value, nuova: nuova.value });
+      formPassword.reset();
+      window.bootstrap.Modal.getInstance(document.getElementById('modale-password'))?.hide();
+      toast(t('Password aggiornata'));
+    } catch (error) {
+      errore.textContent = error.details?.map((d) => d.messaggio).join('; ') || error.message;
+      errore.classList.remove('d-none');
+    }
+  });
+}

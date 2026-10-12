@@ -7,8 +7,9 @@ import { config, ROOT_DIR } from './config';
 import { CLASSIFICAZIONI, STATO_LABEL } from './domain/classificazioni';
 import { VOCABOLARI } from './domain/vocabolari';
 import { ah, errorHandler, notFound } from './http/errors';
-import { apiLimiter, sameOriginOnly, securityHeaders } from './http/security';
-import { DIZIONARI, i18nMiddleware, Lang, TFunction } from './i18n';
+import { apiLimiter, noStoreForPrivate, permissionsPolicy, sameOriginOnly, securityHeaders } from './http/security';
+import { DIZIONARI, i18nMiddleware, Lang, LANGS, TFunction } from './i18n';
+import { chiaviClient } from './i18n/chiavi';
 import api from './routes/api';
 import media from './routes/media';
 import pages from './routes/pages';
@@ -55,7 +56,19 @@ function viewHelpers(lang: Lang, t: TFunction) {
   };
 }
 
+/** Dizionari per gli script del browser: solo le chiavi che usano davvero. */
+function dizionariClient(): Record<Lang, string> {
+  const chiavi = chiaviClient(ROOT_DIR);
+  return Object.fromEntries(
+    LANGS.map((lang) => {
+      const voci = Object.entries(DIZIONARI[lang]).filter(([k]) => chiavi.has(k));
+      return [lang, JSON.stringify(Object.fromEntries(voci)).replace(/</g, '\\u003c')];
+    }),
+  ) as Record<Lang, string>;
+}
+
 export function createApp(): Application {
+  const dizionari = dizionariClient();
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', config.trustProxy);
@@ -78,12 +91,19 @@ export function createApp(): Application {
   app.locals.dizionarioClient = '{}';
 
   app.use(securityHeaders);
+  app.use(permissionsPolicy);
 
   const staticOptions = { maxAge: config.isProduction ? '7d' : 0, index: false as const };
   app.use('/static', express.static(path.join(ROOT_DIR, 'public'), staticOptions));
   app.use('/vendor/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules', 'bootstrap', 'dist'), staticOptions));
   app.get('/favicon.ico', (_req, res) => res.redirect(301, '/static/img/favicon.png'));
   app.get('/healthz', (_req, res) => res.json({ ok: true }));
+  // Canale per la segnalazione responsabile di vulnerabilità (RFC 9116)
+  app.get('/.well-known/security.txt', (_req, res) => {
+    if (!config.securityContact) return void res.status(404).type('text/plain').send('Not found');
+    const scadenza = new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString();
+    res.type('text/plain').send(`Contact: ${config.securityContact}\nExpires: ${scadenza}\nPreferred-Languages: it, en\n`);
+  });
   app.get('/robots.txt', (_req, res) => res.type('text/plain').send('User-agent: *\nDisallow: /area\nDisallow: /api\nDisallow: /login\n'));
 
   app.use(cookieParser());
@@ -95,9 +115,10 @@ export function createApp(): Application {
     res.locals.user = req.user ?? null;
     res.locals.h = viewHelpers(req.lang, req.t);
     // Dizionario per gli script del browser (vuoto in italiano)
-    res.locals.dizionarioClient = JSON.stringify(DIZIONARI[req.lang]).replace(/</g, '\\u003c');
+    res.locals.dizionarioClient = dizionari[req.lang];
     next();
   });
+  app.use(noStoreForPrivate);
 
   app.use('/media', media);
   app.use('/api', apiLimiter, sameOriginOnly, api);

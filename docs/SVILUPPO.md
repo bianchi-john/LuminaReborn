@@ -105,6 +105,8 @@ L'italiano è la lingua principale: i testi nel codice sono in italiano e fanno 
 
 ## Sicurezza
 
+Il quadro completo (mappatura OWASP/GDPR/AgID, verifiche, rischi residui) è in [SICUREZZA.md](SICUREZZA.md). In sintesi:
+
 | Rischio | Contromisura |
 |---|---|
 | SQL injection | solo query parametrizzate; i nomi di tabelle/colonne dinamici vengono da configurazioni statiche (`domain/vocabolari.ts`); `multipleStatements` solo per il migratore |
