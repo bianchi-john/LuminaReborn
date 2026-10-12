@@ -102,7 +102,10 @@ export function createApp(): Application {
   app.use('/static', express.static(path.join(ROOT_DIR, 'public'), staticOptions));
   app.use('/vendor/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules', 'bootstrap', 'dist'), staticOptions));
   // Fonts served by the site itself (no third-party requests): only the font files of the two packages
-  for (const font of ['inter', 'playfair-display']) {
+  const FONT = ['inter', 'playfair-display'];
+  // Extra families for the style test panel (prova-stile.js), downloaded only if someone uses it
+  const FONT_PROVA = ['geist', 'public-sans', 'dm-sans', 'figtree', 'manrope', 'instrument-sans', 'ibm-plex-sans', 'source-sans-3', 'bodoni-moda', 'cormorant-garamond', 'fraunces', 'eb-garamond'];
+  for (const font of [...FONT, ...FONT_PROVA]) {
     app.use(`/vendor/fonts/${font}`, express.static(path.join(ROOT_DIR, 'node_modules', '@fontsource-variable', font, 'files'), { ...staticOptions, maxAge: config.isProduction ? '365d' : 0, immutable: config.isProduction }));
   }
   app.get('/favicon.ico', (_req, res) => res.redirect(301, '/static/img/favicon.png'));

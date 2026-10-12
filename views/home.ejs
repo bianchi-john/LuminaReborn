@@ -263,7 +263,7 @@
   <div class="row row-cols-2 row-cols-md-3 g-3 justify-content-center">
     <% Object.values(vocabolari).filter(v => v.indice).forEach(v => { %>
       <div class="col">
-        <a class="card card-link indice-tile indice-<%= v.key %> h-100 text-decoration-none" href="/voci/<%= v.key %>">
+        <a class="card card-link indice-tile h-100 text-decoration-none" href="/voci/<%= v.key %>">
           <span class="card-body"><%= t(v.plurale) %></span>
         </a>
       </div>

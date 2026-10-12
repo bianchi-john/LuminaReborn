@@ -47,6 +47,7 @@
 <script type="application/json" id="i18n"><%- dizionarioClient %></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script type="module" src="/static/js/common.js?v=<%= assetVersion %>"></script>
+<script type="module" src="/static/js/prova-stile.js?v=<%= assetVersion %>"></script>
 <% (typeof scripts !== 'undefined' ? scripts : []).forEach(src => { %>
 <script type="module" src="/static/js/<%= src %>?v=<%= assetVersion %>"></script>
 <% }) %>

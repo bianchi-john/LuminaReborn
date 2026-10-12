@@ -2361,22 +2361,15 @@ ol.elenco-bibliografia > li::marker {
    v6: index tiles with their own soft tint; lighter rendering
    ========================================================================= */
 
-/* Each index keeps the same tint on the home page and on the Indexes page */
-.indice-autori { --tinta: #f7eeec; --filo: #c99a96; }
-.indice-materiali { --tinta: #f5f0e6; --filo: #c9b48a; }
-.indice-tecniche { --tinta: #eef2ea; --filo: #9fb293; }
-.indice-ubicazioni { --tinta: #edf1f4; --filo: #93a8b9; }
-.indice-provenienze { --tinta: #f1edf4; --filo: #ab9cbc; }
-.indice-mostre { --tinta: #f6f1e4; --filo: #c8ac72; }
-
-[class*="indice-"].card-link {
-  border: 1px solid color-mix(in srgb, var(--filo, transparent) 35%, transparent);
-  background: var(--tinta, #fff);
+/* Index buttons: neutral, fully rounded on the home page */
+.indice-tile.card-link {
+  border: 1px solid var(--lu-line);
+  background: #fff;
   box-shadow: var(--lu-elev-1);
 }
 
-[class*="indice-"].card-link:hover {
-  border-color: var(--filo, var(--lu-line));
+.indice-tile.card-link:hover {
+  border-color: var(--lu-accent);
   box-shadow: var(--lu-elev-2);
 }
 
@@ -2809,9 +2802,11 @@ ol.elenco-bibliografia > li::marker {
 }
 
 /* =========================================================================
-   v7 typography: Playfair Display for the LUMiNA name and the headings,
-   Inter (open source, in the spirit of Helvetica Neue / San Francisco) for
-   everything else. Both served by the site: Latin and extended Latin only.
+   v7 typography: Inter (open source, in the spirit of Helvetica Neue /
+   San Francisco) everywhere; Playfair Display only for the LUMiNA name.
+   Both served by the site: Latin and extended Latin only.
+   Three variables, so the style test panel (prova-stile.js) can swap them:
+   --lu-font (text), --lu-font-titoli (headings), --lu-font-marchio (LUMiNA).
    ========================================================================= */
 
 @font-face {
@@ -2888,8 +2883,9 @@ ol.elenco-bibliografia > li::marker {
 
 :root {
   --lu-font: "Inter Variable", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --lu-titoli: "Playfair Display Variable", Georgia, "Times New Roman", serif;
-  --lu-serif: var(--lu-titoli);
+  --lu-font-titoli: var(--lu-font);
+  --lu-font-marchio: "Playfair Display Variable", Georgia, "Times New Roman", serif;
+  --lu-serif: var(--lu-font-titoli);
   --bs-body-font-family: var(--lu-font);
   --bs-font-sans-serif: var(--lu-font);
   --bs-body-font-size: 1rem;
@@ -2901,15 +2897,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Headings and work titles in Playfair; small labels stay in Inter */
+/* Headings and work titles: same family as the text unless the test panel changes it */
 h1, h2, h3, .serif,
 .scheda-title,
 .opera-card .card-title,
 .indice-tile,
 .empty-state .serif {
-  font-family: var(--lu-titoli);
-  font-weight: 600;
-  letter-spacing: 0;
+  font-family: var(--lu-font-titoli);
+  font-weight: 650;
+  letter-spacing: -0.012em;
 }
 
 h4, h5, h6 {
@@ -2920,7 +2916,7 @@ h4, h5, h6 {
 /* The LUMiNA name: Playfair, with the lowercase italic i */
 .brand-mark,
 .hero-lumina {
-  font-family: var(--lu-titoli);
+  font-family: var(--lu-font-marchio);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -2983,4 +2979,155 @@ h4, h5, h6 {
 .menu-sub > a {
   margin-left: 1rem;
   font-size: 0.95rem;
+}
+
+/* =========================================================================
+   Style test panel (prova-stile.js, Alt+Shift+S) and the transition
+   variants between the home header and the page. Temporary tool.
+   ========================================================================= */
+
+.prova-stile {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 1090;
+  display: flex;
+  flex-direction: column;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 6rem);
+  border: 1px solid var(--lu-line);
+  background: #fff;
+  box-shadow: var(--lu-elev-4);
+  font-size: 0.9rem;
+}
+
+.prova-testa {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--lu-line);
+}
+
+.prova-testa .btn-close {
+  margin-left: auto;
+}
+
+.prova-tasti {
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--lu-line);
+  font-size: 0.72rem;
+  color: var(--lu-muted);
+}
+
+.prova-corpo {
+  overflow-y: auto;
+  padding: 0.4rem 0.9rem;
+}
+
+.prova-gruppo {
+  margin: 0.5rem 0 0.8rem;
+}
+
+.prova-gruppo legend {
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lu-accent);
+}
+
+.prova-voce {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.prova-voce:hover {
+  background: var(--lu-paper);
+}
+
+.prova-voce input {
+  accent-color: var(--lu-accent);
+}
+
+.prova-riepilogo {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid var(--lu-line);
+  font-size: 0.8rem;
+  color: var(--lu-muted);
+  user-select: all;
+}
+
+.prova-azioni {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 0.9rem 0.8rem;
+}
+
+/* Transitions: drawn in the page's paper colour over the bottom of the header,
+   above the blurred image and below the search form */
+html[data-stacco] .hero-contenuto {
+  z-index: 2;
+}
+
+html[data-stacco] .hero-home::before,
+html[data-stacco] .hero-home::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+html[data-stacco="sfumato"] .hero-home::after {
+  height: 8rem;
+  background: linear-gradient(to bottom, rgba(251, 250, 247, 0), var(--lu-paper));
+}
+
+html[data-stacco="sfumato-lungo"] .hero-home::after {
+  height: 45%;
+  background: linear-gradient(to bottom, rgba(251, 250, 247, 0) 0%, rgba(251, 250, 247, 0.55) 55%, var(--lu-paper) 100%);
+}
+
+html[data-stacco="onda"] .hero-home::after,
+html[data-stacco="onda-sfumata"] .hero-home::after {
+  height: 3.5rem;
+  background: var(--lu-paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 32 C150 6 300 6 450 28 S750 58 900 34 S1100 8 1200 24 V60 H0 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 32 C150 6 300 6 450 28 S750 58 900 34 S1100 8 1200 24 V60 H0 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+
+html[data-stacco="seghettato"] .hero-home::after,
+html[data-stacco="seghettato-sfumato"] .hero-home::after {
+  height: 14px;
+  background: var(--lu-paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M0 14 L14 0 L28 14 Z'/%3E%3C/svg%3E") 0 100% / 28px 14px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 14'%3E%3Cpath d='M0 14 L14 0 L28 14 Z'/%3E%3C/svg%3E") 0 100% / 28px 14px repeat-x;
+}
+
+html[data-stacco="onda-sfumata"] .hero-home::before,
+html[data-stacco="seghettato-sfumato"] .hero-home::before {
+  height: 9rem;
+  background: linear-gradient(to bottom, rgba(251, 250, 247, 0), rgba(251, 250, 247, 0.85));
+}
+
+html[data-stacco="curva"] .hero-home::after {
+  height: 4.5rem;
+  background: var(--lu-paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60 Q600 -30 1200 60 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60 Q600 -30 1200 60 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+
+html[data-stacco="diagonale"] .hero-home::after {
+  height: 4rem;
+  background: var(--lu-paper);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
 }
