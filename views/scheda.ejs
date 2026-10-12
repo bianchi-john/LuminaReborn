@@ -93,7 +93,7 @@
     const schedatori = s.schedatori.map(u => u.display_name || u.username).join(', ');
     const lingua = lang !== 'it' ? 'lang="it"' : '';
     // Long lists show the first items; the rest opens with "Show all"
-    const ELENCO = 6;
+    const ELENCO = 5;
   %>
   <div class="row g-4 g-xl-5 scheda-testa">
     <div class="col-lg-7">
@@ -224,7 +224,7 @@
 
   <div class="row g-4 g-xl-5 scheda-corpo">
     <div class="col-lg-8">
-      <% [['descrizione', 'descrizione_sintetica', 16], ['commento', 'corpo_scheda', 24], ['iscrizioni', 'iscrizioni', 16]].forEach(([id, campo, righe]) => { %>
+      <% [['descrizione', 'descrizione_sintetica', 10], ['commento', 'corpo_scheda', 12], ['iscrizioni', 'iscrizioni', 8]].forEach(([id, campo, righe]) => { %>
         <% if (s[campo]) { %>
           <section class="sezione" id="<%= id %>">
             <h2><%= sezioni.find(x => x.id === id).titolo %></h2>
@@ -246,7 +246,7 @@
           <% } %>
           <% if (s.storia_espositiva) { %>
             <h3 class="scheda-etichetta"><%= t('Vicende collezionistiche e storia espositiva') %></h3>
-            <div class="prose" data-comprimi="16" <%- lingua %>><%- h.block(s.storia_espositiva) %></div>
+            <div class="prose" data-comprimi="10" <%- lingua %>><%- h.block(s.storia_espositiva) %></div>
           <% } %>
         </section>
       <% } %>

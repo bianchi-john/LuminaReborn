@@ -1,5 +1,6 @@
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import { createHash } from 'crypto';
 import express, { Application } from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -23,6 +24,24 @@ const TZ = 'Europe/Rome';
 const classLabel = new Map(CLASSIFICAZIONI.map((c) => [c.value, c.label]));
 
 /** Helpers available in every EJS template as `h.*` (they depend on the language). */
+/**
+ * Version appended to CSS/JS URLs (?v=...): a fingerprint of the files' content,
+ * so browsers fetch a file again as soon as it changes (they cache it for a week).
+ * The package version alone never changed, and old scripts stayed in use.
+ */
+function impronta(dir: string, base: string): string {
+  const hash = createHash('sha256').update(base);
+  const visita = (d: string) => {
+    for (const voce of fs.readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const percorso = path.join(d, voce.name);
+      if (voce.isDirectory()) visita(percorso);
+      else hash.update(voce.name).update(fs.readFileSync(percorso));
+    }
+  };
+  visita(dir);
+  return hash.digest('hex').slice(0, 10);
+}
+
 function viewHelpers(lang: Lang, t: TFunction) {
   const locale = lang === 'en' ? 'en-GB' : 'it-IT';
   const dateFmt = new Intl.DateTimeFormat(locale, { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -84,7 +103,7 @@ export function createApp(): Application {
   app.locals.title = '';
   app.locals.vocabolari = VOCABOLARI;
   app.locals.classificazioni = CLASSIFICAZIONI;
-  app.locals.assetVersion = config.isProduction ? version : String(Date.now());
+  app.locals.assetVersion = config.isProduction ? impronta(path.join(ROOT_DIR, 'public'), version) : String(Date.now());
   app.locals.lang = 'it';
   app.locals.t = (s: string) => s;
   app.locals.h = viewHelpers('it', (s) => s);

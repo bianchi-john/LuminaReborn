@@ -56,6 +56,9 @@ window.addEventListener('resize', misuraBarre, { passive: true });
 let progressivo = 0;
 const idPer = (node) => (node.id ||= `comprimibile-${++progressivo}`);
 
+/** Shortened parts of each section, so its title can open or close them all at once. */
+const perSezione = new Map();
+
 /** A toggle button for `target`; `onToggle(aperto)` applies the state and returns the label. */
 function pulsante(target, classe, etichettaChiusa, onToggle) {
   const btn = document.createElement('button');
@@ -68,8 +71,21 @@ function pulsante(target, classe, etichettaChiusa, onToggle) {
     const aperto = btn.getAttribute('aria-expanded') !== 'true';
     btn.setAttribute('aria-expanded', String(aperto));
     btn.textContent = onToggle(aperto);
+    aggiornaTitolo(target.closest('section'));
   });
+  const sezione = target.closest('section');
+  if (sezione) perSezione.set(sezione, [...(perSezione.get(sezione) ?? []), btn]);
   return btn;
+}
+
+const tuttiAperti = (sezione) => (perSezione.get(sezione) ?? []).every((b) => b.getAttribute('aria-expanded') === 'true');
+
+function aggiornaTitolo(sezione) {
+  const btn = sezione?.querySelector(':scope > h2 > .btn-sezione');
+  if (!btn) return;
+  const aperti = tuttiAperti(sezione);
+  btn.setAttribute('aria-expanded', String(aperti));
+  btn.textContent = aperti ? t('Riduci') : t('Espandi');
 }
 
 /** When closing a long block, bring its start back into view if it scrolled away. */
@@ -127,6 +143,23 @@ document.querySelectorAll('[data-elenco]').forEach((lista) => {
       return aperto ? t('Mostra meno') : chiuso;
     }),
   );
+});
+
+// Each shortened section gets a small "Expand" control next to its title: one click opens everything in it
+perSezione.forEach((pulsanti, sezione) => {
+  const titolo = sezione.querySelector(':scope > h2');
+  if (!titolo) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn-sezione no-print';
+  btn.setAttribute('aria-controls', pulsanti.map((b) => b.getAttribute('aria-controls')).join(' '));
+  btn.addEventListener('click', () => {
+    const apri = !tuttiAperti(sezione);
+    pulsanti.filter((b) => (b.getAttribute('aria-expanded') === 'true') !== apri).forEach((b) => b.click());
+    if (!apri) riportaInVista(sezione);
+  });
+  titolo.append(btn);
+  aggiornaTitolo(sezione);
 });
 
 // Section bar: highlights the section being read and keeps its link visible
