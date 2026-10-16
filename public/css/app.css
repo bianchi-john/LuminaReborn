@@ -1579,23 +1579,6 @@ textarea.form-control {
   min-height: 0;
 }
 
-.hero-sfondo img {
-  position: absolute;
-  inset: -48px;
-  width: calc(100% + 96px);
-  height: calc(100% + 96px);
-  object-fit: cover;
-  filter: blur(12px) saturate(1.25);
-  opacity: 0;
-  transform: scale(1.06);
-  transition: opacity 1.8s ease, transform 9s linear;
-}
-
-.hero-sfondo img.attiva {
-  opacity: 1;
-  transform: scale(1);
-}
-
 .hero-velo {
   position: absolute;
   inset: 0;
@@ -1720,7 +1703,6 @@ textarea.form-control {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-sfondo img,
   .opera-card,
   .btn,
   .card-link {
@@ -1731,7 +1713,6 @@ textarea.form-control {
 @media print {
   .site-menu,
   .menu-toggle,
-  .hero-sfondo,
   .hero-velo {
     display: none !important;
   }
@@ -1854,46 +1835,19 @@ textarea.form-control,
   line-height: 1.65;
 }
 
-/* Header background: fixed-height box (does not follow the section's height),
-   so opening the advanced search neither moves nor resizes the images */
-.hero-sfondo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: max(100vh, 52rem);
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.hero-sfondo img {
-  top: -48px;
-  left: -48px;
-  right: auto;
-  bottom: auto;
-  inset: auto;
-  width: calc(100% + 96px);
-  height: calc(100% + 96px);
-  margin: -48px 0 0 -48px;
-}
-
-.hero-sfondo::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 30%;
-  background: linear-gradient(180deg, rgba(42, 34, 32, 0) 0%, #2a2220 100%);
-}
-
-.hero-velo {
-  height: max(100vh, 52rem);
-  bottom: auto;
-}
-
+/* Header background: one fixed image, San Giovanni Battista by Michele Tosini,
+   already blurred (public/img/sfondo-home.webp, 30 KB: no database query, no live
+   CSS filter). Its size depends only on the width, so opening the advanced search
+   neither moves nor zooms it; the image is tall enough (the painting continues
+   below in an abstract blur of its colours) to cover the header however tall it gets. */
 .hero-home {
-  background: #2a2220;
+  /* Enlarged so the painting fills the width (not its frame), moved up by a share of its own
+     width (never of the header's height, which changes) to frame the saint; tall enough to
+     cover even the mobile header with the advanced search open */
+  --sfondo-larghezza: max(160vw, 1600px);
+  background: #2a2220 url(/static/img/sfondo-home.webp) no-repeat;
+  background-size: var(--sfondo-larghezza) auto;
+  background-position: center calc(var(--sfondo-larghezza) * -0.22);
 }
 
 /* Images in rich text: only the record's own, picked from a list */
@@ -2376,12 +2330,6 @@ ol.elenco-bibliografia > li::marker {
 /* Home page: fully rounded index buttons (an exception to the square shapes, like the menu button) */
 .indice-tile.card-link {
   border-radius: var(--lu-pill) !important;
-}
-
-/* Home background: when the browser can pre-blur the image once (home.js),
-   the live CSS filter, recalculated on every animation frame, is no longer needed */
-.hero-sfondo img.presfocata {
-  filter: none;
 }
 
 /* =========================================================================

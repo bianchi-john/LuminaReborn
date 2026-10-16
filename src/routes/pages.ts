@@ -13,7 +13,6 @@ import * as foto from '../services/foto.service';
 import { getPanoramica } from '../services/panoramica.service';
 import * as schede from '../services/schede.service';
 import { codiceDaPercorso } from '../util/codici';
-import { copertineCasuali } from '../services/immagini.service';
 import { opzioniRicerca, search, searchQuerySchema } from '../services/search.service';
 import * as voci from '../services/vocabolari.service';
 
@@ -60,17 +59,13 @@ pages.get(
   ah(async (req, res) => {
     const filtri = searchQuerySchema.parse(req.query);
     const cercato = haCriteri(req.query);
-    const [risultati, opzioni, sfondi] = await Promise.all([
-      cercato ? search(filtri) : Promise.resolve(null),
-      opzioniRicerca(),
-      copertineCasuali(8),
-    ]);
+    const [risultati, opzioni] = await Promise.all([cercato ? search(filtri) : Promise.resolve(null), opzioniRicerca()]);
     const avanzata = ADVANCED_FIELDS.some((f) => {
       const v = (filtri as Record<string, unknown>)[f];
       return v !== null && v !== undefined && f !== 'classificazione';
     });
     const avanzataId = ['ubicazioni', 'materiali', 'tecniche'].some((k) => (filtri as Record<string, unknown>)[k]);
-    res.render('home', { title: '', nav: 'catalogo', filtri, risultati, opzioni, sfondi, avanzata: avanzata || avanzataId });
+    res.render('home', { title: '', nav: 'catalogo', filtri, risultati, opzioni, avanzata: avanzata || avanzataId });
   }),
 );
 

@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import sharp from 'sharp';
 import { SessionUser } from '../auth/session';
 import { config } from '../config';
-import { Db, execute, pool, select, selectOne, withTransaction } from '../db/pool';
+import { Db, execute, pool, selectOne, withTransaction } from '../db/pool';
 import { badRequest, notFound } from '../http/errors';
 import { logger } from '../logger';
 import { computePermessi } from './schede.service';
@@ -207,17 +207,6 @@ export async function getFile(codice: string, variante: Variante, user?: Session
     pubblica: row.stato === 2 && variante !== 'originale',
     etag: `"${(row.sha256 ?? codice).slice(0, 16)}-${variante}"`,
   };
-}
-
-/** Covers of published records in random order (home page header background). */
-export async function copertineCasuali(limite: number): Promise<string[]> {
-  const rows = await select<{ codice: string }>(
-    pool,
-    `SELECT i.codice FROM immagini i JOIN schede s ON s.id = i.id_scheda
-      WHERE s.stato = 2 AND i.ordine = 0 ORDER BY RAND() LIMIT ?`,
-    [limite],
-  );
-  return rows.map((r) => r.codice);
 }
 
 /** Deletes images uploaded but never linked to a record (editor closed without saving). */
