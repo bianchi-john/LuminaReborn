@@ -52,6 +52,7 @@ Every variable is documented in [`.env.example`](../.env.example). The important
 | `MAX_IMAGE_MB`, `MAX_IMAGE_LATO_PX`, `MAX_IMAGE_MEGAPIXEL` | upload limits: 25 MB, 20,000 px per side, 150 MP |
 | `SCRAPING_*` | per-IP limits (see [SECURITY.md](SECURITY.md#anti-scraping)). `SCRAPING_PROTEZIONE=false` turns them off. To unblock an IP, run `docker compose restart nodeapp` |
 | `BACKUP_DIR`, `BACKUP_HOUR`, `EXPORT_HOUR`, `BACKUP_KEEP_DAYS` | backups and exports |
+| `NO_NEW_PRIVILEGES` | `true` by default. Set `false` only on Ubuntu hosts where Docker is installed as a snap: there AppArmor blocks the app's start (`exec … operation not permitted`) |
 
 ## Backup, restore, export
 

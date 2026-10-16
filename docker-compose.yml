@@ -82,7 +82,7 @@ services:
     tmpfs:
       - /tmp
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:${NO_NEW_PRIVILEGES:-true}
     # The app needs no kernel capabilities (it listens on port 3000)
     cap_drop:
       - ALL

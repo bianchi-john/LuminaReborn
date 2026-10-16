@@ -32,16 +32,23 @@ until curl -sf -o /dev/null "${API}/"; do
   sleep 2
 done
 
+# The API answers before it has created the administrator account: retry the login for a while
 echo "[seed] Logging in as administrator '${ADMIN_USERNAME}' ..."
-JWT=$(curl -s -X POST "${API}/auth/login" \
-  -H "Content-Type: application/json" \
-  -d "{\"username\":\"${ADMIN_USERNAME}\",\"password\":\"${ADMIN_PASSWORD}\"}" \
-  | sed -n 's/.*"jwt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-
-if [ -z "${JWT}" ]; then
-  echo "[seed] Could not obtain the administrator token, exiting."
-  exit 1
-fi
+JWT=""
+i=0
+while [ -z "${JWT}" ]; do
+  JWT=$(curl -s -X POST "${API}/auth/login" \
+    -H "Content-Type: application/json" \
+    -d "{\"username\":\"${ADMIN_USERNAME}\",\"password\":\"${ADMIN_PASSWORD}\"}" \
+    | sed -n 's/.*"jwt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+  [ -n "${JWT}" ] && break
+  i=$((i + 1))
+  if [ "$i" -ge 30 ]; then
+    echo "[seed] Could not obtain the administrator token after 30 attempts, exiting."
+    exit 1
+  fi
+  sleep 2
+done
 
 for entry in $SCHEDATORI; do
   user="${entry%%:*}"
