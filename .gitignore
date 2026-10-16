@@ -13,3 +13,6 @@ test-results
 QUERY*.sh
 CARICA_SCHEDE.sh
 backups
+
+# Server: commit currently deployed by scripts/aggiorna.sh
+.versione-attiva*

@@ -93,6 +93,29 @@ Each migration is applied once and recorded in `schema_migrations`. MySQL DDL is
 - Demo data only: nothing to do. The new version uses volumes and reloads the demo.
 - To keep existing data: set `MYSQL_DATA_DIR=./database-data` and `MONGO_DATA_DIR=./user-data/mongo-data`, run `make up`, then run `make grant-media` once (creates the image DB), `make mongo-auth` once (enables MongoDB auth), and finally `make restart`.
 
+## Automatic updates from GitHub
+
+On a server that should follow a branch (e.g. the demo VM following `experimentsJohn`), clone the repository instead of copying it, then add one cron line for the user that runs Docker:
+
+```bash
+git clone -b experimentsJohn https://github.com/bianchi-john/LuminaReborn.git && cd LuminaReborn
+cp .env.example .env   # then set the secrets, see Configuration
+crontab -e             # add: */2 * * * * /full/path/LuminaReborn/scripts/aggiorna.sh
+```
+
+```mermaid
+flowchart LR
+  P[git push] --> G[(GitHub)]
+  C[cron, every 2 min] --> F{new commit?}
+  G --> F
+  F -->|no| Z[nothing]
+  F -->|yes| B[build image<br/>site still up] --> U[swap containers<br/>a few seconds] --> H{/healthz ok?}
+  H -->|yes| OK[done]
+  H -->|no| R[back to the previous commit]
+```
+
+Progress is logged in `backups/aggiornamenti.log`. `.env`, `backups/` and the data volumes are never touched. A rollback restores the code but doesn't undo database migrations: migrations only add things, so the previous version keeps working.
+
 ## Production checklist
 
 `make verifica-produzione` checks the configuration items automatically. The reasons behind each item are in [SECURITY.md](SECURITY.md).
