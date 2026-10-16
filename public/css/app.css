@@ -1835,19 +1835,26 @@ textarea.form-control,
   line-height: 1.65;
 }
 
-/* Header background: one fixed image, San Giovanni Battista by Michele Tosini,
-   already blurred (public/img/sfondo-home.webp, 30 KB: no database query, no live
-   CSS filter). Its size depends only on the width, so opening the advanced search
-   neither moves nor zooms it; the image is tall enough (the painting continues
-   below in an abstract blur of its colours) to cover the header however tall it gets. */
+/* Header background: one fixed image, San Giovanni Battista by Michele Tosini, already
+   blurred (public/img/sfondo-home.webp: no database query, no live CSS filter).
+   It covers a screen-high box at its natural size, as the old rotating covers did,
+   so the blur stays detailed. When the advanced search makes the header taller, the
+   painting fades slowly into a warm tone taken from the painting itself: no edge. */
 .hero-home {
-  /* Enlarged so the painting fills the width (not its frame), moved up by a share of its own
-     width (never of the header's height, which changes) to frame the saint; tall enough to
-     cover even the mobile header with the advanced search open */
-  --sfondo-larghezza: max(160vw, 1600px);
-  background: #2a2220 url(/static/img/sfondo-home.webp) no-repeat;
-  background-size: var(--sfondo-larghezza) auto;
-  background-position: center calc(var(--sfondo-larghezza) * -0.22);
+  background: linear-gradient(180deg, #654c39 0, #4a372b max(100vh, 52rem), #2a2220 calc(max(100vh, 52rem) + 40rem));
+}
+
+.hero-home::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: max(100vh, 52rem);
+  background: url(/static/img/sfondo-home.webp) center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 70%, rgba(0, 0, 0, 0.55) 85%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 70%, rgba(0, 0, 0, 0.55) 85%, transparent 100%);
+  pointer-events: none;
 }
 
 /* Images in rich text: only the record's own, picked from a list */
