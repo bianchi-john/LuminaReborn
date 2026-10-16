@@ -141,6 +141,10 @@ flowchart LR
 
 The public only gets `preview` and `thumbnail`. In long texts, the toolbar's ▣ button inserts one of the **record's own** previews. Pasted or dropped files are refused, and on save `soloImmagini` (`util/html.ts`) strips any image that doesn't belong to the record.
 
+### Home page backgrounds
+
+`services/sfondi.service.ts` keeps a pool of up to 6 covers of published works, chosen at random and blurred once on the server. It is renewed every 6 hours, so the database is only read then, and it is served from memory at `/sfondi/<pool>-<n>.webp`. Each visit gets the pool in a random order. `home.js` shows a new image every 20 s with a cross-fade; it loads only the first at once and each of the others 5 s before its turn. Until the first pool is ready, the fixed painting `public/img/sfondo-home.webp` is shown.
+
 ### Public URLs
 
 ```text

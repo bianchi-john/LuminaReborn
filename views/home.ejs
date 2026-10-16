@@ -24,6 +24,12 @@
   });
 %>
 <section class="hero-home <%= risultati ? 'hero-compatto' : '' %>">
+  <%# Background: a few blurred covers of published works, in random order; only the first is loaded at once (home.js loads the others just before their turn) %>
+  <div class="hero-sfondo" aria-hidden="true" data-hero-sfondo>
+    <% sfondi.forEach((url, i) => { %>
+      <% if (i === 0) { %><img src="<%= url %>" alt="" class="attiva" fetchpriority="high" decoding="async"><% } else { %><img data-src="<%= url %>" alt="" decoding="async"><% } %>
+    <% }) %>
+  </div>
   <div class="hero-velo" aria-hidden="true"></div>
   <div class="container hero-contenuto">
     <h1 class="hero-titolo">

@@ -1835,26 +1835,45 @@ textarea.form-control,
   line-height: 1.65;
 }
 
-/* Header background: one fixed image, San Giovanni Battista by Michele Tosini, already
-   blurred (public/img/sfondo-home.webp: no database query, no live CSS filter).
-   It covers a screen-high box at its natural size, as the old rotating covers did,
-   so the blur stays detailed. When the advanced search makes the header taller, the
-   painting fades slowly into a warm tone taken from the painting itself: no edge. */
+/* Header background: a few covers of published works, already blurred on the server
+   (services/sfondi.service.ts: no live CSS filter), changing every 20 seconds with a slow
+   cross-fade. They cover a screen-high box at their natural size, so the blur stays
+   detailed; when the advanced search makes the header taller, they fade slowly into a
+   warm dark tone: no edge. */
 .hero-home {
   background: linear-gradient(180deg, #654c39 0, #4a372b max(100vh, 52rem), #2a2220 calc(max(100vh, 52rem) + 40rem));
 }
 
-.hero-home::before {
-  content: "";
+.hero-sfondo {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: max(100vh, 52rem);
-  background: url(/static/img/sfondo-home.webp) center / cover no-repeat;
+  overflow: hidden;
   -webkit-mask-image: linear-gradient(180deg, #000 0, #000 70%, rgba(0, 0, 0, 0.55) 85%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0, #000 70%, rgba(0, 0, 0, 0.55) 85%, transparent 100%);
   pointer-events: none;
+}
+
+.hero-sfondo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+.hero-sfondo img.attiva {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-sfondo img {
+    transition: none;
+  }
 }
 
 /* Images in rich text: only the record's own, picked from a list */

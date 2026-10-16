@@ -11,6 +11,7 @@ import { isVocabKey, VOCAB_KEYS, VOCABOLARI } from '../domain/vocabolari';
 import { ah, forbidden, notFound } from '../http/errors';
 import * as foto from '../services/foto.service';
 import { getPanoramica } from '../services/panoramica.service';
+import { sfondiPerVisita } from '../services/sfondi.service';
 import * as schede from '../services/schede.service';
 import { codiceDaPercorso } from '../util/codici';
 import { opzioniRicerca, search, searchQuerySchema } from '../services/search.service';
@@ -65,7 +66,9 @@ pages.get(
       return v !== null && v !== undefined && f !== 'classificazione';
     });
     const avanzataId = ['ubicazioni', 'materiali', 'tecniche'].some((k) => (filtri as Record<string, unknown>)[k]);
-    res.render('home', { title: '', nav: 'catalogo', filtri, risultati, opzioni, avanzata: avanzata || avanzataId });
+    // Backgrounds from the in-memory pool; until it is ready (just after start-up) the fixed painting
+    const sfondi = sfondiPerVisita();
+    res.render('home', { title: '', nav: 'catalogo', filtri, risultati, opzioni, sfondi: sfondi.length ? sfondi : ['/static/img/sfondo-home.webp'], avanzata: avanzata || avanzataId });
   }),
 );
 

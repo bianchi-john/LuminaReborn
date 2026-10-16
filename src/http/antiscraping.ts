@@ -143,7 +143,7 @@ export function chiaveIndirizzo(ip: string): string {
 /** Request category; `null` = not counted (staff access, technical checks). */
 export function categoriaDi(path: string): Categoria | null {
   if (/^\/(login|logout|healthz|robots\.txt|\.well-known)(\/|$)/.test(path)) return null;
-  if (path.startsWith('/media/')) return 'media';
+  if (path.startsWith('/media/') || path.startsWith('/sfondi/')) return 'media';
   if (path.startsWith('/api/')) return 'api';
   return 'pagine';
 }

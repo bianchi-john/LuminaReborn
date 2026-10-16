@@ -5,6 +5,7 @@ import { pool, waitForDatabase } from './db/pool';
 import { logger } from './logger';
 import { avviaEsportazioneProgrammata } from './services/export.service';
 import { pulisciImmaginiOrfane } from './services/immagini.service';
+import { avviaSfondi } from './services/sfondi.service';
 
 async function main(): Promise<void> {
   await waitForDatabase();
@@ -14,6 +15,7 @@ async function main(): Promise<void> {
   const cleanup = setInterval(pulisciImmaginiOrfane, 60 * 60 * 1000);
   cleanup.unref();
   avviaEsportazioneProgrammata();
+  avviaSfondi();
 
   const server = createApp().listen(config.port, () => {
     logger.info(`LUMiNA in ascolto sulla porta ${config.port} (${config.isProduction ? 'produzione' : 'sviluppo'})`);

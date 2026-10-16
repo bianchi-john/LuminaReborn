@@ -16,6 +16,7 @@ import { chiaviClient } from './i18n/chiavi';
 import api from './routes/api';
 import media from './routes/media';
 import pages from './routes/pages';
+import { getSfondo } from './services/sfondi.service';
 import { cleanHtml, htmlToText } from './util/html';
 
 const { version } = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8')) as { version: string };
@@ -150,6 +151,16 @@ export function createApp(): Application {
   app.use(protezioneScraping);
 
   app.use('/media', media);
+  // Home backgrounds: blurred once on the server and kept in memory (services/sfondi.service.ts)
+  app.get('/sfondi/:nome', (req, res, next) => {
+    const m = /^([a-z0-9]{4,16})-(\d)\.webp$/.exec(req.params.nome);
+    const sfondo = m ? getSfondo(m[1], Number(m[2])) : null;
+    if (!sfondo) return next(notFound());
+    res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+    res.setHeader('ETag', sfondo.etag);
+    if (req.get('if-none-match') === sfondo.etag) return void res.status(304).end();
+    res.type('image/webp').send(sfondo.dati);
+  });
   app.use('/api', apiLimiter, sameOriginOnly, api);
   app.use(pages);
 

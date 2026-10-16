@@ -48,3 +48,42 @@ document.querySelectorAll('input[data-suggest]').forEach((input) => {
     },
   });
 });
+
+// Header background: the covers take turns every 20 seconds with a slow cross-fade.
+// Only the first one is in the page from the start; each of the others is downloaded
+// a few seconds before its turn, so opening the home stays light. No changes while
+// the header is off screen or the tab is hidden, nor if the visitor asked the system
+// to reduce motion.
+const INTERVALLO_MS = 20_000;
+const ANTICIPO_MS = 5_000;
+const sfondo = document.querySelector('[data-hero-sfondo]');
+let sfondi = sfondo ? [...sfondo.querySelectorAll('img')] : [];
+
+const carica = (img) => {
+  if (img?.dataset.src && !img.getAttribute('src')) img.src = img.dataset.src;
+};
+
+if (sfondi.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let corrente = 0;
+  let visibile = true;
+  new IntersectionObserver(([voce]) => (visibile = voce.isIntersecting)).observe(sfondo.closest('section') ?? sfondo);
+  // An image that can't be loaded leaves the rotation instead of showing an empty frame
+  sfondi.forEach((img) =>
+    img.addEventListener('error', () => {
+      img.remove();
+      sfondi = sfondi.filter((x) => x !== img);
+    }),
+  );
+  const prossima = () => (corrente + 1) % sfondi.length;
+  setTimeout(() => carica(sfondi[prossima()]), INTERVALLO_MS - ANTICIPO_MS);
+  setInterval(() => {
+    if (document.hidden || !visibile || sfondi.length < 2) return;
+    const dopo = sfondi[prossima()];
+    // Not downloaded yet (slow connection): try again at the next tick
+    if (!dopo.complete || !dopo.naturalWidth) return carica(dopo);
+    sfondi[corrente].classList.remove('attiva');
+    dopo.classList.add('attiva');
+    corrente = prossima();
+    setTimeout(() => carica(sfondi[prossima()]), INTERVALLO_MS - ANTICIPO_MS);
+  }, INTERVALLO_MS);
+}

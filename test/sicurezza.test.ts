@@ -99,6 +99,7 @@ describe('protezione dallo scraping', () => {
   it('classifica le richieste e chiude il sito ai crawler di IA', () => {
     assert.equal(categoriaDi('/opere/annunciazione-abc'), 'pagine');
     assert.equal(categoriaDi('/media/abc/anteprima'), 'media');
+    assert.equal(categoriaDi('/sfondi/abc-0.webp'), 'media', 'gli sfondi della home contano come immagini, non come pagine');
     assert.equal(categoriaDi('/api/ricerca/suggerimenti'), 'api');
     assert.equal(categoriaDi('/login'), null);
     assert.equal(categoriaDi('/healthz'), null);
