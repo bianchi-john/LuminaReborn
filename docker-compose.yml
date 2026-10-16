@@ -66,6 +66,8 @@ services:
       MEDIA_WATERMARK: ${MEDIA_WATERMARK:-© Musei Nazionali di Lucca}
       EXPORT_DIR: /exports
       EXPORT_FOTO_DIR: /exports-foto
+      # Read-only filesystem: fontconfig (used by sharp for the watermark) keeps its cache in /tmp
+      XDG_CACHE_HOME: /tmp/cache
       EXPORT_HOUR: ${EXPORT_HOUR:-2}
       EXPORT_KEEP: ${BACKUP_KEEP_DAYS:-14}
     ports:
