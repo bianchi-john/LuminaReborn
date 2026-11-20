@@ -10,3 +10,6 @@ test
 # Strumenti locali di migrazione
 QUERY*.sh
 CARICA_SCHEDE.sh
+
+# Materiale da consegnare (contiene le password degli account): mai nel repository
+consegna/

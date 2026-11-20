@@ -60,7 +60,7 @@ Gli utenti stanno nello user-manager (MongoDB). Il ruolo dipende dal campo `isAd
 
 Le regole sono controllate dal server: un'azione fuori stato risponde `409`, una scheda di un altro schedatore risponde `404`. Le bozze **non si possono modificare**: si eliminano e si ricreano.
 
-Una guida illustrata per chi scheda (non tecnica) va preparata a parte per ogni installazione, con l'indirizzo e gli account reali.
+La guida illustrata per chi scheda (non tecnica) è in [`Doc/guida-schedatori/`](Doc/guida-schedatori/LEGGIMI.md). Gli account con le password si generano in `consegna/`, cartella esclusa da git.
 
 ## Credenziali dimostrative
 

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>LUMiNA – Guida rapida</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Inter", "Helvetica Neue", Arial, sans-serif; color: #1d1d1f; font-size: 11pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 26pt; margin: 0 0 4mm; letter-spacing: -0.5px; }
+  h2 { font-size: 15pt; margin: 0 0 3mm; padding-bottom: 1.5mm; border-bottom: 2px solid #1d1d1f; }
+  h3 { font-size: 12pt; margin: 5mm 0 1.5mm; }
+  p { margin: 0 0 2.5mm; }
+  ol, ul { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1.2mm; }
+  .cover { display: flex; flex-direction: column; justify-content: center; min-height: 240mm; }
+  .sub { font-size: 13pt; color: #555; margin-bottom: 10mm; }
+  .box { border: 1.5px solid #1d1d1f; border-radius: 3mm; padding: 4mm 5mm; margin: 3mm 0; break-inside: avoid; }
+  table, tr { break-inside: avoid; }
+  .box.avviso { border-color: #c0392b; background: #fdf1ef; }
+  .box.consiglio { border-color: #2c6e49; background: #eff7f1; }
+  .box b.t { display: block; margin-bottom: 1mm; }
+  code, .k { font-family: "SFMono-Regular", Menlo, Consolas, monospace; background: #f1f1f3; padding: 0.3mm 1.5mm; border-radius: 1mm; font-size: 10pt; }
+  figure { margin: 2mm 0 4mm; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid #c9c9ce; border-radius: 2mm; display: block; }
+  figcaption { font-size: 9pt; color: #666; margin-top: 1mm; }
+  .sezione { break-before: page; }
+  .step { break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 2mm 0 4mm; font-size: 10.5pt; }
+  td, th { border: 1px solid #c9c9ce; padding: 2mm 3mm; text-align: left; vertical-align: top; }
+  th { background: #f1f1f3; }
+  .rosso { color: #c0392b; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <h1>LUMiNA</h1>
+  <div class="sub">Guida rapida per chi scheda e per chi approva</div>
+
+  <div class="box">
+    <b class="t">Indirizzo del sito</b>
+    <span class="k">http://10.181.100.249:3000/login</span>
+  </div>
+  <div class="box">
+    <b class="t">Cosa serve</b>
+    <ul>
+      <li>Un computer (non il telefono) con Chrome o Firefox.</li>
+      <li>Il vostro <b>nome utente</b> e la vostra <b>password</b>: sono nel documento Word <i>LUMINA-account.docx</i> che avete ricevuto insieme a questa guida.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <b class="t">Come leggere le immagini</b>
+    Nelle schermate di questa guida i <span class="rosso">riquadri rossi</span> indicano dove cliccare o cosa guardare.
+  </div>
+
+  <div class="box avviso">
+    <b class="t">Una bozza salvata non si può modificare</b>
+    Se c'è un errore, eliminatela (bottone <b>Elimina</b>) e rifatela. Per non perdere lavoro, scrivete prima i testi lunghi (commento, bibliografia, mostre…) in un file Word e poi copiateli e incollateli nel sito.
+  </div>
+
+  <h3>Indice</h3>
+  <ol>
+    <li>Entrare nel sito</li>
+    <li>Il menu</li>
+    <li>Creare una scheda</li>
+    <li>Inviare la scheda all'amministratore</li>
+    <li>Approvare o rifiutare (solo amministratore)</li>
+    <li>Uscire e cosa fare se qualcosa non va</li>
+  </ol>
+</section>
+
+<section class="sezione">
+  <h2>1. Entrare nel sito</h2>
+  <div class="step">
+    <ol>
+      <li>Aprite l'indirizzo <span class="k">http://10.181.100.249:3000/login</span>.</li>
+      <li>In <b>Nome utente</b> scrivete il vostro (es. <i>schedatore01</i>).</li>
+      <li>In <b>Password</b> scrivete la password del documento Word, <b>identica</b>: maiuscole e minuscole contano, niente spazi.</li>
+      <li>Premete <b>Accedi</b>. Si apre la "Pagina di ricerca": siete dentro.</li>
+    </ol>
+    <figure><img src="img/01-login.jpg"><figcaption>La pagina di accesso.</figcaption></figure>
+  </div>
+  <div class="step">
+    <p>Se la password è sbagliata compare un riquadro rosso. Ricontrollatela lettera per lettera e riprovate.</p>
+    <figure><img src="img/02-login-errato.jpg"><figcaption>Il messaggio in caso di nome utente o password errati.</figcaption></figure>
+  </div>
+</section>
+
+<section class="sezione">
+  <h2>2. Il menu</h2>
+  <p>In alto a sinistra in ogni pagina c'è il simbolo <b>☰</b> (tre righe). Cliccandolo si apre un menu scuro sulla sinistra.</p>
+  <table>
+    <tr><th>Chi scheda vede</th><th>Chi approva vede</th></tr>
+    <tr>
+      <td><b>Logout</b><br><b>Schedatore ▾</b> (cliccateci per aprirlo)<br>&nbsp;&nbsp;– Bozze<br>&nbsp;&nbsp;– Schede in approvazione</td>
+      <td><b>Logout</b><br><b>Amministratore</b></td>
+    </tr>
+  </table>
+  <figure><img src="img/03-menu.jpg"><figcaption>Il menu di chi scheda, con la voce "Schedatore" aperta.</figcaption></figure>
+  <p>In alcune pagine il menu mostra anche <b>Homepage</b>, che riporta alla pagina di ricerca.</p>
+</section>
+
+<section class="sezione">
+  <h2>3. Creare una scheda</h2>
+  <div class="step">
+    <ol>
+      <li>Menu <b>☰</b> → <b>Schedatore</b> → <b>Bozze</b>.</li>
+      <li>Premete il bottone verde <b>Crea una nuova bozza</b>.</li>
+    </ol>
+    <figure><img src="img/04-bozze-vuota.jpg"><figcaption>La pagina "Bozze", ancora vuota.</figcaption></figure>
+  </div>
+  <div class="step">
+    <p>Si apre un modulo lungo. <b>L'unico campo obbligatorio è "Titolo opera"</b>: il resto compilatelo se avete le informazioni. Ricordate: una volta salvata, la bozza non si può modificare (vedi prima pagina).</p>
+    <figure><img src="img/05-titolo.jpg"><figcaption>Il titolo si scrive nel riquadro bianco grande. La barra sopra serve per grassetto, corsivo, ecc.</figcaption></figure>
+    <div class="box avviso"><b class="t">Non spuntate "Show HTML"</b>Sotto ogni riquadro di testo c'è la casella "Show HTML": lasciatela vuota.</div>
+  </div>
+
+  <div class="step">
+    <h3>Autore, materiale, tecnica: prima guardate l'elenco</h3>
+    <p>Sotto ogni autore, materiale e tecnica c'è un menu <b>Seleziona preesistente</b> con quelli già inseriti nel sito (anche da altri).</p>
+    <ul>
+      <li><b>Se c'è già</b>: sceglietelo dal menu. I campi sopra diventano grigi: è normale.</li>
+      <li><b>Se non c'è</b>: lasciate il menu su "---" e scrivetelo nei campi.</li>
+    </ul>
+    <figure><img src="img/06-autore.jpg"><figcaption>Autore scelto dall'elenco. "Aggiungi" serve per un secondo autore.</figcaption></figure>
+  </div>
+  <div class="step">
+    <figure><img src="img/07-materiali.jpg"><figcaption>Due materiali: il primo scelto dall'elenco, il secondo scritto a mano dopo aver premuto "Aggiungi".</figcaption></figure>
+    <div class="box consiglio"><b class="t">Perché usare l'elenco</b>Così la stessa cosa non finisce nel sito scritta in modi diversi (es. «Tela», «Tela dipinta», «tela (supp.)») e le ricerche funzionano meglio. Se scrivete a mano un nome che esiste già, il sito lo riconosce anche se cambiano maiuscole o accenti; non riconosce però parole in più o abbreviazioni.</div>
+  </div>
+
+  <div class="step">
+    <h3>Misure</h3>
+    <ul>
+      <li>Scegliete <b>Direzione</b> (Altezza, Larghezza…) e <b>Unità</b> (cm, mm…).</li>
+      <li>In <b>Valore</b> solo numeri. Va bene anche la virgola: <i>72,5</i>.</li>
+      <li><b>Aggiungi misura</b> per un'altra misura; <b>Aggiungi gruppo misure</b> per un altro gruppo (es. "Cornice").</li>
+    </ul>
+    <figure><img src="img/08-misure.jpg"><figcaption>Una misura: Altezza 72,5 cm.</figcaption></figure>
+  </div>
+
+  <div class="step">
+    <h3>Immagini e salvataggio</h3>
+    <ul>
+      <li>In <b>Immagine</b> premete <b>Scegli file</b> (in alcuni computer "Choose File") e prendete la foto. <b>La prima immagine è la copertina.</b></li>
+      <li>Il campo <b>Commento</b> in fondo potete lasciarlo vuoto.</li>
+      <li>Alla fine premete il bottone blu <b>Salva bozza</b>.</li>
+    </ul>
+    <figure><img src="img/09-immagini-salva.jpg"><figcaption>Foto caricata e bottone per salvare.</figcaption></figure>
+    <div class="box avviso"><b class="t">Attenzione al bottone giallo</b>"Annulla l'inserimento" butta via tutto quello che avete scritto e non ancora salvato.</div>
+  </div>
+  <div class="step">
+    <p>Se è andato tutto bene compare questo messaggio e la scheda finisce nella pagina <b>Bozze</b>. Per ora la vedete solo voi.</p>
+    <figure><img src="img/10-salvata.jpg"><figcaption>Scheda salvata.</figcaption></figure>
+  </div>
+
+</section>
+
+<section class="sezione">
+  <h2>4. Inviare la scheda all'amministratore</h2>
+  <div class="step">
+    <ol>
+      <li>Menu <b>☰</b> → <b>Schedatore</b> → <b>Bozze</b>.</li>
+      <li>Sulla riga della scheda premete <b>Invia</b>.</li>
+    </ol>
+    <figure><img src="img/11-bozze-elenco.jpg"><figcaption>"Elimina" cancella la bozza; "Invia" la manda all'amministratore.</figcaption></figure>
+  </div>
+  <div class="step">
+    <p>3. Confermate con <b>Invia</b> nella finestrella.</p>
+    <figure><img src="img/12-conferma-invio.jpg"><figcaption>La conferma prima dell'invio.</figcaption></figure>
+  </div>
+  <div class="step">
+    <p>La scheda passa in <b>Schede in approvazione</b> e aspetta l'amministratore. Se ci avete ripensato premete <b>Ritira</b>: torna tra le vostre bozze.</p>
+    <figure><img src="img/13-in-approvazione.jpg"><figcaption>Una scheda in attesa di approvazione.</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>Se l'amministratore…</th><th>…la scheda</th></tr>
+    <tr><td><b>Approva</b></td><td>diventa pubblica: chiunque la trova nel sito.</td></tr>
+    <tr><td><b>Rigetta</b></td><td>torna tra le vostre <b>Bozze</b>. Eliminatela, rifatela con le correzioni e inviatela di nuovo.</td></tr>
+  </table>
+</section>
+
+<section class="sezione">
+  <h2>5. Approvare o rifiutare <small>(solo account "amministratore")</small></h2>
+  <div class="step">
+    <p>1. Menu <b>☰</b> → <b>Amministratore</b>.</p>
+    <figure><img src="img/14-menu-admin.jpg"><figcaption>Il menu dell'amministratore.</figcaption></figure>
+  </div>
+  <div class="step">
+    <p>2. Vedete l'elenco delle schede inviate. Premete <b>Visualizza</b> per aprirne una.</p>
+    <figure><img src="img/15-admin-elenco.jpg"><figcaption>Le schede in attesa.</figcaption></figure>
+  </div>
+  <div class="step">
+    <figure><img src="img/16-valuta-alto.jpg"><figcaption>In alto: titolo, autore e immagini (con le frecce si scorrono le foto).</figcaption></figure>
+  </div>
+  <div class="step">
+    <p>3. Scorrete fino in fondo. Sotto <b>Schedatore</b> c'è chi ha scritto la scheda. Poi:</p>
+    <ul>
+      <li><b>Approva</b> (verde): la scheda diventa pubblica.</li>
+      <li><b>Rigetta</b> (rosso): la scheda torna a chi l'ha scritta.</li>
+    </ul>
+    <figure><img src="img/17-valuta-basso.jpg"><figcaption>In fondo alla pagina: chi l'ha scritta e i due bottoni.</figcaption></figure>
+    <div class="box avviso"><b class="t">Avvisate voi lo schedatore</b>Il sito non manda notifiche: se rifiutate una scheda, dite voi allo schedatore (email, telefono…) cosa correggere.</div>
+  </div>
+  <div class="step">
+    <figure><img src="img/18-approvata.jpg"><figcaption>Messaggio dopo l'approvazione.</figcaption></figure>
+  </div>
+  <div class="step">
+    <figure><img src="img/19-scheda-pubblica.jpg"><figcaption>La scheda approvata, come la vedono tutti.</figcaption></figure>
+  </div>
+</section>
+
+<section class="sezione">
+  <h2>6. Uscire e cosa fare se qualcosa non va</h2>
+  <h3>Uscire</h3>
+  <p>Menu <b>☰</b> → <b>Logout</b>. Fatelo sempre se usate un computer condiviso.</p>
+
+  <h3>Problemi frequenti</h3>
+  <table>
+    <tr><th>Cosa succede</th><th>Cosa fare</th></tr>
+    <tr><td>"Nome utente o password errati"</td><td>Ricopiate la password dal documento Word, lettera per lettera (maiuscole e minuscole contano).</td></tr>
+    <tr><td>"Sessione scaduta", oppure le pagine non mostrano i dati</td><td>Menu ☰ → Logout, rientrate e riprovate.</td></tr>
+    <tr><td>Un messaggio d'errore quando salvate</td><td>Leggetelo: di solito dice cosa correggere (es. "Il valore di una misura deve essere un numero").</td></tr>
+    <tr><td>Il sito non si apre</td><td>Controllate di essere sulla rete dell'università (o collegati alla VPN di ateneo).</td></tr>
+    <tr><td>Ho sbagliato una scheda già salvata</td><td>Bozze → Elimina, poi rifatela. Se è già in approvazione: prima "Ritira".</td></tr>
+  </table>
+  <div class="box consiglio"><b class="t">Per tutto il resto</b>Scrivete a John, se possibile con uno screenshot della pagina.</div>
+</section>
+
+</body>
+</html>
