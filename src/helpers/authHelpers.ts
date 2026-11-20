@@ -13,7 +13,7 @@ const USER_MANAGER_API_URL = process.env.USER_MANAGER_API_URL || 'http://user-ma
 
 // Funzione di controllo del cookie
 export const cookieChecker = async (jwt: string): Promise<boolean | string> => {
-  console.log(`cookieChecker: Checking cookie with JWT: ${jwt}`);
+  console.log('cookieChecker: Checking cookie (token not logged)');
   try {
     const response = await axios.get(`${USER_MANAGER_API_URL}/users/self`, {
       params: { jwt }
@@ -35,22 +35,27 @@ export const cookieChecker = async (jwt: string): Promise<boolean | string> => {
       //   return false;
       // }
 
+      // Gli utenti bloccati dallo user-manager non entrano
+      if (userData.locked === true) {
+        console.log('cookieChecker: User is locked.');
+        return false;
+      }
+      // Amministratore se isAdmin è true; altrimenti schedatore, anche quando lo
+      // user-manager scrive isAdmin: false (gli account creati dall'interfaccia :8080)
       if (userData.isAdmin === true) {
         console.log('cookieChecker: User is an admin.');
         return 'admin';
-      } else if (!userData.hasOwnProperty('isAdmin')) {
-        console.log('cookieChecker: User is a schedatore.');
-        return 'schedatore';
-      } else {
-        console.log('cookieChecker: User is neither admin nor schedatore.');
-        return false;
       }
+      console.log('cookieChecker: User is a schedatore.');
+      return 'schedatore';
     } else {
       console.log('cookieChecker: User data retrieval failed.');
       return false;
     }
   } catch (error) {
-    console.error('cookieChecker: Error while checking cookie:', error);
+    // Solo lo stato: l'errore completo di axios contiene l'header con il token di sessione
+    const status = axios.isAxiosError(error) ? error.response?.status ?? 'nessuna risposta' : String(error);
+    console.warn(`cookieChecker: sessione non valida o user-manager non raggiungibile (${status})`);
     return false;
   }
 };
@@ -59,7 +64,7 @@ export const cookieChecker = async (jwt: string): Promise<boolean | string> => {
 export const onlySchedatore = async (req: Request, res: Response, next: NextFunction) => {
   const cookies = new Cookies(req, res);
   const jwt = cookies.get('jwt');
-  console.log(`onlySchedatore: Checking schedatore privileges with JWT: ${jwt}`);
+  console.log('onlySchedatore: Checking schedatore privileges (token not logged)');
 
   if (!jwt) {
     console.log('onlySchedatore: JWT missing.');
@@ -85,7 +90,7 @@ export const onlySchedatore = async (req: Request, res: Response, next: NextFunc
 export const onlyAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const cookies = new Cookies(req, res);
   const jwt = cookies.get('jwt');
-  console.log(`onlyAdmin: Checking admin privileges with JWT: ${jwt}`);
+  console.log('onlyAdmin: Checking admin privileges (token not logged)');
 
   if (!jwt) {
     console.log('onlyAdmin: JWT missing.');
@@ -112,7 +117,7 @@ const getJwtFromRequest = (req: Request, res: Response): string | undefined | bo
   try {
     const cookies = new Cookies(req, res);
     const jwt = cookies.get('jwt');
-    console.log(`getJwtFromRequest: Retrieved JWT: ${jwt}`);
+    console.log('getJwtFromRequest: JWT (token not logged)');
 
     if (!jwt) {
       console.log('getJwtFromRequest: JWT not found in cookies.');
@@ -130,7 +135,7 @@ const getJwtFromRequest = (req: Request, res: Response): string | undefined | bo
 // Capisco che tipo di user è il client dal suo token di autenticazione
 export const getUserData = async (req: Request, res: Response): Promise<UserData | false> => {
   let jwt = getJwtFromRequest(req, res);
-  console.log(`getUserData: Retrieved JWT for user data: ${jwt}`);
+  console.log('getUserData: Retrieved JWT for user data (token not logged)');
 
   if (jwt) {
     try {
@@ -146,8 +151,14 @@ export const getUserData = async (req: Request, res: Response): Promise<UserData
         return false;
       }
     } catch (error) {
-      console.error('getUserData: Error retrieving user data:', error);
-      res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+      // Solo lo stato: l'errore completo di axios contiene l'URL con il token di sessione
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      console.warn(`getUserData: impossibile leggere l'utente (${status ?? 'nessuna risposta'})`);
+      if (status === 401 || status === 403) {
+        res.status(Code.UNAUTHORIZED).send(new HttpResponse(Code.UNAUTHORIZED, Status.UNAUTHORIZED, 'Sessione scaduta: esci, rientra e riprova'));
+      } else {
+        res.status(500).send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Internal Server Error'));
+      }
       return false;
     }
   } else {

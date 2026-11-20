@@ -169,7 +169,9 @@ function populateWebPage(data) {
 
     for (i = 0; i < data.data.materiali.length; i++) {
         document.getElementById('materiali').innerHTML += data.data.materiali[i].nome_materiale;
-        if (data.data.materiali[i].descrizione) {document.getElementById('materiali').innerHTML +=+ ", " + data.data.materiali[i].descrizione + " <br>";}
+        // Un materiale per riga (prima finivano attaccati: "TelaOro"; e "+=+" stampava NaN)
+        if (data.data.materiali[i].descrizione) {document.getElementById('materiali').innerHTML += ", " + data.data.materiali[i].descrizione + " <br>";}
+        else {document.getElementById('materiali').innerHTML += "<br>";}
         $('.materiali').removeClass('materiali');
     }
 

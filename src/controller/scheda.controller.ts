@@ -102,36 +102,45 @@ export const createScheda = async (req: Request, res: Response): Promise<Respons
         ));
     }
 
-    // Inserisci la scheda e ottieni l'ID della scheda appena inserita
-    const schedaId = await insertScheda(scheda);
-    const pool = await connection();
-
-    // Mi prendo l'user
+    // Prima si identifica l'utente: senza, la scheda resterebbe senza autore
     const userData = await getUserData(req, res);
-
-    await insertAutori(pool, schedaId, scheda);
-    await insertCronologie(pool, schedaId, scheda);
-    await insertUbicazioni(pool, schedaId, scheda);
-    await insertInventario(pool, schedaId, scheda);
-    await insertMateriali(pool, schedaId, scheda);
-    await insertTecniche(pool, schedaId, scheda);
-    await insertProvenienze(pool, schedaId, scheda);
-    await insertMostre(pool, schedaId, scheda);
-    await insertBibliografia(pool, schedaId, scheda);
-    await insertAltraBibliografia(pool, schedaId, scheda);
-    await insertDocFotografica(pool, schedaId, scheda);
-    await insertMisure(pool, schedaId, scheda);
-    await insertImmagini(pool, schedaId, scheda);
-
-    if (userData !== false) {
-      await insertUser(pool, schedaId, scheda, userData);
-
-      return res.status(Code.CREATED)
-        .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Creata la bozza con id ' + schedaId));
-    } else {
-      return res.status(Code.INTERNAL_SERVER_ERROR)
-        .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'Problema di verifica dell utente'));
+    if (userData === false) {
+      if (res.headersSent) return res;
+      return res.status(Code.UNAUTHORIZED)
+        .send(new HttpResponse(Code.UNAUTHORIZED, Status.UNAUTHORIZED, 'Sessione scaduta: esci, rientra e riprova'));
     }
+
+    // Tutto in un'unica transazione: se un passaggio fallisce non resta una scheda a metà
+    const pool = await connection();
+    const conn = await pool.getConnection();
+    let schedaId: number;
+    try {
+      await conn.beginTransaction();
+      schedaId = await insertScheda(conn, scheda);
+      await insertAutori(conn, schedaId, scheda);
+      await insertCronologie(conn, schedaId, scheda);
+      await insertUbicazioni(conn, schedaId, scheda);
+      await insertInventario(conn, schedaId, scheda);
+      await insertMateriali(conn, schedaId, scheda);
+      await insertTecniche(conn, schedaId, scheda);
+      await insertProvenienze(conn, schedaId, scheda);
+      await insertMostre(conn, schedaId, scheda);
+      await insertBibliografia(conn, schedaId, scheda);
+      await insertAltraBibliografia(conn, schedaId, scheda);
+      await insertDocFotografica(conn, schedaId, scheda);
+      await insertMisure(conn, schedaId, scheda);
+      await insertImmagini(conn, schedaId, scheda);
+      await insertUser(conn, schedaId, scheda, userData);
+      await conn.commit();
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
+
+    return res.status(Code.CREATED)
+      .send(new HttpResponse(Code.CREATED, Status.CREATED, 'Creata la bozza con id ' + schedaId));
   } catch (error: unknown) {
     console.error(error);
     return res.status(Code.INTERNAL_SERVER_ERROR)

@@ -81,12 +81,13 @@ export const validateSchedaData = async (schedaData: any): Promise<YourValidatio
     return { isValid: false, errorMessage: 'Il titolo opera è necessario e deve essere una stringa' };
   }
 
-  // Controllo che le chiavi che iniziano con "Valore" contengano numeri o float
+  // I valori delle misure, se compilati, devono essere numeri (anche con la virgola: "100,5").
+  // Un valore vuoto è ammesso: il modulo invia sempre la prima misura, anche se non usata.
   for (const key in schedaData) {
     if (key.startsWith('Valore')) {
-      const value = schedaData[key];
-      if (isNaN(parseFloat(value))) {
-        return { isValid: false, errorMessage: `Il campo ${key} deve contenere un numero o float` };
+      const value = String(schedaData[key] ?? '').trim().replace(',', '.');
+      if (value !== '' && isNaN(Number(value))) {
+        return { isValid: false, errorMessage: `Il valore di una misura deve essere un numero (es. 100 o 100,5): "${schedaData[key]}" non lo è` };
       }
     }
   }

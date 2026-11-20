@@ -18,17 +18,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (response.ok) {
         window.location.href = '/';
+      } else if (response.status === 401 || response.status === 403) {
+        showError("Nome utente o password errati. Controllate maiuscole e minuscole e riprovate.");
       } else {
-        const errorData = await response.json();
-        if (response.status === 403) {
-          showError("The data entered does not match any user within the site");
-        } else {
-          showError("An error occurred. Please try again later.");
-        }
+        showError("Il servizio di accesso non risponde. Riprovate tra qualche minuto.");
       }
     } catch (error) {
-      console.error('Error during login:', error);
-      showError("An error occurred. Please try again later.");
+      console.error('Errore durante il login:', error);
+      showError("Il sito non risponde. Controllate la connessione e riprovate.");
     }
   });
 

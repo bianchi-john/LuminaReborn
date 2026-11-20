@@ -23,21 +23,18 @@ function getSuggestions() {
                 var tecniche = response.data[0].tecniche;
                 var misure = response.data[0].misure;
 
-                // Funzione per rimuovere i duplicati in base al nome
+                // Rimuove i duplicati confrontando tutti i campi tranne l'id.
+                // (Prima confrontava solo "nome", che esiste solo per gli autori: per
+                // materiali e tecniche il campo era sempre vuoto e restava solo la prima voce.)
                 function rimuoviDuplicati(array) {
-                    var uniqueNames = [];
-                    var uniqueIds = [];
-
-                    array.forEach(function(autore) {
-                        if (!uniqueNames.includes(autore.nome) && !uniqueIds.includes(autore.id)) {
-                            uniqueNames.push(autore.nome);
-                            uniqueIds.push(autore.id);
-                        }
-                    });
-
-                    // Filtra gli autori originali in base agli id unici
-                    return array.filter(function(autore) {
-                        return uniqueIds.includes(autore.id);
+                    var visti = {};
+                    return array.filter(function (voce) {
+                        var chiave = JSON.stringify(Object.keys(voce).sort().filter(function (k) {
+                            return k !== 'id';
+                        }).map(function (k) { return [k, voce[k]]; }));
+                        if (visti[chiave]) return false;
+                        visti[chiave] = true;
+                        return true;
                     });
                 }
 
@@ -572,11 +569,11 @@ function aggiungiGruppoMostre() {
     <p>Curatore</p>
     <input type="text" id="Curatore${numero}" name="Curatore">
     <div class="gruppo_giorni date-form">
-        <p>Giorno inizo</p>
+        <p>Giorno inizio</p>
         <input type="text" class="form-control date-form" id="giornoDataInizioMostra${numero}" placeholder="Giorno (1-31)">
-        <p>Mese inizo</p>
+        <p>Mese inizio</p>
         <input type="text" class="form-control date-form" id="meseDataInizioMostra${numero}" placeholder="Mese (1-12)">
-        <p>Anno inizo</p>
+        <p>Anno inizio</p>
         <input type="text" class="form-control date-form" id="annoDataInizioMostra${numero}" placeholder="Anno (es. 2023)">
         <p>Giorno fine</p>
         <input type="text" class="form-control date-form" id="giornoDataFineMostra${numero}" placeholder="Giorno (1-31)">
@@ -587,7 +584,7 @@ function aggiungiGruppoMostre() {
     </div>
     <p>Logo</p>
     <input type="text" id="luogoMostra${numero}" name="Logo mostra">
-    <p>Descizione</p>
+    <p>Descrizione</p>
     <input type="text" id="descrizioneMostra${numero}" name="Descizione mostra">
     </form>
     </div>
@@ -785,6 +782,18 @@ function rimuoviGruppoAutori() {
 
 /////////// LOGICA PER L'INVIO DEI DATI (CHIAMATA POST) /////////////
 
+// Nome della voce scelta in un elenco a tendina di suggerimenti: il valore
+// dell'opzione è la riga del database in JSON. Vuoto se non si è scelto nulla.
+function nomeDaElenco(select, campo) {
+    if (!select || !select.value) return "";
+    try {
+        var voce = JSON.parse(select.value);
+        return voce && voce[campo] ? String(voce[campo]) : "";
+    } catch (e) {
+        return select.value;
+    }
+}
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -835,24 +844,19 @@ async function gatherData() {
         var numMaterialiForms = document.querySelectorAll('[id^="materiali-group"]').length;
         for (var i = 1; i <= numMaterialiForms; i++) {
             var materiale = document.getElementById("materiale" + i).value ? document.getElementById("materiale" + i).value : "";
-            var materialiSelect = document.getElementById("materialiSelect" + i).value;;
-            if (materialiSelect.length > 0) {
-                formData["Materiale" + i] = materialiSelect
-            }
-            else {
-                formData["Materiale" + i] = materiale
-            }
+            var materialiSelect = document.getElementById("materialiSelect" + i);
+            // Se si sceglie un materiale già esistente si invia il suo nome (prima partiva
+            // l'intera riga del database in JSON, salvata come nome del materiale)
+            formData["Materiale" + i] = nomeDaElenco(materialiSelect, "nome_materiale") || materiale;
         }
 
         // Itera attraverso i form delle tecniche
         var numTecnicheForms = document.querySelectorAll('[id^="tecniche-group"]').length;
         for (var i = 1; i <= numTecnicheForms; i++) {
             var tecnica = document.getElementById("Tecnica" + i).value ? document.getElementById("Tecnica" + i).value : "";
-            var tecnicaSelect = document.getElementById("tecnicheSelect" + i).value;
-            formData["Tecnica" + i] = tecnica
-            if( tecnicaSelect.length > 0 ) {
-                formData["Tecnica" + i] = tecnica
-            }
+            var tecnicaSelect = document.getElementById("tecnicheSelect" + i);
+            // Se si sceglie una tecnica già esistente si invia il suo nome (prima veniva ignorata)
+            formData["Tecnica" + i] = nomeDaElenco(tecnicaSelect, "nome_tecnica") || tecnica;
         }
 
         // Itera attraverso i form delle misure

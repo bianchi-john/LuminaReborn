@@ -8,7 +8,7 @@ export const ADMINQUERY = {
       JOIN statoScheda ON tds_schede_statoScheda.id_stato = statoScheda.id
       WHERE statoScheda.stato = 1;
       `,
-    APPROVE_BOZZA:`UPDATE statoScheda AS ss JOIN tds_schede_statoScheda AS tss ON ss.id = tss.id_stato SET ss.stato = 2 WHERE tss.id_scheda = ?;`,
-    REJECT_BOZZA:`UPDATE statoScheda AS ss JOIN tds_schede_statoScheda AS tss ON ss.id = tss.id_stato SET ss.stato = 0 WHERE tss.id_scheda = ?;`
+    APPROVE_BOZZA:`UPDATE statoScheda AS ss JOIN tds_schede_statoScheda AS tss ON ss.id = tss.id_stato SET ss.stato = 2 WHERE tss.id_scheda = ? AND ss.stato = 1;`,
+    REJECT_BOZZA:`UPDATE statoScheda AS ss JOIN tds_schede_statoScheda AS tss ON ss.id = tss.id_stato SET ss.stato = 0 WHERE tss.id_scheda = ? AND ss.stato = 1;`
   };
   

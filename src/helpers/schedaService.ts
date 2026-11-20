@@ -1,549 +1,244 @@
 // schedaService.ts
-import { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
+//
+// Salvataggio di una scheda e dei suoi collegamenti (tabelle TDS).
+//
+// Autori, materiali, tecniche, ubicazioni, provenienze, mostre e bibliografie
+// sono voci condivise: se ne esiste già una identica la si collega invece di
+// crearne una copia, così la stessa voce raccoglie tutte le opere collegate.
+// Tutte le funzioni ricevono la stessa connessione, così il salvataggio
+// avviene in un'unica transazione (vedi createScheda nel controller).
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { Scheda } from '../interface/scheda';
 import { UserData } from '../interface/user';
 import { QUERY } from '../query/scheda.query';
-import { connection } from '../config/mysql.config';
 
+/** Connessione o pool: basta che sappia eseguire query. */
+type Db = { query: (sql: string, values?: unknown[]) => Promise<any> };
 
-type ResultSet = [RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader, FieldPacket[]];
+/** Numero massimo di gruppi ripetuti letti dal modulo (autori, materiali...). */
+const MAX_GRUPPI = 50;
 
-// schedaService.ts
+/** Testo pulito; i valori scelti da un elenco possono arrivare come JSON della riga. */
+function testo(valore: unknown, campoJson?: string): string {
+  if (valore === undefined || valore === null) return '';
+  let s = String(valore).trim();
+  if (campoJson && s.startsWith('{')) {
+    try {
+      const obj = JSON.parse(s);
+      s = String(obj?.[campoJson] ?? '').trim();
+    } catch {
+      // non è JSON: si usa il testo così com'è
+    }
+  }
+  return s;
+}
 
-export async function insertScheda(scheda: Scheda): Promise<number> {
-  try {
-    const pool = await connection();
+/** Numero con la virgola o con il punto (es. "100,5"); vuoto se non è un numero. */
+export function numero(valore: unknown): string {
+  const s = testo(valore).replace(',', '.');
+  return s !== '' && !isNaN(Number(s)) ? s : '';
+}
 
-    // Inserisci la scheda
-    const resultScheda: ResultSet = await pool.query(QUERY.INSERT_SCHEDA, [
-      scheda.titolo_opera,
-      scheda.corpo_scheda || '',
-      scheda.iscrizioni || '',
-      scheda.descrizione_sintetica || '',
-      scheda.storia_espositiva || '',
-      scheda.classificazione || '',
-    ]);
+/**
+ * Cerca una voce con gli stessi valori (il confronto di MySQL ignora maiuscole
+ * e accenti) e ne restituisce l'id; se non c'è, la crea.
+ */
+async function trovaOCrea(db: Db, tabella: string, valori: Record<string, string>): Promise<number> {
+  const colonne = Object.keys(valori);
+  const [righe] = await db.query(
+    `SELECT id FROM \`${tabella}\` WHERE ${colonne.map((c) => `\`${c}\` = ?`).join(' AND ')} ORDER BY id LIMIT 1`,
+    colonne.map((c) => valori[c]),
+  );
+  if ((righe as RowDataPacket[]).length) return (righe as RowDataPacket[])[0].id;
+  const [res] = await db.query(
+    `INSERT INTO \`${tabella}\` (${colonne.map((c) => `\`${c}\``).join(', ')}) VALUES (${colonne.map(() => '?').join(', ')})`,
+    colonne.map((c) => valori[c]),
+  );
+  return (res as ResultSetHeader).insertId;
+}
 
-    return (resultScheda[0] as ResultSetHeader).insertId;
-  } catch (error) {
-    console.error('Errore durante l\'inserimento della scheda:', error);
-    throw new Error('Errore durante l\'inserimento della scheda');
+/** Collega una voce alla scheda una sola volta, anche se compare due volte nel modulo. */
+async function collega(db: Db, sql: string, schedaId: number, idVoce: number, giaCollegati: Set<number>): Promise<void> {
+  if (giaCollegati.has(idVoce)) return;
+  giaCollegati.add(idVoce);
+  await db.query(sql, [schedaId, idVoce]);
+}
+
+/** Per ogni gruppo numerato 1..N del modulo chiama `fn`; i gruppi vuoti vengono saltati. */
+async function perGruppo(fn: (i: number) => Promise<void>): Promise<void> {
+  for (let i = 1; i <= MAX_GRUPPI; i++) await fn(i);
+}
+
+export async function insertScheda(db: Db, scheda: Scheda): Promise<number> {
+  const [res] = await db.query(QUERY.INSERT_SCHEDA, [
+    testo(scheda.titolo_opera),
+    scheda.corpo_scheda || '',
+    scheda.iscrizioni || '',
+    scheda.descrizione_sintetica || '',
+    scheda.storia_espositiva || '',
+    testo(scheda.classificazione),
+  ]);
+  return (res as ResultSetHeader).insertId;
+}
+
+export async function insertAutori(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const collegati = new Set<number>();
+  await perGruppo(async (i) => {
+    const voce = {
+      nome: testo(scheda[`NomeAutore${i}`]),
+      formula_precedente: testo(scheda[`Formula_precedente${i}`]),
+      formula_successiva: testo(scheda[`Formula_successiva${i}`]),
+      categoria: testo(scheda[`Categoria${i}`]),
+    };
+    if (!voce.nome) return;
+    await collega(db, QUERY.INSERT_TDS_SCHEDA_AUTORI, schedaId, await trovaOCrea(db, 'autori', voce), collegati);
+  });
+}
+
+export async function insertCronologie(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const valori = [
+    testo(scheda.ambito_storico),
+    testo(scheda.etichetta_data),
+    testo(scheda.giorno_data_da),
+    testo(scheda.mese_data_da),
+    testo(scheda.anno_data_da),
+    testo(scheda.giorno_data_a),
+    testo(scheda.mese_data_a),
+    testo(scheda.anno_data_a),
+  ];
+  if (!valori.some(Boolean)) return;
+  const [res] = await db.query(QUERY.INSERT_CONOLOGIA, valori);
+  await db.query(QUERY.INSERT_TDS_SCHEDA_CONOLOGIA, [schedaId, (res as ResultSetHeader).insertId]);
+}
+
+export async function insertUbicazioni(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const voce = { ubicazione: testo(scheda.ubicazione), descrizione: testo(scheda.descrizione) };
+  if (!voce.ubicazione && !voce.descrizione) return;
+  await db.query(QUERY.INSERT_TDS_SCHEDA_UBICAZIONE, [schedaId, await trovaOCrea(db, 'ubicazioni', voce)]);
+}
+
+// L'inventario è proprio di ogni opera: non si condivide
+export async function insertInventario(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const valori = [testo(scheda.inventario), testo(scheda.giuridica)];
+  if (!valori.some(Boolean)) return;
+  const [res] = await db.query(QUERY.INSERT_INVENTARIO, valori);
+  await db.query(QUERY.INSERT_TDS_SCHEDA_INVENTARIO, [schedaId, (res as ResultSetHeader).insertId]);
+}
+
+export async function insertMateriali(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const collegati = new Set<number>();
+  await perGruppo(async (i) => {
+    const nome = testo(scheda[`Materiale${i}`], 'nome_materiale') || testo(scheda[`MaterialePreesistente${i}`], 'nome_materiale');
+    if (!nome) return;
+    await collega(db, QUERY.INSERT_TDS_SCHEDA_MATERIALE, schedaId, await trovaOCrea(db, 'materiali', { nome_materiale: nome }), collegati);
+  });
+}
+
+export async function insertTecniche(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const collegati = new Set<number>();
+  await perGruppo(async (i) => {
+    const nome = testo(scheda[`Tecnica${i}`], 'nome_tecnica') || testo(scheda[`TencicaPreesistente${i}`], 'nome_tecnica');
+    if (!nome) return;
+    await collega(db, QUERY.INSERT_TDS_SCHEDA_TECNICA, schedaId, await trovaOCrea(db, 'tecniche', { nome_tecnica: nome }), collegati);
+  });
+}
+
+export async function insertProvenienze(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const collegati = new Set<number>();
+  await perGruppo(async (i) => {
+    const voce = {
+      provenienza: testo(scheda[`Provenienza${i}`]),
+      descrizione: testo(scheda[`DescrizioneProvenienza${i}`]),
+      note: testo(scheda[`NoteProvenienza${i}`]),
+    };
+    if (!voce.provenienza && !voce.descrizione && !voce.note) return;
+    await collega(db, QUERY.INSERT_TDS_SCHEDA_PROVENIENZA, schedaId, await trovaOCrea(db, 'provenienze', voce), collegati);
+  });
+}
+
+export async function insertMostre(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const collegati = new Set<number>();
+  await perGruppo(async (i) => {
+    const voce = {
+      curatore: testo(scheda[`Curatore${i}`]),
+      titolo_mostra: testo(scheda[`TitoloMostra${i}`]),
+      giorno_data_da: testo(scheda[`GiornoInizioMostra${i}`]),
+      mese_data_da: testo(scheda[`MeseInizioMostra${i}`]),
+      anno_data_da: testo(scheda[`AnnoInizioMostra${i}`]),
+      giorno_data_a: testo(scheda[`GiornoFineMostra${i}`]),
+      mese_data_a: testo(scheda[`MeseFineMostra${i}`]),
+      anno_data_a: testo(scheda[`AnnoFineMostra${i}`]),
+      luogo_mostra: testo(scheda[`LuogoMostra${i}`]),
+      descrizione: testo(scheda[`DescrizioneMostra${i}`]),
+    };
+    if (!Object.values(voce).some(Boolean)) return;
+    await collega(db, QUERY.INSERT_TDS_SCHEDA_MOSTRA, schedaId, await trovaOCrea(db, 'mostre', voce), collegati);
+  });
+}
+
+export async function insertBibliografia(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const riferimento = testo(scheda.bibliografia);
+  if (!riferimento) return;
+  const id = await trovaOCrea(db, 'bibliografie', { riferimento_bibliografico: riferimento });
+  await db.query(QUERY.INSERT_TDS_SCHEDA_BIBILIOGRAFIA, [schedaId, id]);
+}
+
+export async function insertAltraBibliografia(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const riferimento = testo(scheda.altraBibliografia);
+  if (!riferimento) return;
+  const id = await trovaOCrea(db, 'altreBibliografie', { riferimento_bibliografico: riferimento });
+  await db.query(QUERY.INSERT_TDS_SCHEDA_ALTRABIBILIOGRAFIA, [schedaId, id]);
+}
+
+// La documentazione fotografica è propria di ogni opera: non si condivide
+export async function insertDocFotografica(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  const riferimento = testo(scheda.documentazioneFotografica);
+  if (!riferimento) return;
+  const [res] = await db.query(QUERY.INSERT_FOTOGRAFICA, [riferimento]);
+  await db.query(QUERY.INSERT_TDS_SCHEDA_FOTOGRAFICA, [schedaId, (res as ResultSetHeader).insertId]);
+}
+
+export async function insertMisure(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  for (let i = 1; i <= MAX_GRUPPI; i++) {
+    const titolo = testo(scheda[`TitoloMisure${i}`]);
+    const interoParziale = testo(scheda[`InteroParziale${i}`]);
+    const misure: string[][] = [];
+    for (let j = 1; j <= MAX_GRUPPI; j++) {
+      const m = [testo(scheda[`Direzione${i}${j}`]), testo(scheda[`Tipo${i}${j}`]), numero(scheda[`Valore${i}${j}`]), testo(scheda[`Unita${i}${j}`])];
+      // Una misura senza valore non dice nulla: si salta (l'unità di misura ha sempre un valore predefinito)
+      if (m[2] !== '') misure.push(m);
+    }
+    if (!titolo && !interoParziale && !misure.length) continue;
+    const [res] = await db.query(QUERY.INSERT_GRUPPO_MISURE, [interoParziale, titolo]);
+    const gruppoId = (res as ResultSetHeader).insertId;
+    await db.query(QUERY.INSERT_TDS_SCHEDA_MISURE, [schedaId, gruppoId]);
+    for (const m of misure) await db.query(QUERY.INSERT_MISURE, [...m, gruppoId]);
   }
 }
 
-export async function insertAutori(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
-      if (
-        scheda[`NomeAutore${i}`] ||
-        scheda[`Formula_precedente${i}`] ||
-        scheda[`Formula_successiva${i}`] ||
-        scheda[`Categoria${i}`] ||
-        scheda[`NomeAutore${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_AUTORE, [
-          scheda[`Formula_precedente${i}`] || '',
-          scheda[`Formula_successiva${i}`] || '',
-          scheda[`Categoria${i}`] || '',
-          scheda[`NomeAutore${i}`] || '',
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        // Collega  la scheda con la funzione tds
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_AUTORI, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento degli autori:', error);
-    throw new Error('Errore durante l\'inserimento degli autori');
+export async function insertUser(db: Db, schedaId: number, scheda: Scheda, userData: UserData): Promise<void> {
+  const [esistenti] = await db.query('SELECT id FROM users WHERE username = ?', [userData.username]);
+  let userId: number;
+  if ((esistenti as RowDataPacket[]).length) {
+    userId = (esistenti as RowDataPacket[])[0].id;
+  } else {
+    const [res] = await db.query(QUERY.INSERT_USER, [userData.isAdmin, userData.username, userData.display_name]);
+    userId = (res as ResultSetHeader).insertId;
   }
+  const [stato] = await db.query(QUERY.INSERT_STATOSCHEDA, [0, scheda.commento || '']);
+  const statoId = (stato as ResultSetHeader).insertId;
+  await db.query(QUERY.INSERT_TDS_SCHEDE_STATOSCHEDA, [schedaId, statoId]);
+  await db.query(QUERY.INSERT_TDS_STATO_SCHEDAUSER, [statoId, userId]);
+  await db.query(QUERY.INSERT_TDS_USER_SCHEDA, [userId, schedaId, new Date()]);
 }
 
-// Cronologie
-export async function insertCronologie(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-
-    if (
-      scheda.ambito_storico ||
-      scheda.etichetta_data ||
-      scheda.anno_data_a ||
-      scheda.anno_data_da ||
-      scheda.giorno_data_a ||
-      scheda.giorno_data_da ||
-      scheda.mese_data_a ||
-      scheda.mese_data_da
-    ) {
-      const result: ResultSet = await pool.query(QUERY.INSERT_CONOLOGIA, [
-        scheda.ambito_storico || '',
-        scheda.etichetta_data || '',
-        scheda.giorno_data_da || '',
-        scheda.mese_data_da || '',
-        scheda.anno_data_da || '',
-        scheda.giorno_data_a || '',
-        scheda.mese_data_a || '',
-        scheda.anno_data_a || ''
-      ]);
-
-      const thisId = (result[0] as ResultSetHeader).insertId;
-
-      // Collega  la scheda con la funzione tds
-      promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_CONOLOGIA, [schedaId, thisId]));
-    }
-
-
-    await Promise.all(promises);
-  } catch (error) {
-    console.error('Errore durante l\'inserimento delle cronologie:', error);
-    throw new Error('Errore durante l\'inserimento degli cronologie');
-  }
-
-
-}
-
-// Ubicazioni
-export async function insertUbicazioni(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-
-    if (
-      scheda.ubicazione ||
-      scheda.descrizione
-    ) {
-      const result: ResultSet = await pool.query(QUERY.INSERT_UBICAZIONE, [
-        scheda.ubicazione || '',
-        scheda.descrizione || ''
-      ]);
-
-      const thisId = (result[0] as ResultSetHeader).insertId;
-
-      // Collega  la scheda con la funzione tds
-      promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_UBICAZIONE, [schedaId, thisId]));
-    }
-
-
-    await Promise.all(promises);
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di ubicazioni:', error);
-    throw new Error('Errore durante l\'inserimento di ubicazioni');
-  }
-
-}
-
-// Inventario
-export async function insertInventario(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-
-    if (
-      scheda.inventario ||
-      scheda.giuridica
-    ) {
-      const result: ResultSet = await pool.query(QUERY.INSERT_INVENTARIO, [
-        scheda.inventario || '',
-        scheda.giuridica || ''
-      ]);
-
-      const thisId = (result[0] as ResultSetHeader).insertId;
-
-      // Collega  la scheda con la funzione tds
-      promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_INVENTARIO, [schedaId, thisId]));
-    }
-
-
-    await Promise.all(promises);
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di Inventario:', error);
-    throw new Error('Errore durante l\'inserimento di Inventario');
-  }
-
-}
-
-
-// Materiali
-export async function insertMateriali(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
-      if (
-        scheda[`Materiale${i}`] ||
-        scheda[`MaterialePreesistente${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_MATERIALE, [
-          scheda[`Materiale${i}`] || ''
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_MATERIALE, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento Materiali:', error);
-    throw new Error('Errore durante l\'inserimento Materiali');
-  }
-}
-
-
-// Tecniche
-export async function insertTecniche(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
-      if (
-        scheda[`Tecnica${i}`] ||
-        scheda[`TencicaPreesistente${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_TECNICA, [
-          scheda[`Tecnica${i}`] || ''
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_TECNICA, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di tecniche:', error);
-    throw new Error('Errore durante l\'inserimento di tecniche');
-  }
-}
-
-
-// Provenienze
-export async function insertProvenienze(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
-      if (
-        scheda[`Provenienza${i}`] ||
-        scheda[`DescrizioneProvenienza${i}`] ||
-        scheda[`NoteProvenienza${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_PROVENIENZA, [
-          scheda[`Provenienza${i}`] || '',
-          scheda[`DescrizioneProvenienza${i}`] || '',
-          scheda[`NoteProvenienza${i}`] || ''
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_PROVENIENZA, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di Provenienze:', error);
-    throw new Error('Errore durante l\'inserimento di Provenienze');
-  }
-}
-
-
-// Mostre
-export async function insertMostre(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    for (let i = 1; ; i++) {
-      if (
-
-        scheda[`Curatore${i}`] ||
-        scheda[`TitoloMostra${i}`] ||
-        scheda[`GiornoInizioMostra${i}`] ||
-        scheda[`MeseInizioMostra${i}`] ||
-        scheda[`AnnoInizioMostra${i}`] ||
-        scheda[`GiornoFineMostra${i}`] ||
-        scheda[`MeseFineMostra${i}`] ||
-        scheda[`AnnoFineMostra${i}`] ||
-        scheda[`LuogoMostra${i}`] ||
-        scheda[`DescrizioneMostra${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_MOSTRA, [
-          scheda[`Curatore${i}`] || '',
-          scheda[`TitoloMostra${i}`] || '',
-          scheda[`GiornoInizioMostra${i}`] || '',
-          scheda[`MeseInizioMostra${i}`] || '',
-          scheda[`AnnoInizioMostra${i}`] || '',
-          scheda[`GiornoFineMostra${i}`] || '',
-          scheda[`MeseFineMostra${i}`] || '',
-          scheda[`AnnoFineMostra${i}`] || '',
-          scheda[`LuogoMostra${i}`] || '',
-          scheda[`DescrizioneMostra${i}`] || ''
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_MOSTRA, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di Mostre:', error);
-    throw new Error('Errore durante l\'inserimento di Mostre');
-  }
-}
-
-
-
-// Bibliografia
-export async function insertBibliografia(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-      if (
-        scheda[`bibliografia`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_BIBILIOGRAFIA, [
-          scheda[`bibliografia`] || ''
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_BIBILIOGRAFIA, [schedaId, thisId]));
-      }
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di Bibliografia:', error);
-    throw new Error('Errore durante l\'inserimento di Bibliografia');
-  }
-}
-
-
-// AltraBibliografia
-export async function insertAltraBibliografia(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-      if (
-        scheda[`altraBibliografia`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_ALTRABIBILIOGRAFIA, [
-          scheda[`altraBibliografia`] || ''
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_ALTRABIBILIOGRAFIA, [schedaId, thisId]));
-      } 
-    
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di AltraBibliografia:', error);
-    throw new Error('Errore durante l\'inserimento di AltraBibliografia');
-  }
-}
-
-
-
-// DocFotografica
-export async function insertDocFotografica(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    if (
-
-      scheda[`documentazioneFotografica`]
-    ) {
-      atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-      const result: ResultSet = await pool.query(QUERY.INSERT_FOTOGRAFICA, [
-        scheda[`documentazioneFotografica`] || ''
-      ]);
-
-      const thisId = (result[0] as ResultSetHeader).insertId;
-
-      promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_FOTOGRAFICA, [schedaId, thisId]));
-    }
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di DocFotografica:', error);
-    throw new Error('Errore durante l\'inserimento di DocFotografica');
-  }
-}
-
-
-export async function insertMisure(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  const gruppiMisurePromises = [];
-
-  for (let i = 1; ; i++) {
-    const titoloMisureKey = `TitoloMisure${i}`;
-    const interoParzialeKey = `InteroParziale${i}`;
-
-    if (scheda[titoloMisureKey] || scheda[interoParzialeKey]) {
-      const resultGruppoMisure: ResultSet = await pool.query(QUERY.INSERT_GRUPPO_MISURE, [
-        scheda[interoParzialeKey] || '',
-        scheda[titoloMisureKey] || '',
-      ]);
-
-      const gruppoMisureId = (resultGruppoMisure[0] as ResultSetHeader).insertId;
-
-      // Collega il gruppo di misure alla scheda nella tabella tds_schede_misure
-      gruppiMisurePromises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_MISURE, [schedaId, gruppoMisureId]));
-
-      for (let j = 1; ; j++) {
-        const direzioneKey = `Direzione${i}${j}`;
-        const tipoKey = `Tipo${i}${j}`;
-        const valoreKey = `Valore${i}${j}`;
-        const unitaKey = `Unita${i}${j}`;
-
-        if (scheda[direzioneKey] || scheda[tipoKey] || scheda[valoreKey] || scheda[unitaKey]) {
-          const resultMisure: ResultSet = await pool.query(QUERY.INSERT_MISURE, [
-            scheda[direzioneKey] || '',
-            scheda[tipoKey] || '',
-            scheda[valoreKey] || '',
-            scheda[unitaKey] || '',
-            gruppoMisureId,
-          ]);
-        } else {
-          // Se nessuna delle chiavi è presente, esce dal ciclo interno
-          break;
-        }
-      }
-    } else {
-      // Se nessuna delle chiavi è presente, esce dal ciclo esterno
-      break;
-    }
-  }
-}
-
-
-
-
-export async function insertUser(pool: any, schedaId: number, scheda: Scheda, userData: UserData): Promise<void> {
-  try {
-    const promises = [];
-
-    // Verifica se lo user esiste già
-    const userExistsQuery = `SELECT username FROM users WHERE username = ?;`;
-    const [userExistsResult] = await pool.query(userExistsQuery, [userData.username]);
-
-    let userId;
-
-    if (userExistsResult.length > 0) {
-      // Lo user esiste già, prendi l'id
-      const userExistsQuery = `SELECT id FROM users WHERE username = ?;`;
-      const [userExistsResult] = await pool.query(userExistsQuery, [userData.username]);
-
-      userId = userExistsResult[0].id;
-      console.log(`Lo user l'id ${userData.username} esiste già. ID: ${userExistsResult[0].id}`);
-    } else {
-      const firstResult: ResultSet = await pool.query(QUERY.INSERT_USER, [userData.isAdmin, userData.username, userData.display_name]);
-      userId = (firstResult[0] as ResultSetHeader).insertId;
-    }
-
-    const secondResult: ResultSet = await pool.query(QUERY.INSERT_STATOSCHEDA, [0, scheda.commento || '']);
-    const statoSchedaID = (secondResult[0] as ResultSetHeader).insertId;
-
-    // Collega la scheda con la funzione tds
-    promises.push(pool.query(QUERY.INSERT_TDS_SCHEDE_STATOSCHEDA, [schedaId, statoSchedaID]));
-    promises.push(pool.query(QUERY.INSERT_TDS_STATO_SCHEDAUSER, [statoSchedaID, userId]));
-    promises.push(pool.query(QUERY.INSERT_TDS_USER_SCHEDA, [userId, schedaId, new Date()]));
-
-    await Promise.all(promises);
-  } catch (error) {
-    console.error('Errore durante l\'inserimento di user:', error);
-    throw new Error('Errore durante l\'inserimento di user');
-  }
-}
-
-
-
-// Immagini
-export async function insertImmagini(pool: any, schedaId: number, scheda: Scheda): Promise<void> {
-  try {
-    const promises = [];
-    let atLeastOneKeyPresent = false;
-
-    for (let i = 0; ; i++) {
-      if (
-        scheda[`immagine${i}`] ||
-        scheda[`didascalia_immagine${i}`]
-      ) {
-        atLeastOneKeyPresent = true; // almeno una chiave è presente
-
-        const result: ResultSet = await pool.query(QUERY.INSERT_IMMAGINI, [
-          scheda[`immagine${i}`] || '', scheda[`didascalia_immagine${i}`] || '',
-        ]);
-
-        const thisId = (result[0] as ResultSetHeader).insertId;
-
-        promises.push(pool.query(QUERY.INSERT_TDS_SCHEDA_IMMAGINI, [schedaId, thisId]));
-      } else {
-        // Se nessuna delle chiavi è presente, esce dal ciclo
-        break;
-      }
-    }
-
-    if (atLeastOneKeyPresent) {
-      await Promise.all(promises);
-    }
-  } catch (error) {
-    console.error('Errore durante l\'inserimento immagini:', error);
-    throw new Error('Errore durante l\'inserimento immagini');
+// Le immagini partono da 0 nel modulo
+export async function insertImmagini(db: Db, schedaId: number, scheda: Scheda): Promise<void> {
+  for (let i = 0; i <= MAX_GRUPPI; i++) {
+    const immagine = scheda[`immagine${i}`];
+    const didascalia = testo(scheda[`didascalia_immagine${i}`]);
+    if (!immagine && !didascalia) continue;
+    const [res] = await db.query(QUERY.INSERT_IMMAGINI, [immagine || '', didascalia]);
+    await db.query(QUERY.INSERT_TDS_SCHEDA_IMMAGINI, [schedaId, (res as ResultSetHeader).insertId]);
   }
 }

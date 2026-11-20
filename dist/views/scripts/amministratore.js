@@ -37,16 +37,13 @@ function createTable(data) {
 
     // Aggiungi i bottoni con le azioni
     var actions = $("<td>").appendTo(row);
-    var visualizzaButton = $("<a>")
-      .attr("href", "#")
+    // Link diretto alla pagina di valutazione: con href="#" e un gestore di click
+    // il browser annullava il cambio di pagina e il bottone sembrava non fare nulla
+    $("<a>")
+      .attr("href", "/valutaBozza?id=" + encodeURIComponent(scheda.id))
       .addClass("btn btn-primary")
       .text("Visualizza")
       .appendTo(actions);
-      
-    // Aggiungi un evento di click al bottone "Visualizza"
-    visualizzaButton[0].addEventListener('click', function() {
-      window.location.href = window.location.origin + "/valutaBozza?id=" + scheda.id;
-    });
   });
 
   // Aggiungi la tabella al container

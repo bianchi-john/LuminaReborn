@@ -40,6 +40,11 @@ export const approveScheda = async (req: Request, res: Response): Promise<Respon
     const schedaId = req.query.schedaId;
     const result: ResultSet = await pool.query(ADMINQUERY.APPROVE_BOZZA, [schedaId]);
     pool.end();
+    // Si approva o si respinge solo una scheda in attesa di approvazione
+    if ((result[0] as ResultSetHeader).affectedRows === 0) {
+      return res.status(Code.CONFLICT)
+        .send(new HttpResponse(Code.CONFLICT, Status.CONFLICT, 'La scheda non è in attesa di approvazione'));
+    }
     return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Approvata la bozza' + schedaId , result[0]));
     }
@@ -59,6 +64,11 @@ export const rejectBozza = async (req: Request, res: Response): Promise<Response
     const schedaId = req.query.schedaId;
     const result: ResultSet = await pool.query(ADMINQUERY.REJECT_BOZZA, [schedaId]);
     pool.end();
+    // Si approva o si respinge solo una scheda in attesa di approvazione
+    if ((result[0] as ResultSetHeader).affectedRows === 0) {
+      return res.status(Code.CONFLICT)
+        .send(new HttpResponse(Code.CONFLICT, Status.CONFLICT, 'La scheda non è in attesa di approvazione'));
+    }
     return res.status(Code.OK)
       .send(new HttpResponse(Code.OK, Status.OK, 'Rigettata la bozza' + schedaId , result[0]));
     }

@@ -87,11 +87,8 @@ function createTable(data) {
       .text("Elimina")
       .appendTo(actions);
 
-    $("<a>")
-      .attr("href", "#")
-      .addClass("btn btn-warning")
-      .text("Modifica")
-      .appendTo(actions);
+    // Il pulsante "Modifica" non aveva nessuna azione collegata: tolto finché
+    // la modifica delle bozze non sarà disponibile
 
     $("<a>")
       .attr("href", "#")

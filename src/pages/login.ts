@@ -35,7 +35,15 @@ export async function handleLoginPost(req: Request, res: Response): Promise<void
       res.status(response.status).send(response.data);
     }
   } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).send(error);
+    // Non si registra né si rimanda l'errore completo di axios: contiene la richiesta,
+    // cioè anche la password digitata
+    const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+    if (status === 401 || status === 403 || status === 404) {
+      console.warn(`Login non riuscito per "${String(username).slice(0, 50)}" (user-manager: ${status})`);
+      res.status(401).send({ success: false, message: 'Nome utente o password errati' });
+    } else {
+      console.error(`Errore durante il login: user-manager non raggiungibile o in errore (${status ?? 'nessuna risposta'})`);
+      res.status(502).send({ success: false, message: 'Servizio di accesso non disponibile' });
+    }
   }
 }
