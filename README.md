@@ -47,7 +47,7 @@ Gli utenti stanno nello user-manager (MongoDB). Il ruolo dipende dal campo `isAd
   Ritira ◄──────── stato 1 (in approvazione) ──► Rigetta: torna a stato 0
                       │  Approva
                       ▼
-                   stato 2 (pubblicata, visibile a tutti)
+                   stato 2 (pubblicata, visibile a tutti) ──► Elimina (amministratore)
 ```
 
 | Azione | Chi | Quando è permessa |
@@ -57,6 +57,7 @@ Gli utenti stanno nello user-manager (MongoDB). Il ruolo dipende dal campo `isAd
 | Inviare in approvazione | lo schedatore che l'ha creata | solo in stato 0 |
 | Ritirare | lo schedatore che l'ha creata | solo in stato 1 |
 | Approvare / Rigettare | amministratore | solo in stato 1 |
+| Eliminare una scheda pubblicata | amministratore | solo in stato 2 |
 
 Le regole sono controllate dal server: un'azione fuori stato risponde `409`, una scheda di un altro schedatore risponde `404`. Le bozze **non si possono modificare**: si eliminano e si ricreano.
 
@@ -83,7 +84,7 @@ Una scheda è una riga di `schede` più molte tabelle collegate tramite tabelle 
 
 - **Voci condivise tra schede**: autori, materiali, tecniche, ubicazioni, provenienze, mostre, bibliografie. Prima di inserire, il server cerca una voce con gli stessi valori; se c'è la riusa, altrimenti la crea. Il confronto ignora maiuscole, accenti e spazi all'inizio o alla fine (collazione `utf8mb4_0900_ai_ci` più `trim`). Nel modulo, autori, materiali e tecniche hanno anche il menu "Seleziona preesistente".
 - **Voci proprie della scheda**: inventario, cronologia, documentazione fotografica, misure e immagini sono sempre nuove.
-- Eliminare una scheda cancella solo i collegamenti (`ON DELETE CASCADE` sulle tabelle ponte), mai le voci condivise usate da altre schede.
+- **Eliminazione** (`src/helpers/eliminaScheda.ts`, in una transazione, la stessa per schedatore e amministratore): si cancellano la scheda, i suoi collegamenti, le sue voci proprie (immagini, misure, cronologie, inventari, stato) e le voci condivise che non sono più usate da nessun'altra scheda. Quelle ancora usate da altre schede restano.
 - I valori delle misure accettano la virgola (`72,5`); i gruppi di misure vuoti vengono ignorati.
 
 ## Rotte principali
@@ -97,6 +98,7 @@ Una scheda è una riga di `schede` più molte tabelle collegate tramite tabelle 
 | `/manageBozze` | GET / POST / PUT / DELETE | schedatore | elenco, invio, ritiro, eliminazione delle proprie bozze |
 | `/suggestions` | GET | schedatore | voci esistenti per i menu "Seleziona preesistente" |
 | `/admin` | GET / POST / DELETE | amministratore | elenco, approvazione, rifiuto |
+| `/admin/pubblicate` | GET / DELETE | amministratore | elenco ed eliminazione delle schede pubblicate |
 | `/admin/:id` | GET | amministratore | dettaglio di una scheda da valutare |
 
 Le vecchie rotte `PUT` e `DELETE /schede/:id`, che non chiedevano l'accesso, sono state rimosse.
@@ -160,6 +162,12 @@ npm run start:build   # compila TypeScript e copia le viste in dist/
 npm run start:prod    # compila ed avvia (è quello che fa il container)
 ```
 
+Test end-to-end sul sito locale avviato (account dimostrativi; crea ed elimina schede di prova, da non usare su un server in uso):
+
+```bash
+./scripts/test-e2e.sh
+```
+
 **Attenzione alle viste**: il container serve le pagine e gli script da `dist/views/`, che è versionata. Ogni modifica in `src/views/` va copiata anche lì (`npm run start:build` o `rsync -av src/views/ dist/views/`), poi si ricostruisce il container (`docker compose up -d --build nodeapp`).
 
 ## Manutenzione del database
@@ -221,7 +229,6 @@ database-data/, user-data/   dati locali (MySQL / MongoDB), non versionati
 - Nessuna notifica: lo schedatore non viene avvisato quando una scheda viene approvata o rifiutata.
 - Il campo "Commento" del modulo viene salvato ma non viene mostrato all'amministratore.
 - La ricerca veloce restituisce anche risultati poco pertinenti.
-- Le voci condivise rimaste senza schede (es. l'autore di una bozza eliminata) restano tra i suggerimenti.
 - Le immagini sono salvate nel database come data URL: comodo per la demo, pesante con molte foto.
 
 ## Note tecniche

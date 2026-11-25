@@ -7,6 +7,7 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { getUserData } from '../helpers/authHelpers'; // Importa le funzioni dal modulo
+import { eliminaScheda } from '../helpers/eliminaScheda';
 
 const validator = require('validator');
 
@@ -81,12 +82,10 @@ export const deleteSchedaForSchedatore = async (req: Request, res: Response): Pr
   try {
     // Solo le proprie bozze (non quelle in approvazione o pubblicate)
     if ((await statoSePropria(req, res, [0])) === null) return res;
-    const pool = await connection();
-    const schedaId = req.query.schedaId;
-    const result: ResultSet = await pool.query(QUERY.DELETE_SCHEDE_PER_SCHEDATORE, [schedaId]);
-    pool.end();
+    const schedaId = Number(req.query.schedaId);
+    await eliminaScheda(schedaId);
     return res.status(Code.OK)
-      .send(new HttpResponse(Code.OK, Status.OK, 'Eliminata la scheda' + schedaId , result[0]));
+      .send(new HttpResponse(Code.OK, Status.OK, 'Eliminata la scheda ' + schedaId));
     }
      catch (error: unknown) {
       console.error(error);

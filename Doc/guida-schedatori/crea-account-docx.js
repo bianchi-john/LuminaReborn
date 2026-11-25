@@ -9,8 +9,9 @@ const [, , sorgente, destinazione] = process.argv;
 const testo = fs.readFileSync(sorgente, "utf8");
 const sito = (testo.match(/Sito: (\S+)/) || [])[1];
 const maschera = process.env.MASCHERA === "1"; // copia di controllo: password sostituite da X
-const account = [...testo.matchAll(/utente: (\S+)\s+password: (\S+)/g)].map((m) => ({ utente: m[1], password: maschera ? "X".repeat(m[2].length) : m[2] }));
-if (!sito || account.length !== 6) throw new Error("File account non riconosciuto");
+const ASSEGNATI = { schedatore01: "Virginia", schedatore02: "Elena", schedatore03: "Pasquale", amministratore: "Emanuele" };
+const account = [...testo.matchAll(/utente: (\S+)\s+password: (\S+)/g)].filter((m) => m[1] in ASSEGNATI).map((m) => ({ utente: m[1], password: maschera ? "X".repeat(m[2].length) : m[2] }));
+if (!sito || account.length !== 4) throw new Error("File account non riconosciuto");
 
 const FONT = "Arial";
 const MONO = "Consolas";
@@ -90,7 +91,7 @@ const doc = new Document({
         columnWidths: COL,
         rows: [
           riga("Ruolo", "Nome utente", "Password", "Assegnato a", { intestazione: true }),
-          ...schedatori.map((a) => riga("Schedatore", a.utente, a.password, "")),
+          ...schedatori.map((a) => riga("Schedatore", a.utente, a.password, ASSEGNATI[a.utente])),
         ],
       }),
 
@@ -101,7 +102,7 @@ const doc = new Document({
         columnWidths: COL,
         rows: [
           riga("Ruolo", "Nome utente", "Password", "Assegnato a", { intestazione: true }),
-          riga("Amministratore", admin.utente, admin.password, ""),
+          riga("Amministratore", admin.utente, admin.password, ASSEGNATI[admin.utente]),
         ],
       }),
 

@@ -7,6 +7,7 @@ import { Code } from '../enum/code.enum';
 import { Status } from '../enum/status.enum';
 import { Scheda } from '../interface/scheda';
 import { QUERY } from '../query/scheda.query';
+import { eliminaScheda } from '../helpers/eliminaScheda';
 
 
 const validator = require('validator');
@@ -29,6 +30,48 @@ export const getBozzeForAdmin = async (req: Request, res: Response): Promise<Res
       return res.status(Code.INTERNAL_SERVER_ERROR)
         .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
     }
+};
+
+
+/** Elenco delle schede pubblicate, per poterle eliminare. */
+export const getSchedePubblicate = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const pool = await connection();
+    const [righe] = await pool.query(ADMINQUERY.SELECT_SCHEDE_PUBBLICATE);
+    return res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Schede pubblicate', righe));
+  } catch (error: unknown) {
+    console.error(error);
+    return res.status(Code.INTERNAL_SERVER_ERROR)
+      .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
+  }
+};
+
+/** L'amministratore elimina definitivamente una scheda pubblicata (solo stato 2). */
+export const deleteSchedaPubblicata = async (req: Request, res: Response): Promise<Response> => {
+  console.info(`[${new Date().toLocaleString()}] Incoming ${req.method}${req.originalUrl}`);
+  try {
+    const schedaId = Number(req.query.schedaId);
+    if (!Number.isInteger(schedaId) || schedaId <= 0) {
+      return res.status(Code.BAD_REQUEST).send(new HttpResponse(Code.BAD_REQUEST, Status.BAD_REQUEST, 'Scheda non indicata'));
+    }
+    const pool = await connection();
+    const [righe] = await pool.query(ADMINQUERY.STATO_SCHEDA, [schedaId]);
+    const riga = (righe as RowDataPacket[])[0];
+    if (!riga) {
+      return res.status(Code.NOT_FOUND).send(new HttpResponse(Code.NOT_FOUND, Status.NOT_FOUND, 'Scheda non trovata'));
+    }
+    if (Number(riga.stato) !== 2) {
+      return res.status(Code.CONFLICT)
+        .send(new HttpResponse(Code.CONFLICT, Status.CONFLICT, 'Si possono eliminare solo le schede pubblicate'));
+    }
+    await eliminaScheda(schedaId);
+    console.info(`Scheda ${schedaId} eliminata dall'amministratore`);
+    return res.status(Code.OK).send(new HttpResponse(Code.OK, Status.OK, 'Eliminata la scheda ' + schedaId));
+  } catch (error: unknown) {
+    console.error(error);
+    return res.status(Code.INTERNAL_SERVER_ERROR)
+      .send(new HttpResponse(Code.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR, 'An error occurred'));
+  }
 };
 
 

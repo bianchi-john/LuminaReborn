@@ -44,13 +44,42 @@
   <h1>Amministratore</h1>
 </div>
 <div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <!-- Aggiungi la classe d-flex e justify-content-center al container per centrare il contenuto -->
+  <h4 class="mt-2">Da valutare</h4>
+  <div id="daValutare"><p class="text-muted">Caricamento…</p></div>
 
+  <h4 class="mt-5">Schede pubblicate</h4>
+  <p class="text-muted">Una scheda eliminata sparisce dal sito e non si può recuperare.</p>
+  <div id="pubblicate"><p class="text-muted">Caricamento…</p></div>
+</div>
+
+<div class="modal fade" id="eliminaModal" tabindex="-1" role="dialog" aria-labelledby="eliminaModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eliminaModalLabel">Eliminare la scheda pubblicata?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Chiudi">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><b id="eliminaTitolo"></b></p>
+        <p class="mb-0">La scheda sparisce dal sito insieme alle sue immagini. <b>Non si può recuperare.</b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
+        <button type="button" class="btn btn-danger" id="eliminaConferma">Elimina definitivamente</button>
+      </div>
     </div>
   </div>
+</div>
 
+<div class="modal fade" id="messaggioModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Messaggio</h5></div>
+      <div class="modal-body" id="messaggioTesto"></div>
+    </div>
+  </div>
 </div>
 
 </div>

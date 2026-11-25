@@ -8,7 +8,6 @@ export const QUERY = {
       JOIN statoScheda ON tds_schede_statoScheda.id_stato = statoScheda.id
       WHERE users.username = ? AND statoScheda.stato = 0;
       `,
-    DELETE_SCHEDE_PER_SCHEDATORE:'DELETE FROM schede WHERE id = ?',
     SELECT_SCHEDE_PER_SCHEDATORE_IN_APPROVAZIONE:`
       SELECT schede.*
       FROM users
